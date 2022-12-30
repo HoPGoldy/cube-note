@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { useNavigate } from '../Route'
+import { useNavigate } from 'react-router-dom'
 import { Card, Space, Cell } from 'react-vant'
 import Header from '../components/Header'
 import { PageContent, PageAction, ActionButton } from '../components/PageWithAction'
@@ -28,7 +28,7 @@ const About: FC = () => {
                             <a href="mailto:hopgoldy@gmail.com?&subject=cube-diary 相关">
                                 <Cell title="联系我" value="hopgoldy@gmail.com" />
                             </a>
-                            <a href='https://github.com/HoPGoldy/cube-note' target="_blank" rel="noreferrer">
+                            <a href='https://github.com/HoPGoldy/keep-my-password' target="_blank" rel="noreferrer">
                                 <Cell title="开源地址" value="github" />
                             </a>
                         </Card>
