@@ -1,10 +1,8 @@
-import React, { ComponentType, FC, lazy, Suspense, useLayoutEffect, useState } from 'react'
-import { Router, useRoutes } from 'react-router-dom'
-import { createBrowserHistory } from 'history'
+import React, { ComponentType, FC, lazy, Suspense } from 'react'
+import { useRoutes } from 'react-router-dom'
 import Loading from './components/Loading'
 import { LoginAuth } from './components/LoginAuth'
 import { AppContainer } from './components/AppContainer'
-import { routePrefix } from './constans'
 
 const lazyLoad = (compLoader: () => Promise<{ default: ComponentType<any> }>) => {
     const Comp = lazy(compLoader)
@@ -47,31 +45,4 @@ export const Routes: FC = () => {
     ])
 
     return routes
-}
-
-/**
- * 暴露实例，用于组件外导航
- */
-export const history = createBrowserHistory({ window })
-
-/**
- * 暴露了 history 实例的路由组件
- */
-export const BrowserRouter: FC = (props) => {
-    const [state, setState] = useState({
-        action: history.action,
-        location: history.location
-    })
-
-    useLayoutEffect(() => history.listen(setState), [history])
-
-    return (
-        <Router
-            {...props}
-            location={state.location}
-            navigationType={state.action}
-            navigator={history}
-            basename={routePrefix}
-        />
-    )
 }

@@ -1,15 +1,12 @@
 import { STORAGE_PATH } from '@/config'
 import { HttpRequestLog } from '@/types/app'
 import { AppKoaContext, AppResponse } from '@/types/global'
-import { formatLocation } from '@/utils/common'
-import dayjs from 'dayjs'
 import { ensureFile } from 'fs-extra'
 import { readFile, writeFile } from 'fs/promises'
 import Joi from 'joi'
 import { Context } from 'koa'
 import { nanoid } from 'nanoid'
 import path from 'path'
-import { queryIp } from './lib/queryIp'
 
 const initialResponse: AppResponse = {
     code: 200,
@@ -74,16 +71,6 @@ export function getRequestRoute (ctx: AppKoaContext) {
     return route
 }
 
-/**
- * 生成安全通知的通用前缀
- */
-export const getNoticeContentPrefix = async (ctx: AppKoaContext) => {
-    const ip = ctx.log ? ctx.log.ip : getIp(ctx)
-    const location = ctx.log ? ctx.log.location : await queryIp(ip)
-
-    return `来自 ${formatLocation(location)} 的 ip 地址（${ip}）`
-}
-
 interface CreateFileReaderProps {
     fileName: string
     getInitData?: () => Promise<string>
@@ -112,25 +99,4 @@ export const createFileReader = (props: CreateFileReaderProps) => {
         await writeFile(filePath, initData)
         return cache = initData
     }
-}
-
-/**
- * 从 ctx 生成日志对象
- */
-export const createLog = async (ctx: AppKoaContext) => {
-    const logDetail: HttpRequestLog = {
-        ip: getIp(ctx),
-        method: ctx.method,
-        url: ctx.url,
-        route: getRequestRoute(ctx),
-        responseHttpStatus: ctx.status,
-        responseStatus: (ctx.body as any)?.code,
-        date: dayjs().valueOf(),
-        requestParams: ctx.params,
-        requestBody: ctx.request.body
-    }
-
-    logDetail.location = await queryIp(logDetail.ip)
-
-    return logDetail
 }

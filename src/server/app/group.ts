@@ -1,6 +1,6 @@
 import { createRouter } from '../modules/group/router'
 import { createService } from '../modules/group/service'
-import { getAppStorage, getCertificateCollection, getGroupCollection, insertSecurityNotice, saveLoki, updateAppStorage } from '@/server/lib/loki'
+import { getAppStorage, getCertificateCollection, getGroupCollection, saveLoki, updateAppStorage } from '@/server/lib/loki'
 import { createOTP, createToken } from '@/server/lib/auth'
 import { setAlias } from './routeAlias'
 
@@ -11,8 +11,7 @@ export const groupService = createService({
     getGroupCollection,
     getAppStorage,
     updateAppStorage,
-    createToken,
-    insertSecurityNotice
+    createToken
 })
 
 export const groupRouter = createRouter({

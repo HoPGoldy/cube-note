@@ -14,14 +14,9 @@ export const createRouter = (props: Props) => {
     const { service, setAlias } = props
     const router = new Router<any, AppKoaContext>()
 
-    router.post(setAlias('/requireLogin', '请求登录授权', 'POST'), async ctx => {
-        const resp = await service.requireLogin()
-        response(ctx, resp)
-    })
-
-    const loginSchema = Joi.object<{ a: string, b?: string }>({
+    const loginSchema = Joi.object<{ a: string, b: string }>({
         a: Joi.string().required(),
-        b: Joi.string()
+        b: Joi.string().required()
     })
 
     router.post(setAlias('/login', '登录应用', 'POST'), async ctx => {
@@ -31,9 +26,9 @@ export const createRouter = (props: Props) => {
             response(ctx, { code: 401, msg: '无效的主密码凭证' })
             return
         }
-        const { a: password, b: code } = value
+        const { a: username, b: password } = value
 
-        const resp = await service.login(password, ctx, code)
+        const resp = await service.login(username, password)
         response(ctx, resp)
     })
 
@@ -56,10 +51,6 @@ export const createRouter = (props: Props) => {
 
     router.get(setAlias('/logInfo', '登录失败查询'), async ctx => {
         response(ctx, { code: 200, data: service.getLogInfo() })
-    })
-
-    router.get(setAlias('/requireChangePwd', '请求修改密码'), async ctx => {
-        response(ctx, { code: 200, data: service.requireChangePwd() })
     })
 
     router.put(setAlias('/changePwd', '修改密码', 'PUT'), async ctx => {

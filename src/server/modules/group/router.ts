@@ -96,7 +96,7 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    router.post(setAlias('/group/unlock/:groupId', '分组解密', 'POST'), service.checkIsGroupUnlockSuccess, async ctx => {
+    router.post(setAlias('/group/unlock/:groupId', '分组解密', 'POST'), async ctx => {
         const { code } = ctx.request.body
         if (!code || typeof code !== 'string') {
             response(ctx, { code: 401, msg: '无效的分组密码凭证' })

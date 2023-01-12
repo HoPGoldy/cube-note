@@ -112,25 +112,14 @@ const Register = () => {
                         className={fieldClassName}
                         type='password'
                         autoFocus
-                        placeholder="请输入主密码"
+                        placeholder="请输入密码"
                         value={password}
                         onInput={e => setPassword((e.target as any).value)}
                         onKeyUp={e => {
                             if (e.key === 'Enter') onSubmit()
                         }}
                     />
-                    {codeVisible && <input
-                        ref={codeInputRef}
-                        type='password'
-                        placeholder="请输入动态验证码"
-                        className={fieldClassName + 'mt-2'}
-                        value={code}
-                        onInput={e => setCode((e.target as any).value)}
-                        onKeyUp={e => {
-                            if (e.key === 'Enter') onSubmit()
-                        }}
-                    />}
-                    
+
                     <div className='shrink-0 w-full mt-2'>
                         <Button
                             block

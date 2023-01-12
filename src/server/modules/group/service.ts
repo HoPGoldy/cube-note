@@ -1,14 +1,11 @@
-import { AppStorage, CertificateDetail, CertificateGroup, SecurityNoticeType } from '@/types/app'
+import { AppStorage, CertificateDetail, CertificateGroup } from '@/types/app'
 import { CreateOtpFunc } from '@/server/lib/auth'
-import { AppKoaContext, AppResponse, MyJwtPayload } from '@/types/global'
+import { AppResponse, MyJwtPayload } from '@/types/global'
 import { DATE_FORMATTER, STATUS_CODE } from '@/config'
 import { AddGroupResp, CertificateListItem, CountInfoResp, GroupAddPasswordData, GroupRemovePasswordData } from '@/types/http'
 import { sha } from '@/utils/crypto'
 import { authenticator } from 'otplib'
 import dayjs from 'dayjs'
-import { Next } from 'koa'
-import { getNoticeContentPrefix } from '@/server/utils'
-import { InsertSecurityNoticeFunc } from '@/server/lib/loki'
 
 interface Props {
     createOTP: CreateOtpFunc
@@ -18,13 +15,12 @@ interface Props {
     getAppStorage: () => Promise<AppStorage>
     updateAppStorage: (data: Partial<AppStorage>) => Promise<void>
     createToken: (payload: Record<string, any>) => Promise<string>
-    insertSecurityNotice: InsertSecurityNoticeFunc
 }
 
 export const createService = (props: Props) => {
     const {
         createOTP, getAppStorage, updateAppStorage, saveData,
-        createToken, getGroupCollection, getCertificateCollection, insertSecurityNotice
+        createToken, getGroupCollection, getCertificateCollection
     } = props
 
     const challengeManager = createOTP()
@@ -320,32 +316,7 @@ export const createService = (props: Props) => {
         return { code: 200, data: newList }
     }
 
-    /**
-     * 检查中间件 - 分组解锁是否成功
-     */
-    const checkIsGroupUnlockSuccess = async (ctx: AppKoaContext, next: Next) => {
-        await next()
-        if ((ctx.body as any)?.code === 200) return
-
-        const groupCollection = await getGroupCollection()
-        const groupId = +ctx.params.groupId
-        const item = groupCollection.get(groupId)
-
-        let content = await getNoticeContentPrefix(ctx)
-        if (!item) {
-            content += `尝试解锁一个不存在的分组(分组 id: ${groupId})。`
-            content += '正常使用不应该会产生此请求，请检查是否有攻击者尝试爆破分组密码'
-        }
-        else content += '进行了一次失败的解锁，请确认是否为本人操作'
-
-        insertSecurityNotice(
-            SecurityNoticeType.Warning,
-            '分组解锁失败',
-            content
-        )
-    }
-
-    return { getCertificateGroupList, getCertificateList, getGroupLockStatus, getCountInfo, addGroup, updateGroupName, setDefaultGroup, updateGroupSort, deleteGroup, unlockGroup, groupAddPassword, requireOperate, removeGroupPassword, checkIsGroupUnlockSuccess }
+    return { getCertificateGroupList, getCertificateList, getGroupLockStatus, getCountInfo, addGroup, updateGroupName, setDefaultGroup, updateGroupSort, deleteGroup, unlockGroup, groupAddPassword, requireOperate, removeGroupPassword }
 }
 
 export type GroupService = ReturnType<typeof createService>

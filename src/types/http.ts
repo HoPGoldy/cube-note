@@ -81,10 +81,6 @@ export type LoginResp = {
      */
     defaultGroupId: number
     /**
-     * 是否有未读通知
-     */
-    hasNotice: boolean
-    /**
      * 应用主题
      */
     theme: AppTheme
@@ -100,7 +96,7 @@ export type LoginResp = {
      * 密码生成长度
      */
     createPwdLength: number
-} & NoticeInfoResp
+}
 
 export interface NoticeInfoResp {
     /**

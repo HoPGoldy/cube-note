@@ -67,9 +67,9 @@ export const createReplayAttackHeader = (url: string, bodyData: string, secretKe
     const nonce = nanoid(128)
     const sign = sha(`${url}${bodyData}${nonce}${timestamp}${secretKey}`)
     return {
-        'X-kmp-temestamp': timestamp,
-        'X-kmp-nonce': nonce,
-        'X-kmp-signature': sign,
+        'X-cubnote-temestamp': timestamp,
+        'X-cubnote-nonce': nonce,
+        'X-cubnote-signature': sign,
     }
 }
 
@@ -88,9 +88,9 @@ export const getReplayAttackData = (ctx: AppKoaContext): ReplayAttackData | unde
     const data = {
         url: ctx.url,
         body: ctx.request.body,
-        timestamp: Number(ctx.get('X-kmp-temestamp')),
-        nonce: ctx.get('X-kmp-nonce'),
-        signature: ctx.get('X-kmp-signature')
+        timestamp: Number(ctx.get('X-cubnote-temestamp')),
+        nonce: ctx.get('X-cubnote-nonce'),
+        signature: ctx.get('X-cubnote-signature')
     }
 
     if (!data.timestamp || !data.nonce || !data.signature) return undefined

@@ -1,30 +1,32 @@
 import qs from 'qs'
-import { history } from '../Route'
 import { AppResponse } from '@/types/global'
 import { Notify } from 'react-vant'
-import { routePrefix } from '../constans'
 import { STATUS_CODE } from '@/config'
 import { createReplayAttackHeader } from '@/utils/crypto'
+import { RootState, store } from '@/client/store'
+import { logout } from '@/client/store/user'
+import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react'
 
 /**
  * 后端地址
  */
-const baseURL = routePrefix + '/api'
+const BASE_URL = '/api'
 
 /**
- * 请求所用的 token 值
+ * 获取当前正在使用的 token
  */
-let token: string | null = null
+export const getToken = () => localStorage.getItem('cube-note-token')
 
 /**
- * 获取当前正在使用的登录 token
+ * 设置请求中携带的 token
  */
-export const getToken = () => token
-
-/**
- * 设置请求中携带的用户 token
- */
-export const setToken = (newToken: string | null) => token = newToken
+export const setToken = (newToken: string | null) => {
+    if (!newToken) {
+        localStorage.removeItem('cube-note-token')
+        return
+    }
+    localStorage.setItem('cube-note-token', newToken)
+}
 
 /**
  * 基础请求器
@@ -33,6 +35,7 @@ export const setToken = (newToken: string | null) => token = newToken
  * @param requestInit 请求初始化配置
  */
 const fetcher = async <T = unknown>(url: string, requestInit: RequestInit = {}, body?: Record<string, any>): Promise<T> => {
+    const token = getToken()
     const bodyData = body ? JSON.stringify(body) : ''
     const init = {
         ...requestInit,
@@ -42,7 +45,7 @@ const fetcher = async <T = unknown>(url: string, requestInit: RequestInit = {}, 
     if (token) (init.headers as any).Authorization = `Bearer ${token}`
 
     const pureUrl = url.startsWith('/') ? url : ('/' + url)
-    const fullUrl = baseURL + pureUrl
+    const fullUrl = BASE_URL + pureUrl
 
     const replayAttackSecret = sessionStorage.getItem('replayAttackSecret')
     if (replayAttackSecret) {
@@ -52,8 +55,9 @@ const fetcher = async <T = unknown>(url: string, requestInit: RequestInit = {}, 
 
     const resp = await fetch(fullUrl, init)
 
-    if (resp.status === 401 && history.location.pathname !== '/login') {
+    if (resp.status === 401 && location.pathname !== '/login') {
         setToken(null)
+        store.dispatch(setUserState(undefined))
     }
 
     const data: AppResponse<T> = await resp.json()
@@ -69,6 +73,57 @@ const fetcher = async <T = unknown>(url: string, requestInit: RequestInit = {}, 
 
     return data.data as T
 }
+
+/**
+ * 是否为标准后端数据结构
+ */
+const isAppResponse = (data: unknown): data is AppResponse<unknown> => {
+    return typeof data === 'object' && data !== null && 'code' in data
+}
+
+const baseQueryCore = fetchBaseQuery({
+    baseUrl: '/api',
+    prepareHeaders(headers, { getState }) {
+        const state = getState() as RootState
+
+        const { token } = state.user
+        if (token) headers.set('Authorization', `Bearer ${token}`)
+
+        return headers
+    },
+})
+
+const baseQuery: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+    const resp = await baseQueryCore(args, api, extraOptions)
+
+    if (resp.error && resp.error.status === 401 && location.pathname !== '/login') {
+        api.dispatch(logout())
+    }
+
+    if (!isAppResponse(resp.data)) {
+        return resp
+    }
+
+    const { data, code, msg } = resp.data
+    console.log('🚀 ~ file: base.ts:112 ~ >= ~ resp.data', resp.data)
+    resp.data = data
+
+    if (code !== 200) {
+        Notify.show({ type: 'danger', message: msg || '未知错误' })
+        resp.error = { status: code as number, data: msg }
+    }
+
+    return resp
+}
+
+export const baseApi = createApi({
+    baseQuery,
+    endpoints: () => ({}),
+})
 
 /**
  * 使用 GET 发起请求

@@ -1,30 +1,20 @@
 import Router from 'koa-router'
 import { authRouter, loginLocker } from './auth'
 import { globalRouter } from './global'
-import { groupRouter } from './group'
-import { certificateRouter } from './certificate'
-import { otpVerifyRouter } from './optVerify'
-import { loggerRouter, loggerService } from './logger'
 import { AppKoaContext } from '@/types/global'
 import { middlewareJwt, middlewareJwtCatcher } from '../lib/auth'
-import { checkIsSleepTime, createCheckReplayAttack } from '../lib/security'
-import { getRandomRoutePrefix } from '../lib/randomEntry'
+import { createCheckReplayAttack } from '../lib/security'
 import { OPEN_API } from '@/config'
 
-export const createApiRouter = async () => {
-    const routePrefix = await getRandomRoutePrefix()
-    const routes = [globalRouter, authRouter, certificateRouter, groupRouter, loggerRouter, otpVerifyRouter]
-    const publicPath = OPEN_API.map(path => routePrefix + path)
-
-    const apiRouter = new Router<unknown, AppKoaContext>({ prefix: routePrefix})
+export const createApiRouter = () => {
+    const routes = [globalRouter, authRouter]
+    const apiRouter = new Router<unknown, AppKoaContext>()
 
     apiRouter
-        .use(loginLocker.createCheckLoginDisable({ excludePath: ['/global', '/logInfo'] }))
-        .use(createCheckReplayAttack({ excludePath: publicPath }))
-        .use(checkIsSleepTime)
-        .use(loggerService.middlewareLogger)
+        .use(loginLocker.createCheckLoginDisable({ excludePath: ['/global'] }))
+        .use(createCheckReplayAttack({ excludePath: OPEN_API }))
         .use(middlewareJwtCatcher)
-        .use(middlewareJwt.unless({ path: publicPath }))
+        .use(middlewareJwt.unless({ path: OPEN_API }))
 
     routes.forEach(route => apiRouter.use('/api', route.routes(), route.allowedMethods()))
 

@@ -1,13 +1,10 @@
-import { AppStorage, CertificateDetail, NoticeInfo, SecurityNoticeType } from '@/types/app'
+import { AppStorage, CertificateDetail } from '@/types/app'
 import { CreateOtpFunc } from '@/server/lib/auth'
-import { AppKoaContext, AppResponse } from '@/types/global'
-import { createLog, getNoticeContentPrefix } from '@/server/utils'
-import { formatLocation, isSameLocation } from '@/utils/common'
+import { AppResponse } from '@/types/global'
 import { STATUS_CODE } from '@/config'
 import { CertificateGroupDetail, ChangePasswordData, LoginErrorResp, LoginResp } from '@/types/http'
 import { aes, aesDecrypt, getAesMeta, sha } from '@/utils/crypto'
 import { LoginLocker } from '@/server/lib/security'
-import { InsertSecurityNoticeFunc } from '@/server/lib/loki'
 import { authenticator } from 'otplib'
 import { nanoid } from 'nanoid'
 import { DEFAULT_PASSWORD_ALPHABET, DEFAULT_PASSWORD_LENGTH } from '@/constants'
@@ -18,57 +15,29 @@ interface Props {
     getAppStorage: () => Promise<AppStorage>
     updateAppStorage: (data: Partial<AppStorage>) => Promise<void>
     loginLocker: LoginLocker
-    insertSecurityNotice: InsertSecurityNoticeFunc
     createToken: () => Promise<string>
     getReplayAttackSecret: () => Promise<string>
     getCertificateGroupList: () => Promise<CertificateGroupDetail[]>
-    getUnreadNoticeCount: () => Promise<number>
-    getNoticeInfo: () => Promise<NoticeInfo>
     getAllCertificate: () => Promise<CertificateDetail[]>
     updateCertificate: (certificates: CertificateDetail[]) => Promise<void>
 }
 
 export const createService = (props: Props) => {
     const {
-        createOTP, getAppStorage, updateAppStorage, saveData, insertSecurityNotice,
+        createOTP, getAppStorage, updateAppStorage, saveData,
         loginLocker, createToken,
-        getCertificateGroupList, getUnreadNoticeCount, getReplayAttackSecret, getNoticeInfo,
+        getCertificateGroupList, getReplayAttackSecret,
         getAllCertificate, updateCertificate
     } = props
 
     const challengeManager = createOTP()
 
     /**
-     * 请求登录
-     */
-    const requireLogin = async (): Promise<AppResponse> => {
-        const { passwordSalt: salt } = await getAppStorage()
-        if (!salt) return { code: STATUS_CODE.NOT_REGISTER, msg: '请先注册' }
-
-        const challenge = challengeManager.create()
-        return { code: 200, data: { salt, challenge } }
-    }
-
-    /**
      * 登录
      */
-    const login = async (password: string, ctx: AppKoaContext, code?: string): Promise<AppResponse> => {
-        const log = await createLog(ctx)
-
-        const challengeCode = challengeManager.pop()
-        if (!challengeCode) {
-            const prefix = await getNoticeContentPrefix(ctx)
-            insertSecurityNotice(
-                SecurityNoticeType.Danger,
-                '未授权状态下进行登录操作',
-                `${prefix}发起了一次非法登录，已被拦截。请求 query为：${ctx.request.query.toString()}，请求 body 为：${ctx.request.body.toString()}。`
-            )
-            loginLocker.recordLoginFail()
-            return { code: 401, msg: '挑战码错误' }
-        }
-
+    const login = async (username: string, password: string): Promise<AppResponse> => {
         const {
-            passwordHash, defaultGroupId, theme, commonLocation, totpSecret,
+            passwordHash, defaultGroupId, theme,
             createPwdAlphabet = DEFAULT_PASSWORD_ALPHABET, createPwdLength = DEFAULT_PASSWORD_LENGTH
         } = await getAppStorage()
 
@@ -76,55 +45,13 @@ export const createService = (props: Props) => {
             return { code: STATUS_CODE.NOT_REGISTER, msg: '请先注册' }
         }
 
-        // 本次登录地点和常用登录地不同
-        if (commonLocation && !isSameLocation(commonLocation, log.location)) {
-        // if (true) {
-            // 没有绑定动态验证码
-            if (!totpSecret) {
-                const beforeLocation = formatLocation(commonLocation)
-                const prefix = await getNoticeContentPrefix(ctx)
-                insertSecurityNotice(
-                    SecurityNoticeType.Warning,
-                    '异地登录',
-                    `${prefix}进行了一次异地登录，上次登录地为${beforeLocation}，请检查是否为本人操作。`
-                )
-            }
-            // 绑定了动态验证码
-            else {
-                if (!code) {
-                    return { code: STATUS_CODE.NEED_CODE, msg: '非常用地区登录，请输入动态验证码' }
-                }
-
-                const isValid = authenticator.verify({ token: code, secret: totpSecret })
-                if (!isValid) {
-                    return { code: 400, msg: '动态验证码错误' }
-                }
-
-                const beforeLocation = formatLocation(commonLocation)
-                const prefix = await getNoticeContentPrefix(ctx)
-                insertSecurityNotice(
-                    SecurityNoticeType.Info,
-                    '异地登录',
-                    `${prefix}进行了一次异地登录，上次登录地为${beforeLocation}，已完成动态验证码认证。请检查是否为本人操作。`
-                )
-            }
-        }
-
-        if (sha(passwordHash + challengeCode) !== password) {
-            const prefix = await getNoticeContentPrefix(ctx)
-            insertSecurityNotice(
-                SecurityNoticeType.Warning,
-                '登录失败',
-                `${prefix}使用了错误的密码登录，请确保是本人操作。`
-            )
+        if (sha(passwordHash) !== password) {
             loginLocker.recordLoginFail()
             return { code: 401, msg: '密码错误，请检查主密码是否正确' }
         }
 
         const token = await createToken()
         const groups = await getCertificateGroupList()
-        const unReadNoticeCount = await getUnreadNoticeCount()
-        const noticeInfo =  await getNoticeInfo()
         const replayAttackSecret = await getReplayAttackSecret()
 
         const data: LoginResp = {
@@ -132,14 +59,11 @@ export const createService = (props: Props) => {
             groups,
             defaultGroupId,
             theme,
-            hasNotice: unReadNoticeCount >= 1,
             replayAttackSecret,
             createPwdAlphabet,
-            createPwdLength,
-            ...noticeInfo
+            createPwdLength
         }
 
-        await updateAppStorage({ commonLocation: log.location })
         saveData()
         loginLocker.clearRecord()
 
@@ -176,13 +100,6 @@ export const createService = (props: Props) => {
             appLock: lockDetail.disable,
             appFullLock: lockDetail.dead
         }
-    }
-
-    /**
-     * 修改密码 - 获取挑战码
-     */
-    const requireChangePwd = () => {
-        return challengeManager.create('changePwd')
     }
 
     /**
@@ -250,7 +167,7 @@ export const createService = (props: Props) => {
         }
     }
 
-    return { requireLogin, login, register, getLogInfo, requireChangePwd, changePassword }
+    return { login, register, getLogInfo, changePassword }
 }
 
 export type AuthService = ReturnType<typeof createService>

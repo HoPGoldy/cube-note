@@ -1,6 +1,6 @@
 import lokijs from 'lokijs'
 import { ensureDir } from 'fs-extra'
-import { AppStorage, AppTheme, CertificateDetail, CertificateGroup, HttpRequestLog, SecurityNotice, SecurityNoticeType } from '@/types/app'
+import { AppStorage, AppTheme, CertificateDetail, CertificateGroup } from '@/types/app'
 import { STORAGE_PATH } from '@/config'
 
 /**
@@ -41,7 +41,7 @@ export const saveLoki = async (name = 'storage'): Promise<void> => {
 }
 
 interface CreateAccessorArgs<T> {
-    lokiName?: string
+    lokiName?: string,
     collectionName: string,
     initOption?: Partial<CollectionOptions<T>>,
     initData?: T[]
@@ -53,10 +53,10 @@ interface CreateAccessorArgs<T> {
  * @returns 一个 async 函数，调用后返回对应的集合
  */
 export const createCollectionAccessor = <T extends Record<string | number, any>>(arg: CreateAccessorArgs<T>) => {
-    const { lokiName, collectionName, initData, initOption } = arg
+    const { lokiName: defaultLokiName, collectionName, initData, initOption } = arg
 
-    return async () => {
-        const loki = await getLoki(lokiName)
+    return async (lokiName?: string) => {
+        const loki = await getLoki(lokiName || defaultLokiName)
         const collection = loki.getCollection<T>(collectionName)
         if (collection) return collection
 
@@ -67,6 +67,7 @@ export const createCollectionAccessor = <T extends Record<string | number, any>>
 }
 
 const getAppStorageCollection = createCollectionAccessor<AppStorage>({
+    lokiName: 'system',
     collectionName: 'global'
 })
 
@@ -94,38 +95,10 @@ export const updateAppStorage = async (newStorage: Partial<AppStorage>) => {
 }
 
 /**
- * 获取日志集合
- */
-export const getLogCollection = createCollectionAccessor<HttpRequestLog>({
-    lokiName: 'log',
-    collectionName: 'requestLog',
-    initOption: {
-        // 只保存近一个月的日志
-        ttl: 1000 * 60 * 60 * 24 * 30,
-        // 每天清理一次
-        ttlInterval: 1000 * 60 * 60 * 24
-    }
-})
-
-/**
- * 获取安全通知集合
- */
-export const getSecurityNoticeCollection = createCollectionAccessor<SecurityNotice>({
-    lokiName: 'log',
-    collectionName: 'securityNotice',
-    initOption: {
-        // 只保存近一个月的日志
-        ttl: 1000 * 60 * 60 * 24 * 30,
-        // 每天清理一次
-        ttlInterval: 1000 * 60 * 60 * 24
-    }
-})
-
-/**
  * 获取防重放攻击的 nonce 集合
  */
 export const getReplayAttackNonceCollection = createCollectionAccessor<{ value: string }>({
-    lokiName: 'log',
+    lokiName: 'system',
     collectionName: 'replayAttackNonce',
     initOption: {
         indices: ['value'],
@@ -134,21 +107,6 @@ export const getReplayAttackNonceCollection = createCollectionAccessor<{ value: 
         ttlInterval: 1000 * 60
     }
 })
-
-/**
- * 发布一条新的安全通知
- */
-export const insertSecurityNotice = async (
-    type: SecurityNoticeType,
-    title: string,
-    content: string
-) => {
-    const noticeCollection = await getSecurityNoticeCollection()
-    noticeCollection.insert({ type, title, content, date: new Date().valueOf(), isRead: false })
-    saveLoki('log')
-}
-
-export type InsertSecurityNoticeFunc = typeof insertSecurityNotice
 
 /**
  * 获取分组集合
