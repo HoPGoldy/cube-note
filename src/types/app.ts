@@ -110,6 +110,26 @@ export interface AppStorage {
     createPwdLength?: number
 }
 
+export interface UserStorage {
+    username: string
+    /**
+     * 主密码 sha512 摘要
+     */
+    passwordHash?: string
+    /**
+     * 主密码盐值
+     */
+    passwordSalt?: string
+    /**
+     * 主题色
+     */
+    theme: AppTheme
+    /**
+     * 初始化时间
+     */
+    initTime: number
+}
+
 /**
  * 应用主题色
  */

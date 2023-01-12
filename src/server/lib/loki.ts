@@ -1,6 +1,6 @@
 import lokijs from 'lokijs'
 import { ensureDir } from 'fs-extra'
-import { AppStorage, AppTheme, CertificateDetail, CertificateGroup } from '@/types/app'
+import { AppStorage, AppTheme, CertificateDetail, CertificateGroup, UserStorage } from '@/types/app'
 import { STORAGE_PATH } from '@/config'
 
 /**
@@ -66,32 +66,45 @@ export const createCollectionAccessor = <T extends Record<string | number, any>>
     }
 }
 
-const getAppStorageCollection = createCollectionAccessor<AppStorage>({
+/**
+ * 获取用户表
+ */
+const getUserStorageCollection = createCollectionAccessor<UserStorage>({
     lokiName: 'system',
-    collectionName: 'global'
+    collectionName: 'users'
 })
 
-const getDefaultAppStorage = (): AppStorage => {
+const getDefaultUserStorage = (): AppStorage => {
     return { theme: AppTheme.Light, defaultGroupId: 1, initTime: Date.now() }
 }
 
 /**
- * 获取应用全局数据
+ * 获取用户基本数据
+ * @param username 用户名
  */
-export const getAppStorage = async () => {
-    const collection = await getAppStorageCollection()
-    return collection.data[0] || collection.insert(getDefaultAppStorage())
+export const getUserStorage = async (username: string) => {
+    const collection = await getUserStorageCollection()
+    return collection.findOne({ username });
 }
 
 /**
- * 更新应用全局数据
+ * 更新指定用户基本数据
+ * 若不存在该用户则新增
  */
-export const updateAppStorage = async (newStorage: Partial<AppStorage>) => {
-    const collection = await getAppStorageCollection()
+export const updateUserStorage = async (username: string, newStorage: Partial<UserStorage>) => {
+    const collection = await getUserStorageCollection()
+    const oldStorage = collection.findOne({ username });
 
-    const oldStorage = collection.data[0] || collection.insert(getDefaultAppStorage())
-    const fullStorage = { ...oldStorage, ...newStorage }
-    collection.update(fullStorage)
+    if (!oldStorage) {
+        return collection.insert({
+            ...getDefaultUserStorage(),
+            ...newStorage,
+            username
+        })
+    }
+
+    const fullStorage = { ...oldStorage, ...newStorage };
+    return collection.update(fullStorage);
 }
 
 /**
