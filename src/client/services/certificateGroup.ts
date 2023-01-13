@@ -1,4 +1,4 @@
-import { CertificateGroup } from '@/types/app'
+import { CertificateGroup } from '@/types/user'
 import { AddGroupResp, CertificateGroupDetail, CertificateListItem, GroupAddPasswordData, RequireLoginResp } from '@/types/http'
 import { sendGet, sendPost, sendPut, sendDelete } from './base'
 import { sha } from '@/utils/crypto'

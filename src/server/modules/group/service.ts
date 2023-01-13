@@ -1,4 +1,4 @@
-import { AppStorage, CertificateDetail, CertificateGroup } from '@/types/app'
+import { AppStorage, CertificateDetail, CertificateGroup } from '@/types/user'
 import { CreateOtpFunc } from '@/server/lib/auth'
 import { AppResponse, MyJwtPayload } from '@/types/global'
 import { DATE_FORMATTER, STATUS_CODE } from '@/config'

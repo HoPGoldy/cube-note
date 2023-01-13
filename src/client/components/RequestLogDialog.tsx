@@ -1,4 +1,4 @@
-import { HttpRequestLog } from '@/types/app'
+import { HttpRequestLog } from '@/types/user'
 import React, { FC } from 'react'
 import { Dialog } from 'react-vant'
 

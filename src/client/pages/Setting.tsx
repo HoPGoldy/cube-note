@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { Statistic } from '../components/Statistic'
 import { useQuery } from 'react-query'
 import { fetchCountInfo, setAppTheme } from '../services/user'
-import { AppTheme } from '@/types/app'
+import { AppTheme } from '@/types/user'
 import { useLogout } from '../components/LoginAuth'
 
 const SettingPage = () => {

@@ -1,4 +1,4 @@
-import { CertificateDetail } from '@/types/app'
+import { CertificateDetail } from '@/types/user'
 import { MyJwtPayload } from '@/types/global'
 import { DATE_FORMATTER } from '@/config'
 import { CertificateDetailResp } from '@/types/http'

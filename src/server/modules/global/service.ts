@@ -1,15 +1,16 @@
 import { AppConfig } from '@/types/appConfig'
-import { AppStorage, AppTheme } from '@/types/app'
+import { AppStorage, AppTheme, UserStorage } from '@/types/user'
 import { DEFAULT_PASSWORD_ALPHABET, DEFAULT_PASSWORD_LENGTH } from '@/constants'
 
 interface Props {
     mainColor: string[]
     saveStorage: () => Promise<void>
     updateAppStorage: (data: Partial<AppStorage>) => Promise<void>
+    getUserCollection: () => Collection<UserStorage>
 }
 
 export const createService = (props: Props) => {
-    const { mainColor, updateAppStorage, saveStorage } = props
+    const { mainColor, updateAppStorage, saveStorage, getUserCollection } = props
 
     /**
      * 获取当前应用全局配置
@@ -18,7 +19,10 @@ export const createService = (props: Props) => {
         const randIndex = Math.floor(Math.random() * (mainColor.length))
         const buttonColor = mainColor[randIndex]
 
-        return { buttonColor }
+        const userCollection = getUserCollection()
+        const isInit = userCollection.data.length > 0
+
+        return { buttonColor, isInit }
     }
 
     /**

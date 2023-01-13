@@ -4,7 +4,7 @@ import { response, validate } from '@/server/utils'
 import { SetAliasFunc } from '@/server/lib/routeAlias'
 import { GroupService } from './service'
 import Joi from 'joi'
-import { CertificateGroup } from '@/types/app'
+import { CertificateGroup } from '@/types/user'
 import { GroupAddPasswordData, GroupRemovePasswordData } from '@/types/http'
 
 interface Props {

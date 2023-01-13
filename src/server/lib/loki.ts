@@ -1,6 +1,6 @@
 import lokijs from 'lokijs'
 import { ensureDir } from 'fs-extra'
-import { AppStorage, AppTheme, CertificateDetail, CertificateGroup, UserStorage } from '@/types/app'
+import { AppStorage, AppTheme, CertificateDetail, CertificateGroup, UserStorage } from '@/types/user'
 import { STORAGE_PATH } from '@/config'
 
 /**
@@ -69,22 +69,18 @@ export const createCollectionAccessor = <T extends Record<string | number, any>>
 /**
  * 获取用户表
  */
-const getUserStorageCollection = createCollectionAccessor<UserStorage>({
+export const getUserCollection = createCollectionAccessor<UserStorage>({
     lokiName: 'system',
     collectionName: 'users'
 })
-
-const getDefaultUserStorage = (): AppStorage => {
-    return { theme: AppTheme.Light, defaultGroupId: 1, initTime: Date.now() }
-}
 
 /**
  * 获取用户基本数据
  * @param username 用户名
  */
 export const getUserStorage = async (username: string) => {
-    const collection = await getUserStorageCollection()
-    return collection.findOne({ username });
+    const collection = await getUserCollection()
+    return collection.findOne({ username })
 }
 
 /**
@@ -92,19 +88,18 @@ export const getUserStorage = async (username: string) => {
  * 若不存在该用户则新增
  */
 export const updateUserStorage = async (username: string, newStorage: Partial<UserStorage>) => {
-    const collection = await getUserStorageCollection()
-    const oldStorage = collection.findOne({ username });
+    const collection = await getUserCollection()
+    const oldStorage = collection.findOne({ username })
 
     if (!oldStorage) {
         return collection.insert({
-            ...getDefaultUserStorage(),
-            ...newStorage,
+            ...newStorage as UserStorage,
             username
         })
     }
 
-    const fullStorage = { ...oldStorage, ...newStorage };
-    return collection.update(fullStorage);
+    const fullStorage = { ...oldStorage, ...newStorage }
+    return collection.update(fullStorage)
 }
 
 /**

@@ -1,5 +1,5 @@
 import React, { FC, useState, useMemo } from 'react'
-import { CertificateField } from '@/types/app'
+import { CertificateField } from '@/types/user'
 import { Cross, Eye, GiftO, ClosedEye } from '@react-vant/icons'
 import Textarea from './Textarea'
 import { IconBaseProps } from '@react-vant/icons/es/IconBase'

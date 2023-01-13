@@ -6,7 +6,7 @@ import { readAllNotice, useNoticeList } from '../services/log'
 import { Button } from '../components/Button'
 import { ActionSheet, Popup, Sticky, Dialog } from 'react-vant'
 import { SecurityNotice } from '../components/SecurityNotice'
-import { SecurityNoticeType } from '@/types/app'
+import { SecurityNoticeType } from '@/types/user'
 import { UserContext } from '../components/UserProvider'
 
 interface LogLink {

@@ -1,4 +1,4 @@
-import { CertificateGroup } from '@/types/app'
+import { CertificateGroup } from '@/types/user'
 import { sha } from '@/utils/crypto'
 import { nanoid } from 'nanoid'
 import React, { useContext } from 'react'

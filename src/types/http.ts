@@ -1,4 +1,4 @@
-import { AppTheme, HttpRequestLog, SecurityNoticeType } from './app'
+import { AppTheme, HttpRequestLog, SecurityNoticeType } from './user'
 
 export interface RequireLoginResp {
     salt: string
@@ -62,40 +62,6 @@ export interface CertificateGroupDetail {
 export interface AddGroupResp {
     newList: CertificateGroupDetail[]
     newId: number
-}
-
-/**
- * 登录接口返回值
- */
-export type LoginResp = {
-    /**
-     * 用户鉴权令牌
-     */
-    token: string
-    /**
-     * 用户所有的分组信息
-     */
-    groups: CertificateGroupDetail[]
-    /**
-     * 默认展示的分组
-     */
-    defaultGroupId: number
-    /**
-     * 应用主题
-     */
-    theme: AppTheme
-    /**
-     * 防重放攻击的签名密钥
-     */
-    replayAttackSecret: string
-    /**
-     * 密码生成字符集
-     */
-    createPwdAlphabet: string
-    /**
-     * 密码生成长度
-     */
-    createPwdLength: number
 }
 
 export interface NoticeInfoResp {
@@ -198,21 +164,6 @@ export interface SecurityNoticeResp {
      * 通知等级
      */
     type: SecurityNoticeType
-}
-
-export interface LoginErrorResp {
-    /**
-     * 登录错误的日期数组
-     */
-    loginFailure: string[]
-    /**
-     * 应用是否被锁定
-     */
-    appLock: boolean
-    /**
-     * 应用是被被无限期锁定
-     */
-    appFullLock: boolean
 }
 
 export interface CountInfoResp {

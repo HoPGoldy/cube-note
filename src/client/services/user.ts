@@ -3,7 +3,7 @@ import { AppConfig } from '@/types/appConfig'
 import { nanoid } from 'nanoid'
 import { sha } from '@/utils/crypto'
 import { CountInfoResp, LoginErrorResp, LoginResp, RegisterOTPInfo, RequireLoginResp } from '@/types/http'
-import { AppTheme } from '@/types/app'
+import { AppTheme } from '@/types/user'
 
 export const requireLogin = async () => {
     return sendPost<RequireLoginResp>('/requireLogin')

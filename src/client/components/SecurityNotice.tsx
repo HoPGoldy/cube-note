@@ -1,4 +1,4 @@
-import { SecurityNoticeType } from '@/types/app'
+import { SecurityNoticeType } from '@/types/user'
 import { SecurityNoticeResp } from '@/types/http'
 import React, { FC, useContext } from 'react'
 // import { Notify } from 'react-vant'

@@ -5,7 +5,7 @@ import { SetAliasFunc } from '@/server/lib/routeAlias'
 import { CertificateService } from './service'
 import { Random } from 'mockjs'
 import Joi from 'joi'
-import { CertificateDetail } from '@/types/app'
+import { CertificateDetail } from '@/types/user'
 import { CertificateMoveReqBody } from '@/types/http'
 
 interface Props {

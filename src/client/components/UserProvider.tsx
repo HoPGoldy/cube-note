@@ -1,4 +1,4 @@
-import { AppTheme } from '@/types/app'
+import { AppTheme } from '@/types/user'
 import { MyJwtPayload } from '@/types/global'
 import { CertificateGroupDetail, CertificateListItem, NoticeInfoResp } from '@/types/http'
 import React, { Dispatch, FC, SetStateAction, useContext, useEffect, useMemo, useState } from 'react'

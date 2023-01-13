@@ -1,4 +1,4 @@
-import { AppStorage } from '@/types/app'
+import { AppStorage } from '@/types/user'
 import { CreateOtpFunc } from '@/server/lib/auth'
 import { AppResponse } from '@/types/global'
 import { RegisterOTPInfo } from '@/types/http'
