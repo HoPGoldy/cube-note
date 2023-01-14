@@ -34,10 +34,17 @@ export enum AppTheme {
     Light = 'light'
 }
 
+export interface LoginPostData {
+    username: string
+    password: string
+}
+
 /**
  * 登录接口返回值
  */
-export type LoginResp = {
+export type LoginResp = Partial<LoginSuccessResp> & Partial<LoginFailResp>
+
+export interface LoginSuccessResp {
     /**
      * 用户鉴权令牌
      */
@@ -52,20 +59,23 @@ export type LoginResp = {
     replayAttackSecret: string
 }
 
-/**
- * 登录失败响应
- */
-export interface LoginErrorResp {
+export interface LoginFailResp {
     /**
      * 登录错误的日期数组
      */
-    loginFailure: string[]
+    loginFailure: number[]
     /**
-     * 应用是否被锁定
+     * 登录是否被锁定
      */
-    appLock: boolean
-    /**
-     * 应用是被被无限期锁定
-     */
-    appFullLock: boolean
+    ipBaned: boolean
+
+}
+
+export interface ChangePasswordPostData {
+    newP: string
+    oldP: string
+}
+
+export interface SetThemePostData {
+    theme: AppTheme
 }

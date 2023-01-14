@@ -4,6 +4,7 @@ import { getIp, response } from '@/server/utils'
 import { AuthService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
+import { ChangePasswordPostData, LoginPostData, SetThemePostData } from '@/types/user'
 
 interface Props {
     service: AuthService
@@ -13,7 +14,7 @@ export const createRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/user' })
 
-    const loginSchema = Joi.object<{ username: string, password: string }>({
+    const loginSchema = Joi.object<LoginPostData>({
         username: Joi.string().required(),
         password: Joi.string().required()
     })
@@ -27,7 +28,7 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const registerSchema = Joi.object<{ username: string, password: string }>({
+    const registerSchema = Joi.object<LoginPostData>({
         username: Joi.string().required(),
         password: Joi.string().required()
     })
@@ -50,7 +51,7 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const changePwdSchema = Joi.object<{ newP: string, oldP: string }>({
+    const changePwdSchema = Joi.object<ChangePasswordPostData>({
         newP: Joi.string().required(),
         oldP: Joi.string().required()
     })
@@ -67,6 +68,25 @@ export const createRouter = (props: Props) => {
         }
 
         const resp = await service.changePassword(username, newP, oldP)
+        response(ctx, resp)
+    })
+
+    const setThemeSchema = Joi.object<SetThemePostData>({
+        theme: Joi.any().valid('light', 'dark').required()
+    })
+
+    router.put('/setTheme', async ctx => {
+        const body = validate(ctx, setThemeSchema)
+        if (!body) return
+        const { theme } = body
+
+        const username = ctx.state?.user?.username
+        if (!username) {
+            response(ctx, { code: 400, msg: '未知用户，请重新登录' })
+            return
+        }
+
+        const resp = await service.setTheme(username, theme)
         response(ctx, resp)
     })
 

@@ -1,10 +1,9 @@
-import { AppTheme, UserStorage, LoginResp } from '@/types/user'
+import { AppTheme, UserStorage, LoginSuccessResp, LoginFailResp } from '@/types/user'
 import { AppResponse } from '@/types/global'
 import { STATUS_CODE } from '@/config'
 import { sha } from '@/utils/crypto'
 import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
-import { updateUserStorage } from '@/server/lib/loki'
 import { getUserCollection } from '@/server/lib/mongodb'
 
 interface Props {
@@ -19,7 +18,7 @@ export const createService = (props: Props) => {
     const {
         loginLocker, createToken,
         getReplayAttackSecret,
-        getUserStorage, 
+        getUserStorage, updateUserStorage,
     } = props
 
     /**
@@ -28,20 +27,28 @@ export const createService = (props: Props) => {
     const login = async (username: string, password: string, ip: string): Promise<AppResponse> => {
         const userStorage = await getUserStorage(username)
         if (!userStorage) {
-            loginLocker.recordLoginFail(ip)
-            return { code: 401, msg: '账号或密码错误' }
+            const lockInfo = loginLocker.recordLoginFail(ip)
+            const data: LoginFailResp = {
+                loginFailure: lockInfo,
+                ipBaned: lockInfo.length >= 3,
+            }
+            return { code: 401, msg: '账号或密码错误', data }
         }
 
         const { passwordHash, theme } = userStorage
         if (sha(passwordHash) !== password) {
-            loginLocker.recordLoginFail(ip)
-            return { code: 401, msg: '密码错误，请检查主密码是否正确' }
+            const lockInfo = loginLocker.recordLoginFail(ip)
+            const data: LoginFailResp = {
+                loginFailure: lockInfo,
+                ipBaned: lockInfo.length >= 3,
+            }
+            return { code: 401, msg: '密码错误，请检查主密码是否正确', data }
         }
 
         const token = await createToken({ username })
         const replayAttackSecret = await getReplayAttackSecret()
 
-        const data: LoginResp = {
+        const data: LoginSuccessResp = {
             token,
             theme,
             replayAttackSecret,
@@ -80,8 +87,8 @@ export const createService = (props: Props) => {
      */
     const createAdmin = async (username: string, passwordHash: string): Promise<AppResponse> => {
         const userCollection = getUserCollection()
-        const adminNumber = await userCollection.countDocuments({ isAdmin: true })
-        if (adminNumber > 0) {
+        const userNumber = await userCollection.countDocuments()
+        if (userNumber > 0) {
             return { code: 400, msg: '管理员已存在' }
         }
 
@@ -122,7 +129,20 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
-    return { login, register, createAdmin, changePassword }
+    /**
+     * 设置应用主题色
+     */
+    const setTheme = async (username: string, theme: AppTheme) => {
+        const userStorage = await getUserStorage(username)
+        if (!userStorage) {
+            return { code: 400, msg: '用户不存在' }
+        }
+
+        await updateUserStorage(username, { theme })
+        return { code: 200 }
+    }
+
+    return { login, register, createAdmin, changePassword, setTheme }
 }
 
 export type AuthService = ReturnType<typeof createService>

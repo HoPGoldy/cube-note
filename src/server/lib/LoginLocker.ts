@@ -50,6 +50,8 @@ export const createLoginLock = (props: LoginLockOptions) => {
             return dayjs(date).isSame(dayjs(), 'day')
         })
         loginFailRecords.set(ip, todayFail)
+
+        return getLockDetail(ip)
     }
 
     /**

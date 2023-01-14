@@ -20,7 +20,6 @@ export const Routes: FC = () => {
             children: [
                 { path: '/group', element: lazyLoad(() => import('./pages/CertificateList')) },
                 { path: '/addGroup', element: lazyLoad(() => import('./pages/AddGroup')) },
-                { path: '/securityEntry', element: lazyLoad(() => import('./pages/SecurityMonitor')) },
                 { path: '/LogRequest', element: lazyLoad(() => import('./pages/LogRequest')) },
                 { path: '/LogLogin', element: lazyLoad(() => import('./pages/LogLogin')) },
                 { path: '/LogCertificate', element: lazyLoad(() => import('./pages/LogCertificate')) },
@@ -38,10 +37,8 @@ export const Routes: FC = () => {
                 </LoginAuth>
             )
         },
-        {
-            path: '/login',
-            element: lazyLoad(() => import('./pages/Login'))
-        }
+        { path: '/login', element: lazyLoad(() => import('./pages/Login')) },
+        { path: '/init', element: lazyLoad(() => import('./pages/CreateAdmin')) },
     ])
 
     return routes

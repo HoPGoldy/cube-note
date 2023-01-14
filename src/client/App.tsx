@@ -3,8 +3,6 @@ import { store } from './store'
 import { Provider } from 'react-redux'
 import { Routes } from './Route'
 import { AppConfigProvider } from './components/AppConfigProvider'
-import { UserProvider } from './components/UserProvider'
-import { QueryProvider } from './components/QueryClientProvider'
 import { ConfigProvider } from 'react-vant'
 
 const themeVars = {
@@ -15,15 +13,11 @@ const themeVars = {
 function App() {
     return (
         <Provider store={store}>
-            <QueryProvider>
-                <ConfigProvider themeVars={themeVars}>
-                    <UserProvider>
-                        <AppConfigProvider>
-                            <Routes />
-                        </AppConfigProvider>
-                    </UserProvider>
-                </ConfigProvider>
-            </QueryProvider>
+            <ConfigProvider themeVars={themeVars}>
+                <AppConfigProvider>
+                    <Routes />
+                </AppConfigProvider>
+            </ConfigProvider>
         </Provider>
     )
 }

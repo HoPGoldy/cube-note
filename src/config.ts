@@ -40,5 +40,5 @@ export const DATE_FORMATTER = 'YYYY-MM-DD HH:mm:ss'
  * 可以公开请求的接口
  */
 export const OPEN_API = [
-    '/api/global', '/api/logInfo', '/api/requireLogin', '/api/login', '/api/register'
+    '/api/global', '/api/user/login', '/api/user/register', '/api/user/createAdmin'
 ]

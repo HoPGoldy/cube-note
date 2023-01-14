@@ -4,15 +4,12 @@ import { Loading } from 'react-vant'
 import { useAppConfigQuery } from '../services/global'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setAppConfig } from '../store/user'
+import { Navigate, useLocation } from 'react-router-dom'
 
 export const AppConfigContext = React.createContext<AppConfig | undefined>(undefined)
 
 export const AppConfigProvider: FC = (props) => {
-    // const { data: appConfig, isLoading: isLoadingConfig } = useQuery('appConfig', fetchAppConfig, {
-    //     refetchOnMount: false,
-    //     refetchOnReconnect: false,
-    //     refetchOnWindowFocus: false,
-    // })
+    const location = useLocation()
     const appConfig = useAppSelector(s => s.user.appConfig)
     const dispatch = useAppDispatch()
 
@@ -23,6 +20,10 @@ export const AppConfigProvider: FC = (props) => {
         if (!data) return
         dispatch(setAppConfig(data))
     }, [data])
+
+    if (appConfig?.needInit && location.pathname !== '/init') {
+        return <Navigate to="/init" replace />
+    }
 
     return (
         <>{

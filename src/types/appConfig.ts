@@ -9,5 +9,5 @@ export interface AppConfig {
     /**
      * 是否已完成初始化
      */
-    isInit: boolean
+    needInit?: boolean
 }
