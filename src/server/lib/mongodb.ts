@@ -1,24 +1,3 @@
-// const { MongoClient } = require('mongodb')
-// // Replace the uri string with your connection string.
-// const uri =
-//   'mongodb://localhost:27017'
-// const client = new MongoClient(uri)
-// async function run() {
-//     try {
-//         const database = client.db('hello-mongo-db')
-//         const movies = database.collection('movies')
-//         await movies.insertOne({ title: 'Back to the Future', year: 1985 })
-//         // Query for a movie that has the title 'Back to the Future'
-//         const query = { title: 'Back to the Future' }
-//         const movie = await movies.findOne(query)
-//         console.log(movie)
-//     } finally {
-//     // Ensures that the client will close when you finish/error
-//         await client.close()
-//     }
-// }
-// run().catch(console.dir)
-
 import { UserStorage } from '@/types/user'
 import { MongoClient } from 'mongodb'
 
@@ -41,7 +20,6 @@ export const createCollectionAccessor = <T extends Record<string | number, any>>
  */
 export const getUserCollection = createCollectionAccessor<UserStorage>('users')
 
-
 /**
  * 获取用户基本数据
  * @param username 用户名
@@ -57,7 +35,7 @@ export const getUserStorage = async (username: string) => {
  */
 export const updateUserStorage = async (username: string, newStorage: Partial<UserStorage>) => {
     const collection = getUserCollection()
-    const oldStorage = collection.findOne({ username })
+    const oldStorage = await collection.findOne({ username })
 
     if (!oldStorage) {
         return collection.insertOne({
@@ -67,7 +45,7 @@ export const updateUserStorage = async (username: string, newStorage: Partial<Us
     }
 
     const fullStorage = { ...oldStorage, ...newStorage }
-    return collection.updateOne({ username }, fullStorage)
+    return collection.updateOne({ username }, { $set: fullStorage })
 }
 
 /**

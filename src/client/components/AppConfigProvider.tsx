@@ -1,12 +1,9 @@
 import React, { FC, useEffect } from 'react'
-import { AppConfig } from '@/types/appConfig'
 import { Loading } from 'react-vant'
 import { useAppConfigQuery } from '../services/global'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setAppConfig } from '../store/user'
 import { Navigate, useLocation } from 'react-router-dom'
-
-export const AppConfigContext = React.createContext<AppConfig | undefined>(undefined)
 
 export const AppConfigProvider: FC = (props) => {
     const location = useLocation()
@@ -14,11 +11,10 @@ export const AppConfigProvider: FC = (props) => {
     const dispatch = useAppDispatch()
 
     const { data } = useAppConfigQuery()
-    console.log('🚀 ~ file: AppConfigProvider.tsx:18 ~ appConfig', appConfig)
 
     useEffect(() => {
-        if (!data) return
-        dispatch(setAppConfig(data))
+        if (!data || !data.data) return
+        dispatch(setAppConfig(data.data))
     }, [data])
 
     if (appConfig?.needInit && location.pathname !== '/init') {

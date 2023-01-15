@@ -1,31 +1,31 @@
 import { STATUS_CODE } from '@/config'
-import React, { useContext, useRef, useState } from 'react'
+import { sha } from '@/utils/crypto'
+import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Notify } from 'react-vant'
-import { AppConfigContext } from '../components/AppConfigProvider'
 import { Button } from '../components/Button'
-import { UserContext } from '../components/UserProvider'
-import { setToken } from '../services/base'
-import { fetchLoginFail, login, requireLogin } from '../services/user'
-import { useQuery } from 'react-query'
-import { LoginErrorResp } from '@/types/user'
-import { getAesMeta } from '@/utils/crypto'
+import { usePostLoginMutation } from '../services/user'
+import { useAppSelector } from '../store'
 
-const fieldClassName = 'block grow px-3 py-2 w-full transition ' +
+const fieldClassName = 'block grow px-3 py-2 mb-2 w-full transition ' +
     'border border-slate-300 rounded-md shadow-sm placeholder-slate-400 ' +
     'focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 ' +
     'dark:border-slate-500 dark:bg-slate-700 dark:hover:bg-slate-800 '
 
 const Register = () => {
     const navigate = useNavigate()
+    // 用户名
+    const [username, setUsername] = useState('')
     // 密码
     const [password, setPassword] = useState('')
+    // 用户名输入框
+    const usernameInputRef = useRef<HTMLInputElement>(null)
     // 密码输入框
     const passwordInputRef = useRef<HTMLInputElement>(null)
-    const config = useContext(AppConfigContext)
-    const { data: logFailInfo, refetch } = useQuery('loginFailInfo', fetchLoginFail, {
-        retry: false
-    })
+    // 应用配置
+    const config = useAppSelector(s => s.user.appConfig)
+    // 提交登录
+    const [postLogin, { isLoading: isLogin }] = usePostLoginMutation()
 
     // 临时功能，开发自动登录
     // useEffect(() => {
@@ -33,7 +33,19 @@ const Register = () => {
     //     else onSubmit()
     // }, [password])
 
+    const onInputedUsername = () => {
+        passwordInputRef.current?.focus()
+    }
+
     const onSubmit = async () => {
+        const resp = await postLogin({ username, password: sha(password) }).unwrap()
+        console.log('resp', resp)
+        if (resp.code !== STATUS_CODE.SUCCESS) {
+            Notify.show({ type: 'danger', message: resp.msg || '登录失败' })
+            return
+        }
+
+        Notify.show({ type: 'success', message: '登录成功' })
         // const resp = await requireLogin().catch(error => {
         //     if (error.code === STATUS_CODE.NOT_REGISTER) {
         //         Notify.show({ type: 'danger', message: error.msg || '请先注册' })
@@ -69,33 +81,43 @@ const Register = () => {
     return (
         <div className="h-screen w-screen bg-background flex flex-col justify-center items-center dark:text-gray-100">
             <header className="w-screen text-center min-h-[236px]">
-                <div className="text-5xl font-bold text-mainColor">密码本</div>
-                <div className="mt-4 text-xl text-mainColor">管理任何需要加密的内容</div>
+                <div className="text-5xl font-bold text-mainColor">{config?.appName}</div>
+                <div className="mt-4 text-xl text-mainColor">{config?.loginSubtitle}</div>
             </header>
-            {!logFailInfo?.appLock && (
-                <div className='w-[70%] md:w-[40%] lg:w-[30%] xl:w-[20%] flex flex-col items-center'>
-                    <input
-                        ref={passwordInputRef}
-                        className={fieldClassName}
-                        type='password'
-                        autoFocus
-                        placeholder="请输入密码"
-                        value={password}
-                        onInput={e => setPassword((e.target as any).value)}
-                        onKeyUp={e => {
-                            if (e.key === 'Enter') onSubmit()
-                        }}
-                    />
+            <div className='w-[70%] md:w-[40%] lg:w-[30%] xl:w-[20%] flex flex-col items-center'>
+                <input
+                    ref={usernameInputRef}
+                    className={fieldClassName}
+                    autoFocus
+                    placeholder="请输入用户名"
+                    value={username}
+                    onInput={e => setUsername((e.target as any).value)}
+                    onKeyUp={e => {
+                        if (e.key === 'Enter') onInputedUsername()
+                    }}
+                />
 
-                    <div className='shrink-0 w-full mt-2'>
-                        <Button
-                            block
-                            color={config?.buttonColor}
-                            onClick={onSubmit}
-                        >登 录</Button>
-                    </div>
+                <input
+                    ref={passwordInputRef}
+                    className={fieldClassName}
+                    type='password'
+                    placeholder="请输入密码"
+                    value={password}
+                    onInput={e => setPassword((e.target as any).value)}
+                    onKeyUp={e => {
+                        if (e.key === 'Enter') onSubmit()
+                    }}
+                />
+
+                <div className='shrink-0 w-full'>
+                    <Button
+                        block
+                        disabled={isLogin}
+                        color={config?.buttonColor}
+                        onClick={onSubmit}
+                    >登 录</Button>
                 </div>
-            )}
+            </div>
         </div>
     )
 }

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { AppConfig } from '@/types/appConfig'
+import { AppConfigResp } from '@/types/appConfig'
 
 interface UserInfo {
     userName: string
@@ -8,7 +8,7 @@ interface UserInfo {
 
 interface UserState {
     userInfo?: UserInfo
-    appConfig?: AppConfig
+    appConfig?: AppConfigResp
     replayAttackSecret?: string
     token?: string
 }
@@ -33,7 +33,7 @@ export const userSlice = createSlice({
             state.userInfo = undefined
             localStorage.removeItem('cube-note-token')
         },
-        setAppConfig: (state, action: PayloadAction<AppConfig>) => {
+        setAppConfig: (state, action: PayloadAction<AppConfigResp>) => {
             state.appConfig = action.payload
         }
     },

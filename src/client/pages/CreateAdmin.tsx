@@ -1,14 +1,32 @@
+import { sha } from '@/utils/crypto'
 import { ArrowLeft } from '@react-vant/icons'
-import React, { useRef, useState } from 'react'
+import React, { FC, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Notify, Swiper, SwiperInstance } from 'react-vant'
 import { Button } from '../components/Button'
 import { useCreateAdminMutation } from '../services/user'
 
+const GobackBtn: FC<{ onClick: () => unknown }> = (props) => {
+    return (
+        <div
+            className='
+                flex items-center justify-center w-24 mx-auto py-1 pl-1 pr-2 rounded transition cursor-pointer
+                text-slate-700
+                hover:bg-slate-300
+            '
+            onClick={props.onClick}
+        ><ArrowLeft className='inline mr-2' />返回</div>
+    )
+}
+
 const Register = () => {
+    const navigate = useNavigate()
     // 副标题及介绍轮播
     const titleSwiperRef = useRef<SwiperInstance>(null)
     // 输入框轮播
     const contentSwiperRef = useRef<SwiperInstance>(null)
+    // 密码输入框
+    const passwordInputRef = useRef<HTMLInputElement>(null)
     // 重复密码输入框
     const repeatPasswordInputRef = useRef<HTMLInputElement>(null)
     // 用户名
@@ -22,7 +40,7 @@ const Register = () => {
     // 重复密码错误提示
     const [repeatPwdError, setRepeatPwdError] = useState('')
     // 提交注册
-    const [createAdmin, createResult] = useCreateAdminMutation()
+    const [createAdmin, { isLoading: isCreating }] = useCreateAdminMutation()
 
     const setSwiperIndex = (index: number) => {
         titleSwiperRef.current?.swipeTo(index)
@@ -30,14 +48,10 @@ const Register = () => {
     }
 
     const onInputedUsername = () => {
-        if (password.length < 6) {
-            setPwdError('密码长度应大于 6 位')
-            return
-        }
         setSwiperIndex(1)
         // 要延迟一会再触发下个输入框的获取焦点事件，不然会破坏轮播的滚动效果
         setTimeout(() => {
-            repeatPasswordInputRef.current?.focus()
+            passwordInputRef.current?.focus()
         }, 600)
     }
 
@@ -46,8 +60,7 @@ const Register = () => {
             setPwdError('密码长度应大于 6 位')
             return
         }
-        setSwiperIndex(1)
-        // 要延迟一会再触发下个输入框的获取焦点事件，不然会破坏轮播的滚动效果
+        setSwiperIndex(2)
         setTimeout(() => {
             repeatPasswordInputRef.current?.focus()
         }, 600)
@@ -58,17 +71,15 @@ const Register = () => {
             setRepeatPwdError('两次密码不一致')
             return
         }
-        setSwiperIndex(2)
+        setSwiperIndex(3)
     }
 
     const onSubmit = async () => {
-        // await createAdmin(password)
+        const resp = await createAdmin({ username, password: sha(password) })
+        console.log('resp', resp)
         Notify.show({ type: 'success', message: '初始化完成' })
 
-        // 开发模式下页面没有经过后台代理，所以需要手动跳转到登录页
-        if (process.env.NODE_ENV === 'development') location.pathname = '/'
-        // 生产环境下注册页和登录页的路由时一样的，并且有随机前缀，所以直接刷新页面就行
-        else location.reload()
+        navigate('/login', { replace: true })
     }
 
     return (
@@ -86,31 +97,31 @@ const Register = () => {
                             <div className='text-slate-600 text-base mt-6'>
                                 欢迎使用！
                                 <br />
-                                为了安全起见，本应用将不设置默认管理员账号，请手动设置。
+                                安全起见，本应用将不设置默认管理员账号，请手动设置。
                             </div>
                         </Swiper.Item>
                         <Swiper.Item key={1}>
                             设置管理员密码
                             <div className='text-slate-600 text-base mt-6'>
                                 请设置一个至少 6 位的强密码，并牢记在心。
-                                <br /><br />
+                                <br />
                                 不要使用生日、姓名缩写等常见信息。
                             </div>
                         </Swiper.Item>
                         <Swiper.Item key={2}>
                             重复密码
                             <div className='text-slate-600 text-base mt-6'>
-                                请牢记管理员密码，管理员账号可以邀请、管理、删除其他用户账号，请妥善保存。
+                                请牢记管理员密码。
                             </div>
                         </Swiper.Item>
                         <Swiper.Item key={3}>
                             告知
                             <div className='text-slate-600 text-base mt-6'>
-                                本应用不会在任何地方使用、分析或明文存储你的信息。
-                                <br /><br />
-                                你可以使用浏览器的隐私模式进行访问来提高安全性。
-                                <br /><br />
-                                该页面不会再次出现，请确保 <b>主密码已可靠保存</b> 后点击下方按钮。
+                                管理员账号可以邀请、管理、删除其他用户账号。
+                                <br />
+                                除此之外管理员和其他账号功能并无区别，推荐直接当作自己的常用账号使用。
+                                <br />
+                                该页面不会再次出现，请确保 <b>账号密码已可靠保存</b> 后点击下方按钮。
                             </div>
                         </Swiper.Item>
                     </Swiper>
@@ -125,7 +136,6 @@ const Register = () => {
                     <Swiper.Item key={0}>
                         <div className='py-8 px-2 flex items-center relative'>
                             <input
-                                type='password'
                                 className={
                                     'block grow mr-2 px-3 py-2 transition ' +
                                     'border rounded-md shadow-sm placeholder-slate-400 border-slate-300 ' +
@@ -151,7 +161,7 @@ const Register = () => {
                             </div>}
 
                             <Button
-                                disabled={!password}
+                                disabled={!username || isCreating}
                                 className='shrink-0'
                                 type='primary'
                                 onClick={onInputedUsername}
@@ -159,39 +169,42 @@ const Register = () => {
                         </div>
                     </Swiper.Item>
                     <Swiper.Item key={1}>
-                        <div className='py-8 px-2 flex items-center relative'>
-                            <input
-                                type='password'
-                                className={
-                                    'block grow mr-2 px-3 py-2 transition ' +
-                                    'border rounded-md shadow-sm placeholder-slate-400 border-slate-300 ' +
-                                    'focus:outline-none focus:bg-white  ' +
-                                    (pwdError ? 'focus:ring-1 focus:border-red-500 focus:ring-red-500 border-red-500' : 'focus:ring-1 focus:border-sky-500 focus:ring-sky-500')
-                                }
-                                autoFocus
-                                placeholder="请输入主密码"
-                                value={password}
-                                onChange={e => {
-                                    setPassword(e.target.value)
-                                    if (pwdError) setPwdError('')
-                                    if (repeatPwdError) setRepeatPwdError('')
-                                    if (repeatPassword) setRepeatPassword('')
-                                }}
-                                onKeyUp={e => {
-                                    if (e.key === 'Enter') onInputedPassword()
-                                }}
-                            />
+                        <div>
+                            <div className='py-8 px-2 flex items-center relative'>
+                                <input
+                                    ref={passwordInputRef}
+                                    type='password'
+                                    className={
+                                        'block grow mr-2 px-3 py-2 transition ' +
+                                        'border rounded-md shadow-sm placeholder-slate-400 border-slate-300 ' +
+                                        'focus:outline-none focus:bg-white  ' +
+                                        (pwdError ? 'focus:ring-1 focus:border-red-500 focus:ring-red-500 border-red-500' : 'focus:ring-1 focus:border-sky-500 focus:ring-sky-500')
+                                    }
+                                    placeholder="请输入密码"
+                                    value={password}
+                                    onChange={e => {
+                                        setPassword(e.target.value)
+                                        if (pwdError) setPwdError('')
+                                        if (repeatPwdError) setRepeatPwdError('')
+                                        if (repeatPassword) setRepeatPassword('')
+                                    }}
+                                    onKeyUp={e => {
+                                        if (e.key === 'Enter') onInputedPassword()
+                                    }}
+                                />
 
-                            {pwdError && <div className='absolute text-sm bottom-1 text-red-500'>
-                                {pwdError}    
-                            </div>}
+                                {pwdError && <div className='absolute text-sm bottom-1 text-red-500'>
+                                    {pwdError}    
+                                </div>}
 
-                            <Button
-                                disabled={!password}
-                                className='shrink-0'
-                                type='primary'
-                                onClick={onInputedPassword}
-                            >下一步</Button>
+                                <Button
+                                    disabled={!password || isCreating}
+                                    className='shrink-0'
+                                    type='primary'
+                                    onClick={onInputedPassword}
+                                >下一步</Button>
+                            </div>
+                            <GobackBtn onClick={() => setSwiperIndex(0)} />
                         </div>
                     </Swiper.Item>
                     <Swiper.Item key={2}>
@@ -206,7 +219,7 @@ const Register = () => {
                                         'focus:outline-none focus:bg-white  ' +
                                         (repeatPwdError ? 'focus:ring-1 focus:border-red-500 focus:ring-red-500 border-red-500' : 'focus:ring-1 focus:border-sky-500 focus:ring-sky-500')
                                     }
-                                    placeholder="重复主密码"
+                                    placeholder="重复密码"
                                     value={repeatPassword}
                                     onChange={e => {
                                         setRepeatPassword(e.target.value)
@@ -222,26 +235,24 @@ const Register = () => {
                                 </div>}
 
                                 <Button
-                                    disabled={!repeatPassword}
+                                    disabled={!repeatPassword || isCreating}
                                     className='shrink-0'
                                     type='primary'
                                     onClick={onInputedRepeatPassword}
                                 >下一步</Button>
                             </div>
-                            <div
-                                className='
-                                    flex items-center justify-center w-24 mx-auto py-1 pl-1 pr-2 rounded transition cursor-pointer
-                                    text-slate-700
-                                    hover:bg-slate-300
-                                '
-                                onClick={() => setSwiperIndex(0)}
-                            ><ArrowLeft className='inline mr-2' />返回</div>
+                            <GobackBtn onClick={() => setSwiperIndex(1)} />
                         </div>
                     </Swiper.Item>
                     <Swiper.Item key={3}>
                         <div>
                             <div className='pt-8 pb-4 px-2'>
-                                <Button type='primary' block onClick={onSubmit}>完成初始化</Button>
+                                <Button
+                                    type='primary'
+                                    block
+                                    onClick={onSubmit}
+                                    disabled={isCreating}
+                                >完成初始化</Button>
                             </div>
                             <div
                                 className='

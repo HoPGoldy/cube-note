@@ -84,7 +84,7 @@ export const createLoginLock = (props: LoginLockOptions) => {
         }
         catch (e)  {
             console.error(e)
-            response(ctx, { code: 403, msg: '登录失败次数过多，请稍后再试' })
+            response(ctx, { code: 403, msg: '登录失败次数过多，请一天后再试' })
         }
     }
 

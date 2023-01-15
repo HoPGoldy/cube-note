@@ -4,12 +4,13 @@ import { STATUS_CODE } from '@/config'
 import { sha } from '@/utils/crypto'
 import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
-import { getUserCollection } from '@/server/lib/mongodb'
+import { Collection } from 'mongodb'
 
 interface Props {
     loginLocker: LoginLocker
     createToken: (payload: Record<string, any>) => Promise<string>
     getReplayAttackSecret: () => Promise<string>
+    getUserCollection: () => Collection<UserStorage>
     getUserStorage: (username: string) => Promise<UserStorage | null>
     updateUserStorage: (username: string, newStorage: Partial<UserStorage>) => Promise<unknown>
 }
@@ -18,32 +19,27 @@ export const createService = (props: Props) => {
     const {
         loginLocker, createToken,
         getReplayAttackSecret,
+        getUserCollection,
         getUserStorage, updateUserStorage,
     } = props
+
+    const loginFail = (ip: string) => {
+        const lockInfo = loginLocker.recordLoginFail(ip)
+        const retryNumber = 3 - lockInfo.length
+        const message = retryNumber > 0 ? `将在 ${retryNumber} 次后锁定登录` : '账号已被锁定'
+        return { code: 401, msg: `账号或密码错误，${message}` }
+    }
 
     /**
      * 登录
      */
     const login = async (username: string, password: string, ip: string): Promise<AppResponse> => {
         const userStorage = await getUserStorage(username)
-        if (!userStorage) {
-            const lockInfo = loginLocker.recordLoginFail(ip)
-            const data: LoginFailResp = {
-                loginFailure: lockInfo,
-                ipBaned: lockInfo.length >= 3,
-            }
-            return { code: 401, msg: '账号或密码错误', data }
-        }
+        if (!userStorage) return loginFail(ip)
 
-        const { passwordHash, theme } = userStorage
-        if (sha(passwordHash) !== password) {
-            const lockInfo = loginLocker.recordLoginFail(ip)
-            const data: LoginFailResp = {
-                loginFailure: lockInfo,
-                ipBaned: lockInfo.length >= 3,
-            }
-            return { code: 401, msg: '密码错误，请检查主密码是否正确', data }
-        }
+        const { passwordHash, passwordSalt, theme } = userStorage
+        console.log('passwordHash', passwordHash, sha(passwordSalt + password))
+        if (passwordHash !== sha(passwordSalt + password)) return loginFail(ip)
 
         const token = await createToken({ username })
         const replayAttackSecret = await getReplayAttackSecret()

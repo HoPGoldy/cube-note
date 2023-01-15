@@ -108,9 +108,7 @@ const baseQuery: BaseQueryFn<
         return resp
     }
 
-    const { data, code, msg } = resp.data
-    console.log('🚀 ~ file: base.ts:112 ~ >= ~ resp.data', resp.data)
-    resp.data = data
+    const { code, msg } = resp.data
 
     if (code !== 200) {
         Notify.show({ type: 'danger', message: msg || '未知错误' })

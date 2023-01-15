@@ -1,9 +1,10 @@
 import { baseApi } from './base'
-import { AppConfig } from '@/types/appConfig'
+import { AppConfigResp } from '@/types/appConfig'
+import { AppResponse } from '@/types/global'
 
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        appConfig: build.query<AppConfig, void>({
+        appConfig: build.query<AppResponse<AppConfigResp>, void>({
             query: () => 'global',
         }),
     })
