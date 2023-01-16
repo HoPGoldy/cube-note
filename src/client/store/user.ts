@@ -1,13 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { AppConfigResp } from '@/types/appConfig'
-
-interface UserInfo {
-    userName: string
-}
+import { FrontendUserInfo, LoginSuccessResp } from '@/types/user'
 
 interface UserState {
-    userInfo?: UserInfo
+    userInfo?: FrontendUserInfo
     appConfig?: AppConfigResp
     replayAttackSecret?: string
     token?: string
@@ -21,11 +18,12 @@ export const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        login: (state, action: PayloadAction<UserState>) => {
-            const { token, replayAttackSecret } = action.payload
+        login: (state, action: PayloadAction<LoginSuccessResp>) => {
+            const { token, replayAttackSecret, ...userInfo } = action.payload
             state.token = token
             state.replayAttackSecret = replayAttackSecret
-            token && localStorage.setItem('cube-note-token', token)
+            state.userInfo = userInfo
+            localStorage.setItem('cube-note-token', token)
         },
         logout: (state) => {
             state.token = undefined

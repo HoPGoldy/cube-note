@@ -23,11 +23,37 @@ export const createService = (props: Props) => {
         getUserStorage, updateUserStorage,
     } = props
 
-    const loginFail = (ip: string) => {
+    const loginFail = (ip: string, msg = '账号或密码错误') => {
         const lockInfo = loginLocker.recordLoginFail(ip)
         const retryNumber = 3 - lockInfo.length
         const message = retryNumber > 0 ? `将在 ${retryNumber} 次后锁定登录` : '账号已被锁定'
-        return { code: 401, msg: `账号或密码错误，${message}` }
+        return { code: 401, msg: `${msg}，${message}` }
+    }
+
+    /**
+     * 直接获取用户信息
+     */
+    const getUserInfo = async (username: string, ip: string): Promise<AppResponse> => {
+        const userStorage = await getUserStorage(username)
+        if (!userStorage) return loginFail(ip, '用户不存在')
+
+        const { theme, initTime, isAdmin } = userStorage
+
+        const token = await createToken({ username })
+        const replayAttackSecret = await getReplayAttackSecret()
+
+        const data: LoginSuccessResp = {
+            token,
+            theme,
+            initTime,
+            isAdmin,
+            username,
+            replayAttackSecret,
+        }
+
+        loginLocker.clearRecord(ip)
+
+        return { code: 200, data }
     }
 
     /**
@@ -37,21 +63,10 @@ export const createService = (props: Props) => {
         const userStorage = await getUserStorage(username)
         if (!userStorage) return loginFail(ip)
 
-        const { passwordHash, passwordSalt, theme } = userStorage
+        const { passwordHash, passwordSalt } = userStorage
         if (passwordHash !== sha(passwordSalt + password)) return loginFail(ip)
 
-        const token = await createToken({ username })
-        const replayAttackSecret = await getReplayAttackSecret()
-
-        const data: LoginSuccessResp = {
-            token,
-            theme,
-            replayAttackSecret,
-        }
-
-        loginLocker.clearRecord(ip)
-
-        return { code: 200, data }
+        return getUserInfo(username, ip)
     }
 
     /**
@@ -137,7 +152,7 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
-    return { login, register, createAdmin, changePassword, setTheme }
+    return { getUserInfo, login, register, createAdmin, changePassword, setTheme }
 }
 
 export type AuthService = ReturnType<typeof createService>

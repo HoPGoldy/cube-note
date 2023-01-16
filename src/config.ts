@@ -26,8 +26,15 @@ export const STATUS_CODE = {
 export const DATE_FORMATTER = 'YYYY-MM-DD HH:mm:ss'
 
 /**
- * 可以公开请求的接口
+ * 无需登录即可访问的接口
  */
-export const OPEN_API = [
+export const AUTH_EXCLUDE = [
     '/api/global', '/api/user/login', '/api/user/register', '/api/user/createAdmin'
+]
+
+/**
+ * 不进行防重放攻击检查的接口
+ */
+export const REPLAY_ATTACK_EXCLUDE = [
+    '/api/user/getInfo', ...AUTH_EXCLUDE
 ]

@@ -1,9 +1,9 @@
 import React, { FC, useEffect } from 'react'
-import { Loading } from 'react-vant'
 import { useAppConfigQuery } from '../services/global'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setAppConfig } from '../store/user'
 import { Navigate, useLocation } from 'react-router-dom'
+import Loading from './Loading'
 
 export const AppConfigProvider: FC = (props) => {
     const location = useLocation()
@@ -24,9 +24,7 @@ export const AppConfigProvider: FC = (props) => {
     return (
         <>{
             !appConfig 
-                ? (<Loading className="my-24 dark:!text-gray-200" size="36px" vertical>
-                    <span className='dark:text-gray-200'>加载中...</span>
-                </Loading>)
+                ? <Loading tip="正在加载应用配置..." />
                 : props.children
         }</>
     )

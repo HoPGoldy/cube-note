@@ -4,6 +4,9 @@ import { LoginPostData, LoginResp } from '@/types/user'
 
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
+        getUserInfo: build.query<AppResponse<LoginResp>, void>({
+            query: () => 'user/getInfo'
+        }),
         postLogin: build.mutation<AppResponse<LoginResp>, LoginPostData>({
             query: body => ({
                 url: 'user/login',
@@ -21,4 +24,4 @@ const extendedApi = baseApi.injectEndpoints({
     })
 })
 
-export const { usePostLoginMutation, useCreateAdminMutation } = extendedApi
+export const { useLazyGetUserInfoQuery, usePostLoginMutation, useCreateAdminMutation } = extendedApi

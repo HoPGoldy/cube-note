@@ -1,7 +1,7 @@
 
 export interface UserStorage {
     /**
-     *用户米
+     *用户名
      */
     username: string
     /**
@@ -44,20 +44,16 @@ export interface LoginPostData {
  */
 export type LoginResp = Partial<LoginSuccessResp> & Partial<LoginFailResp>
 
-export interface LoginSuccessResp {
+export type LoginSuccessResp = {
     /**
      * 用户鉴权令牌
      */
     token: string
     /**
-     * 应用主题
-     */
-    theme: AppTheme
-    /**
      * 防重放攻击的签名密钥
      */
     replayAttackSecret: string
-}
+} & FrontendUserInfo
 
 export interface LoginFailResp {
     /**
@@ -78,4 +74,23 @@ export interface ChangePasswordPostData {
 
 export interface SetThemePostData {
     theme: AppTheme
+}
+
+export interface FrontendUserInfo {
+    /**
+     *用户名
+     */
+    username: string
+    /**
+     * 主题色
+     */
+    theme: AppTheme
+    /**
+     * 初始化时间
+     */
+    initTime: number
+    /**
+     * 是否为管理员
+     */
+    isAdmin?: boolean
 }

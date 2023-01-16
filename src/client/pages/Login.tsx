@@ -1,11 +1,14 @@
 import { STATUS_CODE } from '@/config'
+import { LoginSuccessResp } from '@/types/user'
 import { sha } from '@/utils/crypto'
 import React, { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { Notify } from 'react-vant'
 import { Button } from '../components/Button'
 import { usePostLoginMutation } from '../services/user'
-import { useAppSelector } from '../store'
+import { useAppDispatch, useAppSelector } from '../store'
+import { login } from '../store/user'
+import { messageError, messageSuccess } from '../utils/message'
 
 const fieldClassName = 'block grow px-3 py-2 mb-2 w-full transition ' +
     'border border-slate-300 rounded-md shadow-sm placeholder-slate-400 ' +
@@ -13,7 +16,7 @@ const fieldClassName = 'block grow px-3 py-2 mb-2 w-full transition ' +
     'dark:border-slate-500 dark:bg-slate-700 dark:hover:bg-slate-800 '
 
 const Register = () => {
-    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     // 用户名
     const [username, setUsername] = useState('')
     // 密码
@@ -26,56 +29,22 @@ const Register = () => {
     const config = useAppSelector(s => s.user.appConfig)
     // 提交登录
     const [postLogin, { isLoading: isLogin }] = usePostLoginMutation()
-
-    // 临时功能，开发自动登录
-    // useEffect(() => {
-    //     if (!password) setPassword('123456')
-    //     else onSubmit()
-    // }, [password])
-
-    const onInputedUsername = () => {
-        passwordInputRef.current?.focus()
-    }
+    // store 里的用户信息
+    const userInfo = useAppSelector(s => s.user.userInfo)
 
     const onSubmit = async () => {
         const resp = await postLogin({ username, password: sha(password) }).unwrap()
-        console.log('resp', resp)
         if (resp.code !== STATUS_CODE.SUCCESS) {
-            Notify.show({ type: 'danger', message: resp.msg || '登录失败' })
+            messageError(resp.msg || '登录失败')
             return
         }
 
-        Notify.show({ type: 'success', message: '登录成功' })
-        // const resp = await requireLogin().catch(error => {
-        //     if (error.code === STATUS_CODE.NOT_REGISTER) {
-        //         Notify.show({ type: 'danger', message: error.msg || '请先注册' })
-        //         location.pathname = 'register.html'
-        //     }
-        // })
+        messageSuccess(`登录成功，欢迎回来，${resp?.data?.username}`)
+        dispatch(login(resp.data as LoginSuccessResp))
+    }
 
-        // if (!resp) return
-        // const { salt, challenge } = resp
-        // const loginResp = await login(password, salt, challenge, code).catch(error => {
-        //     passwordInputRef.current?.focus()
-        //     setPassword('')
-        //     refetch()
-        // })
-
-        // if (!loginResp) return
-        // const {
-        //     replayAttackSecret, token, defaultGroupId, groups, unReadNoticeCount, unReadNoticeTopLevel, theme,
-        //     createPwdAlphabet, createPwdLength
-        // } = loginResp
-
-        // // 请求发起那边访问不到 context，所以需要保存到 sessionStorage 里
-        // sessionStorage.setItem('replayAttackSecret', replayAttackSecret)
-        // setToken(token)
-        // const { key, iv } = getAesMeta(password)
-        // setUserProfile({ pwdKey: key, pwdIv: iv, pwdSalt: salt, token, defaultGroupId, theme, createPwdAlphabet, createPwdLength })
-        // setNoticeInfo({ unReadNoticeCount, unReadNoticeTopLevel})
-        // setGroupList(groups)
-        // setSelectedGroup(defaultGroupId)
-        // navigate('/group', { replace: true })
+    if (userInfo) {
+        return <Navigate to="/" replace />
     }
 
     return (
@@ -93,7 +62,9 @@ const Register = () => {
                     value={username}
                     onInput={e => setUsername((e.target as any).value)}
                     onKeyUp={e => {
-                        if (e.key === 'Enter') onInputedUsername()
+                        if (e.key === 'Enter') {
+                            passwordInputRef.current?.focus()
+                        }
                     }}
                 />
 

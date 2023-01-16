@@ -1,30 +1,37 @@
+import { STATUS_CODE } from '@/config'
+import { LoginSuccessResp } from '@/types/user'
 import React, { FC, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { setToken } from '../services/base'
-import { useAppSelector } from '../store'
-
-export const useLogout = () => {
-    /**
-     * 统一登出方法
-     * 会清除所有的数据
-     */
-    return () => {
-        setToken(null)
-    }
-}
+import { useLazyGetUserInfoQuery } from '../services/user'
+import { useAppDispatch, useAppSelector } from '../store'
+import { login } from '../store/user'
+import Loading from './Loading'
 
 export const LoginAuth: FC = ({ children }) => {
     const userInfo = useAppSelector(s => s.user.userInfo)
-    const logout = useLogout()
+    const token = useAppSelector(s => s.user.token)
+    const dispatch = useAppDispatch()
+    const [getUserInfo, { data: userInfoResp }] = useLazyGetUserInfoQuery()
 
     useEffect(() => {
-        if (userInfo) return
-        logout()
-    }, [userInfo])
+        if (!token) return
+        getUserInfo()
+    }, [token])
 
-    if (!userInfo) {
+    useEffect(() => {
+        if (!userInfoResp || userInfoResp.code !== STATUS_CODE.SUCCESS) return
+        dispatch(login(userInfoResp.data as LoginSuccessResp))
+    }, [userInfoResp])
+
+    if ((!userInfo && !token) || userInfoResp?.code === 401) {
         return (
             <Navigate to="/login" replace />
+        )
+    }
+
+    if (!userInfo && token) {
+        return (
+            <Loading tip="正在加载用户信息..." />
         )
     }
 

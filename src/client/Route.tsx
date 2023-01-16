@@ -18,6 +18,7 @@ export const Routes: FC = () => {
         {
             path: '/',
             children: [
+                { index: true, element: lazyLoad(() => import('./pages/JumpToDefaultDataEntry')) },
                 // { path: '/group', element: lazyLoad(() => import('./pages/CertificateList')) },
                 // { path: '/addGroup', element: lazyLoad(() => import('./pages/AddGroup')) },
                 // { path: '/LogRequest', element: lazyLoad(() => import('./pages/LogRequest')) },
