@@ -1,8 +1,8 @@
 import React, { ComponentType, FC, lazy, Suspense } from 'react'
 import { useRoutes } from 'react-router-dom'
-import Loading from './components/Loading'
-import { LoginAuth } from './components/LoginAuth'
-import { AppContainer } from './components/AppContainer'
+import Loading from './layouts/Loading'
+import { LoginAuth } from './layouts/LoginAuth'
+import { AppContainer } from './layouts/AppContainer'
 
 const lazyLoad = (compLoader: () => Promise<{ default: ComponentType<any> }>) => {
     const Comp = lazy(compLoader)

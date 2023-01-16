@@ -30,7 +30,6 @@ export const createRouter = (props: Props) => {
 
     router.get('/getInfo', async ctx => {
         const username = ctx.state?.user?.username
-        console.log('🚀 ~ file: router.ts:33 ~ createRouter ~ ctx.state', ctx.state)
         if (!username) {
             response(ctx, { code: 400, msg: '未知用户，请重新登录' })
             return

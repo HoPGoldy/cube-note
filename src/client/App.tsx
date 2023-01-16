@@ -2,7 +2,7 @@ import React from 'react'
 import { store } from './store'
 import { Provider } from 'react-redux'
 import { Routes } from './Route'
-import { AppConfigProvider } from './components/AppConfigProvider'
+import { AppConfigProvider } from './layouts/AppConfigProvider'
 import { ConfigProvider } from 'react-vant'
 
 const themeVars = {

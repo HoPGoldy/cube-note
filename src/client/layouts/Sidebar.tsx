@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Plus, Gem, Coupon, Lock, Setting } from '@react-vant/icons'
-import { UserContext } from './UserProvider'
+import { Segmented } from 'antd'
 
 interface TabDetail {
     id: number | string
@@ -10,12 +10,6 @@ interface TabDetail {
     requireLogin?: boolean
     prefix?: () => JSX.Element
 }
-
-const STATIC_TABS: TabDetail[] = [
-    { id: 'addNew', name: '新增分组', url: '/addGroup', prefix: () => <Plus fontSize={20} /> },
-    { id: 'securityEntry', name: '安全管理', url: '/securityEntry', prefix: () => <Gem fontSize={20} /> },
-    { id: 'setting', name: '设置', url: '/Setting', prefix: () => <Setting fontSize={20} /> }
-]
 
 export const Sidebar: FC = () => {
     // const { groupList, selectedGroup, setSelectedGroup } = useContext(UserContext)
@@ -86,6 +80,7 @@ export const Sidebar: FC = () => {
             <header className='text-center font-bold text-lg h-[44px] leading-[44px]'>
                 密码本
             </header>
+            <Segmented options={['Daily', 'Weekly', 'Monthly']} onResize={undefined} onResizeCapture={undefined} />
             {/* {(groupList || []).map(formatGroupItem).map(renderGroupItem)} */}
             <div className='my-4 mx-4 mr-8 bg-slate-400 h-[1px]'></div>
             {/* {STATIC_TABS.map(renderGroupItem)} */}
