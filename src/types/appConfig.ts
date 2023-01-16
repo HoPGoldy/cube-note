@@ -24,4 +24,5 @@ export interface AppConfig {
     DEFAULT_COLOR: string[]
     APP_NAME: string
     LOGIN_SUBTITLE: string
+    MONGODB_URL?: string
 }

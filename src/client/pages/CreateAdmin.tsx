@@ -1,10 +1,12 @@
 import { sha } from '@/utils/crypto'
 import { ArrowLeft } from '@react-vant/icons'
 import React, { FC, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { Notify, Swiper, SwiperInstance } from 'react-vant'
 import { Button } from '../components/Button'
 import { useCreateAdminMutation } from '../services/user'
+import { useAppDispatch, useAppSelector } from '../store'
+import { initSuccess } from '../store/user'
 
 const GobackBtn: FC<{ onClick: () => unknown }> = (props) => {
     return (
@@ -20,7 +22,7 @@ const GobackBtn: FC<{ onClick: () => unknown }> = (props) => {
 }
 
 const Register = () => {
-    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     // 副标题及介绍轮播
     const titleSwiperRef = useRef<SwiperInstance>(null)
     // 输入框轮播
@@ -41,6 +43,8 @@ const Register = () => {
     const [repeatPwdError, setRepeatPwdError] = useState('')
     // 提交注册
     const [createAdmin, { isLoading: isCreating }] = useCreateAdminMutation()
+    // 是否需要初始化，初始化完成后这个值就变成 false 了
+    const needInit = useAppSelector(s => s.user.appConfig?.needInit)
 
     const setSwiperIndex = (index: number) => {
         titleSwiperRef.current?.swipeTo(index)
@@ -78,8 +82,13 @@ const Register = () => {
         const resp = await createAdmin({ username, password: sha(password) })
         console.log('resp', resp)
         Notify.show({ type: 'success', message: '初始化完成' })
+        dispatch(initSuccess())
+    }
 
-        navigate('/login', { replace: true })
+    if (needInit === false) {
+        return (
+            <Navigate to='/login' replace />
+        )
     }
 
     return (

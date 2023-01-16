@@ -35,10 +35,13 @@ export const userSlice = createSlice({
         },
         setAppConfig: (state, action: PayloadAction<AppConfigResp>) => {
             state.appConfig = action.payload
+        },
+        initSuccess: (state) => {
+            state.appConfig?.needInit && (state.appConfig.needInit = false)
         }
     },
 })
 
-export const { login, logout, setAppConfig } = userSlice.actions
+export const { login, logout, setAppConfig, initSuccess } = userSlice.actions
 
 export default userSlice.reducer

@@ -1,9 +1,19 @@
 /**
+ * 获取指定参数
+ */
+export const getRunArg = (argName: string) => {
+    const fullArg = process.argv.slice(2).find(arg => {
+        return arg.startsWith(`--${argName}`) || arg.startsWith(`-${argName}`)
+    })
+    
+    return fullArg?.replace(`--${argName}=`, '').replace(`-${argName}=`, '')
+}
+
+/**
  * 获取服务开放端口
  */
 export const getServePort = () => {
-    const portArg = process.argv.slice(2).find(arg => arg.startsWith('--port'))
-    const userPort = Number(portArg?.replace('--port=', ''))
+    const userPort = Number(getRunArg('port'))
 
     if (userPort) return userPort
     // 开发环境默认端口

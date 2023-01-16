@@ -1,4 +1,4 @@
-import { AppTheme, UserStorage, LoginSuccessResp, LoginFailResp } from '@/types/user'
+import { AppTheme, UserStorage, LoginSuccessResp } from '@/types/user'
 import { AppResponse } from '@/types/global'
 import { STATUS_CODE } from '@/config'
 import { sha } from '@/utils/crypto'
@@ -38,7 +38,6 @@ export const createService = (props: Props) => {
         if (!userStorage) return loginFail(ip)
 
         const { passwordHash, passwordSalt, theme } = userStorage
-        console.log('passwordHash', passwordHash, sha(passwordSalt + password))
         if (passwordHash !== sha(passwordSalt + password)) return loginFail(ip)
 
         const token = await createToken({ username })

@@ -4,7 +4,7 @@ import { Collection } from 'mongodb'
 
 interface Props {
     mainColor: string[]
-    getConfig: () => Promise<AppConfig>
+    getConfig: () => AppConfig
     getUserCollection: () => Collection<UserStorage>
 }
 
@@ -15,7 +15,7 @@ export const createService = (props: Props) => {
      * 获取当前应用全局配置
      */
     const getAppConfig = async (): Promise<AppConfigResp> => {
-        const { DEFAULT_COLOR, APP_NAME, LOGIN_SUBTITLE } = await getConfig()
+        const { DEFAULT_COLOR, APP_NAME, LOGIN_SUBTITLE } = getConfig()
         const randIndex = Math.floor(Math.random() * (DEFAULT_COLOR.length))
         const buttonColor = DEFAULT_COLOR[randIndex]
 

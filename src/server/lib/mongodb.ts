@@ -1,7 +1,10 @@
 import { UserStorage } from '@/types/user'
+import { getRunArg } from '@/utils/common'
 import { MongoClient } from 'mongodb'
+import { getAppConfig } from './appConfig'
 
-const client = new MongoClient('mongodb://localhost:27017')
+const { MONGODB_URL } = getAppConfig()
+const client = new MongoClient(MONGODB_URL || getRunArg('mongodb-url') || 'mongodb://localhost:27017')
 
 /**
  * 创建集合访问器
