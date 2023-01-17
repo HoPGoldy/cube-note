@@ -4,11 +4,13 @@ import type { TypedUseSelectorHook } from 'react-redux'
 import { setupListeners } from '@reduxjs/toolkit/query/react'
 import { baseApi } from '../services/base'
 import userReducer from './user'
+import globalReducer from './global'
 
 export const store = configureStore({
     reducer: {
         [baseApi.reducerPath]: baseApi.reducer,
         user: userReducer,
+        global: globalReducer,
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware().concat(baseApi.middleware),
 })

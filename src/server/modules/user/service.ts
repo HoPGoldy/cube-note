@@ -155,4 +155,4 @@ export const createService = (props: Props) => {
     return { getUserInfo, login, register, createAdmin, changePassword, setTheme }
 }
 
-export type AuthService = ReturnType<typeof createService>
+export type UserService = ReturnType<typeof createService>

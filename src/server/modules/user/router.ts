@@ -1,13 +1,13 @@
 import Router from 'koa-router'
 import { AppKoaContext } from '@/types/global'
 import { getIp, response } from '@/server/utils'
-import { AuthService } from './service'
+import { UserService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
 import { ChangePasswordPostData, LoginPostData, SetThemePostData } from '@/types/user'
 
 interface Props {
-    service: AuthService
+    service: UserService
 }
 
 export const createRouter = (props: Props) => {

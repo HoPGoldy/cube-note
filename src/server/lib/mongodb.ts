@@ -1,3 +1,5 @@
+import { ArticleStorage } from '@/types/article'
+import { TagStorage } from '@/types/tag'
 import { UserStorage } from '@/types/user'
 import { getRunArg } from '@/utils/common'
 import { MongoClient } from 'mongodb'
@@ -5,23 +7,12 @@ import { getAppConfig } from './appConfig'
 
 const { MONGODB_URL } = getAppConfig()
 const client = new MongoClient(MONGODB_URL || getRunArg('mongodb-url') || 'mongodb://localhost:27017')
-
-/**
- * 创建集合访问器
- * @param collectionName 集合名
- * @returns 一个函数，调用后返回对应的集合
- */
-export const createCollectionAccessor = <T extends Record<string | number, any>>(collectionName: string) => {
-    return () => {
-        const database = client.db('cube-note')
-        return database.collection<T>(collectionName)
-    }
-}
+const database = client.db('cube-note')
 
 /**
  * 获取用户表
  */
-export const getUserCollection = createCollectionAccessor<UserStorage>('users')
+export const getUserCollection = () => database.collection<UserStorage>('users')
 
 /**
  * 获取用户基本数据
@@ -54,7 +45,17 @@ export const updateUserStorage = async (username: string, newStorage: Partial<Us
 /**
  * 获取防重放攻击的 nonce 集合
  */
-export const getReplayAttackNonceCollection = createCollectionAccessor<{ value: string }>('replayAttackNonce')
+export const getReplayAttackNonceCollection = () => database.collection<{ value: string }>('replayAttackNonce')
 
 // nonce 只用保存一分钟的时间
 getReplayAttackNonceCollection().createIndex({ createdAt: 1 }, { expireAfterSeconds: 60 })
+
+/**
+ * 获取文章集合
+ */
+export const getArticleCollection = () => database.collection<ArticleStorage>('articles')
+
+/**
+ * 获取标签集合
+ */
+export const getTagCollection = () => database.collection<TagStorage>('tags')

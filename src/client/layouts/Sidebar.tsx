@@ -1,7 +1,6 @@
 import React, { FC, useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Plus, Gem, Coupon, Lock, Setting } from '@react-vant/icons'
-import { Segmented } from 'antd'
 
 interface TabDetail {
     id: number | string
@@ -80,7 +79,6 @@ export const Sidebar: FC = () => {
             <header className='text-center font-bold text-lg h-[44px] leading-[44px]'>
                 密码本
             </header>
-            <Segmented options={['Daily', 'Weekly', 'Monthly']} onResize={undefined} onResizeCapture={undefined} />
             {/* {(groupList || []).map(formatGroupItem).map(renderGroupItem)} */}
             <div className='my-4 mx-4 mr-8 bg-slate-400 h-[1px]'></div>
             {/* {STATIC_TABS.map(renderGroupItem)} */}

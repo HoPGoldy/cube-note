@@ -6,7 +6,7 @@ import { Notify, Swiper, SwiperInstance } from 'react-vant'
 import { Button } from '../components/Button'
 import { useCreateAdminMutation } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
-import { initSuccess } from '../store/user'
+import { initSuccess } from '../store/global'
 
 const GobackBtn: FC<{ onClick: () => unknown }> = (props) => {
     return (

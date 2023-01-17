@@ -1,13 +1,13 @@
 import React, { FC, useEffect } from 'react'
 import { useAppConfigQuery } from '../services/global'
 import { useAppDispatch, useAppSelector } from '../store'
-import { setAppConfig } from '../store/user'
+import { setAppConfig } from '../store/global'
 import { Navigate, useLocation } from 'react-router-dom'
 import Loading from './Loading'
 
 export const AppConfigProvider: FC = (props) => {
     const location = useLocation()
-    const appConfig = useAppSelector(s => s.user.appConfig)
+    const appConfig = useAppSelector(s => s.global.appConfig)
     const dispatch = useAppDispatch()
 
     const { data } = useAppConfigQuery()

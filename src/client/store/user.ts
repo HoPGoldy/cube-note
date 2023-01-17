@@ -1,11 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { AppConfigResp } from '@/types/appConfig'
 import { FrontendUserInfo, LoginSuccessResp } from '@/types/user'
 
 interface UserState {
     userInfo?: FrontendUserInfo
-    appConfig?: AppConfigResp
     replayAttackSecret?: string
     token?: string
 }
@@ -31,15 +29,9 @@ export const userSlice = createSlice({
             state.userInfo = undefined
             localStorage.removeItem('cube-note-token')
         },
-        setAppConfig: (state, action: PayloadAction<AppConfigResp>) => {
-            state.appConfig = action.payload
-        },
-        initSuccess: (state) => {
-            state.appConfig?.needInit && (state.appConfig.needInit = false)
-        }
     },
 })
 
-export const { login, logout, setAppConfig, initSuccess } = userSlice.actions
+export const { login, logout } = userSlice.actions
 
 export default userSlice.reducer

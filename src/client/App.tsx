@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import { Routes } from './Route'
 import { AppConfigProvider } from './layouts/AppConfigProvider'
 import { ConfigProvider } from 'react-vant'
+import { ResponsiveProvider } from './layouts/Responsive'
 
 const themeVars = {
     buttonBorderRadius: 'var(--rv-border-radius-lg)',
@@ -15,7 +16,9 @@ function App() {
         <Provider store={store}>
             <ConfigProvider themeVars={themeVars}>
                 <AppConfigProvider>
-                    <Routes />
+                    <ResponsiveProvider>
+                        <Routes />
+                    </ResponsiveProvider>
                 </AppConfigProvider>
             </ConfigProvider>
         </Provider>

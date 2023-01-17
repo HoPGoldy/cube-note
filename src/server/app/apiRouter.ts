@@ -6,9 +6,11 @@ import { createCheckReplayAttack } from '../lib/replayAttackDefense'
 import { AUTH_EXCLUDE, REPLAY_ATTACK_EXCLUDE } from '@/config'
 import { loginLocker } from './LoginLocker'
 import { userRouter } from './user'
+import { tagRouter } from './tag'
+import { articleRouter } from './article'
 
 export const createApiRouter = () => {
-    const routes = [globalRouter, userRouter]
+    const routes = [globalRouter, userRouter, tagRouter, articleRouter]
     const apiRouter = new Router<unknown, AppKoaContext>()
 
     apiRouter

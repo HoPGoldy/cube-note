@@ -25,7 +25,7 @@ const Register = () => {
     // 密码输入框
     const passwordInputRef = useRef<HTMLInputElement>(null)
     // 应用配置
-    const config = useAppSelector(s => s.user.appConfig)
+    const config = useAppSelector(s => s.global.appConfig)
     // 提交登录
     const [postLogin, { isLoading: isLogin }] = usePostLoginMutation()
     // store 里的用户信息
