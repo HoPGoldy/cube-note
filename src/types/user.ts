@@ -24,6 +24,10 @@ export interface UserStorage {
      * 是否为管理员
      */
     isAdmin?: boolean
+    /**
+     * 用户当前根节点文章的 id
+     */
+    rootArticleId: string
 }
 
 /**

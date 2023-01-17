@@ -23,7 +23,7 @@ const initialState: UserState = {
     isMobile: getIsMobile()
 }
 
-export const userSlice = createSlice({
+export const globalSlice = createSlice({
     name: 'global',
     initialState,
     reducers: {
@@ -40,6 +40,6 @@ export const userSlice = createSlice({
     },
 })
 
-export const { setAppConfig, initSuccess, setIsMobile } = userSlice.actions
+export const { setAppConfig, initSuccess, setIsMobile } = globalSlice.actions
 
-export default userSlice.reducer
+export default globalSlice.reducer

@@ -5,12 +5,14 @@ import { setupListeners } from '@reduxjs/toolkit/query/react'
 import { baseApi } from '../services/base'
 import userReducer from './user'
 import globalReducer from './global'
+import menuReducer from './menu'
 
 export const store = configureStore({
     reducer: {
         [baseApi.reducerPath]: baseApi.reducer,
         user: userReducer,
         global: globalReducer,
+        menu: menuReducer,
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware().concat(baseApi.middleware),
 })

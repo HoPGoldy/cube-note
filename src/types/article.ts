@@ -26,3 +26,18 @@ export interface AddArticlePostData {
     content: string
     parentId: string
 }
+
+export interface ArticleMenuItem {
+    id: string
+    title: string
+}
+
+export enum TabTypes {
+    Sub = 'sub',
+    Link = 'link',
+    Favorite = 'favorite',
+}
+
+export type ArticleMenuResp = {
+    [key in TabTypes]: ArticleMenuItem[]
+}
