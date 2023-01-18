@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { FrontendUserInfo, LoginSuccessResp } from '@/types/user'
+import { AppTheme, FrontendUserInfo, LoginSuccessResp } from '@/types/user'
 
 interface UserState {
     userInfo?: FrontendUserInfo
@@ -29,9 +29,13 @@ export const userSlice = createSlice({
             state.userInfo = undefined
             localStorage.removeItem('cube-note-token')
         },
+        changeTheme: (state, action: PayloadAction<AppTheme>) => {
+            if (!state.userInfo) return
+            state.userInfo.theme = action.payload
+        }
     },
 })
 
-export const { login, logout } = userSlice.actions
+export const { login, logout, changeTheme } = userSlice.actions
 
 export default userSlice.reducer

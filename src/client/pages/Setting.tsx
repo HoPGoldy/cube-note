@@ -1,29 +1,28 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Card, Cell, Space, Switch } from 'react-vant'
 import { Contact, Close, LikeO, StarO, ArrowLeft, Certificate, SendGiftO, EcardPay } from '@react-vant/icons'
-import { UserContext } from '../components/UserProvider'
 import { ActionButton, ActionIcon, PageAction, PageContent } from '../components/PageWithAction'
 import { useNavigate } from 'react-router-dom'
 import { Statistic } from '../components/Statistic'
-import { useQuery } from 'react-query'
-import { fetchCountInfo, setAppTheme } from '../services/user'
 import { AppTheme } from '@/types/user'
-import { useLogout } from '../components/LoginAuth'
+import { useAppDispatch, useAppSelector } from '../store'
+import { changeTheme, logout } from '../store/user'
 
 const SettingPage = () => {
-    const { userProfile, setUserProfile } = useContext(UserContext)
-    const onLogout = useLogout()
+    const userInfo = useAppSelector(s => s.user.userInfo)
+    const dispatch = useAppDispatch()
     const navigate = useNavigate()
     // 数量统计接口
-    const { data: countInfo } = useQuery('/getCountInfo', fetchCountInfo)
+    // const { data: countInfo } = useQuery('/getCountInfo', fetchCountInfo)
 
     const onSwitchDark = () => {
-        const newTheme = userProfile?.theme === AppTheme.Light ? AppTheme.Dark : AppTheme.Light
-        setAppTheme(newTheme)
-        setUserProfile?.(old => {
-            if (!old) return old
-            return { ...old, theme: newTheme }
-        })
+        const newTheme = userInfo?.theme === AppTheme.Light ? AppTheme.Dark : AppTheme.Light
+        // setAppTheme(newTheme)
+        dispatch(changeTheme(newTheme))
+    }
+
+    const onLogout = () => {
+        dispatch(logout())
     }
 
     return (
@@ -34,8 +33,8 @@ const SettingPage = () => {
                         <Card round>
                             <Card.Body>
                                 <div className="flex flex-row justify-around">
-                                    <Statistic label="分组数量" value={countInfo?.group || '---'} />
-                                    <Statistic label="凭证数量" value={countInfo?.certificate || '---'} />
+                                    <Statistic label="分组数量" value={11 || '---'} />
+                                    <Statistic label="凭证数量" value={222 || '---'} />
                                 </div>
                             </Card.Body>
                         </Card>
@@ -48,7 +47,7 @@ const SettingPage = () => {
                             <Cell title="黑夜模式" icon={<StarO />} 
                                 rightIcon={<Switch
                                     size={24}
-                                    defaultChecked={userProfile?.theme === AppTheme.Dark}
+                                    defaultChecked={userInfo?.theme === AppTheme.Dark}
                                     onChange={onSwitchDark}
                                 />}
                             />

@@ -1,9 +1,8 @@
-import React, { FC, useContext, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Plus, Gem, Coupon, Lock, Setting } from '@react-vant/icons'
+import React, { FC } from 'react'
 import { ArticleMenuItem, TabTypes } from '@/types/article'
 import { useAppDispatch, useAppSelector } from '../store'
-import { setCurrentTab } from '../store/menu'
+import { setCurrentMenu } from '../store/menu'
+import { Link } from 'react-router-dom'
 
 interface TabDetail {
     name: string
@@ -30,7 +29,7 @@ export const Sidebar: FC = () => {
                     (currentTab === item.type ? 'bg-slate-600 dark:bg-slate-800' : 'bg-slate-500 dark:bg-slate-700')
                 }
                 key={item.name}
-                onClick={() => dispatch(setCurrentTab(item.type))}
+                onClick={() => dispatch(setCurrentMenu(item.type))}
             >{item.name}</div>
         )
     }
@@ -46,9 +45,12 @@ export const Sidebar: FC = () => {
             p-4 transition h-screen overflow-y-auto 
             bg-slate-700 dark:bg-slate-900 text-white dark:text-gray-200
         '>
-            <header className='text-center font-bold text-lg h-[44px] leading-[44px]'>
+            <div className='text-center font-bold text-lg h-[44px] leading-[44px]'>
                 记事本
-            </header>
+                <Link to='/setting'>
+                    <div>设置</div>
+                </Link>
+            </div>
             <div className='flex justify-between'>
                 {tabOptions.map(renderTabBtn)}
             </div>

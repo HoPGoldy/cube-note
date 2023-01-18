@@ -22,12 +22,12 @@ export const menuSlice = createSlice({
             state[TabTypes.Link] = action.payload[TabTypes.Link]
             state[TabTypes.Favorite] = action.payload[TabTypes.Favorite]
         },
-        setCurrentTab: (state, action: PayloadAction<TabTypes>) => {
+        setCurrentMenu: (state, action: PayloadAction<TabTypes>) => {
             state.currentTab = action.payload
         }
     },
 })
 
-export const { setMenu, setCurrentTab } = menuSlice.actions
+export const { setMenu, setCurrentMenu } = menuSlice.actions
 
 export default menuSlice.reducer

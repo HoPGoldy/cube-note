@@ -6,6 +6,7 @@ import { baseApi } from '../services/base'
 import userReducer from './user'
 import globalReducer from './global'
 import menuReducer from './menu'
+import tabReducer from './tab'
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
         user: userReducer,
         global: globalReducer,
         menu: menuReducer,
+        tab: tabReducer,
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware().concat(baseApi.middleware),
 })

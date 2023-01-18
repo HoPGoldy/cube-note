@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // eslint-disable-next-line no-undef
 module.exports = {
     darkMode: ['class', '[data-theme="dark"]'],
@@ -25,4 +26,7 @@ module.exports = {
             }
         }
     },
+    plugins: [
+        require('@tailwindcss/typography')
+    ],
 }

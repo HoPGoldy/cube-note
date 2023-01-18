@@ -1,10 +1,10 @@
 import { Search } from '@react-vant/icons'
 import { DebouncedFunc } from 'lodash'
 import debounce from 'lodash/debounce'
-import React, { FC, MouseEventHandler, useContext, useEffect, useRef, useState } from 'react'
+import React, { FC, MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card, Field, FieldInstance, Loading } from 'react-vant'
-import { AppConfigContext } from './AppConfigProvider'
+import { useAppSelector } from '../store'
 
 /**
  * 页面正文，会给下面的操作栏留出空间
@@ -62,8 +62,8 @@ type ActionButtonProps = {
  * 底部操作栏中的按钮
  */
 export const ActionButton: FC<ActionButtonProps> = (props) => {
-    const config = useContext(AppConfigContext)
-    const styles = { background: props.color || config?.buttonColor || 'f000' }
+    const buttonColor = useAppSelector(s => s.global.appConfig?.buttonColor)
+    const styles = { background: props.color || buttonColor || 'f000' }
 
     return (
         <div
