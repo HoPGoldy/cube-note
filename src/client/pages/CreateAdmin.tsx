@@ -44,7 +44,7 @@ const Register = () => {
     // 提交注册
     const [createAdmin, { isLoading: isCreating }] = useCreateAdminMutation()
     // 是否需要初始化，初始化完成后这个值就变成 false 了
-    const needInit = useAppSelector(s => s.user.appConfig?.needInit)
+    const needInit = useAppSelector(s => s.global.appConfig?.needInit)
 
     const setSwiperIndex = (index: number) => {
         titleSwiperRef.current?.swipeTo(index)

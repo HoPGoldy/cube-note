@@ -4,6 +4,7 @@ import { createToken } from '@/server/lib/auth'
 import { getReplayAttackSecret } from '@/server/lib/replayAttackDefense'
 import { loginLocker } from './LoginLocker'
 import { getUserCollection, getUserStorage, updateUserStorage } from '../lib/mongodb'
+import { articleService } from './article'
 
 
 export const userService = createService({
@@ -13,6 +14,7 @@ export const userService = createService({
     getUserStorage,
     updateUserStorage,
     getUserCollection,
+    addArticle: articleService.addArticle
 })
 
 export const userRouter = createRouter({ service: userService })

@@ -5,8 +5,9 @@ export interface ArticleStorage {
     updateTime: number
     /**
      * 父级文章 id
+     * 如果是跟节点的话，就没有这个属性
      */
-    parentArticleId: string
+    parentArticleId?: string
     /**
      * 下属文章 id
      */

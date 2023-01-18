@@ -14,7 +14,7 @@ export const LoginAuth: FC = ({ children }) => {
     const [getUserInfo, { data: userInfoResp }] = useLazyGetUserInfoQuery()
 
     useEffect(() => {
-        if (!token) return
+        if (!token || userInfo) return
         getUserInfo()
     }, [token])
 

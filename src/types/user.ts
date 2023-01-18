@@ -94,6 +94,10 @@ export interface FrontendUserInfo {
      */
     initTime: number
     /**
+     * 笔记根节点 id
+     */
+    rootArticleId: string
+    /**
      * 是否为管理员
      */
     isAdmin?: boolean

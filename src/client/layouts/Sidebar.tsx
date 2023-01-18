@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Plus, Gem, Coupon, Lock, Setting } from '@react-vant/icons'
-import { TabTypes } from '@/types/article'
+import { ArticleMenuItem, TabTypes } from '@/types/article'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentTab } from '../store/menu'
 
@@ -19,6 +19,7 @@ const tabOptions: TabDetail[] = [
 
 export const Sidebar: FC = () => {
     const currentTab = useAppSelector(s => s.menu.currentTab)
+    const currentMenu = useAppSelector(s => s.menu[currentTab])
     const dispatch = useAppDispatch()
 
     const renderTabBtn = (item: TabDetail) => {
@@ -34,6 +35,12 @@ export const Sidebar: FC = () => {
         )
     }
 
+    const renderMenuItem = (item: ArticleMenuItem) => {
+        return (
+            <div key={item.id}>{item.title}</div>
+        )
+    }
+
     return (
         <section className='
             p-4 transition h-screen overflow-y-auto 
@@ -44,6 +51,10 @@ export const Sidebar: FC = () => {
             </header>
             <div className='flex justify-between'>
                 {tabOptions.map(renderTabBtn)}
+            </div>
+            <div>
+                {(currentMenu || []).map(renderMenuItem)}
+                <div>创建</div>
             </div>
             {/* {(groupList || []).map(formatGroupItem).map(renderGroupItem)} */}
             {/* <div className='my-4 mx-4 mr-8 bg-slate-400 h-[1px]'></div> */}

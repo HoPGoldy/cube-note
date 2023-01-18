@@ -5,6 +5,7 @@ import { sha } from '@/utils/crypto'
 import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
 import { Collection } from 'mongodb'
+import { ArticleService } from '../article/service'
 
 interface Props {
     loginLocker: LoginLocker
@@ -13,6 +14,7 @@ interface Props {
     getUserCollection: () => Collection<UserStorage>
     getUserStorage: (username: string) => Promise<UserStorage | null>
     updateUserStorage: (username: string, newStorage: Partial<UserStorage>) => Promise<unknown>
+    addArticle: ArticleService['addArticle']
 }
 
 export const createService = (props: Props) => {
@@ -21,6 +23,7 @@ export const createService = (props: Props) => {
         getReplayAttackSecret,
         getUserCollection,
         getUserStorage, updateUserStorage,
+        addArticle,
     } = props
 
     const loginFail = (ip: string, msg = '账号或密码错误') => {
@@ -37,7 +40,7 @@ export const createService = (props: Props) => {
         const userStorage = await getUserStorage(username)
         if (!userStorage) return loginFail(ip, '用户不存在')
 
-        const { theme, initTime, isAdmin } = userStorage
+        const { theme, initTime, isAdmin, rootArticleId } = userStorage
 
         const token = await createToken({ username })
         const replayAttackSecret = await getReplayAttackSecret()
@@ -48,6 +51,7 @@ export const createService = (props: Props) => {
             initTime,
             isAdmin,
             username,
+            rootArticleId,
             replayAttackSecret,
         }
 
@@ -78,12 +82,18 @@ export const createService = (props: Props) => {
             return { code: STATUS_CODE.ALREADY_REGISTER, msg: '已经注册' }
         }
 
+        const createResp = await addArticle('记事本', '第一个笔记')
+        if (!createResp.data) {
+            return createResp
+        }
+
         const passwordSalt = nanoid()
         const initStorage: UserStorage = {
             username,
             passwordHash: sha(passwordSalt + passwordHash),
             passwordSalt,
             initTime: Date.now(),
+            rootArticleId: createResp.data,
             theme: AppTheme.Light
         }
 

@@ -1,8 +1,9 @@
 import { AppResponse } from '@/types/global'
-import { RootState } from '@/client/store'
+import { store } from '@/client/store'
 import { logout } from '@/client/store/user'
 import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react'
 import { message } from '../utils/message'
+import { setReplayAttackHeaders } from '@/utils/crypto'
 
 /**
  * 是否为标准后端数据结构
@@ -13,16 +14,18 @@ const isAppResponse = (data: unknown): data is AppResponse<unknown> => {
 
 const baseQueryCore = fetchBaseQuery({
     baseUrl: '/api',
-    prepareHeaders(headers, { getState }) {
-        const state = getState() as RootState
-        const { token } = state.user
+    fetchFn: async (args, init) => {
+        const state = store.getState()
+        const { token, replayAttackSecret } = state.user
 
-        if (token) {
-            headers.set('Authorization', `Bearer ${token}`)
+        const headers = (args as Request)?.headers
+        if (headers) {
+            if (token) headers.set('Authorization', `Bearer ${token}`)
+            if (replayAttackSecret) setReplayAttackHeaders(args as Request, replayAttackSecret)
         }
 
-        return headers
-    },
+        return await fetch(args, init)
+    }
 })
 
 const baseQuery: BaseQueryFn<
