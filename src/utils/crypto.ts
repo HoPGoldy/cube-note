@@ -62,10 +62,11 @@ export const aesDecrypt = (str: string, key: CryptoJS.lib.WordArray, iv: CryptoJ
  * @param secretKey 签名私钥
  */
 export const setReplayAttackHeaders = (request: Request, secretKey: string) => {
-    const bodyData = JSON.stringify(request.body)
+    const url = '/api' + request.url.split('/api')[1]
+    const bodyData = JSON.stringify(request.body || {})
     const timestamp = Date.now()
-    const nonce = nanoid(128)
-    const sign = sha(`${request.url}${bodyData}${nonce}${timestamp}${secretKey}`)
+    const nonce = nanoid()
+    const sign = sha(`${url}${bodyData}${nonce}${timestamp}${secretKey}`)
 
     request.headers.set('X-cubnote-temestamp', timestamp.toString())
     request.headers.set('X-cubnote-nonce', nonce)
@@ -74,7 +75,7 @@ export const setReplayAttackHeaders = (request: Request, secretKey: string) => {
 
 interface ReplayAttackData {
     url: string
-    body: Record<string, any>
+    body: string
     timestamp: number
     nonce: string
     signature: string
@@ -86,7 +87,7 @@ interface ReplayAttackData {
 export const getReplayAttackData = (ctx: AppKoaContext): ReplayAttackData | undefined => {
     const data = {
         url: ctx.url,
-        body: ctx.request.body,
+        body: JSON.stringify(ctx.request.body),
         timestamp: Number(ctx.get('X-cubnote-temestamp')),
         nonce: ctx.get('X-cubnote-nonce'),
         signature: ctx.get('X-cubnote-signature')
@@ -99,7 +100,7 @@ export const getReplayAttackData = (ctx: AppKoaContext): ReplayAttackData | unde
 /**
  * 验证防重放攻击 header
  */
-export const validateReplayAttackData= (data: ReplayAttackData, secretKey: string) => {
+export const validateReplayAttackData = (data: ReplayAttackData, secretKey: string) => {
     const { timestamp, url, body, nonce, signature } = data
     // console.log('bodyData', JSON.stringify(body))
 
@@ -107,6 +108,6 @@ export const validateReplayAttackData= (data: ReplayAttackData, secretKey: strin
     // 服务器时间和客户端时间相差 1 分钟以上，认为是无效请求
     if (serverTimestamp - timestamp > 1000 * 60) return false
 
-    const newSign = sha(`${url}${JSON.stringify(body)}${nonce}${timestamp}${secretKey}`)
+    const newSign = sha(`${url}${body}${nonce}${timestamp}${secretKey}`)
     return newSign === signature
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, Cell, Space, Switch } from 'react-vant'
 import { Contact, Close, LikeO, StarO, ArrowLeft, Certificate, SendGiftO, EcardPay } from '@react-vant/icons'
-import { ActionButton, ActionIcon, PageAction, PageContent } from '../components/PageWithAction'
+import { ActionButton, ActionIcon, PageAction, PageContent } from '../layouts/PageWithAction'
 import { useNavigate } from 'react-router-dom'
 import { Statistic } from '../components/Statistic'
 import { AppTheme } from '@/types/user'
@@ -25,50 +25,48 @@ const SettingPage = () => {
         dispatch(logout())
     }
 
-    return (
-        <div>
-            <PageContent>
-                <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
-                    <Space direction="vertical" gap={16} className='w-full'>
-                        <Card round>
-                            <Card.Body>
-                                <div className="flex flex-row justify-around">
-                                    <Statistic label="分组数量" value={11 || '---'} />
-                                    <Statistic label="凭证数量" value={222 || '---'} />
-                                </div>
-                            </Card.Body>
-                        </Card>
+    return (<>
+        <PageContent>
+            <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
+                <Space direction="vertical" gap={16} className='w-full'>
+                    <Card round>
+                        <Card.Body>
+                            <div className="flex flex-row justify-around">
+                                <Statistic label="分组数量" value={11 || '---'} />
+                                <Statistic label="凭证数量" value={222 || '---'} />
+                            </div>
+                        </Card.Body>
+                    </Card>
 
-                        <Card round>
-                            <Cell title="修改密码" icon={<Contact />} isLink onClick={() => navigate('/ChangePassword')} />
-                            <Cell title="动态验证码" icon={<Certificate />} isLink onClick={() => navigate('/OtpManage')} />
-                            <Cell title="分组管理" icon={<SendGiftO />} isLink onClick={() => navigate('/GroupManage')} />
-                            <Cell title="新密码生成" icon={<EcardPay />} isLink onClick={() => navigate('/CreatePwdSetting')} />
-                            <Cell title="黑夜模式" icon={<StarO />} 
-                                rightIcon={<Switch
-                                    size={24}
-                                    defaultChecked={userInfo?.theme === AppTheme.Dark}
-                                    onChange={onSwitchDark}
-                                />}
-                            />
-                            <Cell title="关于" icon={<LikeO />} isLink onClick={() => navigate('/About')} />
-                        </Card>
+                    <Card round>
+                        <Cell title="修改密码" icon={<Contact />} isLink onClick={() => navigate('/ChangePassword')} />
+                        <Cell title="动态验证码" icon={<Certificate />} isLink onClick={() => navigate('/OtpManage')} />
+                        <Cell title="分组管理" icon={<SendGiftO />} isLink onClick={() => navigate('/GroupManage')} />
+                        <Cell title="新密码生成" icon={<EcardPay />} isLink onClick={() => navigate('/CreatePwdSetting')} />
+                        <Cell title="黑夜模式" icon={<StarO />} 
+                            rightIcon={<Switch
+                                size={24}
+                                defaultChecked={userInfo?.theme === AppTheme.Dark}
+                                onChange={onSwitchDark}
+                            />}
+                        />
+                        <Cell title="关于" icon={<LikeO />} isLink onClick={() => navigate('/about')} />
+                    </Card>
 
-                        <Card round>
-                            <Cell title="登出" icon={<Close />} isLink onClick={onLogout} />
-                        </Card>
-                    </Space>
-                </div>
-            </PageContent>
+                    <Card round>
+                        <Cell title="登出" icon={<Close />} isLink onClick={onLogout} />
+                    </Card>
+                </Space>
+            </div>
+        </PageContent>
 
-            <PageAction>
-                <ActionIcon onClick={() => navigate(-1)}>
-                    <ArrowLeft fontSize={24} />
-                </ActionIcon>
-                <ActionButton onClick={() => navigate('/securityEntry')}>安全管理</ActionButton>
-            </PageAction>
-        </div>
-    )
+        <PageAction>
+            <ActionIcon onClick={() => navigate(-1)}>
+                <ArrowLeft fontSize={24} />
+            </ActionIcon>
+            <ActionButton onClick={() => navigate('/securityEntry')}>安全管理</ActionButton>
+        </PageAction>
+    </>)
 }
 
 export default SettingPage

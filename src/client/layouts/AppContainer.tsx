@@ -14,11 +14,15 @@ export const AppContainer = () => {
                     <Sidebar />
                 </aside>
             </DesktopArea>
-            <main className='h-screen w-page-content flex-grow'>
+            <main className='h-screen flex-grow box-border md:pt-[40px]'>
                 <DesktopArea>
-                    <TopTab />
+                    <nav className='h-[40px] mt-[-40px]'>
+                        <TopTab />
+                    </nav>
                 </DesktopArea>
-                <Outlet />
+                <div className='h-full overflow-hidden'>
+                    <Outlet />
+                </div>
             </main>
         </div>
     )

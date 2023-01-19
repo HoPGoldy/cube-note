@@ -1,10 +1,11 @@
 import React, { FC, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../store'
 import { addTab, setCurrentTab, TabItem } from '../store/tab'
 
 const routeName: Record<string, string> = {
     '/setting': '设置',
+    '/about': '关于',
 }
 
 /**
@@ -16,6 +17,8 @@ export const useTabControl = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
+        if (location.pathname === '/') return
+
         const index = tabList.findIndex((item) => item.path === location.pathname)
         if (index === -1) {
             dispatch(addTab({
@@ -36,24 +39,30 @@ const TopTab: FC = () => {
     const tabList = useAppSelector(s => s.tab.tabList)
     const currentTab = useAppSelector(s => s.tab.currentTabIndex)
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
     useEffect(() => {
         dispatch(setCurrentTab(location.pathname))
     }, [location.pathname])
 
+    const onClickTab = (item: TabItem) => {
+        if (item.path === currentTab) return
+        dispatch(setCurrentTab(item.path))
+        navigate(item.path)
+    }
+
     const renderTabItem = (item: TabItem) => {
         return (
-            <Link to={item.path} key={item.path}>
-                <div
-                    className={
-                        'm-1 p-1 ' +
-                        (item.path === currentTab ? 'bg-slate-600 text-white' : '')
-                    }
-                    onClick={() => dispatch(setCurrentTab(item.path))}
-                >
-                    {item.title}
-                </div>
-            </Link>
+            <div
+                className={
+                    'm-1 p-1 cursor-pointer ' +
+                    (item.path === currentTab ? 'bg-slate-600 text-white' : '')
+                }
+                key={item.path}
+                onClick={() => onClickTab(item)}
+            >
+                {item.title}
+            </div>
         )
     }
 

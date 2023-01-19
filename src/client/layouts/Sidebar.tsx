@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { ArticleMenuItem, TabTypes } from '@/types/article'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentMenu } from '../store/menu'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
 interface TabDetail {
     name: string
@@ -45,8 +45,8 @@ export const Sidebar: FC = () => {
             p-4 transition h-screen overflow-y-auto 
             bg-slate-700 dark:bg-slate-900 text-white dark:text-gray-200
         '>
-            <div className='text-center font-bold text-lg h-[44px] leading-[44px]'>
-                记事本
+            <div className='flex justify-between font-bold text-lg h-[44px] leading-[44px]'>
+                <div>记事本</div>
                 <Link to='/setting'>
                     <div>设置</div>
                 </Link>

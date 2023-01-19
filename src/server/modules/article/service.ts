@@ -5,7 +5,7 @@ import { sha } from '@/utils/crypto'
 import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
 import { Collection, ObjectId, WithId } from 'mongodb'
-import { ArticleStorage } from '@/types/article'
+import { AddArticlePostData, ArticleStorage } from '@/types/article'
 
 interface Props {
     getArticleCollection: () => Collection<ArticleStorage>
@@ -58,7 +58,45 @@ export const createService = (props: Props) => {
 
     }
 
-    return { addArticle }
+    const updateArticle = async (id: string, detail: Partial<AddArticlePostData>) => {
+        const articleCollection = getArticleCollection()
+        const _id = new ObjectId(id)
+        const article = await articleCollection.findOne({ _id })
+        if (!article) {
+            return { code: 400, msg: '文章不存在' }
+        }
+
+        await articleCollection.updateOne({ _id }, { $set: {
+            title: detail.title || article.title,
+            content: detail.content || article.content,
+            parentArticleId: detail.parentId ? detail.parentId : article.parentArticleId,
+            updateTime: Date.now()
+        } })
+
+        return { code: 200 }
+    }
+
+    const getArticleContent = async (id: string) => {
+        const articleCollection = getArticleCollection()
+        const _id = new ObjectId(id)
+        const article = await articleCollection.findOne(
+            { _id },
+            {
+                projection: {
+                    childrenArticleIds: 0,
+                    relatedArticleIds: 0,
+                    parentArticleId: 0
+                }
+            }
+        )
+        if (!article) {
+            return { code: 400, msg: '文章不存在' }
+        }
+
+        return { code: 200, data: article }
+    }
+
+    return { addArticle, getArticleContent, updateArticle }
 }
 
 export type ArticleService = ReturnType<typeof createService>

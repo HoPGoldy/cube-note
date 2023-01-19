@@ -1,10 +1,12 @@
 import React from 'react'
+import { Navigate } from 'react-router-dom'
+import { useAppSelector } from '../store'
 
 const JumpToDefaultDataEntry = () => {
+    const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
+
     return (
-        <div>
-            hello world
-        </div>
+        <Navigate to={`/article/${rootArticleId}`} replace />
     )
 }
 

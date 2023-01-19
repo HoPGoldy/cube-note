@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce'
 import React, { FC, MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card, Field, FieldInstance, Loading } from 'react-vant'
+import { MobileArea } from '../layouts/Responsive'
 import { useAppSelector } from '../store'
 
 /**
@@ -11,7 +12,7 @@ import { useAppSelector } from '../store'
  */
 export const PageContent: FC = (props) => {
     return (
-        <div className="overflow-y-auto relative md:h-screen h-page-content">
+        <div className="overflow-y-auto relative md:h-full h-page-content">
             {props.children}
         </div>
     )
@@ -24,9 +25,11 @@ export const PageContent: FC = (props) => {
  */
 export const PageAction: FC = (props) => {
     return (
-        <div className="p-2 flex flex-row md:hidden h-bottombar">
-            {props.children}
-        </div>
+        <MobileArea>
+            <div className="p-2 flex flex-row md:hidden h-bottombar">
+                {props.children}
+            </div>
+        </MobileArea>
     )
 }
 

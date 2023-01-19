@@ -46,10 +46,15 @@ export const tabSlice = createSlice({
         },
         setCurrentTab: (state, action: PayloadAction<string>) => {
             state.currentTabIndex = action.payload
+        },
+        setTabTitle: (state, action: PayloadAction<TabItem>) => {
+            const index = state.tabList.findIndex((item) => item.path === action.payload.path)
+            if (index === -1) return
+            state.tabList[index].title = action.payload.title
         }
     },
 })
 
-export const { addTab, removeTab, setCurrentTab } = tabSlice.actions
+export const { addTab, removeTab, setCurrentTab, setTabTitle } = tabSlice.actions
 
 export default tabSlice.reducer

@@ -2219,6 +2219,11 @@ caniuse-lite@^1.0.30001335, caniuse-lite@^1.0.30001359:
   resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001361.tgz#ba2adb2527566fb96f3ac7c67698ae7fc495a28d"
   integrity sha512-ybhCrjNtkFji1/Wto6SSJKkWk6kZgVQsDq5QI83SafsF6FXv2JB4df9eEdH6g8sdGgqTXrFLjAxqBGgYoU3azQ==
 
+ccount@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/ccount/-/ccount-2.0.1.tgz#17a3bf82302e0870d6da43a01311a8bc02a3ecf5"
+  integrity sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==
+
 chalk@^2.0.0, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.npmmirror.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
@@ -2933,6 +2938,11 @@ escape-string-regexp@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmmirror.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
+
+escape-string-regexp@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-5.0.0.tgz#4683126b500b61762f2dbebace1806e8be31b1c8"
+  integrity sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==
 
 eslint-plugin-react@^7.30.1:
   version "7.30.1"
@@ -4083,6 +4093,11 @@ lodash@^4.17.21:
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
+longest-streak@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/longest-streak/-/longest-streak-3.1.0.tgz#62fa67cd958742a1574af9f39866364102d90cd4"
+  integrity sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==
+
 loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmmirror.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -4127,6 +4142,11 @@ make-error@^1.1.1:
   resolved "https://registry.npmmirror.com/make-error/-/make-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"
   integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
 
+markdown-table@^3.0.0:
+  version "3.0.3"
+  resolved "https://registry.npmjs.org/markdown-table/-/markdown-table-3.0.3.tgz#e6331d30e493127e031dd385488b5bd326e4a6bd"
+  integrity sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==
+
 match-sorter@^6.0.2:
   version "6.3.1"
   resolved "https://registry.npmjs.org/match-sorter/-/match-sorter-6.3.1.tgz#98cc37fda756093424ddf3cbc62bfe9c75b92bda"
@@ -4143,6 +4163,15 @@ mdast-util-definitions@^5.0.0:
     "@types/mdast" "^3.0.0"
     "@types/unist" "^2.0.0"
     unist-util-visit "^4.0.0"
+
+mdast-util-find-and-replace@^2.0.0:
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/mdast-util-find-and-replace/-/mdast-util-find-and-replace-2.2.1.tgz#249901ef43c5f41d6e8a8d446b3b63b17e592d7c"
+  integrity sha512-SobxkQXFAdd4b5WmEakmkVoh18icjQRxGy5OWTCzgsLRm1Fu/KCtwD1HIQSsmq5ZRjVH0Ehwg6/Fn3xIUk+nKw==
+  dependencies:
+    escape-string-regexp "^5.0.0"
+    unist-util-is "^5.0.0"
+    unist-util-visit-parents "^5.0.0"
 
 mdast-util-from-markdown@^1.0.0:
   version "1.2.0"
@@ -4162,6 +4191,72 @@ mdast-util-from-markdown@^1.0.0:
     unist-util-stringify-position "^3.0.0"
     uvu "^0.5.0"
 
+mdast-util-gfm-autolink-literal@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/mdast-util-gfm-autolink-literal/-/mdast-util-gfm-autolink-literal-1.0.2.tgz#4032dcbaddaef7d4f2f3768ed830475bb22d3970"
+  integrity sha512-FzopkOd4xTTBeGXhXSBU0OCDDh5lUj2rd+HQqG92Ld+jL4lpUfgX2AT2OHAVP9aEeDKp7G92fuooSZcYJA3cRg==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    ccount "^2.0.0"
+    mdast-util-find-and-replace "^2.0.0"
+    micromark-util-character "^1.0.0"
+
+mdast-util-gfm-footnote@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/mdast-util-gfm-footnote/-/mdast-util-gfm-footnote-1.0.1.tgz#11d2d40a1a673a399c459e467fa85e00223191fe"
+  integrity sha512-p+PrYlkw9DeCRkTVw1duWqPRHX6Ywh2BNKJQcZbCwAuP/59B0Lk9kakuAd7KbQprVO4GzdW8eS5++A9PUSqIyw==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    mdast-util-to-markdown "^1.3.0"
+    micromark-util-normalize-identifier "^1.0.0"
+
+mdast-util-gfm-strikethrough@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/mdast-util-gfm-strikethrough/-/mdast-util-gfm-strikethrough-1.0.2.tgz#6b4fa4ae37d449ccb988192ac0afbb2710ffcefd"
+  integrity sha512-T/4DVHXcujH6jx1yqpcAYYwd+z5lAYMw4Ls6yhTfbMMtCt0PHY4gEfhW9+lKsLBtyhUGKRIzcUA2FATVqnvPDA==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    mdast-util-to-markdown "^1.3.0"
+
+mdast-util-gfm-table@^1.0.0:
+  version "1.0.6"
+  resolved "https://registry.npmjs.org/mdast-util-gfm-table/-/mdast-util-gfm-table-1.0.6.tgz#184e900979fe790745fc3dabf77a4114595fcd7f"
+  integrity sha512-uHR+fqFq3IvB3Rd4+kzXW8dmpxUhvgCQZep6KdjsLK4O6meK5dYZEayLtIxNus1XO3gfjfcIFe8a7L0HZRGgag==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    markdown-table "^3.0.0"
+    mdast-util-from-markdown "^1.0.0"
+    mdast-util-to-markdown "^1.3.0"
+
+mdast-util-gfm-task-list-item@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/mdast-util-gfm-task-list-item/-/mdast-util-gfm-task-list-item-1.0.1.tgz#6f35f09c6e2bcbe88af62fdea02ac199cc802c5c"
+  integrity sha512-KZ4KLmPdABXOsfnM6JHUIjxEvcx2ulk656Z/4Balw071/5qgnhz+H1uGtf2zIGnrnvDC8xR4Fj9uKbjAFGNIeA==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    mdast-util-to-markdown "^1.3.0"
+
+mdast-util-gfm@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/mdast-util-gfm/-/mdast-util-gfm-2.0.1.tgz#16fcf70110ae689a06d77e8f4e346223b64a0ea6"
+  integrity sha512-42yHBbfWIFisaAfV1eixlabbsa6q7vHeSPY+cg+BBjX51M8xhgMacqH9g6TftB/9+YkcI0ooV4ncfrJslzm/RQ==
+  dependencies:
+    mdast-util-from-markdown "^1.0.0"
+    mdast-util-gfm-autolink-literal "^1.0.0"
+    mdast-util-gfm-footnote "^1.0.0"
+    mdast-util-gfm-strikethrough "^1.0.0"
+    mdast-util-gfm-table "^1.0.0"
+    mdast-util-gfm-task-list-item "^1.0.0"
+    mdast-util-to-markdown "^1.0.0"
+
+mdast-util-phrasing@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/mdast-util-phrasing/-/mdast-util-phrasing-3.0.0.tgz#c44fcf6be61a3cb8da54ab2df22320e61d4537ce"
+  integrity sha512-S+QYsDRLkGi8U7o5JF1agKa/sdP+CNGXXLqC17pdTVL8FHHgQEiwFGa9yE5aYtUxNiFGYoaDy9V1kC85Sz86Gg==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    unist-util-is "^5.0.0"
+
 mdast-util-to-hast@^12.1.0:
   version "12.2.5"
   resolved "https://registry.npmjs.org/mdast-util-to-hast/-/mdast-util-to-hast-12.2.5.tgz#91532ebd929a7def21585034f7901eb367d2d272"
@@ -4177,7 +4272,21 @@ mdast-util-to-hast@^12.1.0:
     unist-util-position "^4.0.0"
     unist-util-visit "^4.0.0"
 
-mdast-util-to-string@^3.1.0:
+mdast-util-to-markdown@^1.0.0, mdast-util-to-markdown@^1.3.0:
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/mdast-util-to-markdown/-/mdast-util-to-markdown-1.5.0.tgz#c13343cb3fc98621911d33b5cd42e7d0731171c6"
+  integrity sha512-bbv7TPv/WC49thZPg3jXuqzuvI45IL2EVAr/KxF0BSdHsU0ceFHOmwQn6evxAh1GaoK/6GQ1wp4R4oW2+LFL/A==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    "@types/unist" "^2.0.0"
+    longest-streak "^3.0.0"
+    mdast-util-phrasing "^3.0.0"
+    mdast-util-to-string "^3.0.0"
+    micromark-util-decode-string "^1.0.0"
+    unist-util-visit "^4.0.0"
+    zwitch "^2.0.0"
+
+mdast-util-to-string@^3.0.0, mdast-util-to-string@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/mdast-util-to-string/-/mdast-util-to-string-3.1.0.tgz#56c506d065fbf769515235e577b5a261552d56e9"
   integrity sha512-n4Vypz/DZgwo0iMHLQL49dJzlp7YtAJP+N07MZHpjPf/5XJuHUWstviF4Mn2jEiR/GNmtnRRqnwsXExk3igfFA==
@@ -4202,7 +4311,7 @@ methods@^1.1.2:
   resolved "https://registry.npmmirror.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==
 
-micromark-core-commonmark@^1.0.1:
+micromark-core-commonmark@^1.0.0, micromark-core-commonmark@^1.0.1:
   version "1.0.6"
   resolved "https://registry.npmjs.org/micromark-core-commonmark/-/micromark-core-commonmark-1.0.6.tgz#edff4c72e5993d93724a3c206970f5a15b0585ad"
   integrity sha512-K+PkJTxqjFfSNkfAhp4GB+cZPfQd6dxtTXnf+RjZOV7T4EEXnvgzOcnp+eSTmpGk9d1S9sL6/lqrgSNn/s0HZA==
@@ -4223,6 +4332,86 @@ micromark-core-commonmark@^1.0.1:
     micromark-util-symbol "^1.0.0"
     micromark-util-types "^1.0.1"
     uvu "^0.5.0"
+
+micromark-extension-gfm-autolink-literal@^1.0.0:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/micromark-extension-gfm-autolink-literal/-/micromark-extension-gfm-autolink-literal-1.0.3.tgz#dc589f9c37eaff31a175bab49f12290edcf96058"
+  integrity sha512-i3dmvU0htawfWED8aHMMAzAVp/F0Z+0bPh3YrbTPPL1v4YAlCZpy5rBO5p0LPYiZo0zFVkoYh7vDU7yQSiCMjg==
+  dependencies:
+    micromark-util-character "^1.0.0"
+    micromark-util-sanitize-uri "^1.0.0"
+    micromark-util-symbol "^1.0.0"
+    micromark-util-types "^1.0.0"
+    uvu "^0.5.0"
+
+micromark-extension-gfm-footnote@^1.0.0:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/micromark-extension-gfm-footnote/-/micromark-extension-gfm-footnote-1.0.4.tgz#cbfd8873b983e820c494498c6dac0105920818d5"
+  integrity sha512-E/fmPmDqLiMUP8mLJ8NbJWJ4bTw6tS+FEQS8CcuDtZpILuOb2kjLqPEeAePF1djXROHXChM/wPJw0iS4kHCcIg==
+  dependencies:
+    micromark-core-commonmark "^1.0.0"
+    micromark-factory-space "^1.0.0"
+    micromark-util-character "^1.0.0"
+    micromark-util-normalize-identifier "^1.0.0"
+    micromark-util-sanitize-uri "^1.0.0"
+    micromark-util-symbol "^1.0.0"
+    micromark-util-types "^1.0.0"
+    uvu "^0.5.0"
+
+micromark-extension-gfm-strikethrough@^1.0.0:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/micromark-extension-gfm-strikethrough/-/micromark-extension-gfm-strikethrough-1.0.4.tgz#162232c284ffbedd8c74e59c1525bda217295e18"
+  integrity sha512-/vjHU/lalmjZCT5xt7CcHVJGq8sYRm80z24qAKXzaHzem/xsDYb2yLL+NNVbYvmpLx3O7SYPuGL5pzusL9CLIQ==
+  dependencies:
+    micromark-util-chunked "^1.0.0"
+    micromark-util-classify-character "^1.0.0"
+    micromark-util-resolve-all "^1.0.0"
+    micromark-util-symbol "^1.0.0"
+    micromark-util-types "^1.0.0"
+    uvu "^0.5.0"
+
+micromark-extension-gfm-table@^1.0.0:
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/micromark-extension-gfm-table/-/micromark-extension-gfm-table-1.0.5.tgz#7b708b728f8dc4d95d486b9e7a2262f9cddbcbb4"
+  integrity sha512-xAZ8J1X9W9K3JTJTUL7G6wSKhp2ZYHrFk5qJgY/4B33scJzE2kpfRL6oiw/veJTbt7jiM/1rngLlOKPWr1G+vg==
+  dependencies:
+    micromark-factory-space "^1.0.0"
+    micromark-util-character "^1.0.0"
+    micromark-util-symbol "^1.0.0"
+    micromark-util-types "^1.0.0"
+    uvu "^0.5.0"
+
+micromark-extension-gfm-tagfilter@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/micromark-extension-gfm-tagfilter/-/micromark-extension-gfm-tagfilter-1.0.1.tgz#fb2e303f7daf616db428bb6a26e18fda14a90a4d"
+  integrity sha512-Ty6psLAcAjboRa/UKUbbUcwjVAv5plxmpUTy2XC/3nJFL37eHej8jrHrRzkqcpipJliuBH30DTs7+3wqNcQUVA==
+  dependencies:
+    micromark-util-types "^1.0.0"
+
+micromark-extension-gfm-task-list-item@^1.0.0:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/micromark-extension-gfm-task-list-item/-/micromark-extension-gfm-task-list-item-1.0.3.tgz#7683641df5d4a09795f353574d7f7f66e47b7fc4"
+  integrity sha512-PpysK2S1Q/5VXi72IIapbi/jliaiOFzv7THH4amwXeYXLq3l1uo8/2Be0Ac1rEwK20MQEsGH2ltAZLNY2KI/0Q==
+  dependencies:
+    micromark-factory-space "^1.0.0"
+    micromark-util-character "^1.0.0"
+    micromark-util-symbol "^1.0.0"
+    micromark-util-types "^1.0.0"
+    uvu "^0.5.0"
+
+micromark-extension-gfm@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/micromark-extension-gfm/-/micromark-extension-gfm-2.0.1.tgz#40f3209216127a96297c54c67f5edc7ef2d1a2a2"
+  integrity sha512-p2sGjajLa0iYiGQdT0oelahRYtMWvLjy8J9LOCxzIQsllMCGLbsLW+Nc+N4vi02jcRJvedVJ68cjelKIO6bpDA==
+  dependencies:
+    micromark-extension-gfm-autolink-literal "^1.0.0"
+    micromark-extension-gfm-footnote "^1.0.0"
+    micromark-extension-gfm-strikethrough "^1.0.0"
+    micromark-extension-gfm-table "^1.0.0"
+    micromark-extension-gfm-tagfilter "^1.0.0"
+    micromark-extension-gfm-task-list-item "^1.0.0"
+    micromark-util-combine-extensions "^1.0.0"
+    micromark-util-types "^1.0.0"
 
 micromark-factory-destination@^1.0.0:
   version "1.0.0"
@@ -5545,6 +5734,16 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
+remark-gfm@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/remark-gfm/-/remark-gfm-3.0.1.tgz#0b180f095e3036545e9dddac0e8df3fa5cfee54f"
+  integrity sha512-lEFDoi2PICJyNrACFOfDD3JlLkuSbOa5Wd8EPt06HUdptv8Gn0bxYTdbU/XXQ3swAPkEaGxxPN9cbnMHvVu1Ig==
+  dependencies:
+    "@types/mdast" "^3.0.0"
+    mdast-util-gfm "^2.0.0"
+    micromark-extension-gfm "^2.0.0"
+    unified "^10.0.0"
+
 remark-parse@^10.0.0:
   version "10.0.1"
   resolved "https://registry.npmjs.org/remark-parse/-/remark-parse-10.0.1.tgz#6f60ae53edbf0cf38ea223fe643db64d112e0775"
@@ -6289,7 +6488,7 @@ unist-util-stringify-position@^3.0.0:
   dependencies:
     "@types/unist" "^2.0.0"
 
-unist-util-visit-parents@^5.1.1:
+unist-util-visit-parents@^5.0.0, unist-util-visit-parents@^5.1.1:
   version "5.1.1"
   resolved "https://registry.npmjs.org/unist-util-visit-parents/-/unist-util-visit-parents-5.1.1.tgz#868f353e6fce6bf8fa875b251b0f4fec3be709bb"
   integrity sha512-gks4baapT/kNRaWxuGkl5BIhoanZo7sC/cUT/JToSRNL1dYoXRFl75d++NkjYk4TAu2uv2Px+l8guMajogeuiw==
@@ -6599,3 +6798,8 @@ yn@3.1.1:
   version "3.1.1"
   resolved "https://registry.npmmirror.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
+
+zwitch@^2.0.0:
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/zwitch/-/zwitch-2.0.4.tgz#c827d4b0acb76fc3e685a4c6ec2902d51070e9d7"
+  integrity sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==

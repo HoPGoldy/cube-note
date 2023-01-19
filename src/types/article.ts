@@ -42,3 +42,18 @@ export enum TabTypes {
 export type ArticleMenuResp = {
     [key in TabTypes]: ArticleMenuItem[]
 }
+
+export interface ArticleContentResp {
+    id: string
+    title: string
+    content: string
+    createTime: number
+    updateTime: number
+    tagIds: string[]
+}
+
+export interface ArticleLinkResp {
+    parentArticleId?: string
+    childrenArticleIds: string[]
+    relatedArticleIds: string[]
+}

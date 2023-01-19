@@ -35,15 +35,28 @@ export const createRouter = (props: Props) => {
         response(ctx)
     })
 
+    const updateArticleSchema = Joi.object<Partial<AddArticlePostData>>({
+        title: Joi.string(),
+        content: Joi.string(),
+        parentId: Joi.string(),
+    })
+
     // 更新文章
     router.put('/update/:id', async ctx => {
-        response(ctx)
+        const { id } = ctx.params
+        const body = validate(ctx, updateArticleSchema)
+        if (!body) return
+
+        const resp = await service.updateArticle(id, body)
+        response(ctx, resp)
     })
 
     // 查询文章详情
     // 包含内容、标题等正文详情
     router.get('/get/content/:id', async ctx => {
-        response(ctx)
+        const { id } = ctx.params
+        const resp = await service.getArticleContent(id)
+        response(ctx, resp)
     })
 
     // 获取文章链接信息
