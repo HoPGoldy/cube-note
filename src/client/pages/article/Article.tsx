@@ -39,7 +39,7 @@ const About: FC = () => {
             title: articleResp.data.title,
             path: `/article/${params.articleId}`
         }))
-        setContent(visibleContent)
+        setContent(articleResp.data.content)
         setVisibleContent(articleResp.data.content)
     }, [articleResp])
 
@@ -73,9 +73,11 @@ const About: FC = () => {
         setSearchParams(searchParams)
     }
 
-    const saveEdit = () => {
+    const saveEdit = async () => {
         searchParams.delete('mode')
         setSearchParams(searchParams)
+        const resp = await updateArticle({ id: params.articleId as string, detail: { content } })
+        console.log('🚀 ~ file: Article.tsx:80 ~ saveEdit ~ resp', resp)
     }
 
     return (<>
