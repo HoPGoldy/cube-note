@@ -6,6 +6,7 @@ import { Navigate } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { usePostLoginMutation } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
+import { setCurrentArticle } from '../store/menu'
 import { login } from '../store/user'
 import { messageError, messageSuccess } from '../utils/message'
 
@@ -39,7 +40,9 @@ const Register = () => {
         }
 
         messageSuccess(`登录成功，欢迎回来，${resp?.data?.username}`)
-        dispatch(login(resp.data as LoginSuccessResp))
+        const userInfo = resp.data as LoginSuccessResp
+        dispatch(login(userInfo))
+        dispatch(setCurrentArticle(userInfo.rootArticleId))
     }
 
     if (userInfo) {

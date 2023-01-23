@@ -23,6 +23,7 @@ export const useTabControl = () => {
         if (index === -1) {
             dispatch(addTab({
                 path: location.pathname,
+                search: location.search,
                 title: routeName[location.pathname] || '新标签页'
             }))
         }

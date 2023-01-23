@@ -16,7 +16,7 @@ export const createRouter = (props: Props) => {
 
     const addArticleSchema = Joi.object<AddArticlePostData>({
         title: Joi.string().required(),
-        content: Joi.string().required(),
+        content: Joi.string().allow('').required(),
         parentId: Joi.string().required(),
     })
 
@@ -37,7 +37,7 @@ export const createRouter = (props: Props) => {
 
     const updateArticleSchema = Joi.object<Partial<AddArticlePostData>>({
         title: Joi.string(),
-        content: Joi.string(),
+        content: Joi.string().allow(''),
         parentId: Joi.string(),
     })
 
@@ -53,7 +53,7 @@ export const createRouter = (props: Props) => {
 
     // 查询文章详情
     // 包含内容、标题等正文详情
-    router.get('/get/content/:id', async ctx => {
+    router.get('/getContent/:id', async ctx => {
         const { id } = ctx.params
         const resp = await service.getArticleContent(id)
         response(ctx, resp)
@@ -61,8 +61,10 @@ export const createRouter = (props: Props) => {
 
     // 获取文章链接信息
     // 文章下属文章列表、相关文章列表
-    router.get('/get/link/:id', async ctx => {
-        response(ctx)
+    router.get('/getLink/:id', async ctx => {
+        const { id } = ctx.params
+        const resp = await service.getArticleLink(id)
+        response(ctx, resp)
     })
 
     // 批量设置文章的父文章
@@ -81,8 +83,10 @@ export const createRouter = (props: Props) => {
     })
 
     // 查询文章树
-    router.get('/tree', async ctx => {
-        response(ctx)
+    router.get('/tree/:rootArticleId', async ctx => {
+        const { rootArticleId } = ctx.params
+        const resp = await service.getArticleTree(rootArticleId)
+        response(ctx, resp)
     })
 
     return router

@@ -1,14 +1,17 @@
-import React, { FC, useState, useEffect, useMemo } from 'react'
+import React, { FC, useState, useEffect, useMemo, useRef } from 'react'
 import throttle from 'lodash/throttle'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
-import { useGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
+import { useAddArticleMutation, useLazyGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
 import { useAppDispatch } from '../../store'
-import { setTabTitle } from '../../store/tab'
+import { updateCurrentTabTitle } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import { DesktopArea } from '../../layouts/Responsive'
 import Preview from './Preview'
 import Editor from './Editor'
+import { messageInfo, messageSuccess, messageWarning } from '@/client/utils/message'
+import { STATUS_CODE } from '@/config'
+import { setCurrentArticle } from '@/client/store/menu'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -16,9 +19,15 @@ const About: FC = () => {
     const dispatch = useAppDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
     // 获取详情
-    const {data: articleResp, isLoading} = useGetArticleContentQuery(params.articleId as string)
+    const [fetchArticle, {data: articleResp, isLoading}] = useLazyGetArticleContentQuery()
     // 保存详情
     const [updateArticle, { isLoading: updatingArticle }] = useUpdateArticleMutation()
+    // 新增文章
+    const [addArticle, { isLoading: addingArticle }] = useAddArticleMutation()
+    // 标题输入框
+    const titleInputRef = useRef<HTMLInputElement>(null)
+    // 正在编辑的标题内容
+    const [title, setTitle] = useState('')
     // 正在编辑的文本内容
     const [content, setContent] = useState('')
     // 渲染的内容
@@ -26,31 +35,60 @@ const About: FC = () => {
     // 编辑时的节流
     const onContentChangeThrottle = useMemo(() => throttle(setVisibleContent, 1000), [])
     // 页面是否在编辑中
-    const isEdit = searchParams.get('mode') === 'edit'
+    const isEdit = (searchParams.get('mode') === 'edit')
 
     useEffect(() => {
         onContentChangeThrottle(content)
     }, [content, onContentChangeThrottle])
 
     useEffect(() => {
+        if (!params.articleId) {
+            return
+        }
+        fetchArticle(params.articleId)
+        dispatch(setCurrentArticle(params.articleId))
+    }, [params.articleId])
+
+    useEffect(() => {
         if (!articleResp?.data) return
-        
-        dispatch(setTabTitle({
-            title: articleResp.data.title,
-            path: `/article/${params.articleId}`
-        }))
+
+        dispatch(updateCurrentTabTitle(articleResp.data.title))
+        setTitle(articleResp.data.title)
         setContent(articleResp.data.content)
         setVisibleContent(articleResp.data.content)
     }, [articleResp])
+
+    const saveEdit = async () => {
+        if (!title) {
+            messageWarning('标题不能为空')
+            return
+        }
+        const resp = await updateArticle({ id: params.articleId as string, detail: { title, content } }).unwrap()
+        if (resp.code !== STATUS_CODE.SUCCESS) return
+        messageSuccess('保存成功')
+        dispatch(updateCurrentTabTitle(title))
+    }
+
+    const endEdit = async () => {
+        searchParams.delete('mode')
+        setSearchParams(searchParams)
+    }
 
     const renderContent = () => {
         if (isLoading) return <Loading tip='信息加载中...' />
 
         return (
             <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
-                <div>
-                    {articleResp?.data?.title}
-                </div>
+                <input
+                    ref={titleInputRef}
+                    value={title}
+                    disabled={!isEdit}
+                    onChange={e => setTitle(e.target.value)}
+                    onKeyUp={e => e.key === 'Enter' && titleInputRef.current?.blur()}
+                    onBlur={saveEdit}
+                    placeholder="请输入笔记名"
+                    className='font-bold dark:text-slate-200 text-xl bg-inherit mb-4 w-full'
+                />
 
                 <div className='flex md:flex-row flex-col flex-nowrap'>
                     {isEdit && (
@@ -73,11 +111,17 @@ const About: FC = () => {
         setSearchParams(searchParams)
     }
 
-    const saveEdit = async () => {
-        searchParams.delete('mode')
-        setSearchParams(searchParams)
-        const resp = await updateArticle({ id: params.articleId as string, detail: { content } })
-        console.log('🚀 ~ file: Article.tsx:80 ~ saveEdit ~ resp', resp)
+    const createArticle = async () => {
+        const title = `新笔记-${new Date().toLocaleString()}`
+        const resp = await addArticle({
+            title,
+            content: '',
+            parentId: params.articleId as string
+        }).unwrap()
+        console.log('resp', resp)
+        if (!resp.data) return
+
+        navigate(`/article/${resp.data}?mode=edit`)
     }
 
     return (<>
@@ -92,14 +136,20 @@ const About: FC = () => {
         <DesktopArea>
             <div className='fixed bottom-0 right-0 m-4'>
                 {isEdit ? (
-                    <div className='cursor-pointer' onClick={saveEdit}>
+                    <div className='cursor-pointer' onClick={async () => {
+                        await saveEdit()
+                        await endEdit()
+                    }}>
                         保存
                     </div>
-                ) : (
+                ) : (<>
+                    <div className='cursor-pointer' onClick={createArticle}>
+                        新增笔记
+                    </div>
                     <div className='cursor-pointer' onClick={startEdit}>
                         编辑
                     </div>
-                )}
+                </>)}
             </div>
         </DesktopArea>
     </>)

@@ -4,20 +4,17 @@ export interface ArticleStorage {
     createTime: number
     updateTime: number
     /**
-     * 父级文章 id
+     * 祖先文章 id 列表
      * 如果是跟节点的话，就没有这个属性
+     * 会包含当前文章的所有祖先节点
      */
-    parentArticleId?: string
+    parentArticleIds: string[]
     /**
-     * 下属文章 id
-     */
-    childrenArticleIds: string[]
-    /**
-     * 相关文章 id
+     * 相关文章 id 列表
      */
     relatedArticleIds: string[]
     /**
-     * 相关 tag id
+     * 相关 tag id 列表
      */
     tagIds: string[]
 }
@@ -29,7 +26,7 @@ export interface AddArticlePostData {
 }
 
 export interface ArticleMenuItem {
-    id: string
+    _id: string
     title: string
 }
 
@@ -44,7 +41,7 @@ export type ArticleMenuResp = {
 }
 
 export interface ArticleContentResp {
-    id: string
+    _id: string
     title: string
     content: string
     createTime: number
@@ -53,7 +50,13 @@ export interface ArticleContentResp {
 }
 
 export interface ArticleLinkResp {
-    parentArticleId?: string
-    childrenArticleIds: string[]
-    relatedArticleIds: string[]
+    childrenArticles: ArticleMenuItem[]
+    relatedArticles: ArticleMenuItem[]
+}
+
+export interface ArticleTreeNode {
+    key: string
+    label: string
+    children?: ArticleTreeNode[]
+    onTitleClick?: (args: { key: string }) => void
 }

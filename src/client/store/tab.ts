@@ -7,6 +7,10 @@ export interface TabItem {
      */
     path: string
     /**
+     * 选项卡对应的查询参数
+     */
+    search?: string
+    /**
      * 显示在标签选项卡上的文字
      */
     title: string
@@ -47,14 +51,14 @@ export const tabSlice = createSlice({
         setCurrentTab: (state, action: PayloadAction<string>) => {
             state.currentTabIndex = action.payload
         },
-        setTabTitle: (state, action: PayloadAction<TabItem>) => {
-            const index = state.tabList.findIndex((item) => item.path === action.payload.path)
-            if (index === -1) return
-            state.tabList[index].title = action.payload.title
+        updateCurrentTabTitle: (state, action: PayloadAction<string>) => {
+            const index = state.tabList.findIndex((item) => item.path === state.currentTabIndex)
+            if (index === -1 || state.tabList[index].title === action.payload) return
+            state.tabList[index].title = action.payload
         }
     },
 })
 
-export const { addTab, removeTab, setCurrentTab, setTabTitle } = tabSlice.actions
+export const { addTab, removeTab, setCurrentTab, updateCurrentTabTitle } = tabSlice.actions
 
 export default tabSlice.reducer

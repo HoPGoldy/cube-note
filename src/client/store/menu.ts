@@ -1,9 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { ArticleMenuResp, TabTypes } from '@/types/article'
+import { ArticleLinkResp, ArticleMenuItem, ArticleMenuResp, TabTypes } from '@/types/article'
 
 type State = ArticleMenuResp & {
+    /**
+     * 当前选中的哪个标签
+     */
     currentTab: TabTypes
+    /**
+     * 当前显示的哪个文章
+     */
+    currentArticleId: string
 }
 
 const initialState: State = {
@@ -11,23 +18,29 @@ const initialState: State = {
     [TabTypes.Link]: [],
     [TabTypes.Favorite]: [],
     currentTab: TabTypes.Sub,
+    currentArticleId: ''
 }
 
 export const menuSlice = createSlice({
     name: 'menu',
     initialState,
     reducers: {
-        setMenu: (state, action: PayloadAction<ArticleMenuResp>) => {
-            state[TabTypes.Sub] = action.payload[TabTypes.Sub]
-            state[TabTypes.Link] = action.payload[TabTypes.Link]
-            state[TabTypes.Favorite] = action.payload[TabTypes.Favorite]
+        setLinkMenu: (state, action: PayloadAction<ArticleLinkResp>) => {
+            state[TabTypes.Sub] = action.payload.childrenArticles
+            state[TabTypes.Link] = action.payload.relatedArticles
+        },
+        setFavoriteMenu: (state, action: PayloadAction<ArticleMenuItem[]>) => {
+            state[TabTypes.Favorite] = action.payload
         },
         setCurrentMenu: (state, action: PayloadAction<TabTypes>) => {
             state.currentTab = action.payload
+        },
+        setCurrentArticle: (state, action: PayloadAction<string>) => {
+            state.currentArticleId = action.payload
         }
     },
 })
 
-export const { setMenu, setCurrentMenu } = menuSlice.actions
+export const { setLinkMenu, setFavoriteMenu, setCurrentMenu, setCurrentArticle } = menuSlice.actions
 
 export default menuSlice.reducer

@@ -82,7 +82,7 @@ export const createService = (props: Props) => {
             return { code: STATUS_CODE.ALREADY_REGISTER, msg: '已经注册' }
         }
 
-        const createResp = await addArticle('记事本', '第一个笔记')
+        const createResp = await addArticle('首页', '第一个笔记')
         if (!createResp.data) {
             return createResp
         }

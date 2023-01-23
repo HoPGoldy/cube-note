@@ -9,11 +9,9 @@ export const AppContainer = () => {
 
     return (
         <div className='flex'>
-            <DesktopArea>
-                <aside className='h-screen w-sidebar hidden md:block'>
-                    <Sidebar />
-                </aside>
-            </DesktopArea>
+            <aside className='h-screen w-sidebar hidden md:block'>
+                <Sidebar />
+            </aside>
             <main className='h-screen flex-grow box-border md:pt-[40px]'>
                 <DesktopArea>
                     <nav className='h-[40px] mt-[-40px]'>

@@ -11,7 +11,7 @@ interface Props {
 
 export const createRouter = (props: Props) => {
     const { service } = props
-    const router = new Router<any, AppKoaContext>({ prefix: '/article' })
+    const router = new Router<any, AppKoaContext>({ prefix: '/tag' })
 
     const addSchema = Joi.object<{ title: string }>({
         title: Joi.string().required()

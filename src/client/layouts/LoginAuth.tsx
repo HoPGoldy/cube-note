@@ -4,6 +4,7 @@ import React, { FC, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useLazyGetUserInfoQuery } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
+import { setCurrentArticle } from '../store/menu'
 import { login } from '../store/user'
 import Loading from './Loading'
 
@@ -20,7 +21,9 @@ export const LoginAuth: FC = ({ children }) => {
 
     useEffect(() => {
         if (!userInfoResp || userInfoResp.code !== STATUS_CODE.SUCCESS) return
-        dispatch(login(userInfoResp.data as LoginSuccessResp))
+        const userInfo = userInfoResp.data as LoginSuccessResp
+        dispatch(login(userInfo))
+        dispatch(setCurrentArticle(userInfo.rootArticleId))
     }, [userInfoResp])
 
     if ((!userInfo && !token) || userInfoResp?.code === 401) {
