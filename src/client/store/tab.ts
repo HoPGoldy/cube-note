@@ -40,13 +40,11 @@ export const tabSlice = createSlice({
             state.tabList.push(action.payload)
             state.currentTabIndex = action.payload.path
         },
+        // 移除时不需要手动调整当前 currentTab，因为在 TopTab 组件里会 useEffect 自动调整
         removeTab: (state, action: PayloadAction<string>) => {
             const index = state.tabList.findIndex((item) => item.path === action.payload)
             if (index === -1) return
             state.tabList.splice(index, 1)
-            if (action.payload === state.currentTabIndex) {
-                state.currentTabIndex = state.tabList[index- 1].path
-            }
         },
         setCurrentTab: (state, action: PayloadAction<string>) => {
             state.currentTabIndex = action.payload

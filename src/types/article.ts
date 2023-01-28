@@ -25,6 +25,15 @@ export interface AddArticlePostData {
     parentId: string
 }
 
+export type UpdateArticlePostData = Partial<AddArticlePostData> & {
+    id: string
+}
+
+export interface DeleteArticleMutation {
+    id: string
+    force: boolean
+}
+
 export interface ArticleMenuItem {
     _id: string
     title: string
@@ -50,6 +59,8 @@ export interface ArticleContentResp {
 }
 
 export interface ArticleLinkResp {
+    parentArticleId: string
+    parentArticleTitle: string
     childrenArticles: ArticleMenuItem[]
     relatedArticles: ArticleMenuItem[]
 }

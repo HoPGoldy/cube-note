@@ -4,7 +4,7 @@ import { response } from '@/server/utils'
 import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { AddArticlePostData } from '@/types/article'
+import { AddArticlePostData, DeleteArticleMutation, UpdateArticlePostData } from '@/types/article'
 
 interface Props {
     service: ArticleService
@@ -30,30 +30,39 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    // 删除文章
-    router.delete('/remove/:id', async ctx => {
-        response(ctx)
+    const removeArticleSchema = Joi.object<DeleteArticleMutation>({
+        id: Joi.string().required(),
+        force: Joi.boolean().required(),
     })
 
-    const updateArticleSchema = Joi.object<Partial<AddArticlePostData>>({
+    // 删除文章
+    router.post('/remove', async ctx => {
+        const body = validate(ctx, removeArticleSchema)
+        if (!body) return
+
+        const resp = await service.removeArticle(body.id, body.force)
+        response(ctx, resp)
+    })
+
+    const updateArticleSchema = Joi.object<UpdateArticlePostData>({
+        id: Joi.string(),
         title: Joi.string(),
         content: Joi.string().allow(''),
         parentId: Joi.string(),
     })
 
     // 更新文章
-    router.put('/update/:id', async ctx => {
-        const { id } = ctx.params
+    router.put('/update', async ctx => {
         const body = validate(ctx, updateArticleSchema)
         if (!body) return
 
-        const resp = await service.updateArticle(id, body)
+        const resp = await service.updateArticle(body)
         response(ctx, resp)
     })
 
     // 查询文章详情
     // 包含内容、标题等正文详情
-    router.get('/getContent/:id', async ctx => {
+    router.get('/:id/getContent', async ctx => {
         const { id } = ctx.params
         const resp = await service.getArticleContent(id)
         response(ctx, resp)
@@ -61,7 +70,7 @@ export const createRouter = (props: Props) => {
 
     // 获取文章链接信息
     // 文章下属文章列表、相关文章列表
-    router.get('/getLink/:id', async ctx => {
+    router.get('/:id/getLink', async ctx => {
         const { id } = ctx.params
         const resp = await service.getArticleLink(id)
         response(ctx, resp)
@@ -83,7 +92,7 @@ export const createRouter = (props: Props) => {
     })
 
     // 查询文章树
-    router.get('/tree/:rootArticleId', async ctx => {
+    router.get('/:rootArticleId/tree', async ctx => {
         const { rootArticleId } = ctx.params
         const resp = await service.getArticleTree(rootArticleId)
         response(ctx, resp)

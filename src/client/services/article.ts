@@ -1,31 +1,49 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { AddArticlePostData, ArticleContentResp, ArticleLinkResp, ArticleTreeNode } from '@/types/article'
+import { AddArticlePostData, ArticleContentResp, ArticleLinkResp, ArticleTreeNode, DeleteArticleMutation, UpdateArticlePostData } from '@/types/article'
+import { TagDescription } from '@reduxjs/toolkit/dist/query'
 
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         getArticleContent: build.query<AppResponse<ArticleContentResp>, string>({
-            query: (id) => `article/getContent/${id}`,
+            query: (id) => `article/${id}/getContent`,
+            providesTags: (res, err, id) => [{ type: 'articleContent', id }]
         }),
         getArticleLink: build.query<AppResponse<ArticleLinkResp>, string>({
-            query: (id) => `article/getLink/${id}`,
+            query: (id) => `article/${id}/getLink`,
+            providesTags: (res, err, id) => [{ type: 'articleLink', id }]
         }),
-        updateArticle: build.mutation<AppResponse, { id: string, detail: Partial<AddArticlePostData> }>({
-            query: ({ id, detail }) => ({
-                url: `article/update/${id}`,
+        updateArticle: build.mutation<AppResponse, UpdateArticlePostData>({
+            query: detail => ({
+                url: 'article/update',
                 method: 'PUT',
                 body: detail
-            })
+            }),
+            invalidatesTags: (res, err, { id }) => [{ type: 'articleContent', id }, { type: 'articleLink', id }, 'menu']
         }),
         addArticle: build.mutation<AppResponse<string>, AddArticlePostData>({
             query: (detail) => ({
                 url: 'article/add',
                 method: 'POST',
                 body: detail
-            })
+            }),
+            invalidatesTags: (res, err, { parentId }) => [{ type: 'articleLink', parentId }, 'menu']
+        }),
+        deleteArticle: build.mutation<AppResponse<string>, DeleteArticleMutation>({
+            query: (detail) => ({
+                url: 'article/remove',
+                method: 'POST',
+                body: detail
+            }),
+            invalidatesTags: (res, err) => {
+                const tags: TagDescription<any>[] = ['menu']
+                if (res?.data) tags.push({ type: 'articleLink', id: res.data })
+                return tags
+            }
         }),
         getArticleTree: build.query<AppResponse<ArticleTreeNode[]>, string | undefined>({
-            query: (id) => `article/tree/${id}`,
+            query: (id) => `article/${id}/tree`,
+            providesTags: ['menu']
         }),
     })
 })
@@ -35,5 +53,6 @@ export const {
     useUpdateArticleMutation,
     useAddArticleMutation,
     useGetArticleTreeQuery,
-    useGetArticleLinkQuery
+    useGetArticleLinkQuery,
+    useDeleteArticleMutation
 } = extendedApi

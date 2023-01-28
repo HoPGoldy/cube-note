@@ -3,9 +3,9 @@ import { Menu } from 'antd'
 import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentMenu, setLinkMenu } from '../store/menu'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
-import { useGetArticleLinkQuery, useGetArticleTreeQuery } from '../services/article'
+import { useAddArticleMutation, useGetArticleLinkQuery, useGetArticleTreeQuery } from '../services/article'
 import { cloneDeep } from 'lodash'
 
 interface TabDetail {
@@ -29,17 +29,34 @@ export const Sidebar: FC = () => {
     const currentMenu = useAppSelector(s => s.menu[currentTab])
     const currentRootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     const currentArticleId = useAppSelector(s => s.menu.currentArticleId)
+    const parentArticleId = useAppSelector(s => s.menu.parentArticleId)
+    const parentArticleTitle = useAppSelector(s => s.menu.parentArticleTitle)
+
     const { data: articleTree, isLoading: treeLoading } = useGetArticleTreeQuery(currentRootArticleId, {
         skip: !currentRootArticleId
     })
-    const { data: articleLink, isLoading: linkLoading } = useGetArticleLinkQuery(currentArticleId, {
+    const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId, {
         skip: !currentArticleId
     })
+    // 新增文章
+    const [addArticle, { isLoading: addingArticle }] = useAddArticleMutation()
 
     const selectedKeys = useMemo(() => [currentArticleId], [currentArticleId])
 
     const onClickTreeItem = ({ key }: { key: string }) => {
         navigate(`/article/${key}`)
+    }
+
+    const createArticle = async () => {
+        const title = `新笔记-${new Date().toLocaleString()}`
+        const resp = await addArticle({
+            title,
+            content: '',
+            parentId: currentArticleId
+        }).unwrap()
+        if (!resp.data) return
+
+        navigate(`/article/${resp.data}?mode=edit`)
     }
 
     useEffect(() => {
@@ -92,10 +109,53 @@ export const Sidebar: FC = () => {
         )
     }
 
+    const renderSubMenu = () => {
+        if (linkLoading) return <div className='text-center'>加载中...</div>
+
+        return (<>
+            {parentArticleId && (
+                <Link to={`/article/${parentArticleId}`}>
+                    <div
+                        className={menuItemClassname + ' text-center'}
+                    >返回{parentArticleTitle}</div>
+                </Link>
+            )}
+            {(!currentMenu || currentMenu.length === 0)
+                ? (<div className='text-center'>暂无笔记</div>)
+                : currentMenu.map(renderMenuItem)
+            }
+            <div
+                className={menuItemClassname + ' text-center'}
+                onClick={createArticle}
+            >创建子笔记</div>
+        </>)
+    }
+
+    const renderLinkMenu = () => {
+        return (<>123</>)
+    }
+
+    const renderFavoriteMenu = () => {
+        return (<>666</>)
+    }
+
+    const renderCurrentMenu = () => {
+        switch (currentTab) {
+        case TabTypes.Sub:
+            return renderSubMenu()
+        case TabTypes.Link:
+            return renderLinkMenu()
+        case TabTypes.Favorite:
+            return renderFavoriteMenu()
+        default:
+            return null
+        }
+    }
+
     return (
         <DesktopArea>
             <section className='
-                p-4 transition h-screen overflow-y-auto 
+                p-4 transition h-screen overflow-y-auto flex flex-col flex-nowrap 
                 bg-slate-700 dark:bg-slate-900 text-white dark:text-gray-200
             '>
                 <div className='flex justify-between font-bold text-lg h-[44px] leading-[44px]'>
@@ -109,9 +169,8 @@ export const Sidebar: FC = () => {
                 <div className='flex justify-between'>
                     {tabOptions.map(renderTabBtn)}
                 </div>
-                <div>
-                    {(currentMenu || []).map(renderMenuItem)}
-                    <div className={menuItemClassname + ' text-center'}>创建</div>
+                <div className='mt-2 flex-grow'>
+                    {renderCurrentMenu()}
                 </div>
                 <Menu
                     mode='vertical'

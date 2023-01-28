@@ -11,12 +11,22 @@ type State = ArticleMenuResp & {
      * 当前显示的哪个文章
      */
     currentArticleId: string
+    /**
+     * 父文章 id
+     */
+    parentArticleId: string
+    /**
+     * 父文章标题
+     */
+    parentArticleTitle: string
 }
 
 const initialState: State = {
     [TabTypes.Sub]: [],
     [TabTypes.Link]: [],
     [TabTypes.Favorite]: [],
+    parentArticleId: '',
+    parentArticleTitle: '',
     currentTab: TabTypes.Sub,
     currentArticleId: ''
 }
@@ -28,6 +38,8 @@ export const menuSlice = createSlice({
         setLinkMenu: (state, action: PayloadAction<ArticleLinkResp>) => {
             state[TabTypes.Sub] = action.payload.childrenArticles
             state[TabTypes.Link] = action.payload.relatedArticles
+            state.parentArticleId = action.payload.parentArticleId
+            state.parentArticleTitle = action.payload.parentArticleTitle
         },
         setFavoriteMenu: (state, action: PayloadAction<ArticleMenuItem[]>) => {
             state[TabTypes.Favorite] = action.payload

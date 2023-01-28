@@ -1,5 +1,5 @@
 import { Collection, ObjectId, WithId } from 'mongodb'
-import { AddArticlePostData, ArticleLinkResp, ArticleMenuItem, ArticleStorage, ArticleTreeNode } from '@/types/article'
+import { AddArticlePostData, ArticleLinkResp, ArticleMenuItem, ArticleStorage, ArticleTreeNode, UpdateArticlePostData } from '@/types/article'
 import { cloneDeep } from 'lodash'
 
 interface Props {
@@ -42,13 +42,43 @@ export const createService = (props: Props) => {
     /**
      * 删除文章
      */
-    const removeArticle = async (id: string) => {
-
-    }
-
-    const updateArticle = async (id: string, detail: Partial<AddArticlePostData>) => {
+    const removeArticle = async (id: string, force: boolean) => {
         const articleCollection = getArticleCollection()
         const _id = new ObjectId(id)
+        const article = await articleCollection.findOne({ _id })
+        if (!article) {
+            return { code: 200 }
+        }
+
+        const childrenArticleIds = [
+            ...article.parentArticleIds,
+            id
+        ]
+
+        const childrenArticles = await articleCollection.find({
+            parentArticleIds: { $eq: childrenArticleIds }
+        }, {
+            projection: { title: 1 }
+        }).toArray()
+
+        const deleteIds = [_id]
+
+        if (childrenArticles.length > 0) {
+            if (!force) return { code: 400, msg: '包含子条目，无法删除' }
+            deleteIds.push(...childrenArticles.map(item => item._id))
+        }
+
+        await articleCollection.deleteMany({
+            _id: { $in: deleteIds }
+        })
+
+        // 返回父级文章 id，删除后会跳转至这个文章
+        return { code: 200, data: article.parentArticleIds[article.parentArticleIds.length - 1] }
+    }
+
+    const updateArticle = async (detail: UpdateArticlePostData) => {
+        const articleCollection = getArticleCollection()
+        const _id = new ObjectId(detail.id)
         const article = await articleCollection.findOne({ _id })
         if (!article) {
             return { code: 400, msg: '文章不存在' }
@@ -103,7 +133,13 @@ export const createService = (props: Props) => {
             id
         ]
 
-        const queryPromises = [
+        const parentArticleId = article.parentArticleIds[article.parentArticleIds.length - 1]
+
+        const queryPromises: [
+            Promise<WithId<ArticleStorage>[]>,
+            Promise<WithId<ArticleStorage>[]>,
+            Promise<WithId<ArticleStorage> | null>
+        ] = [
             articleCollection.find({
                 parentArticleIds: { $eq: targetArticleIds }
             }, {
@@ -113,12 +149,15 @@ export const createService = (props: Props) => {
                 _id: { $all: article.relatedArticleIds }
             }, {
                 projection: { title: 1 }
-            }).toArray()
+            }).toArray(),
+            articleCollection.findOne({
+                _id: new ObjectId(parentArticleId)
+            }, {
+                projection: { title: 1 }
+            })
         ]
 
-        const [childrenArticles, relatedArticles] = await Promise.all(queryPromises)
-
-        console.log('relatedArticles', relatedArticles)
+        const [childrenArticles, relatedArticles, parentArticle] = await Promise.all(queryPromises)
 
         const formatItem = (item: WithId<ArticleStorage>) => ({
             title: item.title,
@@ -126,6 +165,8 @@ export const createService = (props: Props) => {
         })
 
         const data: ArticleLinkResp = {
+            parentArticleId: parentArticleId,
+            parentArticleTitle: parentArticle?.title || '',
             childrenArticles: childrenArticles.map(formatItem),
             relatedArticles: relatedArticles.map(formatItem),
         }
@@ -176,7 +217,7 @@ export const createService = (props: Props) => {
         return { code: 200, data: arrayToTree(rootId, articles) }
     }
 
-    return { addArticle, getArticleContent, updateArticle, getArticleLink, getArticleTree }
+    return { addArticle, getArticleContent, updateArticle, getArticleLink, getArticleTree, removeArticle }
 }
 
 export type ArticleService = ReturnType<typeof createService>

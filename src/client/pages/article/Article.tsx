@@ -2,9 +2,9 @@ import React, { FC, useState, useEffect, useMemo, useRef } from 'react'
 import throttle from 'lodash/throttle'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
-import { useAddArticleMutation, useLazyGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
-import { useAppDispatch } from '../../store'
-import { updateCurrentTabTitle } from '../../store/tab'
+import { useAddArticleMutation, useDeleteArticleMutation, useLazyGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
+import { useAppDispatch, useAppSelector } from '../../store'
+import { removeTab, updateCurrentTabTitle } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import { DesktopArea } from '../../layouts/Responsive'
 import Preview from './Preview'
@@ -12,6 +12,7 @@ import Editor from './Editor'
 import { messageInfo, messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
+import DeleteBtn from './DeleteBtn'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -22,8 +23,8 @@ const About: FC = () => {
     const [fetchArticle, {data: articleResp, isLoading}] = useLazyGetArticleContentQuery()
     // 保存详情
     const [updateArticle, { isLoading: updatingArticle }] = useUpdateArticleMutation()
-    // 新增文章
-    const [addArticle, { isLoading: addingArticle }] = useAddArticleMutation()
+    // 根节点文章
+    const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     // 标题输入框
     const titleInputRef = useRef<HTMLInputElement>(null)
     // 正在编辑的标题内容
@@ -33,21 +34,23 @@ const About: FC = () => {
     // 渲染的内容
     const [visibleContent, setVisibleContent] = useState('')
     // 编辑时的节流
-    const onContentChangeThrottle = useMemo(() => throttle(setVisibleContent, 1000), [])
+    const onContentChangeThrottle = useMemo(() => throttle(setVisibleContent, 500), [])
     // 页面是否在编辑中
     const isEdit = (searchParams.get('mode') === 'edit')
+    // 当前文章 id
+    const currentArticleId = params.articleId as string
 
     useEffect(() => {
         onContentChangeThrottle(content)
     }, [content, onContentChangeThrottle])
 
     useEffect(() => {
-        if (!params.articleId) {
+        if (!currentArticleId) {
             return
         }
-        fetchArticle(params.articleId)
-        dispatch(setCurrentArticle(params.articleId))
-    }, [params.articleId])
+        fetchArticle(currentArticleId)
+        dispatch(setCurrentArticle(currentArticleId))
+    }, [currentArticleId])
 
     useEffect(() => {
         if (!articleResp?.data) return
@@ -63,8 +66,10 @@ const About: FC = () => {
             messageWarning('标题不能为空')
             return
         }
-        const resp = await updateArticle({ id: params.articleId as string, detail: { title, content } }).unwrap()
+
+        const resp = await updateArticle({ id: currentArticleId, title, content }).unwrap()
         if (resp.code !== STATUS_CODE.SUCCESS) return
+
         messageSuccess('保存成功')
         dispatch(updateCurrentTabTitle(title))
     }
@@ -79,16 +84,22 @@ const About: FC = () => {
 
         return (
             <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
-                <input
-                    ref={titleInputRef}
-                    value={title}
-                    disabled={!isEdit}
-                    onChange={e => setTitle(e.target.value)}
-                    onKeyUp={e => e.key === 'Enter' && titleInputRef.current?.blur()}
-                    onBlur={saveEdit}
-                    placeholder="请输入笔记名"
-                    className='font-bold dark:text-slate-200 text-xl bg-inherit mb-4 w-full'
-                />
+                <div className="flex">
+                    <input
+                        ref={titleInputRef}
+                        value={title}
+                        disabled={!isEdit}
+                        onChange={e => setTitle(e.target.value)}
+                        onKeyUp={e => e.key === 'Enter' && titleInputRef.current?.blur()}
+                        onBlur={saveEdit}
+                        placeholder="请输入笔记名"
+                        className='font-bold dark:text-slate-200 text-xl bg-inherit mb-4 w-full'
+                    />
+                    {currentArticleId !== rootArticleId && <DeleteBtn
+                        title={title}
+                        currentArticleId={currentArticleId}
+                    />}
+                </div>
 
                 <div className='flex md:flex-row flex-col flex-nowrap'>
                     {isEdit && (
@@ -111,19 +122,6 @@ const About: FC = () => {
         setSearchParams(searchParams)
     }
 
-    const createArticle = async () => {
-        const title = `新笔记-${new Date().toLocaleString()}`
-        const resp = await addArticle({
-            title,
-            content: '',
-            parentId: params.articleId as string
-        }).unwrap()
-        console.log('resp', resp)
-        if (!resp.data) return
-
-        navigate(`/article/${resp.data}?mode=edit`)
-    }
-
     return (<>
         <PageContent>
             {renderContent()}
@@ -143,9 +141,6 @@ const About: FC = () => {
                         保存
                     </div>
                 ) : (<>
-                    <div className='cursor-pointer' onClick={createArticle}>
-                        新增笔记
-                    </div>
                     <div className='cursor-pointer' onClick={startEdit}>
                         编辑
                     </div>
