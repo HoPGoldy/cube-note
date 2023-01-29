@@ -46,7 +46,7 @@ export const middlewareJwt = jwtKoa({ secret: getJwtSecretKey })
  */
 export const createToken = async (payload: Record<string, any> = {}) => {
     const secret = await getJwtSecretKey()
-    return jwt.sign(payload, secret, { expiresIn: '30m' })
+    return jwt.sign(payload, secret, { expiresIn: '30d' })
 }
 
 /**

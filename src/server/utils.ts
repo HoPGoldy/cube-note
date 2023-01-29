@@ -32,7 +32,6 @@ export const response = (ctx: Context, { code, msg, data }: AppResponse = initia
  */
 export const validate = <T>(ctx: Context, schema: Joi.ObjectSchema<T>) => {
     const { error, value } = schema.validate(ctx.method === 'GET' ? ctx.request.query : ctx.request.body)
-    console.log('ctx.method === \'GET\' ? ctx.', ctx.body)
     if (!value || error) {
         response(ctx, { code: 400, msg: '参数异常' })
         console.log('参数异常', error)

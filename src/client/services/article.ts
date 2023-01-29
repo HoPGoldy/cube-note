@@ -1,6 +1,9 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { AddArticlePostData, ArticleContentResp, ArticleLinkResp, ArticleTreeNode, DeleteArticleMutation, UpdateArticlePostData } from '@/types/article'
+import {
+    AddArticlePostData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp, ArticleTreeNode, DeleteArticleMutation,
+    UpdateArticlePostData
+} from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
 
 const extendedApi = baseApi.injectEndpoints({
@@ -29,7 +32,7 @@ const extendedApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: (res, err, { parentId }) => [{ type: 'articleLink', parentId }, 'menu']
         }),
-        deleteArticle: build.mutation<AppResponse<string>, DeleteArticleMutation>({
+        deleteArticle: build.mutation<AppResponse<ArticleDeleteResp>, DeleteArticleMutation>({
             query: (detail) => ({
                 url: 'article/remove',
                 method: 'POST',
@@ -37,7 +40,7 @@ const extendedApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: (res, err) => {
                 const tags: TagDescription<any>[] = ['menu']
-                if (res?.data) tags.push({ type: 'articleLink', id: res.data })
+                if (res?.data) tags.push({ type: 'articleLink', id: res.data.parentArticleId })
                 return tags
             }
         }),

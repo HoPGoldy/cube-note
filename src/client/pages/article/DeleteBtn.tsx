@@ -32,8 +32,9 @@ const DeleteBtn: FC<Props> = (props) => {
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('删除成功')
-        navigate(`/article/${resp.data}`)
-        dispatch(removeTab(`/article/${currentArticleId}`))
+        navigate(`/article/${resp.data?.parentArticleId}`)
+        const needRemoveTab = resp.data?.deletedArticleIds.map(id => `/article/${id}`) || []
+        dispatch(removeTab(needRemoveTab))
     }
 
     return (<>

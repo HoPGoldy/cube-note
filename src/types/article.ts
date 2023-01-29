@@ -71,3 +71,8 @@ export interface ArticleTreeNode {
     children?: ArticleTreeNode[]
     onTitleClick?: (args: { key: string }) => void
 }
+
+export interface ArticleDeleteResp {
+    deletedArticleIds: string[]
+    parentArticleId: string
+}

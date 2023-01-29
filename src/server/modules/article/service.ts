@@ -1,5 +1,5 @@
 import { Collection, ObjectId, WithId } from 'mongodb'
-import { AddArticlePostData, ArticleLinkResp, ArticleMenuItem, ArticleStorage, ArticleTreeNode, UpdateArticlePostData } from '@/types/article'
+import { AddArticlePostData, ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleStorage, ArticleTreeNode, UpdateArticlePostData } from '@/types/article'
 import { cloneDeep } from 'lodash'
 
 interface Props {
@@ -67,13 +67,19 @@ export const createService = (props: Props) => {
             if (!force) return { code: 400, msg: '包含子条目，无法删除' }
             deleteIds.push(...childrenArticles.map(item => item._id))
         }
+        console.log('🚀 ~ file: service.ts:65 ~ removeArticle ~ deleteIds', deleteIds)
 
         await articleCollection.deleteMany({
             _id: { $in: deleteIds }
         })
 
+        const data: ArticleDeleteResp = {
+            parentArticleId: article.parentArticleIds[article.parentArticleIds.length - 1],
+            deletedArticleIds: deleteIds.map(item => item.toString()),
+        }
+
         // 返回父级文章 id，删除后会跳转至这个文章
-        return { code: 200, data: article.parentArticleIds[article.parentArticleIds.length - 1] }
+        return { code: 200, data }
     }
 
     const updateArticle = async (detail: UpdateArticlePostData) => {
