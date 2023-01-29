@@ -20,5 +20,11 @@ export const createRouter = (props: Props) => {
         response(ctx, { code: 200, data })
     })
 
+    router.get('/userDataInfo', async ctx => {
+        const username = ctx.state?.user?.username
+        const data = await service.getUserDataInfo(username)
+        response(ctx, data)
+    })
+
     return router
 }

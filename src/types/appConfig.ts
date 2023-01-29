@@ -26,3 +26,7 @@ export interface AppConfig {
     LOGIN_SUBTITLE: string
     MONGODB_URL?: string
 }
+
+export interface UserDataInfoResp {
+    articleCount: number
+}

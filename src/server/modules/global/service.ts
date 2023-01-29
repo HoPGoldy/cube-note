@@ -1,15 +1,19 @@
-import { AppConfig, AppConfigResp } from '@/types/appConfig'
+import { getUserStorage } from '@/server/lib/mongodb'
+import { AppConfig, AppConfigResp, UserDataInfoResp } from '@/types/appConfig'
+import { ArticleStorage } from '@/types/article'
 import { UserStorage } from '@/types/user'
-import { Collection } from 'mongodb'
+import { Collection, ObjectId, WithId } from 'mongodb'
 
 interface Props {
     mainColor: string[]
     getConfig: () => AppConfig
     getUserCollection: () => Collection<UserStorage>
+    getArticleCollection: () => Collection<ArticleStorage>
+    getUserStorage: (username: string) => Promise<WithId<UserStorage> | null>
 }
 
 export const createService = (props: Props) => {
-    const { getConfig, getUserCollection } = props
+    const { getConfig, getUserCollection, getArticleCollection, getUserStorage } = props
 
     /**
      * 获取当前应用全局配置
@@ -27,7 +31,24 @@ export const createService = (props: Props) => {
         return data
     }
 
-    return { getAppConfig }
+    const getUserDataInfo = async (username: string) => {
+        const userStorage = await getUserStorage(username)
+        if (!userStorage) return { code: 404, message: '用户不存在' }
+
+        const rootArticleId = new ObjectId(userStorage.rootArticleId)
+
+        const articleCollection = getArticleCollection()
+        const articleCount = await articleCollection.countDocuments({
+            parentArticleIds: {
+                $elemMatch: { $eq: rootArticleId }
+            }
+        })
+
+        const data: UserDataInfoResp = { articleCount }
+        return { code: 200, data }
+    }
+
+    return { getAppConfig, getUserDataInfo }
 }
 
 export type GlobalService = ReturnType<typeof createService>

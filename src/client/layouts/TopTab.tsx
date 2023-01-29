@@ -1,7 +1,8 @@
+import { Cross } from '@react-vant/icons'
 import React, { FC, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../store'
-import { addTab, setCurrentTab, TabItem } from '../store/tab'
+import { addTab, removeTab, setCurrentTab, TabItem } from '../store/tab'
 
 const routeName: Record<string, string> = {
     '/setting': '设置',
@@ -49,7 +50,19 @@ const TopTab: FC = () => {
     const onClickTab = (item: TabItem) => {
         if (item.path === currentTab) return
         dispatch(setCurrentTab(item.path))
-        navigate(item.path)
+        navigate(item.path + item.search)
+    }
+
+    const onCloseTab = (e: React.MouseEvent, item: TabItem) => {
+        e.stopPropagation()
+        dispatch(removeTab(item.path))
+
+        // 如果关闭的是当前选项卡，跳转到上一个选项卡
+        if (item.path !== location.pathname || tabList.length <= 1) return
+        const prevTab = tabList.find((item) => item.path === item.path)
+        if (!prevTab) return
+
+        navigate(prevTab.path + prevTab.search)
     }
 
     const renderTabItem = (item: TabItem) => {
@@ -63,6 +76,9 @@ const TopTab: FC = () => {
                 onClick={() => onClickTab(item)}
             >
                 {item.title}
+                {tabList.length > 1 && (
+                    <Cross className='inline' onClick={e => onCloseTab(e, item)} />
+                )}
             </div>
         )
     }

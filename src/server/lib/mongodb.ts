@@ -59,3 +59,8 @@ export const getArticleCollection = () => database.collection<ArticleStorage>('a
  * 获取标签集合
  */
 export const getTagCollection = () => database.collection<TagStorage>('tags')
+
+/**
+ * 获取数据库状态
+ */
+export const getDatabaseStats = async () => database.stats()
