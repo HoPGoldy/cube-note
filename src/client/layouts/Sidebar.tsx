@@ -194,7 +194,7 @@ export const Sidebar: FC = () => {
                 <div className='mt-2 flex-grow'>
                     {renderCurrentMenu()}
                 </div>
-                <SideMenu />
+                <SideMenu treeData={articleTree?.data || []} />
             </section>
         </DesktopArea>
     )
