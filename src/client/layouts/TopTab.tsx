@@ -55,7 +55,7 @@ const TopTab: FC = () => {
 
     const onCloseTab = (e: React.MouseEvent, item: TabItem) => {
         e.stopPropagation()
-        dispatch(removeTab(item.path))
+        dispatch(removeTab([item.path]))
 
         // 如果关闭的是当前选项卡，跳转到上一个选项卡
         if (item.path !== location.pathname || tabList.length <= 1) return

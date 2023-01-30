@@ -22,17 +22,8 @@ export const Routes: FC = () => {
             children: [
                 { index: true, element: lazyLoad(() => import('./pages/JumpToDefaultDataEntry')) },
                 { path: '/article/:articleId', element: lazyLoad(() => import('./pages/article/Article')) },
-                // { path: '/addGroup', element: lazyLoad(() => import('./pages/AddGroup')) },
-                // { path: '/LogRequest', element: lazyLoad(() => import('./pages/LogRequest')) },
-                // { path: '/LogLogin', element: lazyLoad(() => import('./pages/LogLogin')) },
-                // { path: '/LogCertificate', element: lazyLoad(() => import('./pages/LogCertificate')) },
-                // { path: '/NoticeList', element: lazyLoad(() => import('./pages/NoticeList')) },
                 { path: '/setting', element: lazyLoad(() => import('./pages/Setting')) },
                 { path: '/about', element: lazyLoad(() => import('./pages/About')) },
-                // { path: '/ChangePassword', element: lazyLoad(() => import('./pages/ChangePassword')) },
-                // { path: '/OtpManage', element: lazyLoad(() => import('./pages/OtpManage')) },
-                // { path: '/GroupManage', element: lazyLoad(() => import('./pages/GroupManage')) },
-                // { path: '/CreatePwdSetting', element: lazyLoad(() => import('./pages/CreatePwdSetting')) },
             ],
             element: (
                 <LoginAuth>
