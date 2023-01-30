@@ -1,7 +1,7 @@
 import { createRouter } from '@/server/modules/tag/router'
 import { createService } from '@/server/modules/tag/service'
-import { getTagCollection } from '../lib/mongodb'
+import { db } from './database'
 
-export const tagService = createService({ getTagCollection })
+export const tagService = createService({ db })
 
 export const tagRouter = createRouter({ service: tagService })

@@ -1,15 +1,16 @@
 import { Collection, ObjectId, WithId } from 'mongodb'
 import { AddArticlePostData, ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleStorage, ArticleTreeNode, UpdateArticlePostData } from '@/types/article'
 import { cloneDeep } from 'lodash'
+import { DatabaseAccessor } from '@/server/lib/mongodb'
 
 interface Props {
-    getArticleCollection: () => Collection<ArticleStorage>
+    db: DatabaseAccessor
 }
 
 export const createService = (props: Props) => {
     const {
         getArticleCollection
-    } = props
+    } = props.db
 
     const addArticle = async (title: string, content: string, parentId?: string) => {
         const articleCollection = getArticleCollection()

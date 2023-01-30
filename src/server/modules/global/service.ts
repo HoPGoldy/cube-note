@@ -1,19 +1,15 @@
-import { getUserStorage } from '@/server/lib/mongodb'
+import { DatabaseAccessor } from '@/server/lib/mongodb'
 import { AppConfig, AppConfigResp, UserDataInfoResp } from '@/types/appConfig'
-import { ArticleStorage } from '@/types/article'
-import { UserStorage } from '@/types/user'
-import { Collection, ObjectId, WithId } from 'mongodb'
+import { ObjectId } from 'mongodb'
 
 interface Props {
-    mainColor: string[]
     getConfig: () => AppConfig
-    getUserCollection: () => Collection<UserStorage>
-    getArticleCollection: () => Collection<ArticleStorage>
-    getUserStorage: (username: string) => Promise<WithId<UserStorage> | null>
+    db: DatabaseAccessor
 }
 
 export const createService = (props: Props) => {
-    const { getConfig, getUserCollection, getArticleCollection, getUserStorage } = props
+    const { getConfig } = props
+    const { getUserCollection, getArticleCollection, getUserStorage } = props.db
 
     /**
      * 获取当前应用全局配置

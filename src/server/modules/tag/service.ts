@@ -1,15 +1,14 @@
 import { AppResponse } from '@/types/global'
-import { Collection, WithId } from 'mongodb'
+import { WithId } from 'mongodb'
 import { TagStorage } from '@/types/tag'
+import { DatabaseAccessor } from '@/server/lib/mongodb'
 
 interface Props {
-    getTagCollection: () => Collection<TagStorage>
+    db: DatabaseAccessor
 }
 
 export const createService = (props: Props) => {
-    const {
-        getTagCollection
-    } = props
+    const { getTagCollection } = props.db
 
     const addTag = async (title: string): Promise<AppResponse> => {
         const tagCollection = getTagCollection()

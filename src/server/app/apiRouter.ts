@@ -8,6 +8,7 @@ import { loginLocker } from './LoginLocker'
 import { userRouter } from './user'
 import { tagRouter } from './tag'
 import { articleRouter } from './article'
+import { db } from './database'
 
 export const createApiRouter = () => {
     const routes = [globalRouter, userRouter, tagRouter, articleRouter]
@@ -15,7 +16,7 @@ export const createApiRouter = () => {
 
     apiRouter
         .use(loginLocker.checkLoginDisable)
-        .use(createCheckReplayAttack({ excludePath: REPLAY_ATTACK_EXCLUDE }))
+        .use(createCheckReplayAttack({ db, excludePath: REPLAY_ATTACK_EXCLUDE }))
         .use(middlewareJwtCatcher)
         .use(middlewareJwt.unless({ path: AUTH_EXCLUDE }))
 

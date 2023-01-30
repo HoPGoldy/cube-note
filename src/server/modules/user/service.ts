@@ -4,16 +4,14 @@ import { STATUS_CODE } from '@/config'
 import { sha } from '@/utils/crypto'
 import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
-import { Collection } from 'mongodb'
 import { ArticleService } from '../article/service'
+import { DatabaseAccessor } from '@/server/lib/mongodb'
 
 interface Props {
     loginLocker: LoginLocker
     createToken: (payload: Record<string, any>) => Promise<string>
     getReplayAttackSecret: () => Promise<string>
-    getUserCollection: () => Collection<UserStorage>
-    getUserStorage: (username: string) => Promise<UserStorage | null>
-    updateUserStorage: (username: string, newStorage: Partial<UserStorage>) => Promise<unknown>
+    db: DatabaseAccessor
     addArticle: ArticleService['addArticle']
 }
 
@@ -21,10 +19,9 @@ export const createService = (props: Props) => {
     const {
         loginLocker, createToken,
         getReplayAttackSecret,
-        getUserCollection,
-        getUserStorage, updateUserStorage,
         addArticle,
     } = props
+    const { getUserCollection, getUserStorage, updateUserStorage } = props.db
 
     const loginFail = (ip: string, msg = '账号或密码错误') => {
         const lockInfo = loginLocker.recordLoginFail(ip)
