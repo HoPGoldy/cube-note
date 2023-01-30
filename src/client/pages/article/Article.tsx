@@ -1,15 +1,15 @@
 import React, { FC, useState, useEffect, useMemo, useRef } from 'react'
 import throttle from 'lodash/throttle'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
-import { useAddArticleMutation, useDeleteArticleMutation, useLazyGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
+import { useGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTabTitle } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import { DesktopArea } from '../../layouts/Responsive'
 import Preview from './Preview'
 import Editor from './Editor'
-import { messageInfo, messageSuccess, messageWarning } from '@/client/utils/message'
+import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
 import DeleteBtn from './DeleteBtn'
@@ -19,8 +19,10 @@ const About: FC = () => {
     const params = useParams()
     const dispatch = useAppDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
+    // 当前文章 id
+    const currentArticleId = params.articleId as string
     // 获取详情
-    const [fetchArticle, {data: articleResp, isLoading}] = useLazyGetArticleContentQuery()
+    const { data: articleResp, isLoading } = useGetArticleContentQuery(currentArticleId)
     // 保存详情
     const [updateArticle, { isLoading: updatingArticle }] = useUpdateArticleMutation()
     // 根节点文章
@@ -37,18 +39,12 @@ const About: FC = () => {
     const onContentChangeThrottle = useMemo(() => throttle(setVisibleContent, 500), [])
     // 页面是否在编辑中
     const isEdit = (searchParams.get('mode') === 'edit')
-    // 当前文章 id
-    const currentArticleId = params.articleId as string
 
     useEffect(() => {
         onContentChangeThrottle(content)
     }, [content, onContentChangeThrottle])
 
     useEffect(() => {
-        if (!currentArticleId) {
-            return
-        }
-        fetchArticle(currentArticleId)
         dispatch(setCurrentArticle(currentArticleId))
     }, [currentArticleId])
 

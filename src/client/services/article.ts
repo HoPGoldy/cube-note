@@ -1,7 +1,7 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
 import {
-    AddArticlePostData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp, ArticleTreeNode, DeleteArticleMutation,
+    AddArticlePostData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp, ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
     UpdateArticlePostData
 } from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
@@ -16,13 +16,21 @@ const extendedApi = baseApi.injectEndpoints({
             query: (id) => `article/${id}/getLink`,
             providesTags: (res, err, id) => [{ type: 'articleLink', id }]
         }),
-        updateArticle: build.mutation<AppResponse, UpdateArticlePostData>({
+        updateArticle: build.mutation<AppResponse<ArticleUpdateResp>, UpdateArticlePostData>({
             query: detail => ({
                 url: 'article/update',
                 method: 'PUT',
                 body: detail
             }),
-            invalidatesTags: (res, err, { id }) => [{ type: 'articleContent', id }, { type: 'articleLink', id }, 'menu']
+            invalidatesTags: (res, err, { id }) => {
+                // 如果修改了标题，就要修改父节点的侧边栏（子节点名称）和树菜单
+                const tags: TagDescription<any>[] = [
+                    { type: 'articleContent', id },
+                    { type: 'articleLink', id: res?.data?.parentArticleId },
+                    'menu'
+                ]
+                return tags
+            }
         }),
         addArticle: build.mutation<AppResponse<string>, AddArticlePostData>({
             query: (detail) => ({
@@ -40,7 +48,7 @@ const extendedApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: (res, err) => {
                 const tags: TagDescription<any>[] = ['menu']
-                if (res?.data) tags.push({ type: 'articleLink', id: res.data.parentArticleId })
+                tags.push({ type: 'articleLink', id: res?.data?.parentArticleId })
                 return tags
             }
         }),
@@ -52,7 +60,7 @@ const extendedApi = baseApi.injectEndpoints({
 })
 
 export const {
-    useLazyGetArticleContentQuery,
+    useGetArticleContentQuery,
     useUpdateArticleMutation,
     useAddArticleMutation,
     useGetArticleTreeQuery,

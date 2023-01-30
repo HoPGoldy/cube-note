@@ -1,5 +1,5 @@
-import { Collection, ObjectId, WithId } from 'mongodb'
-import { AddArticlePostData, ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleStorage, ArticleTreeNode, UpdateArticlePostData } from '@/types/article'
+import { ObjectId, WithId } from 'mongodb'
+import { ArticleDeleteResp, ArticleLinkResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, UpdateArticlePostData } from '@/types/article'
 import { cloneDeep } from 'lodash'
 import { DatabaseAccessor } from '@/server/lib/mongodb'
 
@@ -14,7 +14,6 @@ export const createService = (props: Props) => {
 
     const addArticle = async (title: string, content: string, parentId?: string) => {
         const articleCollection = getArticleCollection()
-        const parentArticleId = parentId ? new ObjectId(parentId) : null
         let parentArticle: WithId<ArticleStorage> | null = null
         if (parentId) {
             const _id = new ObjectId(parentId)
@@ -51,13 +50,10 @@ export const createService = (props: Props) => {
             return { code: 200 }
         }
 
-        const childrenArticleIds = [
-            ...article.parentArticleIds,
-            id
-        ]
-
         const childrenArticles = await articleCollection.find({
-            parentArticleIds: { $eq: childrenArticleIds }
+            parentArticleIds: {
+                $elemMatch: { $eq: id }
+            }
         }, {
             projection: { title: 1 }
         }).toArray()
@@ -68,7 +64,6 @@ export const createService = (props: Props) => {
             if (!force) return { code: 400, msg: '包含子条目，无法删除' }
             deleteIds.push(...childrenArticles.map(item => item._id))
         }
-        console.log('🚀 ~ file: service.ts:65 ~ removeArticle ~ deleteIds', deleteIds)
 
         await articleCollection.deleteMany({
             _id: { $in: deleteIds }
@@ -104,7 +99,11 @@ export const createService = (props: Props) => {
             updateTime: Date.now()
         } })
 
-        return { code: 200 }
+        const data: ArticleUpdateResp = {
+            parentArticleId: parentArticleIds[parentArticleIds.length - 1],
+        }
+
+        return { code: 200, data }
     }
 
     const getArticleContent = async (id: string) => {
@@ -187,12 +186,12 @@ export const createService = (props: Props) => {
         const roots: ArticleTreeNode[] = []
 
         data.forEach(item => {
-            const newItem: ArticleTreeNode = { label: item.title, key: item._id.toString() }
+            const newItem: ArticleTreeNode = { title: item.title, value: item._id.toString() }
             if (item.parentArticleIds.length === 1 && item.parentArticleIds[0] === rootId) {
                 roots.push(newItem)
             }
 
-            cache.set(newItem.key.toString(), newItem)
+            cache.set(newItem.value, newItem)
 
             const parent = cache.get(item.parentArticleIds[item.parentArticleIds.length - 1])
             if (parent) {

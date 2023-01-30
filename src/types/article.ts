@@ -66,13 +66,16 @@ export interface ArticleLinkResp {
 }
 
 export interface ArticleTreeNode {
-    key: string
-    label: string
+    value: string
+    title: string
     children?: ArticleTreeNode[]
-    onTitleClick?: (args: { key: string }) => void
 }
 
 export interface ArticleDeleteResp {
     deletedArticleIds: string[]
+    parentArticleId: string
+}
+
+export interface ArticleUpdateResp {
     parentArticleId: string
 }
