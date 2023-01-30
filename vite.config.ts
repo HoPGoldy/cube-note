@@ -7,6 +7,10 @@ export default defineConfig({
     base: './',
     server: {
         port: 3500,
+        watch: {
+            // 不监听 src/server 目录下的文件变化，这部分由 ts-node 负责
+            ignored: path => path.includes('src/server/')
+        },
         proxy: {
             '/api/': {
                 target: 'http://localhost:3600/',
