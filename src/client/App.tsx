@@ -5,7 +5,6 @@ import { Routes } from './Route'
 import { AppConfigProvider } from './layouts/AppConfigProvider'
 import { ConfigProvider } from 'react-vant'
 import { ResponsiveProvider } from './layouts/Responsive'
-import 'react-sortable-tree/style.css'
 
 const themeVars = {
     buttonBorderRadius: 'var(--rv-border-radius-lg)',

@@ -1,11 +1,11 @@
 import React, { FC, useEffect } from 'react'
 import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
 import { useAppDispatch, useAppSelector } from '../store'
-import { setCurrentMenu, setParentArticle } from '../store/menu'
+import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '../store/menu'
 import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
-import { useAddArticleMutation, useGetArticleLinkQuery, useGetArticleTreeQuery } from '../services/article'
-import { SideMenu } from '../components/SideMenu'
+import { useAddArticleMutation, useGetArticleLinkQuery, useGetArticleTreeQuery, useUpdateArticleLinkMutation } from '../services/article'
+import { TreeMenu } from '../components/TreeMenu'
 
 interface TabDetail {
     name: string
@@ -29,16 +29,19 @@ export const Sidebar: FC = () => {
     const currentArticleId = useAppSelector(s => s.menu.currentArticleId)
     const parentArticleId = useAppSelector(s => s.menu.parentArticleId)
     const parentArticleTitle = useAppSelector(s => s.menu.parentArticleTitle)
+    const selectedRelatedArticleIds = useAppSelector(s => s.menu.selectedRelatedArticleIds)
     // 获取左下角菜单树
     const { data: articleTree, isLoading: treeLoading } = useGetArticleTreeQuery(currentRootArticleId, {
         skip: !currentRootArticleId
     })
-    // 回去当前文章的相关链接
+    // 获取当前文章的相关链接
     const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId, {
         skip: !currentArticleId,
     })
     // 新增文章
     const [addArticle, { isLoading: addingArticle }] = useAddArticleMutation()
+    // 更新选中的相关文章
+    const [updateRelatedArticleIds, { isLoading: updatingRelatedArticleIds }] = useUpdateArticleLinkMutation()
 
     const onClickTreeItem = (item: ArticleTreeNode) => {
         navigate(`/article/${item.value}`, { state: { tabTitle: item.title }})
@@ -59,7 +62,17 @@ export const Sidebar: FC = () => {
     useEffect(() => {
         if (!articleLink || !articleLink.data) return
         dispatch(setParentArticle(articleLink.data))
+        dispatch(setRelatedArticleIds(articleLink.data.relatedArticles.map(item => item._id)))
+        console.log('🚀 ~ file: Sidebar.tsx:64 ~ useEffect ~ articleLink.data.relatedArticles.map(item => item._id)', articleLink.data.relatedArticles.map(item => item._id))
     }, [articleLink])
+
+    const onUpdateRelatedArticleIds = (newIds: string[]) => {
+        dispatch(setRelatedArticleIds(newIds))
+        updateRelatedArticleIds({
+            selfId: currentArticleId,
+            relatedIds: newIds
+        })
+    }
 
     const renderTabBtn = (item: TabDetail) => {
         return (
@@ -111,13 +124,17 @@ export const Sidebar: FC = () => {
 
     const renderLinkMenu = () => {
         return (<>
-            <Link to={`/articleLink/${currentArticleId}`} state={{ tabTitle: '123321' }}>
+            <TreeMenu
+                value={selectedRelatedArticleIds}
+                onChange={onUpdateRelatedArticleIds}
+                treeData={articleTree?.data || []}
+            >
                 <div className={menuItemClassname + ' text-center'}>
                     关联其他笔记
                 </div>
-            </Link>
+            </TreeMenu>
         </>)
-    }
+    }   
 
     const renderFavoriteMenu = () => {
         return (<>666</>)
@@ -156,10 +173,14 @@ export const Sidebar: FC = () => {
                 <div className='mt-2 flex-grow'>
                     {renderCurrentMenu()}
                 </div>
-                <SideMenu
+                <TreeMenu
                     treeData={articleTree?.data || []}
                     onClickNode={onClickTreeItem}
-                />
+                >
+                    <div className='w-full border border-white text-center p-2 cursor-pointer'>
+                        侧边栏菜单
+                    </div>
+                </TreeMenu>
             </section>
         </DesktopArea>
     )

@@ -79,3 +79,8 @@ export interface ArticleDeleteResp {
 export interface ArticleUpdateResp {
     parentArticleId: string
 }
+
+export interface ArticleUpdateLinkMutation {
+    selfId: string
+    relatedIds: string[]
+}

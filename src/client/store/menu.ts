@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { ArticleLinkResp, ArticleMenuItem, ArticleMenuResp, TabTypes } from '@/types/article'
+import { ArticleLinkResp, TabTypes } from '@/types/article'
 
 type State = {
     /**
@@ -19,13 +19,18 @@ type State = {
      * 父文章标题
      */
     parentArticleTitle: string
+    /**
+     * 当前选中的相关文章 id
+     */
+    selectedRelatedArticleIds: string[]
 }
 
 const initialState: State = {
     parentArticleId: '',
     parentArticleTitle: '',
     currentTab: TabTypes.Sub,
-    currentArticleId: ''
+    currentArticleId: '',
+    selectedRelatedArticleIds: [],
 }
 
 export const menuSlice = createSlice({
@@ -41,10 +46,13 @@ export const menuSlice = createSlice({
         },
         setCurrentArticle: (state, action: PayloadAction<string>) => {
             state.currentArticleId = action.payload
+        },
+        setRelatedArticleIds: (state, action: PayloadAction<string[]>) => {
+            state.selectedRelatedArticleIds = action.payload
         }
     },
 })
 
-export const { setParentArticle, setCurrentMenu, setCurrentArticle } = menuSlice.actions
+export const { setParentArticle, setCurrentMenu, setCurrentArticle, setRelatedArticleIds } = menuSlice.actions
 
 export default menuSlice.reducer

@@ -4,7 +4,7 @@ import { response } from '@/server/utils'
 import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { AddArticlePostData, DeleteArticleMutation, UpdateArticlePostData } from '@/types/article'
+import { AddArticlePostData, ArticleUpdateLinkMutation, DeleteArticleMutation, UpdateArticlePostData } from '@/types/article'
 
 interface Props {
     service: ArticleService
@@ -81,14 +81,18 @@ export const createRouter = (props: Props) => {
         response(ctx)
     })
 
-    // 关联两个文章
-    router.get('/link', async ctx => {
-        response(ctx)
+    const addArticleLinkSchema = Joi.object<ArticleUpdateLinkMutation>({
+        selfId: Joi.string(),
+        relatedIds: Joi.array().items(Joi.string()),
     })
 
-    // 取消关联两个文章
-    router.get('/unlink', async ctx => {
-        response(ctx)
+    // 关联两个文章
+    router.post('/updateLink', async ctx => {
+        const body = validate(ctx, addArticleLinkSchema)
+        if (!body) return
+
+        const resp = await service.updateArticleLink(body.selfId, body.relatedIds)
+        response(ctx, resp)
     })
 
     // 查询文章树

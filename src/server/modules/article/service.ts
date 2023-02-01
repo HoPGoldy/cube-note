@@ -223,7 +223,24 @@ export const createService = (props: Props) => {
         return { code: 200, data: arrayToTree(rootId, articles) }
     }
 
-    return { addArticle, getArticleContent, updateArticle, getArticleLink, getArticleTree, removeArticle }
+    const updateArticleLink = async (id: string, linkIds: string[]) => {
+        const articleCollection = getArticleCollection()
+        const _id = new ObjectId(id)
+
+        const article = await articleCollection.findOne({ _id })
+        if (!article) {
+            return { code: 400, msg: '文章不存在' }
+        }
+
+        await articleCollection.updateOne({ _id }, { $set: { relatedArticleIds: linkIds } })
+
+        return { code: 200 }
+    }
+
+    return {
+        addArticle, getArticleContent, updateArticle, getArticleLink, getArticleTree, removeArticle,
+        updateArticleLink
+    }
 }
 
 export type ArticleService = ReturnType<typeof createService>

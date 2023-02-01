@@ -7,6 +7,8 @@ interface Props {
     treeData: ArticleTreeNode[]
     onClickNode?: (node: ArticleTreeNode) => void
     onClickRoot?: () => void
+    value?: string[]
+    onChange?: (value: string[]) => void
 }
 
 interface MenuList {
@@ -37,7 +39,7 @@ const getNewMenuPos = (prevRect: DOMRect, menuItemNumber: number) => {
 /**
  * 桌面端左下方的快捷访问嵌套菜单
  */
-export const SideMenu: FC<Props> = (props) => {
+export const TreeMenu: FC<Props> = (props) => {
     // 弹出的菜单项，一个数组，元素是弹出的菜单项
     const [menuLists, setMenuLists] = useState<MenuList[]>([])
     // 关闭全部菜单
@@ -88,13 +90,25 @@ export const SideMenu: FC<Props> = (props) => {
         closeAllThrottle()
     }
 
+    const onClickNode = (node: ArticleTreeNode) => {
+        props.onClickNode?.(node)
+
+        if (props.value?.includes(node.value)) {
+            props.onChange?.(props.value?.filter(v => v !== node.value))
+        }
+        else props.onChange?.([...(props?.value || []), node.value])
+    }
+
     const renderMenuItem = (item: ArticleTreeNode, level: number) => {
         return (
             <div
                 key={item.value}
                 id={item.value.toString()}
-                className='p-2 text-white hover:bg-slate-400 cursor-pointer flex items-center justify-between'
-                onClick={() => props.onClickNode?.(item)}
+                className={
+                    'p-2 text-white cursor-pointer flex items-center justify-between ' +
+                    (props.value?.includes(item.value) ? 'bg-green-700 hover:bg-green-600' : 'hover:bg-slate-400 ')
+                }
+                onClick={() => onClickNode(item)}
                 onMouseEnter={() => onOpenInnerMenu(item.value.toString(), level, item.children)}
                 style={{ height: MENU_HEIGHT, width: MENU_WIDTH }}
             >
@@ -119,13 +133,12 @@ export const SideMenu: FC<Props> = (props) => {
 
     return (<>
         <div
-            className='w-full border border-white text-center p-2 cursor-pointer'
             id="side-menu-entery"
             onClick={props.onClickRoot}
             onMouseEnter={onOpenFirstMenu}
             onMouseLeave={mouseLeave}
         >
-            侧边栏菜单
+            {props.children}
         </div>
         {menuLists.map(renderMenuLists)}
     </>)

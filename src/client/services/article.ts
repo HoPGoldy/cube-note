@@ -1,7 +1,8 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
 import {
-    AddArticlePostData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp, ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
+    AddArticlePostData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp,
+    ArticleTreeNode, ArticleUpdateLinkMutation, ArticleUpdateResp, DeleteArticleMutation,
     UpdateArticlePostData
 } from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
@@ -56,6 +57,13 @@ const extendedApi = baseApi.injectEndpoints({
             query: (id) => `article/${id}/tree`,
             providesTags: ['menu']
         }),
+        updateArticleLink: build.mutation<AppResponse<string>, ArticleUpdateLinkMutation>({
+            query: (detail) => ({
+                url: 'article/updateLink',
+                method: 'POST',
+                body: detail
+            }),
+        }),
     })
 })
 
@@ -65,5 +73,6 @@ export const {
     useAddArticleMutation,
     useGetArticleTreeQuery,
     useGetArticleLinkQuery,
-    useDeleteArticleMutation
+    useDeleteArticleMutation,
+    useUpdateArticleLinkMutation,
 } = extendedApi
