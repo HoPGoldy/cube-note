@@ -1,12 +1,10 @@
-import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react'
-import { Menu, TreeSelect } from 'antd'
+import React, { FC, useEffect } from 'react'
 import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentMenu, setParentArticle } from '../store/menu'
 import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
 import { useAddArticleMutation, useGetArticleLinkQuery, useGetArticleTreeQuery } from '../services/article'
-import { cloneDeep } from 'lodash'
 import { SideMenu } from '../components/SideMenu'
 
 interface TabDetail {
@@ -31,48 +29,19 @@ export const Sidebar: FC = () => {
     const currentArticleId = useAppSelector(s => s.menu.currentArticleId)
     const parentArticleId = useAppSelector(s => s.menu.parentArticleId)
     const parentArticleTitle = useAppSelector(s => s.menu.parentArticleTitle)
-
+    // 获取左下角菜单树
     const { data: articleTree, isLoading: treeLoading } = useGetArticleTreeQuery(currentRootArticleId, {
         skip: !currentRootArticleId
     })
+    // 回去当前文章的相关链接
     const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId, {
         skip: !currentArticleId,
     })
     // 新增文章
     const [addArticle, { isLoading: addingArticle }] = useAddArticleMutation()
-    // 菜单树需要的树形数据结构
-    const treeMenuItems = useMemo(() => {
-        // if (!articleTree) return []
-        // const rootItem: ArticleTreeNode = {
-        //     key: currentRootArticleId || '',
-        //     title: '笔记树',
-        //     children: cloneDeep(articleTree.data)
-        // }
 
-        // // 递归，为每一个有 children 的节点添加 onTitleClick 方法
-        // const addOnTitleClick = (item: ArticleTreeNode) => {
-        //     if (item.children) {
-        //         item.children.forEach(addOnTitleClick)
-        //     }
-        // }
-        // addOnTitleClick(rootItem)
-        
-        return articleTree?.data || []
-    }, [articleTree])
-
-    const selectedKeys = useMemo(() => [currentArticleId], [currentArticleId])
-
-    const onClickTreeItem = (item: { key: string, title?: string, keyPath?: string[] }) => {
-        // let title = item.title
-        // if (!title && treeMenuItems[0]) {
-        //     // 使用 keypath reduce 获取到 title
-        //     const keyPath = item.keyPath || []
-        //     const node = keyPath.reduce((acc, cur) => {
-        //         if (!acc) return acc
-        //         return acc.children?.find(c => c.key === cur) || { children: [] }
-        //     }, treeMenuItems[0])
-        // }
-        navigate(`/article/${item.key}`, { state: { tabTitle: item.title }})
+    const onClickTreeItem = (item: ArticleTreeNode) => {
+        navigate(`/article/${item.value}`, { state: { tabTitle: item.title }})
     }
 
     const createArticle = async () => {
@@ -110,7 +79,7 @@ export const Sidebar: FC = () => {
             <div
                 key={item._id}
                 className={menuItemClassname}
-                onClick={() => onClickTreeItem({ key: item._id, title: item.title })}
+                onClick={() => onClickTreeItem({ value: item._id, title: item.title })}
             >
                 {item.title}
             </div>
@@ -167,13 +136,6 @@ export const Sidebar: FC = () => {
         }
     }
 
-    const [value, setValue] = useState<string>()
-
-    const onChange = (newValue: string, label: ReactNode[]) => {
-        console.log('🚀 ~ file: Sidebar.tsx:172 ~ onChange ~ newValue', newValue, label)
-        setValue(newValue)
-    }
-
     return (
         <DesktopArea>
             <section className='
@@ -194,7 +156,10 @@ export const Sidebar: FC = () => {
                 <div className='mt-2 flex-grow'>
                     {renderCurrentMenu()}
                 </div>
-                <SideMenu treeData={articleTree?.data || []} />
+                <SideMenu
+                    treeData={articleTree?.data || []}
+                    onClickNode={onClickTreeItem}
+                />
             </section>
         </DesktopArea>
     )
