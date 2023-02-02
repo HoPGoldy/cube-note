@@ -1,7 +1,8 @@
 import { ArticleTreeNode } from '@/types/article'
-import React, { FC, useState, useMemo } from 'react'
+import React, { FC, useState, useMemo, useRef } from 'react'
 import debounce from 'lodash/debounce'
 import { Arrow } from '@react-vant/icons'
+import { nanoid } from 'nanoid'
 
 interface Props {
     treeData: ArticleTreeNode[]
@@ -40,6 +41,8 @@ const getNewMenuPos = (prevRect: DOMRect, menuItemNumber: number) => {
  * 桌面端左下方的快捷访问嵌套菜单
  */
 export const TreeMenu: FC<Props> = (props) => {
+    // 唯一的 dom id，用于支持多个 TreeMenu 组件
+    const entryId = useRef(nanoid())
     // 弹出的菜单项，一个数组，元素是弹出的菜单项
     const [menuLists, setMenuLists] = useState<MenuList[]>([])
     // 关闭全部菜单
@@ -74,7 +77,7 @@ export const TreeMenu: FC<Props> = (props) => {
 
     const onOpenFirstMenu = () => {
         closeAllThrottle.cancel()
-        openMenu('side-menu-entery', props.treeData)
+        openMenu(entryId.current, props.treeData)
     }
 
     const onOpenInnerMenu = (id: string, level: number, nextMenuList?: ArticleTreeNode[]) => {
@@ -133,7 +136,7 @@ export const TreeMenu: FC<Props> = (props) => {
 
     return (<>
         <div
-            id="side-menu-entery"
+            id={entryId.current}
             onClick={props.onClickRoot}
             onMouseEnter={onOpenFirstMenu}
             onMouseLeave={mouseLeave}

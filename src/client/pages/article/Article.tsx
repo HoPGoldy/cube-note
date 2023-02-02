@@ -13,6 +13,8 @@ import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
 import DeleteBtn from './DeleteBtn'
+import { Star } from '@react-vant/icons'
+import { UpdateArticlePostData } from '@/types/article'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -33,6 +35,8 @@ const About: FC = () => {
     const [title, setTitle] = useState('')
     // 正在编辑的文本内容
     const [content, setContent] = useState('')
+    // 是否收藏
+    const [isFavorite, setIsFavorite] = useState(false)
     // 渲染的内容
     const [visibleContent, setVisibleContent] = useState('')
     // 编辑时的节流
@@ -42,7 +46,7 @@ const About: FC = () => {
 
     useEffect(() => {
         onContentChangeThrottle(content)
-    }, [content, onContentChangeThrottle])
+    }, [content])
 
     useEffect(() => {
         dispatch(setCurrentArticle(currentArticleId))
@@ -55,15 +59,16 @@ const About: FC = () => {
         setTitle(articleResp.data.title)
         setContent(articleResp.data.content)
         setVisibleContent(articleResp.data.content)
+        setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
 
-    const saveEdit = async () => {
-        if (!title) {
+    const saveEdit = async (data: Partial<UpdateArticlePostData>) => {
+        if (data.title === '') {
             messageWarning('标题不能为空')
             return
         }
 
-        const resp = await updateArticle({ id: currentArticleId, title, content }).unwrap()
+        const resp = await updateArticle({ ...data, id: currentArticleId }).unwrap()
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('保存成功')
@@ -73,6 +78,11 @@ const About: FC = () => {
     const endEdit = async () => {
         searchParams.delete('mode')
         setSearchParams(searchParams)
+    }
+
+    const onClickSaveBtn = async () => {
+        await saveEdit({ title, content, favorite: isFavorite })
+        await endEdit()
     }
 
     const renderContent = () => {
@@ -87,14 +97,25 @@ const About: FC = () => {
                         disabled={!isEdit}
                         onChange={e => setTitle(e.target.value)}
                         onKeyUp={e => e.key === 'Enter' && titleInputRef.current?.blur()}
-                        onBlur={saveEdit}
+                        onBlur={() => saveEdit({ title })}
                         placeholder="请输入笔记名"
                         className='font-bold dark:text-slate-200 text-xl bg-inherit mb-4 w-full'
                     />
-                    {currentArticleId !== rootArticleId && <DeleteBtn
-                        title={title}
-                        currentArticleId={currentArticleId}
-                    />}
+                    <div className='flex items-center'>
+                        <Star
+                            className={'mr-2 ' + (updatingArticle ? 'cursor-wait' : 'cursor-pointer')}
+                            fontSize="1.5rem"
+                            color={isFavorite ? 'yellow' : 'gray'}
+                            onClick={() => {
+                                saveEdit({ favorite: !isFavorite })
+                                setIsFavorite(!isFavorite)
+                            }}
+                        />
+                        {currentArticleId !== rootArticleId && <DeleteBtn
+                            title={title}
+                            currentArticleId={currentArticleId}
+                        />}
+                    </div>
                 </div>
 
                 <div className='flex md:flex-row flex-col flex-nowrap'>
@@ -130,10 +151,7 @@ const About: FC = () => {
         <DesktopArea>
             <div className='fixed bottom-0 right-0 m-4'>
                 {isEdit ? (
-                    <div className='cursor-pointer' onClick={async () => {
-                        await saveEdit()
-                        await endEdit()
-                    }}>
+                    <div className='cursor-pointer' onClick={onClickSaveBtn}>
                         保存
                     </div>
                 ) : (<>

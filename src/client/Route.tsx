@@ -23,7 +23,6 @@ export const Routes: FC = () => {
                 { index: true, element: lazyLoad(() => import('./pages/JumpToDefaultDataEntry')) },
                 { path: '/article/:articleId', element: lazyLoad(() => import('./pages/article/Article')) },
                 { path: '/setting', element: lazyLoad(() => import('./pages/Setting')) },
-                { path: '/articleLink/:articleId', element: lazyLoad(() => import('./pages/ArticleLink')) },
                 { path: '/about', element: lazyLoad(() => import('./pages/About')) },
             ],
             element: (

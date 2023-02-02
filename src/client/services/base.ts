@@ -56,5 +56,5 @@ const baseQuery: BaseQueryFn<
 export const baseApi = createApi({
     baseQuery,
     endpoints: () => ({}),
-    tagTypes: ['menu', 'articleContent', 'articleLink']
+    tagTypes: ['menu', 'articleContent', 'articleLink', 'articleRelated', 'favorite']
 })

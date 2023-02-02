@@ -4,6 +4,10 @@ export interface ArticleStorage {
     createTime: number
     updateTime: number
     /**
+     * 该文章是否收藏
+     */
+    favorite: boolean
+    /**
      * 祖先文章 id 列表
      * 如果是跟节点的话，就没有这个属性
      * 会包含当前文章的所有祖先节点
@@ -27,6 +31,7 @@ export interface AddArticlePostData {
 
 export type UpdateArticlePostData = Partial<AddArticlePostData> & {
     id: string
+    favorite?: boolean
 }
 
 export interface DeleteArticleMutation {
@@ -41,7 +46,7 @@ export interface ArticleMenuItem {
 
 export enum TabTypes {
     Sub = 'sub',
-    Link = 'link',
+    Related = 'related',
     Favorite = 'favorite',
 }
 
@@ -55,6 +60,7 @@ export interface ArticleContentResp {
     content: string
     createTime: number
     updateTime: number
+    favorite: boolean
     tagIds: string[]
 }
 
@@ -62,6 +68,9 @@ export interface ArticleLinkResp {
     parentArticleId: string
     parentArticleTitle: string
     childrenArticles: ArticleMenuItem[]
+}
+
+export interface ArticleRelatedResp {
     relatedArticles: ArticleMenuItem[]
 }
 

@@ -46,9 +46,10 @@ export const createRouter = (props: Props) => {
 
     const updateArticleSchema = Joi.object<UpdateArticlePostData>({
         id: Joi.string(),
-        title: Joi.string(),
-        content: Joi.string().allow(''),
-        parentId: Joi.string(),
+        title: Joi.string().allow(null),
+        content: Joi.string().allow('', null),
+        favorite: Joi.boolean().allow(null),
+        parentId: Joi.string().allow(null),
     })
 
     // 更新文章
@@ -68,11 +69,17 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    // 获取文章链接信息
-    // 文章下属文章列表、相关文章列表
+    // 获取文章子级、父级文章信息
     router.get('/:id/getLink', async ctx => {
         const { id } = ctx.params
-        const resp = await service.getArticleLink(id)
+        const resp = await service.getChildren(id)
+        response(ctx, resp)
+    })
+
+    // 获取相关文章信息
+    router.get('/:id/getRelated', async ctx => {
+        const { id } = ctx.params
+        const resp = await service.getRelatives(id)
         response(ctx, resp)
     })
 
@@ -91,7 +98,7 @@ export const createRouter = (props: Props) => {
         const body = validate(ctx, addArticleLinkSchema)
         if (!body) return
 
-        const resp = await service.updateArticleLink(body.selfId, body.relatedIds)
+        const resp = await service.updateRelatives(body.selfId, body.relatedIds)
         response(ctx, resp)
     })
 
@@ -99,6 +106,12 @@ export const createRouter = (props: Props) => {
     router.get('/:rootArticleId/tree', async ctx => {
         const { rootArticleId } = ctx.params
         const resp = await service.getArticleTree(rootArticleId)
+        response(ctx, resp)
+    })
+
+    // 获取所有收藏的文章
+    router.get('/favorite', async ctx => {
+        const resp = await service.getFavoriteArticles()
         response(ctx, resp)
     })
 

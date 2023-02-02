@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from 'mongodb'
-import { ArticleDeleteResp, ArticleLinkResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, UpdateArticlePostData } from '@/types/article'
-import { cloneDeep } from 'lodash'
+import { ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleRelatedResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, UpdateArticlePostData } from '@/types/article'
+import { cloneDeep, isNil } from 'lodash'
 import { DatabaseAccessor } from '@/server/lib/mongodb'
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 
 export const createService = (props: Props) => {
     const {
-        getArticleCollection
+        getArticleCollection,
     } = props.db
 
     const addArticle = async (title: string, content: string, parentId?: string) => {
@@ -34,6 +34,7 @@ export const createService = (props: Props) => {
             parentArticleIds,
             relatedArticleIds: [],
             tagIds: [],
+            favorite: false
         })
 
         return { code: 200, data: newArticle.insertedId.toString() }
@@ -96,6 +97,7 @@ export const createService = (props: Props) => {
             title: detail.title || article.title,
             content: detail.content || article.content,
             parentArticleIds,
+            favorite: isNil(detail.favorite) ? article.favorite : detail.favorite,
             updateTime: Date.now()
         } })
 
@@ -126,7 +128,13 @@ export const createService = (props: Props) => {
         return { code: 200, data: article }
     }
 
-    const getArticleLink = async (id: string) => {
+    const formatArticleListItem = (item: WithId<ArticleStorage>) => ({
+        title: item.title,
+        _id: item._id.toString(),
+    })
+
+    // 获取子代的文章列表（也会包含父级文章）
+    const getChildren = async (id: string) => {
         const articleCollection = getArticleCollection()
         const _id = new ObjectId(id)
         const article = await articleCollection.findOne({ _id })
@@ -143,16 +151,10 @@ export const createService = (props: Props) => {
 
         const queryPromises: [
             Promise<WithId<ArticleStorage>[]>,
-            Promise<WithId<ArticleStorage>[]>,
             Promise<WithId<ArticleStorage> | null>
         ] = [
             articleCollection.find({
                 parentArticleIds: { $eq: targetArticleIds }
-            }, {
-                projection: { title: 1 }
-            }).toArray(),
-            articleCollection.find({
-                _id: { $all: article.relatedArticleIds }
             }, {
                 projection: { title: 1 }
             }).toArray(),
@@ -163,18 +165,34 @@ export const createService = (props: Props) => {
             })
         ]
 
-        const [childrenArticles, relatedArticles, parentArticle] = await Promise.all(queryPromises)
-
-        const formatItem = (item: WithId<ArticleStorage>) => ({
-            title: item.title,
-            _id: item._id.toString(),
-        })
+        const [childrenArticles, parentArticle] = await Promise.all(queryPromises)
 
         const data: ArticleLinkResp = {
             parentArticleId: parentArticleId,
             parentArticleTitle: parentArticle?.title || '',
-            childrenArticles: childrenArticles.map(formatItem),
-            relatedArticles: relatedArticles.map(formatItem),
+            childrenArticles: childrenArticles.map(formatArticleListItem),
+        }
+
+        return { code: 200, data }
+    }
+
+    // 获取相关的文章列表
+    const getRelatives = async (id: string) => {
+        const articleCollection = getArticleCollection()
+        const _id = new ObjectId(id)
+        const article = await articleCollection.findOne({ _id })
+        if (!article) {
+            return { code: 400, msg: '文章不存在' }
+        }
+
+        const relatedArticles = await articleCollection.find({
+            _id: { $in: article.relatedArticleIds.map(id => new ObjectId(id)) }
+        }, {
+            projection: { title: 1 }
+        }).toArray()
+
+        const data: ArticleRelatedResp = {
+            relatedArticles: relatedArticles.map(formatArticleListItem),
         }
 
         return { code: 200, data }
@@ -223,7 +241,7 @@ export const createService = (props: Props) => {
         return { code: 200, data: arrayToTree(rootId, articles) }
     }
 
-    const updateArticleLink = async (id: string, linkIds: string[]) => {
+    const updateRelatives = async (id: string, linkIds: string[]) => {
         const articleCollection = getArticleCollection()
         const _id = new ObjectId(id)
 
@@ -237,9 +255,21 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
+    const getFavoriteArticles = async () => {
+        const articleCollection = getArticleCollection()
+        const articles = await articleCollection.find({
+            favorite: true
+        }, {
+            projection: { title: 1 }
+        }).toArray()
+
+        const data: ArticleMenuItem[] = articles.map(formatArticleListItem)
+        return { code: 200, data }
+    }
+
     return {
-        addArticle, getArticleContent, updateArticle, getArticleLink, getArticleTree, removeArticle,
-        updateArticleLink
+        addArticle, getArticleContent, updateArticle, getChildren, getRelatives, getArticleTree, removeArticle,
+        updateRelatives, getFavoriteArticles
     }
 }
 

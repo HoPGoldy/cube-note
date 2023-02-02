@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '../store/menu'
 import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
-import { useAddArticleMutation, useGetArticleLinkQuery, useGetArticleTreeQuery, useUpdateArticleLinkMutation } from '../services/article'
+import { useAddArticleMutation, useGetArticleLinkQuery, useGetArticleRelatedQuery, useGetArticleTreeQuery, useGetFavoriteQuery, useUpdateArticleLinkMutation } from '../services/article'
 import { TreeMenu } from '../components/TreeMenu'
 
 interface TabDetail {
@@ -15,7 +15,7 @@ interface TabDetail {
 
 const tabOptions: TabDetail[] = [
     { name: '下属条目', type: TabTypes.Sub },
-    { name: '相关条目', type: TabTypes.Link },
+    { name: '相关条目', type: TabTypes.Related },
     { name: '收藏条目', type: TabTypes.Favorite },
 ]
 
@@ -34,9 +34,17 @@ export const Sidebar: FC = () => {
     const { data: articleTree, isLoading: treeLoading } = useGetArticleTreeQuery(currentRootArticleId, {
         skip: !currentRootArticleId
     })
-    // 获取当前文章的相关链接
+    // 获取当前文章的子级、父级文章
     const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId, {
-        skip: !currentArticleId,
+        skip: !currentArticleId || currentTab !== TabTypes.Sub,
+    })
+    // 获取收藏文章
+    const { data: articleFavorite, isLoading: favoriteLoading } = useGetFavoriteQuery(undefined, {
+        skip: currentTab !== TabTypes.Favorite,
+    })
+    // 获取当前文章的相关文章
+    const { data: articleRelatedLink, isLoading: relatedLinkLoading } = useGetArticleRelatedQuery(currentArticleId, {
+        skip: !currentArticleId || currentTab !== TabTypes.Related,
     })
     // 新增文章
     const [addArticle, { isLoading: addingArticle }] = useAddArticleMutation()
@@ -62,9 +70,12 @@ export const Sidebar: FC = () => {
     useEffect(() => {
         if (!articleLink || !articleLink.data) return
         dispatch(setParentArticle(articleLink.data))
-        dispatch(setRelatedArticleIds(articleLink.data.relatedArticles.map(item => item._id)))
-        console.log('🚀 ~ file: Sidebar.tsx:64 ~ useEffect ~ articleLink.data.relatedArticles.map(item => item._id)', articleLink.data.relatedArticles.map(item => item._id))
     }, [articleLink])
+
+    useEffect(() => {
+        if (!articleRelatedLink || !articleRelatedLink.data) return
+        dispatch(setRelatedArticleIds(articleRelatedLink.data.relatedArticles.map(item => item._id)))
+    }, [articleRelatedLink])
 
     const onUpdateRelatedArticleIds = (newIds: string[]) => {
         dispatch(setRelatedArticleIds(newIds))
@@ -122,8 +133,15 @@ export const Sidebar: FC = () => {
         </>)
     }
 
-    const renderLinkMenu = () => {
+    const renderRelatedMenu = () => {
+        if (relatedLinkLoading) return <div className='text-center'>加载中...</div>
+        const currentMenu = articleRelatedLink?.data?.relatedArticles || []
+
         return (<>
+            {currentMenu.length === 0
+                ? (<div className='text-center'>暂无相关笔记</div>)
+                : currentMenu.map(renderMenuItem)
+            }
             <TreeMenu
                 value={selectedRelatedArticleIds}
                 onChange={onUpdateRelatedArticleIds}
@@ -137,15 +155,23 @@ export const Sidebar: FC = () => {
     }   
 
     const renderFavoriteMenu = () => {
-        return (<>666</>)
+        if (favoriteLoading) return <div className='text-center'>加载中...</div>
+        const currentMenu = articleFavorite?.data || []
+
+        return (<>
+            {currentMenu.length === 0
+                ? (<div className='text-center'>暂无收藏</div>)
+                : currentMenu.map(renderMenuItem)
+            }
+        </>)
     }
 
     const renderCurrentMenu = () => {
         switch (currentTab) {
         case TabTypes.Sub:
             return renderSubMenu()
-        case TabTypes.Link:
-            return renderLinkMenu()
+        case TabTypes.Related:
+            return renderRelatedMenu()
         case TabTypes.Favorite:
             return renderFavoriteMenu()
         default:
