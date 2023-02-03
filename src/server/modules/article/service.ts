@@ -1,5 +1,5 @@
 import { ObjectId, WithId } from 'mongodb'
-import { ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleRelatedResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, UpdateArticlePostData } from '@/types/article'
+import { ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleRelatedResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, UpdateArticleReqData } from '@/types/article'
 import { cloneDeep, isNil } from 'lodash'
 import { DatabaseAccessor } from '@/server/lib/mongodb'
 
@@ -79,7 +79,7 @@ export const createService = (props: Props) => {
         return { code: 200, data }
     }
 
-    const updateArticle = async (detail: UpdateArticlePostData) => {
+    const updateArticle = async (detail: UpdateArticleReqData) => {
         const articleCollection = getArticleCollection()
         const _id = new ObjectId(detail.id)
         const article = await articleCollection.findOne({ _id })
@@ -97,7 +97,9 @@ export const createService = (props: Props) => {
             title: detail.title || article.title,
             content: detail.content || article.content,
             parentArticleIds,
+            relatedArticleIds: detail.relatedArticleIds || article.relatedArticleIds,
             favorite: isNil(detail.favorite) ? article.favorite : detail.favorite,
+            tagIds: detail.tagIds || article.tagIds,
             updateTime: Date.now()
         } })
 
@@ -241,20 +243,6 @@ export const createService = (props: Props) => {
         return { code: 200, data: arrayToTree(rootId, articles) }
     }
 
-    const updateRelatives = async (id: string, linkIds: string[]) => {
-        const articleCollection = getArticleCollection()
-        const _id = new ObjectId(id)
-
-        const article = await articleCollection.findOne({ _id })
-        if (!article) {
-            return { code: 400, msg: '文章不存在' }
-        }
-
-        await articleCollection.updateOne({ _id }, { $set: { relatedArticleIds: linkIds } })
-
-        return { code: 200 }
-    }
-
     const getFavoriteArticles = async () => {
         const articleCollection = getArticleCollection()
         const articles = await articleCollection.find({
@@ -269,7 +257,7 @@ export const createService = (props: Props) => {
 
     return {
         addArticle, getArticleContent, updateArticle, getChildren, getRelatives, getArticleTree, removeArticle,
-        updateRelatives, getFavoriteArticles
+        getFavoriteArticles
     }
 }
 

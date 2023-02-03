@@ -4,7 +4,7 @@ import { getIp, response } from '@/server/utils'
 import { UserService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { ChangePasswordPostData, LoginPostData, SetThemePostData } from '@/types/user'
+import { ChangePasswordReqData, LoginReqData, SetThemeReqData } from '@/types/user'
 
 interface Props {
     service: UserService
@@ -14,7 +14,7 @@ export const createRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/user' })
 
-    const loginSchema = Joi.object<LoginPostData>({
+    const loginSchema = Joi.object<LoginReqData>({
         username: Joi.string().required(),
         password: Joi.string().required()
     })
@@ -39,7 +39,7 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const registerSchema = Joi.object<LoginPostData>({
+    const registerSchema = Joi.object<LoginReqData>({
         username: Joi.string().required(),
         password: Joi.string().required()
     })
@@ -62,7 +62,7 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const changePwdSchema = Joi.object<ChangePasswordPostData>({
+    const changePwdSchema = Joi.object<ChangePasswordReqData>({
         newP: Joi.string().required(),
         oldP: Joi.string().required()
     })
@@ -82,7 +82,7 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const setThemeSchema = Joi.object<SetThemePostData>({
+    const setThemeSchema = Joi.object<SetThemeReqData>({
         theme: Joi.any().valid('light', 'dark').required()
     })
 

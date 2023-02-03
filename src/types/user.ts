@@ -38,7 +38,7 @@ export enum AppTheme {
     Light = 'light'
 }
 
-export interface LoginPostData {
+export interface LoginReqData {
     username: string
     password: string
 }
@@ -71,12 +71,12 @@ export interface LoginFailResp {
 
 }
 
-export interface ChangePasswordPostData {
+export interface ChangePasswordReqData {
     newP: string
     oldP: string
 }
 
-export interface SetThemePostData {
+export interface SetThemeReqData {
     theme: AppTheme
 }
 

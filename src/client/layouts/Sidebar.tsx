@@ -4,7 +4,10 @@ import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '../store/menu'
 import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
-import { useAddArticleMutation, useGetArticleLinkQuery, useGetArticleRelatedQuery, useGetArticleTreeQuery, useGetFavoriteQuery, useUpdateArticleLinkMutation } from '../services/article'
+import {
+    useAddArticleMutation, useGetArticleLinkQuery, useGetArticleRelatedQuery, useGetArticleTreeQuery,
+    useGetFavoriteQuery, useUpdateArticleMutation, articleApi
+} from '../services/article'
 import { TreeMenu } from '../components/TreeMenu'
 
 interface TabDetail {
@@ -31,25 +34,25 @@ export const Sidebar: FC = () => {
     const parentArticleTitle = useAppSelector(s => s.menu.parentArticleTitle)
     const selectedRelatedArticleIds = useAppSelector(s => s.menu.selectedRelatedArticleIds)
     // 获取左下角菜单树
-    const { data: articleTree, isLoading: treeLoading } = useGetArticleTreeQuery(currentRootArticleId, {
+    const { data: articleTree } = useGetArticleTreeQuery(currentRootArticleId, {
         skip: !currentRootArticleId
     })
     // 获取当前文章的子级、父级文章
     const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId, {
         skip: !currentArticleId || currentTab !== TabTypes.Sub,
     })
+    // 获取当前文章的相关文章
+    const { data: articleRelatedLink, isFetching: relatedLinkLoading } = useGetArticleRelatedQuery(currentArticleId, {
+        skip: !currentArticleId || currentTab !== TabTypes.Related,
+    })
     // 获取收藏文章
     const { data: articleFavorite, isLoading: favoriteLoading } = useGetFavoriteQuery(undefined, {
         skip: currentTab !== TabTypes.Favorite,
     })
-    // 获取当前文章的相关文章
-    const { data: articleRelatedLink, isLoading: relatedLinkLoading } = useGetArticleRelatedQuery(currentArticleId, {
-        skip: !currentArticleId || currentTab !== TabTypes.Related,
-    })
     // 新增文章
-    const [addArticle, { isLoading: addingArticle }] = useAddArticleMutation()
+    const [addArticle] = useAddArticleMutation()
     // 更新选中的相关文章
-    const [updateRelatedArticleIds, { isLoading: updatingRelatedArticleIds }] = useUpdateArticleLinkMutation()
+    const [updateArticle] = useUpdateArticleMutation()
 
     const onClickTreeItem = (item: ArticleTreeNode) => {
         navigate(`/article/${item.value}`, { state: { tabTitle: item.title }})
@@ -77,12 +80,28 @@ export const Sidebar: FC = () => {
         dispatch(setRelatedArticleIds(articleRelatedLink.data.relatedArticles.map(item => item._id)))
     }, [articleRelatedLink])
 
+    // 把选择的相关文章更新到后端
     const onUpdateRelatedArticleIds = (newIds: string[]) => {
         dispatch(setRelatedArticleIds(newIds))
-        updateRelatedArticleIds({
-            selfId: currentArticleId,
-            relatedIds: newIds
+        updateArticle({
+            id: currentArticleId,
+            relatedArticleIds: newIds
         })
+    }
+
+    // 把选择的相关文章更新到相关列表
+    const onUpdateRelatedList = (newItem: ArticleTreeNode) => {
+        const currentLinks = articleRelatedLink?.data?.relatedArticles || []
+        dispatch(articleApi.util.updateQueryData('getArticleRelated', currentArticleId, (data) => {
+            if (!data?.data) return
+            // 不存在就添加
+            if (!currentLinks.find(item => item._id === newItem.value)) {
+                data.data.relatedArticles?.push({ _id: newItem.value, title: newItem.title })
+                return
+            }
+            // 存在就移除
+            data.data.relatedArticles = data.data.relatedArticles.filter(item => item._id !== newItem.value)
+        }))
     }
 
     const renderTabBtn = (item: TabDetail) => {
@@ -133,18 +152,22 @@ export const Sidebar: FC = () => {
         </>)
     }
 
-    const renderRelatedMenu = () => {
+    const renderRelatedMenuList = () => {
         if (relatedLinkLoading) return <div className='text-center'>加载中...</div>
         const currentMenu = articleRelatedLink?.data?.relatedArticles || []
 
+        if (currentMenu.length === 0) return <div className='text-center'>暂无相关笔记</div>
+        return currentMenu.map(renderMenuItem)
+    }
+
+    const renderRelatedMenu = () => {
         return (<>
-            {currentMenu.length === 0
-                ? (<div className='text-center'>暂无相关笔记</div>)
-                : currentMenu.map(renderMenuItem)
-            }
+            {renderRelatedMenuList()}
             <TreeMenu
+                key={currentArticleId}
                 value={selectedRelatedArticleIds}
                 onChange={onUpdateRelatedArticleIds}
+                onClickNode={onUpdateRelatedList}
                 treeData={articleTree?.data || []}
             >
                 <div className={menuItemClassname + ' text-center'}>
@@ -183,7 +206,8 @@ export const Sidebar: FC = () => {
         <DesktopArea>
             <section className='
                 p-4 transition h-screen overflow-y-auto flex flex-col flex-nowrap 
-                bg-slate-700 dark:bg-slate-900 text-white dark:text-gray-200
+                bg-slate-700 dark:bg-slate-900 text-white dark:text-gray-200 
+                w-[240px]
             '>
                 <div className='flex justify-between font-bold text-lg h-[44px] leading-[44px]'>
                     <Link to='/'>

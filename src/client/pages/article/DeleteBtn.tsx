@@ -18,7 +18,7 @@ const DeleteBtn: FC<Props> = (props) => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     // 删除文章
-    const [deleteArticle, { isLoading: deletingArticle }] = useDeleteArticleMutation()
+    const [deleteArticle] = useDeleteArticleMutation()
     // 是否显示删除弹窗
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     // 是否删除子文章
@@ -38,11 +38,13 @@ const DeleteBtn: FC<Props> = (props) => {
     }
 
     return (<>
-        <Button
-            onClick={() => setShowDeleteDialog(true)}
-            className='min-w-[80px]'
-            type='danger'
-        >删除</Button>
+        <div className='w-20'>
+            <Button
+                onClick={() => setShowDeleteDialog(true)}
+                className='w-full'
+                type='danger'
+            >删除</Button>
+        </div>
 
         <Dialog
             visible={showDeleteDialog}

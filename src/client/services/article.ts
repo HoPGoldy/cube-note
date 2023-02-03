@@ -1,15 +1,16 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
 import {
-    AddArticlePostData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp,
+    AddArticleReqData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp,
     ArticleMenuItem,
     ArticleRelatedResp,
-    ArticleTreeNode, ArticleUpdateLinkMutation, ArticleUpdateResp, DeleteArticleMutation,
-    UpdateArticlePostData
+    ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
+    UpdateArticleReqData
 } from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
+import { STATUS_CODE } from '@/config'
 
-const extendedApi = baseApi.injectEndpoints({
+export const articleApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         getArticleContent: build.query<AppResponse<ArticleContentResp>, string>({
             query: (id) => `article/${id}/getContent`,
@@ -23,28 +24,48 @@ const extendedApi = baseApi.injectEndpoints({
             query: (id) => `article/${id}/getRelated`,
             providesTags: (res, err, id) => [{ type: 'articleRelated', id }]
         }),
-        updateArticle: build.mutation<AppResponse<ArticleUpdateResp>, UpdateArticlePostData>({
+        updateArticle: build.mutation<AppResponse<ArticleUpdateResp>, UpdateArticleReqData>({
             query: detail => ({
                 url: 'article/update',
                 method: 'PUT',
                 body: detail
             }),
-            invalidatesTags: (res, err, { id, title, favorite }) => {
-                const tags: TagDescription<any>[] = [{ type: 'articleContent', id }]
+            invalidatesTags: (res, err, { title, favorite }) => {
+                const tags: TagDescription<any>[] = []
 
                 // 如果修改了标题，就要修改父节点的侧边栏（子节点名称）和树菜单
                 if (title) {
                     tags.push({ type: 'articleLink', id: res?.data?.parentArticleId }, 'menu')
                 }
-                // 如果是否收藏改了，就要修改收藏夹
+                // 如果收藏改了，就要修改侧边栏的收藏夹
                 if (favorite !== undefined) {
                     tags.push('favorite')
                 }
 
                 return tags
-            }
+            },
+            async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
+                try {
+                    // 把修改乐观更新到缓存
+                    const { undo } = dispatch(
+                        articleApi.util.updateQueryData('getArticleContent', id, (draft) => {
+                            if (!draft.data) return
+                            if (patch.content) draft.data.content = patch.content
+                            if (patch.title) draft.data.title = patch.title
+                            if (patch.favorite !== undefined) draft.data.favorite = patch.favorite
+                            if (patch.tagIds) draft.data.tagIds = patch.tagIds
+                        })
+                    )
+
+                    const resp = await queryFulfilled
+                    if (resp.data.code !== STATUS_CODE.SUCCESS) undo()
+                }
+                catch (e) {
+                    console.error(e)
+                }
+            },
         }),
-        addArticle: build.mutation<AppResponse<string>, AddArticlePostData>({
+        addArticle: build.mutation<AppResponse<string>, AddArticleReqData>({
             query: (detail) => ({
                 url: 'article/add',
                 method: 'POST',
@@ -68,14 +89,6 @@ const extendedApi = baseApi.injectEndpoints({
             query: (id) => `article/${id}/tree`,
             providesTags: ['menu']
         }),
-        updateArticleLink: build.mutation<AppResponse<string>, ArticleUpdateLinkMutation>({
-            query: (detail) => ({
-                url: 'article/updateLink',
-                method: 'POST',
-                body: detail
-            }),
-            invalidatesTags: (res, err, { selfId }) => [{ type: 'articleRelated', id: selfId }]
-        }),
         getFavorite: build.query<AppResponse<ArticleMenuItem[]>, void>({
             query: () => 'article/favorite',
             providesTags: ['favorite']
@@ -91,6 +104,5 @@ export const {
     useGetArticleLinkQuery,
     useGetArticleRelatedQuery,
     useDeleteArticleMutation,
-    useUpdateArticleLinkMutation,
     useGetFavoriteQuery,
-} = extendedApi
+} = articleApi

@@ -23,15 +23,19 @@ export interface ArticleStorage {
     tagIds: string[]
 }
 
-export interface AddArticlePostData {
+export interface AddArticleReqData {
     title: string
     content: string
     parentId: string
 }
 
-export type UpdateArticlePostData = Partial<AddArticlePostData> & {
+export type UpdateArticleReqData = Partial<Omit<ArticleContent, 'parentArticleIds'>> & {
     id: string
-    favorite?: boolean
+    /**
+     * 更新时只需要指定父节点 id
+     */
+    parentId?: string
+    relatedArticleIds?: string[]
 }
 
 export interface DeleteArticleMutation {
@@ -54,15 +58,19 @@ export type ArticleMenuResp = {
     [key in TabTypes]: ArticleMenuItem[]
 }
 
-export interface ArticleContentResp {
-    _id: string
+interface ArticleContent {
     title: string
     content: string
     createTime: number
     updateTime: number
+    parentArticleIds: string[]
     favorite: boolean
     tagIds: string[]
 }
+
+export type ArticleContentResp = {
+    _id: string
+} & ArticleContent
 
 export interface ArticleLinkResp {
     parentArticleId: string
@@ -87,9 +95,4 @@ export interface ArticleDeleteResp {
 
 export interface ArticleUpdateResp {
     parentArticleId: string
-}
-
-export interface ArticleUpdateLinkMutation {
-    selfId: string
-    relatedIds: string[]
 }

@@ -4,7 +4,7 @@ import { response } from '@/server/utils'
 import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { AddArticlePostData, ArticleUpdateLinkMutation, DeleteArticleMutation, UpdateArticlePostData } from '@/types/article'
+import { AddArticleReqData, DeleteArticleMutation, UpdateArticleReqData } from '@/types/article'
 
 interface Props {
     service: ArticleService
@@ -14,7 +14,7 @@ export const createRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/article' })
 
-    const addArticleSchema = Joi.object<AddArticlePostData>({
+    const addArticleSchema = Joi.object<AddArticleReqData>({
         title: Joi.string().required(),
         content: Joi.string().allow('').required(),
         parentId: Joi.string().required(),
@@ -44,12 +44,14 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const updateArticleSchema = Joi.object<UpdateArticlePostData>({
+    const updateArticleSchema = Joi.object<UpdateArticleReqData>({
         id: Joi.string(),
         title: Joi.string().allow(null),
         content: Joi.string().allow('', null),
         favorite: Joi.boolean().allow(null),
+        relatedArticleIds: Joi.array().items(Joi.string()).allow(null),
         parentId: Joi.string().allow(null),
+        tagIds: Joi.array().items(Joi.string()).allow(null),
     })
 
     // 更新文章
@@ -86,20 +88,6 @@ export const createRouter = (props: Props) => {
     // 批量设置文章的父文章
     router.get('/setParentId', async ctx => {
         response(ctx)
-    })
-
-    const addArticleLinkSchema = Joi.object<ArticleUpdateLinkMutation>({
-        selfId: Joi.string(),
-        relatedIds: Joi.array().items(Joi.string()),
-    })
-
-    // 关联两个文章
-    router.post('/updateLink', async ctx => {
-        const body = validate(ctx, addArticleLinkSchema)
-        if (!body) return
-
-        const resp = await service.updateRelatives(body.selfId, body.relatedIds)
-        response(ctx, resp)
     })
 
     // 查询文章树

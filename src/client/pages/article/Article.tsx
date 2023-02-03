@@ -6,7 +6,6 @@ import { useGetArticleContentQuery, useUpdateArticleMutation } from '../../servi
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTabTitle } from '../../store/tab'
 import Loading from '../../layouts/Loading'
-import { DesktopArea } from '../../layouts/Responsive'
 import Preview from './Preview'
 import Editor from './Editor'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
@@ -14,7 +13,10 @@ import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
 import DeleteBtn from './DeleteBtn'
 import { Star } from '@react-vant/icons'
-import { UpdateArticlePostData } from '@/types/article'
+import { UpdateArticleReqData } from '@/types/article'
+import TagArea from './TagArea'
+import { blurOnEnter } from '@/client/utils/input'
+import { Button } from '@/client/components/Button'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -43,6 +45,8 @@ const About: FC = () => {
     const onContentChangeThrottle = useMemo(() => throttle(setVisibleContent, 500), [])
     // 页面是否在编辑中
     const isEdit = (searchParams.get('mode') === 'edit')
+    // 是否正在编辑标签
+    const [isEditTag, setIsEditTag] = useState(false)
 
     useEffect(() => {
         onContentChangeThrottle(content)
@@ -62,7 +66,7 @@ const About: FC = () => {
         setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
 
-    const saveEdit = async (data: Partial<UpdateArticlePostData>) => {
+    const saveEdit = async (data: Partial<UpdateArticleReqData>) => {
         if (data.title === '') {
             messageWarning('标题不能为空')
             return
@@ -90,13 +94,13 @@ const About: FC = () => {
 
         return (
             <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
-                <div className="flex">
+                <div className="flex mb-2">
                     <input
                         ref={titleInputRef}
                         value={title}
                         disabled={!isEdit}
                         onChange={e => setTitle(e.target.value)}
-                        onKeyUp={e => e.key === 'Enter' && titleInputRef.current?.blur()}
+                        onKeyUp={blurOnEnter}
                         onBlur={() => saveEdit({ title })}
                         placeholder="请输入笔记名"
                         className='font-bold dark:text-slate-200 text-xl bg-inherit mb-4 w-full'
@@ -115,8 +119,23 @@ const About: FC = () => {
                             title={title}
                             currentArticleId={currentArticleId}
                         />}
+
+                        <div className='w-20 ml-2' >
+                            {isEdit ? (
+                                <Button className='w-full' onClick={onClickSaveBtn}>保存</Button>
+                            ) : (
+                                <Button className='w-full' onClick={startEdit}>编辑</Button>
+                            )}
+                        </div>
                     </div>
                 </div>
+
+                <TagArea
+                    articleId={currentArticleId}
+                    value={articleResp?.data?.tagIds || []}
+                    editing={isEditTag}
+                    onEditFinish={setIsEditTag}
+                />
 
                 <div className='flex md:flex-row flex-col flex-nowrap'>
                     {isEdit && (
@@ -148,7 +167,7 @@ const About: FC = () => {
             <ActionButton onClick={() => navigate(-1)}>返回</ActionButton>
         </PageAction>
 
-        <DesktopArea>
+        {/* <DesktopArea>
             <div className='fixed bottom-0 right-0 m-4'>
                 {isEdit ? (
                     <div className='cursor-pointer' onClick={onClickSaveBtn}>
@@ -160,7 +179,7 @@ const About: FC = () => {
                     </div>
                 </>)}
             </div>
-        </DesktopArea>
+        </DesktopArea> */}
     </>)
 }
 

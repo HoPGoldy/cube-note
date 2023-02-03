@@ -1,5 +1,5 @@
 import { ArticleStorage } from '@/types/article'
-import { TagStorage } from '@/types/tag'
+import { TagGroupStorage, TagStorage } from '@/types/tag'
 import { UserStorage } from '@/types/user'
 import { MongoClient } from 'mongodb'
 
@@ -64,13 +64,18 @@ export const createDb = (props: Props) => {
     const getTagCollection = () => database.collection<TagStorage>('tags')
 
     /**
+     * 获取标签分组集合
+     */
+    const getTagGroupCollection = () => database.collection<TagGroupStorage>('tagGroups')
+
+    /**
      * 获取数据库状态
      */
     const getDatabaseStats = async () => database.stats()
 
     return {
         getUserCollection, getUserStorage, updateUserStorage, getReplayAttackNonceCollection,
-        getArticleCollection, getTagCollection, getDatabaseStats
+        getArticleCollection, getTagCollection, getDatabaseStats, getTagGroupCollection
     }
 }
 
