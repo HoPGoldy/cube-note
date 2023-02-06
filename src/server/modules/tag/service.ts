@@ -1,4 +1,4 @@
-import { TagStorage, TagUpdateReqData } from '@/types/tag'
+import { TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
 import { DatabaseAccessor } from '@/server/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import isNil from 'lodash/isNil'
@@ -57,7 +57,88 @@ export const createService = (props: Props) => {
         return { code: 200, data: groupList }
     }
 
-    return { addTag, updateTag, removeTag, getTagList, getGroupList }
+    const addGroup = async (data: TagGroupStorage) => {
+        const collection = getTagGroupCollection()
+        const existGroup = await collection.findOne({ title: data.title })
+        if (existGroup) return { code: 400, msg: '分组已存在' }
+
+        const newGroup = await collection.insertOne(data)
+        return { code: 200, msg: '添加成功', data: newGroup.insertedId.toString() }
+    }
+
+    /**
+     * 删除分组
+     * mehtod 为 force 时，删除分组下的所有标签，否则会移动到未命名分组
+     */
+    const removeGroup = async (id: string, method: string) => {
+        const collection = getTagGroupCollection()
+        await collection.deleteOne({ _id: new ObjectId(id) })
+
+        const tagCollection = getTagCollection()
+        // 删掉下属标签
+        if (method === 'force') {
+            await tagCollection.deleteMany({ groupId: id })
+        }
+        // 把该分组下的标签移动到未分组
+        else {
+            await tagCollection.updateMany({ groupId: id }, { $set: { groupId: '' } })
+        }
+
+        return { code: 200 }
+    }
+
+    const updateGroup = async (detail: TagUpdateReqData) => {
+        const collection = getTagGroupCollection()
+        const _id = new ObjectId(detail.id)
+
+        await collection.updateOne({ _id }, { $set: {
+            title: detail.title
+        } })
+
+        return { code: 200 }
+    }
+
+    const batchSetColor = async (ids: string[], color: string) => {
+        const collection = getTagCollection()
+        await collection.updateMany({
+            _id: {
+                $in: ids.map(id => new ObjectId(id))
+            }
+        }, {
+            $set: { color }
+        })
+
+        return { code: 200 }
+    }
+
+    const batchSetGroup = async (ids: string[], groupId: string) => {
+        const collection = getTagCollection()
+        await collection.updateMany({
+            _id: {
+                $in: ids.map(id => new ObjectId(id))
+            }
+        }, {
+            $set: { groupId }
+        })
+
+        return { code: 200 }
+    }
+
+    const batchRemoveTag = async (ids: string[]) => {
+        const collection = getTagCollection()
+        await collection.deleteMany({
+            _id: {
+                $in: ids.map(id => new ObjectId(id))
+            }
+        })
+
+        return { code: 200 }
+    }
+
+    return {
+        addTag, updateTag, removeTag, getTagList, getGroupList, addGroup, removeGroup, updateGroup,
+        batchSetColor, batchSetGroup, batchRemoveTag
+    }
 }
 
 export type TagService = ReturnType<typeof createService>

@@ -91,7 +91,7 @@ const TagArea: FC<Props> = (props) => {
             )}
             <EditTagEntry
                 onClick={() => onEditFinish(!editing)}
-                label={editing ? '结束编辑' : '编辑标签'}
+                label={editing ? '结束编辑' : (tagList.length > 0 ? '编辑标签' : '新增标签')}
             />
         </div>
     )

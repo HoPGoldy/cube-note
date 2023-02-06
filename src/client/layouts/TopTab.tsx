@@ -7,6 +7,7 @@ import { addTab, removeTab, setCurrentTab, TabItem } from '../store/tab'
 const routeName: Record<string, string> = {
     '/setting': '设置',
     '/about': '关于',
+    '/tags': '标签管理',
 }
 
 /**
@@ -78,7 +79,7 @@ const TopTab: FC = () => {
                 onClick={() => onClickTab(item)}
             >
                 {item.title}
-                {tabList.length > 1 && (
+                {tabList.length > 1 && item.path === currentTab && (
                     <Cross className='inline' onClick={e => onCloseTab(e, item)} />
                 )}
             </div>

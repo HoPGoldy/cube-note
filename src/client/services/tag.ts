@@ -1,6 +1,6 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { TagListItem, TagStorage } from '@/types/tag'
+import { SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage } from '@/types/tag'
 import { STATUS_CODE } from '@/config'
 
 export const tagApi = baseApi.injectEndpoints({
@@ -41,11 +41,65 @@ export const tagApi = baseApi.injectEndpoints({
                 )
             }
         }),
+        getTagGroup: build.query<AppResponse<TagGroupListItem[]>, void>({
+            query: () => 'tag/group/list',
+        }),
+        addTagGroup: build.mutation<AppResponse<string>, TagGroupStorage>({
+            query: data => ({
+                url: 'tag/group/add',
+                method: 'POST',
+                body: data
+            }),
+            async onQueryStarted(reqData, { dispatch, queryFulfilled }) {
+                const { data: updatedPost } = await queryFulfilled
+                if (updatedPost.code !== STATUS_CODE.SUCCESS || !updatedPost.data) return
+
+                const _id = updatedPost.data
+                dispatch(
+                    tagApi.util.updateQueryData('getTagGroup', undefined, (draft) => {
+                        if (!draft.data) return
+                        draft.data.push({ _id, ...reqData })
+                    })
+                )
+            }
+        }),
+        updateTagGroup: build.mutation<AppResponse<string>, TagGroupUpdateReqData>({
+            query: data => ({
+                url: 'tag/group/update',
+                method: 'PUT',
+                body: data
+            }),
+            async onQueryStarted(reqData, { dispatch, queryFulfilled }) {
+                const { undo } = dispatch(
+                    tagApi.util.updateQueryData('getTagGroup', undefined, (draft) => {
+                        if (!draft.data) return
+                        if (reqData.title) {
+                            const target = draft.data.find(item => item._id === reqData.id)
+                            if (target) target.title = reqData.title
+                        }
+                    })
+                )
+
+                const resp = await queryFulfilled
+                if (resp.data.code !== STATUS_CODE.SUCCESS) undo()
+            }
+        }),
+        setTagGroup: build.mutation<AppResponse<string>, SetTagGroupReqData>({
+            query: data => ({
+                url: 'tag/batch/setGroup',
+                method: 'POST',
+                body: data
+            }),
+        }),
     })
 })
 
 export const {
     useGetTagListQuery,
     useAddTagMutation,
-    useDeleteTagMutation
+    useDeleteTagMutation,
+    useGetTagGroupQuery,
+    useAddTagGroupMutation,
+    useUpdateTagGroupMutation,
+    useSetTagGroupMutation,
 } = tagApi
