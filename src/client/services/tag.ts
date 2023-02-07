@@ -1,12 +1,13 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage } from '@/types/tag'
+import { DeleteTagReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage } from '@/types/tag'
 import { STATUS_CODE } from '@/config'
 
 export const tagApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         getTagList: build.query<AppResponse<TagListItem[]>, void>({
             query: () => 'tag/list',
+            providesTags: ['tagList'],
         }),
         addTag: build.mutation<AppResponse<string>, TagStorage>({
             query: data => ({
@@ -90,6 +91,25 @@ export const tagApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: data
             }),
+            invalidatesTags: ['tagList'],
+        }),
+        deleteTags: build.mutation<AppResponse<string>, DeleteTagReqData>({
+            query: data => ({
+                url: 'tag/batch/remove',
+                method: 'POST',
+                body: data
+            }),
+            async onQueryStarted(reqData, { dispatch, queryFulfilled }) {
+                const { data: updatedPost } = await queryFulfilled
+                if (updatedPost.code !== STATUS_CODE.SUCCESS) return
+
+                dispatch(
+                    tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
+                        if (!draft.data) return
+                        draft.data = draft.data.filter((item) => !reqData.ids.includes(item._id))
+                    })
+                )
+            }
         }),
     })
 })
@@ -102,4 +122,5 @@ export const {
     useAddTagGroupMutation,
     useUpdateTagGroupMutation,
     useSetTagGroupMutation,
+    useDeleteTagsMutation,
 } = tagApi

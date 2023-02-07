@@ -16,7 +16,7 @@ export const Tag: FC<Props> = (props) => {
 
     return (
         <div
-            className='rounded px-2 mb-1 mr-1 text-white cursor-pointer'
+            className='rounded px-2 mb-1 mr-1 text-white cursor-pointer h-min'
             style={{ backgroundColor: color, opacity: selected ? 1 : 0.3 }}
             onClick={() => onClick?.(id)}
         >

@@ -4,7 +4,7 @@ import { response } from '@/server/utils'
 import { TagService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupStorage, TagGroupUpdateReqData, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { DeleteTagReqData, SetTagColorReqData, SetTagGroup, SetTagGroupReqData, TagGroupStorage, TagGroupUpdateReqData, TagStorage, TagUpdateReqData } from '@/types/tag'
 
 interface Props {
     service: TagService
@@ -113,8 +113,10 @@ export const createRouter = (props: Props) => {
     })
 
     const batchSetGroupSchema = Joi.object<SetTagGroupReqData>({
-        groupId: Joi.string().required(),
-        ids: Joi.array().items(Joi.string()).required(),
+        changeList: Joi.array().items(Joi.object<SetTagGroup>({
+            groupId: Joi.string().required(),
+            ids: Joi.array().items(Joi.string()).required(),
+        }))
     })
 
     // 批量设置标签分组
@@ -122,7 +124,7 @@ export const createRouter = (props: Props) => {
         const body = validate(ctx, batchSetGroupSchema)
         if (!body) return
 
-        const resp = await service.batchSetGroup(body.ids, body.groupId)
+        const resp = await service.batchSetGroup(body.changeList)
         response(ctx, resp)
     })
 

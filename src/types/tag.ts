@@ -35,9 +35,13 @@ export interface SetTagColorReqData {
 }
 
 /** 批量设置标签分组 */
-export interface SetTagGroupReqData {
+export interface SetTagGroup {
     ids: string[]
     groupId: string
+}
+
+export interface SetTagGroupReqData {
+    changeList: SetTagGroup[]
 }
 
 /** 批量删除标签 */
