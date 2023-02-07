@@ -44,6 +44,7 @@ export const tagApi = baseApi.injectEndpoints({
         }),
         getTagGroup: build.query<AppResponse<TagGroupListItem[]>, void>({
             query: () => 'tag/group/list',
+            providesTags: ['tagGroupList'],
         }),
         addTagGroup: build.mutation<AppResponse<string>, TagGroupStorage>({
             query: data => ({
@@ -111,6 +112,13 @@ export const tagApi = baseApi.injectEndpoints({
                 )
             }
         }),
+        deleteTagGroup: build.mutation<AppResponse<string>, { id: string, method: string }>({
+            query: data => ({
+                url: `tag/group/${data.id}/${data.method}/removeGroup`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['tagGroupList', 'tagList'],
+        }),
     })
 })
 
@@ -123,4 +131,5 @@ export const {
     useUpdateTagGroupMutation,
     useSetTagGroupMutation,
     useDeleteTagsMutation,
+    useDeleteTagGroupMutation,
 } = tagApi

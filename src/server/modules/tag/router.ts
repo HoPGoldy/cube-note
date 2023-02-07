@@ -78,7 +78,7 @@ export const createRouter = (props: Props) => {
     })
 
     // 删除分组
-    router.delete('/:id/:method/removeGroup', async ctx => {
+    router.delete('/group/:id/:method/removeGroup', async ctx => {
         const { id, method } = ctx.params
         const resp = await service.removeGroup(id, method)
         response(ctx, resp)

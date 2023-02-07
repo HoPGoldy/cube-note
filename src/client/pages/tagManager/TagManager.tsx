@@ -1,20 +1,20 @@
-import React, { FC, useState, useEffect, useRef, useMemo } from 'react'
+import React, { FC, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PageContent, PageAction, ActionButton } from '../layouts/PageWithAction'
-import { SetTagGroup, SetTagGroupReqData, TagGroupListItem, TagListItem } from '@/types/tag'
-import { useAddTagGroupMutation, useDeleteTagsMutation, useGetTagGroupQuery, useGetTagListQuery, useSetTagGroupMutation, useUpdateTagGroupMutation } from '../services/tag'
-import Loading from '../layouts/Loading'
+import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
+import { SetTagGroup, TagGroupListItem, TagListItem } from '@/types/tag'
+import { useAddTagGroupMutation, useDeleteTagsMutation, useGetTagGroupQuery, useGetTagListQuery, useSetTagGroupMutation, useUpdateTagGroupMutation } from '../../services/tag'
+import Loading from '../../layouts/Loading'
 import groupBy from 'lodash/groupBy'
 import cloneDeep from 'lodash/cloneDeep'
-import debounce from 'lodash/debounce'
 import { ReactSortable } from 'react-sortablejs'
-import { Button } from '../components/Button'
+import { Button } from '../../components/Button'
 import dayjs from 'dayjs'
-import { Tag } from '../components/Tag'
-import { blurOnEnter } from '../utils/input'
+import { Tag } from '../../components/Tag'
+import { blurOnEnter } from '../../utils/input'
 import { STATUS_CODE } from '@/config'
-import { messageError, messageSuccess, messageWarning } from '../utils/message'
+import { messageError, messageSuccess, messageWarning } from '../../utils/message'
 import { DEFAULT_TAG_GROUP } from '@/constants'
+import { useDeleteGroup } from './DeleteGroup'
 
 type FontendTagListItem = TagListItem & {
     id: string
@@ -74,6 +74,8 @@ const TagManager: FC = () => {
     const [updateTagGroup] = useSetTagGroupMutation()
     // 删除标签
     const [deleteTag] = useDeleteTagsMutation()
+    // 删除分组
+    const { renderDeleteBtn, renderDeleteModal } = useDeleteGroup()
 
     useEffect(() => {
         if (!tagGroupResp?.data) return
@@ -203,7 +205,7 @@ const TagManager: FC = () => {
                     onBlur={() => onSaveGroupTitle(item)}
                     disabled={item._id === DEFAULT_TAG_GROUP}
                 />
-                <Button type="danger" onClick={onStartDelete}>删除分组</Button>
+                {renderDeleteBtn(item)}
                 <ReactSortable<FontendTagListItem>
                     list={tags}
                     setList={list => onUpdateTagList(item._id, list)}
@@ -240,6 +242,8 @@ const TagManager: FC = () => {
         <PageAction>
             <ActionButton onClick={() => navigate(-1)}>返回</ActionButton>
         </PageAction>
+
+        {renderDeleteModal()}
     </>)
 }
 
