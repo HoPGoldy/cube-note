@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
-import { SetTagGroup, TagGroupListItem, TagListItem } from '@/types/tag'
+import { FontendTagListItem, SetTagGroup, TagGroupListItem, TagListItem } from '@/types/tag'
 import { useAddTagGroupMutation, useDeleteTagsMutation, useGetTagGroupQuery, useGetTagListQuery, useSetTagGroupMutation, useUpdateTagGroupMutation } from '../../services/tag'
 import Loading from '../../layouts/Loading'
 import groupBy from 'lodash/groupBy'
@@ -15,10 +15,7 @@ import { STATUS_CODE } from '@/config'
 import { messageError, messageSuccess, messageWarning } from '../../utils/message'
 import { DEFAULT_TAG_GROUP } from '@/constants'
 import { useDeleteGroup } from './DeleteGroup'
-
-type FontendTagListItem = TagListItem & {
-    id: string
-}
+import { useSetGroupColor } from './SetGroupColor'
 
 /**
  * 获取哪些标签的分组发生了变化
@@ -74,8 +71,10 @@ const TagManager: FC = () => {
     const [updateTagGroup] = useSetTagGroupMutation()
     // 删除标签
     const [deleteTag] = useDeleteTagsMutation()
-    // 删除分组
+    // 功能 - 删除分组
     const { renderDeleteBtn, renderDeleteModal } = useDeleteGroup()
+    // 功能 - 设置分组内标签颜色
+    const { renderColorPicker, renderSetGroupColorBtn } = useSetGroupColor({ groupedTagDict })
 
     useEffect(() => {
         if (!tagGroupResp?.data) return
@@ -206,6 +205,7 @@ const TagManager: FC = () => {
                     disabled={item._id === DEFAULT_TAG_GROUP}
                 />
                 {renderDeleteBtn(item)}
+                {renderSetGroupColorBtn(item)}
                 <ReactSortable<FontendTagListItem>
                     list={tags}
                     setList={list => onUpdateTagList(item._id, list)}
@@ -244,6 +244,7 @@ const TagManager: FC = () => {
         </PageAction>
 
         {renderDeleteModal()}
+        {renderColorPicker()}
     </>)
 }
 

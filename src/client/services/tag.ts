@@ -1,6 +1,6 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { DeleteTagReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage } from '@/types/tag'
+import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage } from '@/types/tag'
 import { STATUS_CODE } from '@/config'
 
 export const tagApi = baseApi.injectEndpoints({
@@ -94,6 +94,14 @@ export const tagApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ['tagList'],
         }),
+        setTagColor: build.mutation<AppResponse<string>, SetTagColorReqData>({
+            query: data => ({
+                url: 'tag/batch/setColor',
+                method: 'POST',
+                body: data
+            }),
+            invalidatesTags: ['tagList'],
+        }),
         deleteTags: build.mutation<AppResponse<string>, DeleteTagReqData>({
             query: data => ({
                 url: 'tag/batch/remove',
@@ -130,6 +138,7 @@ export const {
     useAddTagGroupMutation,
     useUpdateTagGroupMutation,
     useSetTagGroupMutation,
+    useSetTagColorMutation,
     useDeleteTagsMutation,
     useDeleteTagGroupMutation,
 } = tagApi

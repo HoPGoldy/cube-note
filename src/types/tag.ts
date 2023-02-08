@@ -48,3 +48,7 @@ export interface SetTagGroupReqData {
 export interface DeleteTagReqData {
     ids: string[]
 }
+
+export type FontendTagListItem = TagListItem & {
+    id: string
+}
