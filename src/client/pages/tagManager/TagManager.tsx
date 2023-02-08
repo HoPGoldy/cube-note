@@ -1,47 +1,20 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
-import { FontendTagListItem, SetTagGroup, TagGroupListItem, TagListItem } from '@/types/tag'
-import { useAddTagGroupMutation, useDeleteTagsMutation, useGetTagGroupQuery, useGetTagListQuery, useSetTagGroupMutation, useUpdateTagGroupMutation } from '../../services/tag'
+import { FontendTagListItem, TagGroupListItem, TagStorage } from '@/types/tag'
+import { useAddTagGroupMutation, useAddTagMutation, useGetTagGroupQuery, useGetTagListQuery, useUpdateTagGroupMutation } from '../../services/tag'
 import Loading from '../../layouts/Loading'
 import groupBy from 'lodash/groupBy'
 import cloneDeep from 'lodash/cloneDeep'
 import { Button } from '../../components/Button'
 import dayjs from 'dayjs'
-import { Tag } from '../../components/Tag'
+import { AddTag, Tag } from '../../components/Tag'
 import { blurOnEnter } from '../../utils/input'
-import { STATUS_CODE } from '@/config'
-import { messageError, messageSuccess, messageWarning } from '../../utils/message'
 import { DEFAULT_TAG_GROUP } from '@/constants'
 import { useDeleteGroup } from './DeleteGroup'
 import { useSetGroupColor } from './SetGroupColor'
 import { useTagConfig } from './TagConfig'
-
-/**
- * 获取哪些标签的分组发生了变化
- */
-const diffTagGroup = (oldGroup: TagListItem[], newGroup: Record<string, FontendTagListItem[]>) => {
-    // 找出两者的不同
-    const oldTagMap = new Map<string, TagListItem>(
-        oldGroup.map(item => [item._id, item])
-    )
-    const changedGroups: SetTagGroup[] = []
-    for (const key in newGroup) {
-        const changedGroup: SetTagGroup = {
-            groupId: key,
-            ids: [],
-        }
-        newGroup[key].forEach(item => {
-            const oldTag = oldTagMap.get(item._id)
-            if (!oldTag) return
-            if (oldTag.groupId === key || (!oldTag.groupId && key === DEFAULT_TAG_GROUP)) return
-            changedGroup.ids.push(item._id)
-        })
-        changedGroups.push(changedGroup)
-    }
-
-    return changedGroups.filter(item => item.ids.length > 0)
-}
+import { useBatchOperation } from './BatchOperation'
 
 /**
  * 标签管理
@@ -57,26 +30,22 @@ const TagManager: FC = () => {
     const [tagGroups, setTagGroups] = useState<TagGroupListItem[]>([])
     // 分组后的标签列表
     const [groupedTagDict, setGroupedTagDict] = useState<Record<string, FontendTagListItem[]>>({})
-    // 是否为删除模式
-    const [isDeleteMode, setIsDeleteMode] = useState(false)
-    // 当前选中的删除标签
-    const [selectedDeleteTagIds, setSelectedDeleteTagIds] = useState<string[]>([])
     // 新增分组
     const [addTagGroup, { isLoading: isAddingGroup }] = useAddTagGroupMutation()
     // 标题输入框引用
     const titleInputRefs = useRef<Record<string, HTMLInputElement>>({})
     // 更新分组标题
     const [updateGroup] = useUpdateTagGroupMutation()
-    // 更新标签分组
-    const [updateTagGroup] = useSetTagGroupMutation()
-    // 删除标签
-    const [deleteTag] = useDeleteTagsMutation()
+    // 新增标签
+    const [addTag, { isLoading: isAddingTag }] = useAddTagMutation()
     // 功能 - 删除分组
-    const { renderDeleteBtn, renderDeleteModal } = useDeleteGroup()
+    const { onClickDeleteGroup, renderDeleteModal } = useDeleteGroup()
     // 功能 - 设置分组内标签颜色
-    const { renderColorPicker, renderSetGroupColorBtn } = useSetGroupColor({ groupedTagDict })
+    const { renderColorPicker, onClickSetGroupColor } = useSetGroupColor({ groupedTagDict })
     // 功能 - 标签详情管理
     const { renderTagDetail, showTagDetail } = useTagConfig()
+    // 功能 - 批量操作
+    const { isBatch, isTagSelected, onSelectTag, renderBatchBtn } = useBatchOperation()
 
     useEffect(() => {
         if (!tagGroupResp?.data) return
@@ -96,27 +65,6 @@ const TagManager: FC = () => {
         )
         setGroupedTagDict(groupedTagList)
     }, [tagListResp?.data])
-
-    const onSaveConfig = async () => {
-        const oldTagGroup = tagListResp?.data
-        if (!oldTagGroup) {
-            console.error('找不到 oldTagGroup，更新失败')
-            return
-        }
-
-        // 找出两者的不同
-        const changedGroups = diffTagGroup(oldTagGroup, groupedTagDict)
-        if (changedGroups.length === 0) {
-            messageWarning('没有需要更新的内容')
-            return
-        }
-        const resp = await updateTagGroup({ changeList: changedGroups }).unwrap()
-        if (resp.code !== STATUS_CODE.SUCCESS) {
-            messageError(resp.msg || '更新失败，请稍后再试')
-            return
-        }
-        messageSuccess('更新成功')
-    }
 
     const onAddGroup = async () => {
         const title = `新分组 ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`
@@ -141,46 +89,29 @@ const TagManager: FC = () => {
         updateGroup({ id: item._id, title: item.title }) 
     }
 
-    const onStartDelete = () => {
-        setIsDeleteMode(true)
-    }
-
-    const onSaveDelete = async () => {
-        if (selectedDeleteTagIds.length === 0) {
-            messageWarning('请选择需要删除的标签')
-            return
-        }
-        const resp = await deleteTag({ ids: selectedDeleteTagIds }).unwrap()
-        if (resp.code !== STATUS_CODE.SUCCESS) return
-
-        messageSuccess('删除成功')
-        setIsDeleteMode(false)
-        setSelectedDeleteTagIds([])
-    }
-
-    const onCancelDelete = () => {
-        setIsDeleteMode(false)
-        setSelectedDeleteTagIds([])
-    }
-
     const onClickTag = (item: FontendTagListItem) => {
-        if (isDeleteMode) {
-            setSelectedDeleteTagIds([...selectedDeleteTagIds, item._id])
-            return
-        }
+        if (isBatch) onSelectTag(item._id)
+        else showTagDetail(item)
+    }
 
-        showTagDetail(item)
+    const onClickAddBtn = async (title: string, groupId: string) => {
+        if (!title) return
+
+        const data: TagStorage = { title, color: '#404040' }
+        if (groupId !== DEFAULT_TAG_GROUP) data.groupId = groupId
+
+        const resp = await addTag(data).unwrap()
+        if (!resp?.data) return
     }
 
     const renderTagItem = (item: FontendTagListItem) => {
-        const selected = isDeleteMode && selectedDeleteTagIds.includes(item._id)
         return (
             <Tag
                 key={item._id}
                 label={item.title}
                 id={item._id}
-                color={selected ? 'red' : item.color}
-                selected={isDeleteMode ? selected : true}
+                color={item.color}
+                selected={isBatch ? isTagSelected(item._id) : undefined}
                 onClick={() => onClickTag(item)}
             />
         )
@@ -199,10 +130,22 @@ const TagManager: FC = () => {
                     onBlur={() => onSaveGroupTitle(item)}
                     disabled={item._id === DEFAULT_TAG_GROUP}
                 />
-                {renderDeleteBtn(item)}
-                {renderSetGroupColorBtn(item)}
+
+                {!isBatch && <Button
+                    type="danger"
+                    onClick={() => onClickDeleteGroup(item)}
+                >删除分组</Button>}
+
+                {!isBatch && <Button
+                    onClick={() => onClickSetGroupColor(item)}
+                >设置分组颜色</Button>}
+
                 <div className='flex flex-wrap min-h-[50px]'>
                     {tags.map(renderTagItem)}
+                    {!isBatch && <AddTag
+                        onFinish={title => onClickAddBtn(title, item._id)}
+                        loading={isAddingTag}
+                    />}
                 </div>
             </div>
         )
@@ -213,14 +156,7 @@ const TagManager: FC = () => {
 
         return (<>
             <Button onClick={onAddGroup} loading={isAddingGroup}>新增分组</Button>
-            {isDeleteMode
-                ? (<>
-                    <Button onClick={onCancelDelete}>放弃删除</Button>
-                    <Button type='danger' onClick={onSaveDelete}>确认删除</Button>
-                </>)
-                : <Button onClick={onStartDelete}>删除标签</Button>
-            }
-            <Button onClick={onSaveConfig}>保存</Button>
+            {renderBatchBtn()}
             {tagGroups.map(renderTagGroupItem)}
         </>)
     }

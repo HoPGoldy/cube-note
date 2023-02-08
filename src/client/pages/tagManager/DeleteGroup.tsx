@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import { TagGroupListItem } from '@/types/tag'
 import { useDeleteTagGroupMutation } from '../../services/tag'
-import { Button } from '../../components/Button'
 import { messageSuccess } from '../../utils/message'
-import { DEFAULT_TAG_GROUP } from '@/constants'
 import { Checkbox, Dialog } from 'react-vant'
 
 export const useDeleteGroup = () => {
@@ -14,7 +12,7 @@ export const useDeleteGroup = () => {
     // 删除分组请求
     const [deleteTagGroup] = useDeleteTagGroupMutation()
 
-    const onClickDelete = (item: TagGroupListItem) => {
+    const onClickDeleteGroup = (item: TagGroupListItem) => {
         setDeleteGroup(item)
     }
 
@@ -31,16 +29,6 @@ export const useDeleteGroup = () => {
     const closeDeleteModal = () => {
         setDeleteGroup(null)
         setDeleteChildren(false)
-    }
-
-    const renderDeleteBtn = (item: TagGroupListItem) => {
-        if (item._id === DEFAULT_TAG_GROUP) return null
-        return (
-            <Button
-                type="danger"
-                onClick={() => onClickDelete(item)}
-            >删除分组</Button>
-        )
     }
 
     const renderDeleteModal = () => {
@@ -76,6 +64,6 @@ export const useDeleteGroup = () => {
     }
 
     return {
-        renderDeleteBtn, renderDeleteModal
+        renderDeleteModal, onClickDeleteGroup
     }
 }

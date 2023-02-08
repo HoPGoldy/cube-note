@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { FontendTagListItem, TagGroupListItem } from '@/types/tag'
 import { useSetTagColorMutation } from '../../services/tag'
-import { Button } from '../../components/Button'
 import { messageSuccess, messageWarning } from '../../utils/message'
 import { ColorPicker } from '@/client/components/ColorPicker'
 import { STATUS_CODE } from '@/config'
@@ -40,14 +39,6 @@ export const useSetGroupColor = (props: Props) => {
         messageSuccess('修改成功')
     }
 
-    const renderSetGroupColorBtn = (item: TagGroupListItem) => {
-        return (
-            <Button
-                onClick={() => onClickSetGroupColor(item)}
-            >设置分组颜色</Button>
-        )
-    }
-
     const renderColorPicker = () => {
         return (
             <ColorPicker
@@ -59,6 +50,6 @@ export const useSetGroupColor = (props: Props) => {
     }
 
     return {
-        renderSetGroupColorBtn, renderColorPicker
+        onClickSetGroupColor, renderColorPicker
     }
 }

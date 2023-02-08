@@ -59,7 +59,7 @@ export const AddTag: FC<AddTagProps> = (props) => {
 
     return (
         <div
-            className='rounded px-2 mb-1 mr-1 border border-slate-600 cursor-pointer'
+            className='rounded px-2 mb-1 mr-1 border border-slate-600 cursor-pointer h-min'
         >
             {renderContent()}
         </div>
