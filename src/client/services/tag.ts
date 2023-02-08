@@ -1,6 +1,6 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage } from '@/types/tag'
+import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage, TagUpdateReqData } from '@/types/tag'
 import { STATUS_CODE } from '@/config'
 
 export const tagApi = baseApi.injectEndpoints({
@@ -24,6 +24,26 @@ export const tagApi = baseApi.injectEndpoints({
                     tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
                         if (!draft.data) return
                         draft.data.push({ _id, ...reqData })
+                    })
+                )
+            }
+        }),
+        updateTag: build.mutation<AppResponse<string>, TagUpdateReqData>({
+            query: data => ({
+                url: 'tag/update',
+                method: 'PUT',
+                body: data
+            }),
+            async onQueryStarted({ id, ...newTag }, { dispatch, queryFulfilled }) {
+                const { data: updatedPost } = await queryFulfilled
+                if (updatedPost.code !== STATUS_CODE.SUCCESS) return
+
+                dispatch(
+                    tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
+                        if (!draft.data) return
+                        const targetTag = draft.data.find(item => item._id === id)
+                        if (!targetTag) return
+                        Object.assign(targetTag, newTag)
                     })
                 )
             }
@@ -133,6 +153,7 @@ export const tagApi = baseApi.injectEndpoints({
 export const {
     useGetTagListQuery,
     useAddTagMutation,
+    useUpdateTagMutation,
     useDeleteTagMutation,
     useGetTagGroupQuery,
     useAddTagGroupMutation,

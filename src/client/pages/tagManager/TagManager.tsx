@@ -6,7 +6,6 @@ import { useAddTagGroupMutation, useDeleteTagsMutation, useGetTagGroupQuery, use
 import Loading from '../../layouts/Loading'
 import groupBy from 'lodash/groupBy'
 import cloneDeep from 'lodash/cloneDeep'
-import { ReactSortable } from 'react-sortablejs'
 import { Button } from '../../components/Button'
 import dayjs from 'dayjs'
 import { Tag } from '../../components/Tag'
@@ -16,6 +15,7 @@ import { messageError, messageSuccess, messageWarning } from '../../utils/messag
 import { DEFAULT_TAG_GROUP } from '@/constants'
 import { useDeleteGroup } from './DeleteGroup'
 import { useSetGroupColor } from './SetGroupColor'
+import { useTagConfig } from './TagConfig'
 
 /**
  * 获取哪些标签的分组发生了变化
@@ -62,7 +62,7 @@ const TagManager: FC = () => {
     // 当前选中的删除标签
     const [selectedDeleteTagIds, setSelectedDeleteTagIds] = useState<string[]>([])
     // 新增分组
-    const [addTagGroup] = useAddTagGroupMutation()
+    const [addTagGroup, { isLoading: isAddingGroup }] = useAddTagGroupMutation()
     // 标题输入框引用
     const titleInputRefs = useRef<Record<string, HTMLInputElement>>({})
     // 更新分组标题
@@ -75,6 +75,8 @@ const TagManager: FC = () => {
     const { renderDeleteBtn, renderDeleteModal } = useDeleteGroup()
     // 功能 - 设置分组内标签颜色
     const { renderColorPicker, renderSetGroupColorBtn } = useSetGroupColor({ groupedTagDict })
+    // 功能 - 标签详情管理
+    const { renderTagDetail, showTagDetail } = useTagConfig()
 
     useEffect(() => {
         if (!tagGroupResp?.data) return
@@ -88,7 +90,6 @@ const TagManager: FC = () => {
 
     useEffect(() => {
         if (!tagListResp?.data) return
-
         const groupedTagList = groupBy(
             tagListResp.data.map(item => ({ ...item, id: item._id })),
             item => item.groupId ? item.groupId : DEFAULT_TAG_GROUP
@@ -115,15 +116,6 @@ const TagManager: FC = () => {
             return
         }
         messageSuccess('更新成功')
-    }
-
-    const onUpdateTagList = (groupId: string, tags: FontendTagListItem[]) => {
-        const newTagDict = {
-            ...groupedTagDict,
-            [groupId]: tags
-        }
-
-        setGroupedTagDict(newTagDict)
     }
 
     const onAddGroup = async () => {
@@ -174,7 +166,10 @@ const TagManager: FC = () => {
     const onClickTag = (item: FontendTagListItem) => {
         if (isDeleteMode) {
             setSelectedDeleteTagIds([...selectedDeleteTagIds, item._id])
+            return
         }
+
+        showTagDetail(item)
     }
 
     const renderTagItem = (item: FontendTagListItem) => {
@@ -206,14 +201,9 @@ const TagManager: FC = () => {
                 />
                 {renderDeleteBtn(item)}
                 {renderSetGroupColorBtn(item)}
-                <ReactSortable<FontendTagListItem>
-                    list={tags}
-                    setList={list => onUpdateTagList(item._id, list)}
-                    className='flex flex-wrap min-h-[50px]'
-                    group='tagGroup'
-                >
+                <div className='flex flex-wrap min-h-[50px]'>
                     {tags.map(renderTagItem)}
-                </ReactSortable>
+                </div>
             </div>
         )
     }
@@ -222,7 +212,7 @@ const TagManager: FC = () => {
         if (isLoading || isLoadingTagList) return <Loading />
 
         return (<>
-            <Button onClick={onAddGroup}>新增分组</Button>
+            <Button onClick={onAddGroup} loading={isAddingGroup}>新增分组</Button>
             {isDeleteMode
                 ? (<>
                     <Button onClick={onCancelDelete}>放弃删除</Button>
@@ -245,6 +235,7 @@ const TagManager: FC = () => {
 
         {renderDeleteModal()}
         {renderColorPicker()}
+        {renderTagDetail()}
     </>)
 }
 

@@ -11,8 +11,6 @@ interface Props {
 }
 
 export const useSetGroupColor = (props: Props) => {
-    // 是否显示颜色选择器
-    const [showColorPicker, setShowColorPicker] = useState(false)
     // 当前选中的分组
     const [currentGroup, setCurrentGroup] = useState<TagGroupListItem | null>(null)
     // 批量设置分组颜色
@@ -20,11 +18,9 @@ export const useSetGroupColor = (props: Props) => {
 
     const onClickSetGroupColor = (item: TagGroupListItem) => {
         setCurrentGroup(item)
-        setShowColorPicker(true)
     }
 
     const onClosePicker = () => {
-        setShowColorPicker(false)
         setCurrentGroup(null)
     }
 
@@ -56,7 +52,7 @@ export const useSetGroupColor = (props: Props) => {
         return (
             <ColorPicker
                 onChange={onSelectedColor}
-                visible={showColorPicker}
+                visible={!!currentGroup}
                 onClose={onClosePicker}
             />
         )

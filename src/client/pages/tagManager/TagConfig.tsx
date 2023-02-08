@@ -1,68 +1,123 @@
 import React, { useState } from 'react'
-import { FontendTagListItem, TagGroupListItem } from '@/types/tag'
-import { useSetTagColorMutation } from '../../services/tag'
+import { FontendTagListItem } from '@/types/tag'
+import { useDeleteTagsMutation, useUpdateTagMutation } from '../../services/tag'
 import { Button } from '../../components/Button'
-import { messageSuccess, messageWarning } from '../../utils/message'
+import { messageSuccess } from '../../utils/message'
 import { ColorPicker } from '@/client/components/ColorPicker'
 import { STATUS_CODE } from '@/config'
+import { Popup } from 'react-vant'
+import { blurOnEnter } from '@/client/utils/input'
+import { GroupPicker } from '@/client/components/GroupPicker'
 
-interface Props {
-    groupedTagDict: Record<string, FontendTagListItem[]>
-}
-
-export const useTagConfig = (props: Props) => {
-    // 是否显示颜色选择器
+export const useTagConfig = () => {
+    // 当前选中的标签详情
+    const [currentTag, setCurrentTag] = useState<FontendTagListItem | null>(null)
+    // 是否显示颜色选择弹窗
     const [showColorPicker, setShowColorPicker] = useState(false)
-    // 当前选中的分组
-    const [currentGroup, setCurrentGroup] = useState<TagGroupListItem | null>(null)
-    // 批量设置分组颜色
-    const [setGroupColor] = useSetTagColorMutation()
+    // 是否显示分组选择弹窗
+    const [showGroupPicker, setShowGroupPicker] = useState(false)
+    // 删除标签
+    const [deleteTag] = useDeleteTagsMutation()
+    // 更新标签
+    const [updateTag, { isLoading: isSavingTag }] = useUpdateTagMutation()
 
-    const onClickSetGroupColor = (item: TagGroupListItem) => {
-        setCurrentGroup(item)
-        setShowColorPicker(true)
+    const showTagDetail = (item: FontendTagListItem) => {
+        setCurrentTag(item)
     }
 
-    const onClosePicker = () => {
-        setShowColorPicker(false)
-        setCurrentGroup(null)
+    const onClose = () => {
+        setCurrentTag(null)
     }
 
-    const onSelectedColor = async (color: string) => {
-        if (!currentGroup) return
-        const tagIds = props.groupedTagDict[currentGroup._id]
-            ?.filter(item => item.color !== color)
-            .map(item => item._id) || []
-        
-        if (tagIds.length === 0) {
-            messageWarning('没有需要修改的标签')
-            return
-        }
+    const onChangeDetail = (value: Partial<FontendTagListItem>) => {
+        setCurrentTag(prev => {
+            if (!prev) return null
+            return {
+                ...prev,
+                ...value
+            }
+        })
+    }
 
-        const resp = await setGroupColor({ ids: tagIds, color }).unwrap()
+    const onDeleteTag = async () => {
+        if (!currentTag) return
+        const resp = await deleteTag({ ids: [currentTag._id] }).unwrap()
         if (resp.code !== STATUS_CODE.SUCCESS) return
-        messageSuccess('修改成功')
+        messageSuccess('删除成功')
+        onClose()
     }
 
-    const renderSetGroupColorBtn = (item: TagGroupListItem) => {
-        return (
-            <Button
-                onClick={() => onClickSetGroupColor(item)}
-            >设置分组颜色</Button>
-        )
+    const saveChange = async () => {
+        if (!currentTag) return
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _id, ...newTag } = currentTag
+        const resp = await updateTag(newTag).unwrap()
+        if (resp.code !== STATUS_CODE.SUCCESS) return
+        messageSuccess('保存成功')
+        onClose()
     }
 
-    const renderColorPicker = () => {
-        return (
+    const renderTagDetail = () => {
+        return (<>
+            <Popup
+                round
+                visible={!!currentTag}
+                onClose={onClose}
+            >
+                <div className='p-4'>
+                    <div>
+                        标签名称：<input
+                            className='font-bold'
+                            value={currentTag?.title || ''}
+                            onChange={e => onChangeDetail({ title: e.target.value })}
+                            onKeyUp={blurOnEnter}
+                        />
+                    </div>
+                    <div>
+                        标签颜色：
+                        <div
+                            className='inline-block w-6 h-6 ml-2 rounded-full'
+                            style={{ backgroundColor: currentTag?.color }}
+                            onClick={() => setShowColorPicker(true)}
+                        />
+                    </div>
+                    <div>
+                        当前分组 id：
+                        {currentTag?.groupId || '无分组'}
+                    </div>
+                    <div>
+                        <Button
+                            type="danger"
+                            onClick={onDeleteTag}
+                        >删除标签</Button>
+                        <Button
+                            type="primary"
+                            onClick={() => setShowGroupPicker(true)}
+                        >转移分组</Button>
+                        <Button
+                            type="primary"
+                            onClick={saveChange}
+                            loading={isSavingTag}
+                        >保存</Button>
+                    </div>
+                </div>
+            </Popup>
             <ColorPicker
-                onChange={onSelectedColor}
+                onChange={color => onChangeDetail({ color })}
                 visible={showColorPicker}
-                onClose={onClosePicker}
+                onClose={() => setShowColorPicker(false)}
             />
+            <GroupPicker
+                value={currentTag?.groupId || ''}
+                onChange={group => onChangeDetail({ groupId: group._id })}
+                visible={showGroupPicker}
+                onClose={() => setShowGroupPicker(false)}
+            />
+        </>
         )
     }
 
     return {
-        renderSetGroupColorBtn, renderColorPicker
+        showTagDetail, renderTagDetail
     }
 }
