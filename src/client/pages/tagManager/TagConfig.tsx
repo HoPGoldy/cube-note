@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FontendTagListItem } from '@/types/tag'
+import { TagListItem } from '@/types/tag'
 import { useDeleteTagsMutation, useUpdateTagMutation } from '../../services/tag'
 import { Button } from '../../components/Button'
 import { messageSuccess } from '../../utils/message'
@@ -11,7 +11,7 @@ import { GroupPicker } from '@/client/components/GroupPicker'
 
 export const useTagConfig = () => {
     // 当前选中的标签详情
-    const [currentTag, setCurrentTag] = useState<FontendTagListItem | null>(null)
+    const [currentTag, setCurrentTag] = useState<TagListItem | null>(null)
     // 是否显示颜色选择弹窗
     const [showColorPicker, setShowColorPicker] = useState(false)
     // 是否显示分组选择弹窗
@@ -21,7 +21,7 @@ export const useTagConfig = () => {
     // 更新标签
     const [updateTag, { isLoading: isSavingTag }] = useUpdateTagMutation()
 
-    const showTagDetail = (item: FontendTagListItem) => {
+    const showTagDetail = (item: TagListItem) => {
         setCurrentTag(item)
     }
 
@@ -29,7 +29,7 @@ export const useTagConfig = () => {
         setCurrentTag(null)
     }
 
-    const onChangeDetail = (value: Partial<FontendTagListItem>) => {
+    const onChangeDetail = (value: Partial<TagListItem>) => {
         setCurrentTag(prev => {
             if (!prev) return null
             return {
@@ -49,9 +49,7 @@ export const useTagConfig = () => {
 
     const saveChange = async () => {
         if (!currentTag) return
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { _id, ...newTag } = currentTag
-        const resp = await updateTag(newTag).unwrap()
+        const resp = await updateTag(currentTag).unwrap()
         if (resp.code !== STATUS_CODE.SUCCESS) return
         messageSuccess('保存成功')
         onClose()

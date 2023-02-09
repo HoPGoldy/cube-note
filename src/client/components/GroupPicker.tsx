@@ -1,7 +1,7 @@
 import { TagGroupListItem } from '@/types/tag'
 import React, { FC } from 'react'
 import { Popup } from 'react-vant'
-import { useGetTagGroupQuery } from '../services/tag'
+import { useAllTagGroup } from '../pages/tagManager/useTagGroupInfo'
 
 interface Props {
   value?: string
@@ -13,7 +13,7 @@ interface Props {
 export const GroupPicker: FC<Props> = (props) => {
     const { value, onChange, visible, onClose } = props
     // 获取标签分组
-    const { data: tagGroupResp } = useGetTagGroupQuery()
+    const { tagGroups } = useAllTagGroup()
 
     const renderGroupItem = (item: TagGroupListItem) => {
         return (
@@ -45,7 +45,7 @@ export const GroupPicker: FC<Props> = (props) => {
             onClose={onClose}
         >
             <div className='text-center p-4'>
-                {tagGroupResp?.data?.map(renderGroupItem)}
+                {tagGroups.map(renderGroupItem)}
             </div>
         </Popup>
     )

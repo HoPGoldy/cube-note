@@ -34,14 +34,14 @@ export const tagApi = baseApi.injectEndpoints({
                 method: 'PUT',
                 body: data
             }),
-            async onQueryStarted({ id, ...newTag }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({ _id, ...newTag }, { dispatch, queryFulfilled }) {
                 const { data: updatedPost } = await queryFulfilled
                 if (updatedPost.code !== STATUS_CODE.SUCCESS) return
 
                 dispatch(
                     tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
                         if (!draft.data) return
-                        const targetTag = draft.data.find(item => item._id === id)
+                        const targetTag = draft.data.find(item => item._id === _id)
                         if (!targetTag) return
                         Object.assign(targetTag, newTag)
                     })

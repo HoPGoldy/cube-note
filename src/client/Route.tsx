@@ -5,6 +5,9 @@ import { LoginAuth } from './layouts/LoginAuth'
 import { AppContainer } from './layouts/AppContainer'
 import { useAppDispatch } from './store'
 import { addTab } from './store/tab'
+import Search from './pages/search/Search'
+import Article from './pages/article/Article'
+import Entry from './pages/JumpToDefaultDataEntry'
 
 const lazyLoad = (compLoader: () => Promise<{ default: ComponentType<any> }>) => {
     const Comp = lazy(compLoader)
@@ -20,8 +23,9 @@ export const Routes: FC = () => {
         {
             path: '/',
             children: [
-                { index: true, element: lazyLoad(() => import('./pages/JumpToDefaultDataEntry')) },
-                { path: '/article/:articleId', element: lazyLoad(() => import('./pages/article/Article')) },
+                { index: true, element: <Entry /> },
+                { path: '/article/:articleId', element: <Article /> },
+                { path: '/search', element: <Search /> },
                 { path: '/tags', element: lazyLoad(() => import('./pages/tagManager/TagManager')) },
                 { path: '/setting', element: lazyLoad(() => import('./pages/Setting')) },
                 { path: '/about', element: lazyLoad(() => import('./pages/About')) },

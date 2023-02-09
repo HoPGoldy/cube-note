@@ -28,7 +28,7 @@ export const createService = (props: Props) => {
 
     const updateTag = async (detail: TagUpdateReqData) => {
         const collection = getTagCollection()
-        const _id = new ObjectId(detail.id)
+        const _id = new ObjectId(detail._id)
         const oldTag = await collection.findOne({ _id })
         if (!oldTag) {
             return { code: 400, msg: '标签不存在' }
@@ -90,7 +90,7 @@ export const createService = (props: Props) => {
 
     const updateGroup = async (detail: TagUpdateReqData) => {
         const collection = getTagGroupCollection()
-        const _id = new ObjectId(detail.id)
+        const _id = new ObjectId(detail._id)
 
         await collection.updateOne({ _id }, { $set: {
             title: detail.title

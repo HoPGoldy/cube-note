@@ -8,6 +8,7 @@ const routeName: Record<string, string> = {
     '/setting': '设置',
     '/about': '关于',
     '/tags': '标签管理',
+    '/search': '搜索',
 }
 
 /**
@@ -36,10 +37,14 @@ export const useTabControl = () => {
     }, [location.pathname])
 }
 
+interface Props {
+    className?: string
+}
+
 /**
  * PC 端最上面的选项卡组件
  */
-const TopTab: FC = () => {
+const TopTab: FC<Props> = (props) => {
     const location = useLocation()
     const tabList = useAppSelector(s => s.tab.tabList)
     const currentTab = useAppSelector(s => s.tab.currentTabIndex)
@@ -87,7 +92,7 @@ const TopTab: FC = () => {
     }
 
     return (
-        <div className='flex'>
+        <div className={'flex ' + props?.className}>
             {tabList.map(renderTabItem)}
         </div>
     )

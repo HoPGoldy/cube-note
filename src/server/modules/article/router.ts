@@ -4,7 +4,7 @@ import { response } from '@/server/utils'
 import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { AddArticleReqData, DeleteArticleMutation, UpdateArticleReqData } from '@/types/article'
+import { AddArticleReqData, DeleteArticleMutation, QueryArticleReqData, UpdateArticleReqData } from '@/types/article'
 
 interface Props {
     service: ArticleService
@@ -68,6 +68,21 @@ export const createRouter = (props: Props) => {
     router.get('/:id/getContent', async ctx => {
         const { id } = ctx.params
         const resp = await service.getArticleContent(id)
+        response(ctx, resp)
+    })
+
+    const queryArticleSchema = Joi.object<QueryArticleReqData>({
+        keyword: Joi.string().allow(null),
+        tagIds: Joi.array().items(Joi.string()).allow(null),
+        page: Joi.number().allow(null),
+    })
+
+    // 获取文章列表
+    router.post('/getList', async ctx => {
+        const body = validate(ctx, queryArticleSchema)
+        if (!body) return
+
+        const resp = await service.getArticleList(body)
         response(ctx, resp)
     })
 

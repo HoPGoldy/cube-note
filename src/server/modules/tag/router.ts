@@ -30,7 +30,7 @@ export const createRouter = (props: Props) => {
     })
 
     const updateSchema = Joi.object<TagUpdateReqData>({
-        id: Joi.string().required(),
+        _id: Joi.string().required(),
         title: Joi.string().allow(null),
         color: Joi.string().allow(null),
         groupId: Joi.string().allow(null),

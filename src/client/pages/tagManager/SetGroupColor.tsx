@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { FontendTagListItem, TagGroupListItem } from '@/types/tag'
+import { TagGroupListItem, TagListItem } from '@/types/tag'
 import { useSetTagColorMutation } from '../../services/tag'
 import { messageSuccess, messageWarning } from '../../utils/message'
 import { ColorPicker } from '@/client/components/ColorPicker'
 import { STATUS_CODE } from '@/config'
 
 interface Props {
-    groupedTagDict: Record<string, FontendTagListItem[]>
+    groupedTagDict: Record<string, TagListItem[]>
 }
 
 export const useSetGroupColor = (props: Props) => {

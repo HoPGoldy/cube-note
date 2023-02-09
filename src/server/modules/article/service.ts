@@ -1,5 +1,5 @@
-import { ObjectId, WithId } from 'mongodb'
-import { ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleRelatedResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, UpdateArticleReqData } from '@/types/article'
+import { Filter, ObjectId, RootFilterOperators, WithId } from 'mongodb'
+import { ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleRelatedResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, QueryArticleReqData, UpdateArticleReqData } from '@/types/article'
 import { cloneDeep, isNil } from 'lodash'
 import { DatabaseAccessor } from '@/server/lib/mongodb'
 
@@ -106,6 +106,47 @@ export const createService = (props: Props) => {
         const data: ArticleUpdateResp = {
             parentArticleId: parentArticleIds[parentArticleIds.length - 1],
         }
+
+        return { code: 200, data }
+    }
+
+    const getArticleList = async (query: QueryArticleReqData) => {
+        const collection = getArticleCollection()
+        const { page = 1, tagIds, keyword } = query
+
+        const filterObj: Filter<ArticleStorage> & RootFilterOperators<ArticleStorage> = {}
+        if (tagIds && tagIds.length > 0) {
+            filterObj.tagIds = { $elemMatch: { $in: tagIds } }
+        }
+        if (keyword) {
+            filterObj.$or = [
+                { title: { $regex: keyword } },
+                { content: { $regex: keyword } }
+            ]
+        }
+
+        const result = await collection
+            .find(filterObj, {
+                projection: { content: 1, title: 1, updateTime: 1, favorite: 1, tagIds: 1 }
+            })
+            .sort({ updateTime: -1 })
+            .skip((page - 1) * 15)
+            .limit(15)
+            .toArray()
+
+        const data = result.map(item =>  {
+            let content = ''
+            // 截取正文中关键字前后的内容
+            if (keyword) {
+                const matched = item.content.match(new RegExp(keyword, 'i'))
+                if (matched && matched.index) {
+                    content = item.content.slice(Math.max(matched.index - 30, 0), matched.index + 30)
+                }
+            }
+            if (!content) content = item.content.slice(0, 30)
+
+            return { ...item, content }
+        })
 
         return { code: 200, data }
     }
@@ -257,7 +298,7 @@ export const createService = (props: Props) => {
 
     return {
         addArticle, getArticleContent, updateArticle, getChildren, getRelatives, getArticleTree, removeArticle,
-        getFavoriteArticles
+        getFavoriteArticles, getArticleList
     }
 }
 

@@ -5,6 +5,7 @@ import {
     ArticleMenuItem,
     ArticleRelatedResp,
     ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
+    QueryArticleReqData,
     UpdateArticleReqData
 } from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
@@ -65,6 +66,14 @@ export const articleApi = baseApi.injectEndpoints({
                 }
             },
         }),
+        queryArticleList: build.query<AppResponse<ArticleContentResp[]>, QueryArticleReqData>({
+            query: query => ({
+                url: 'article/getList',
+                method: 'POST',
+                body: query
+            }),
+            providesTags: ['articleContent']
+        }),
         addArticle: build.mutation<AppResponse<string>, AddArticleReqData>({
             query: (detail) => ({
                 url: 'article/add',
@@ -100,6 +109,8 @@ export const {
     useGetArticleContentQuery,
     useUpdateArticleMutation,
     useAddArticleMutation,
+    useQueryArticleListQuery,
+    useLazyQueryArticleListQuery,
     useGetArticleTreeQuery,
     useGetArticleLinkQuery,
     useGetArticleRelatedQuery,

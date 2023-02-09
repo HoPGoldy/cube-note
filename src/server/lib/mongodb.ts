@@ -58,6 +58,9 @@ export const createDb = (props: Props) => {
      */
     const getArticleCollection = () => database.collection<ArticleStorage>('articles')
 
+    // 文章内容和标题使用全文索引
+    getArticleCollection().createIndex({ content: 'text', title: 'text' })
+
     /**
      * 获取标签集合
      */

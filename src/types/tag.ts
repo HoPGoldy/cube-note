@@ -11,9 +11,7 @@ export interface TagListItem {
     groupId?: string
 }
 
-export type TagUpdateReqData = Partial<TagStorage> & {
-    id: string
-}
+export type TagUpdateReqData = Partial<TagListItem>
 
 export type TagGroupUpdateReqData = Partial<TagGroupStorage> & {
     id: string
@@ -43,8 +41,4 @@ export interface SetTagGroupReqData {
 /** 批量删除标签 */
 export interface DeleteTagReqData {
     ids: string[]
-}
-
-export type FontendTagListItem = TagListItem & {
-    id: string
 }

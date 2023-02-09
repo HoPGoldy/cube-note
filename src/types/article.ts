@@ -29,6 +29,12 @@ export interface AddArticleReqData {
     parentId: string
 }
 
+export interface QueryArticleReqData {
+    keyword?: string
+    tagIds?: string[]
+    page?: number
+}
+
 export type UpdateArticleReqData = Partial<Omit<ArticleContent, 'parentArticleIds'>> & {
     id: string
     /**
