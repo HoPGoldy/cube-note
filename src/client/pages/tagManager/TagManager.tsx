@@ -45,7 +45,7 @@ const TagManager: FC = () => {
     // 功能 - 标签详情管理
     const { renderTagDetail, showTagDetail } = useTagConfig()
     // 功能 - 批量操作
-    const { isBatch, isTagSelected, onSelectTag, renderBatchBtn } = useBatchOperation()
+    const { isBatch, isTagSelected, onSelectTag, renderBatchBtn, renderBatchModal } = useBatchOperation()
 
     useEffect(() => {
         if (!tagGroupResp?.data) return
@@ -171,6 +171,7 @@ const TagManager: FC = () => {
 
         {renderDeleteModal()}
         {renderColorPicker()}
+        {renderBatchModal()}
         {renderTagDetail()}
     </>)
 }

@@ -1,4 +1,4 @@
-import { SetTagGroup, TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { SetTagGroupReqData, TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
 import { DatabaseAccessor } from '@/server/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import isNil from 'lodash/isNil'
@@ -112,15 +112,14 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
-    const batchSetGroup = async (changeList: SetTagGroup[]) => {
+    const batchSetGroup = async ({ ids, groupId }: SetTagGroupReqData) => {
         const collection = getTagCollection()
-        const reqs = changeList.map(({ ids, groupId }) => collection.updateMany({
+        await collection.updateMany({
             _id: { $in: ids.map(id => new ObjectId(id)) }
         }, {
             $set: { groupId: groupId === DEFAULT_TAG_GROUP ? '' : groupId }
-        }))
+        })
 
-        await Promise.all(reqs)
         return { code: 200 }
     }
 

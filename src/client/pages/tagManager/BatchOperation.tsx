@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { useDeleteTagsMutation } from '../../services/tag'
+import { useDeleteTagsMutation, useSetTagColorMutation, useSetTagGroupMutation } from '../../services/tag'
 import { Button } from '../../components/Button'
 import { messageSuccess, messageWarning } from '../../utils/message'
 import { STATUS_CODE } from '@/config'
+import { ColorPicker } from '@/client/components/ColorPicker'
+import { GroupPicker } from '@/client/components/GroupPicker'
 
 export const useBatchOperation = () => {
     // 是否处于批量操作模式
@@ -11,6 +13,14 @@ export const useBatchOperation = () => {
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
     // 删除标签
     const [deleteTag] = useDeleteTagsMutation()
+    // 批量设置标签颜色
+    const [updateTagColor] = useSetTagColorMutation()
+    // 批量设置标签分组
+    const [updateTagGroup] = useSetTagGroupMutation()
+    // 是否显示颜色选择弹窗
+    const [showColorPicker, setShowColorPicker] = useState(false)
+    // 是否显示分组选择弹窗
+    const [showGroupPicker, setShowGroupPicker] = useState(false)
 
     const isTagSelected = (id: string) => {
         return selectedTagIds.includes(id)
@@ -34,6 +44,32 @@ export const useBatchOperation = () => {
         setSelectedTagIds([])
     }
 
+    const onSaveColor = async (color: string) => {
+        if (selectedTagIds.length === 0) {
+            messageWarning('请选择需要设置颜色的标签')
+            return
+        }
+
+        const resp = await updateTagColor({ ids: selectedTagIds, color }).unwrap()
+        if (resp.code !== STATUS_CODE.SUCCESS) return
+
+        messageSuccess('设置成功')
+        setSelectedTagIds([])
+    }
+
+    const onSaveGroup = async (groupId: string) => {
+        if (selectedTagIds.length === 0) {
+            messageWarning('请选择需要设置分组的标签')
+            return
+        }
+
+        const resp = await updateTagGroup({ ids: selectedTagIds, groupId }).unwrap()
+        if (resp.code !== STATUS_CODE.SUCCESS) return
+
+        messageSuccess('设置成功')
+        setSelectedTagIds([])
+    }
+
     const renderBatchBtn = () => {
         if (!isBatch) {
             return (
@@ -45,10 +81,10 @@ export const useBatchOperation = () => {
 
         return (<>
             <Button
-                onClick={() => setIsBatch(true)}
+                onClick={() => setShowGroupPicker(true)}
             >批量移动分组</Button>
             <Button
-                onClick={() => setIsBatch(true)}
+                onClick={() => setShowColorPicker(true)}
             >批量设置颜色</Button>
             <Button
                 onClick={onSaveDelete}
@@ -62,7 +98,22 @@ export const useBatchOperation = () => {
         </>)
     }
 
+    const renderBatchModal = () => {
+        return (<>
+            <ColorPicker
+                onChange={onSaveColor}
+                visible={showColorPicker}
+                onClose={() => setShowColorPicker(false)}
+            />
+            <GroupPicker
+                onChange={group => onSaveGroup(group._id)}
+                visible={showGroupPicker}
+                onClose={() => setShowGroupPicker(false)}
+            />
+        </>)
+    }
+
     return {
-        isBatch, isTagSelected, renderBatchBtn, onSelectTag
+        isBatch, isTagSelected, renderBatchBtn, renderBatchModal, onSelectTag
     }
 }
