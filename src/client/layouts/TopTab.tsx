@@ -1,8 +1,9 @@
 import { Cross } from '@react-vant/icons'
 import React, { FC, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { ReactSortable } from 'react-sortablejs'
 import { useAppDispatch, useAppSelector } from '../store'
-import { addTab, removeTab, setCurrentTab, TabItem, updateCurrentTab } from '../store/tab'
+import { addTab, removeTab, setCurrentTab, setTabList, TabItem, updateCurrentTab } from '../store/tab'
 
 const routeName: Record<string, string> = {
     '/setting': '设置',
@@ -22,12 +23,12 @@ export const useTabControl = () => {
     useEffect(() => {
         if (location.pathname === '/') return
 
-        const index = tabList.findIndex((item) => item.path === location.pathname)
+        const index = tabList.findIndex((item) => item.id === location.pathname)
 
         // 标签没有就新建
         if (index === -1) {
             dispatch(addTab({
-                path: location.pathname,
+                id: location.pathname,
                 search: location.search,
                 // 优先用路由状态里传递的 tabTitle，这样可以直接显示出名字
                 // 不然就要等待页面加载完成后，页面组件里主动设置名字了，这样会有延迟
@@ -62,21 +63,21 @@ const TopTab: FC<Props> = (props) => {
     }, [location.pathname])
 
     const onClickTab = (item: TabItem) => {
-        if (item.path === currentTab) return
-        dispatch(setCurrentTab(item.path))
-        navigate(item.path + item.search)
+        if (item.id === currentTab) return
+        dispatch(setCurrentTab(item.id))
+        navigate(item.id + item.search)
     }
 
-    const onCloseTab = (e: React.MouseEvent, item: TabItem) => {
+    const onCloseTab = (e: React.MouseEvent, closedItem: TabItem) => {
         e.stopPropagation()
-        dispatch(removeTab([item.path]))
+        dispatch(removeTab([closedItem.id]))
 
         // 如果关闭的是当前选项卡，跳转到上一个选项卡
-        if (item.path !== location.pathname || tabList.length <= 1) return
-        const prevTab = tabList.find((item) => item.path === item.path)
+        if (closedItem.id !== location.pathname || tabList.length <= 1) return
+        const prevTab = tabList.find(item => item.id === item.id)
         if (!prevTab) return
 
-        navigate(prevTab.path + prevTab.search)
+        navigate(prevTab.id + prevTab.search)
     }
 
     const renderTabItem = (item: TabItem) => {
@@ -84,13 +85,13 @@ const TopTab: FC<Props> = (props) => {
             <div
                 className={
                     'm-1 p-1 cursor-pointer ' +
-                    (item.path === currentTab ? 'bg-slate-600 text-white' : '')
+                    (item.id === currentTab ? 'bg-slate-600 text-white' : '')
                 }
-                key={item.path}
+                key={item.id}
                 onClick={() => onClickTab(item)}
             >
                 {item.title}
-                {tabList.length > 1 && item.path === currentTab && (
+                {tabList.length > 1 && item.id === currentTab && (
                     <Cross className='inline' onClick={e => onCloseTab(e, item)} />
                 )}
             </div>
@@ -98,9 +99,13 @@ const TopTab: FC<Props> = (props) => {
     }
 
     return (
-        <div className={'flex ' + props?.className}>
+        <ReactSortable
+            className={'flex ' + props?.className}
+            list={tabList}
+            setList={newList => dispatch(setTabList(newList))}
+        >
             {tabList.map(renderTabItem)}
-        </div>
+        </ReactSortable>
     )
 }
 
