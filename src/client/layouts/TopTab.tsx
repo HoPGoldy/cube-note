@@ -2,7 +2,7 @@ import { Cross } from '@react-vant/icons'
 import React, { FC, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../store'
-import { addTab, removeTab, setCurrentTab, TabItem } from '../store/tab'
+import { addTab, removeTab, setCurrentTab, TabItem, updateCurrentTab } from '../store/tab'
 
 const routeName: Record<string, string> = {
     '/setting': '设置',
@@ -23,18 +23,19 @@ export const useTabControl = () => {
         if (location.pathname === '/') return
 
         const index = tabList.findIndex((item) => item.path === location.pathname)
-        if (index === -1) {
-            dispatch(addTab({
-                path: location.pathname,
-                search: location.search,
-                // 优先用路由状态里传递的 tabTitle，这样可以直接显示出名字
-                // 不然就要等待页面加载完成后，页面组件里主动设置名字了，这样会有延迟
-                title: location.state?.tabTitle || routeName[location.pathname] || '新标签页'
-            }))
+        const payload = {
+            path: location.pathname,
+            search: location.search,
+            // 优先用路由状态里传递的 tabTitle，这样可以直接显示出名字
+            // 不然就要等待页面加载完成后，页面组件里主动设置名字了，这样会有延迟
+            title: location.state?.tabTitle || routeName[location.pathname] || '新标签页'
         }
 
+        const action = index === -1 ? addTab(payload) : updateCurrentTab(payload)
+        dispatch(action)
+
         dispatch(setCurrentTab(location.pathname))
-    }, [location.pathname])
+    }, [location.pathname, location.search])
 }
 
 interface Props {

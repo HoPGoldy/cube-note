@@ -43,19 +43,25 @@ export const tabSlice = createSlice({
         // 移除时不需要手动调整当前 currentTab，因为在 TopTab 组件里会 useEffect 自动调整
         removeTab: (state, action: PayloadAction<string[]>) => {
             if (action.payload.length <= 0) return
-            state.tabList = state.tabList.filter((item) => !action.payload.includes(item.path))
+            state.tabList = state.tabList.filter(item => !action.payload.includes(item.path))
         },
         setCurrentTab: (state, action: PayloadAction<string>) => {
             state.currentTabIndex = action.payload
         },
-        updateCurrentTabTitle: (state, action: PayloadAction<string>) => {
-            const index = state.tabList.findIndex((item) => item.path === state.currentTabIndex)
-            if (index === -1 || state.tabList[index].title === action.payload) return
-            state.tabList[index].title = action.payload
+        updateCurrentTab: (state, action: PayloadAction<Partial<TabItem>>) => {
+            const targetTab = state.tabList.find(item => item.path === state.currentTabIndex)
+            if (!targetTab) return
+
+            if (action.payload.title && action.payload.title !== targetTab.title) {
+                targetTab.title = action.payload.title
+            }
+            if (action.payload.search && action.payload.search !== targetTab.search) {
+                targetTab.search = action.payload.search
+            }
         }
     },
 })
 
-export const { addTab, removeTab, setCurrentTab, updateCurrentTabTitle } = tabSlice.actions
+export const { addTab, removeTab, setCurrentTab, updateCurrentTab } = tabSlice.actions
 
 export default tabSlice.reducer

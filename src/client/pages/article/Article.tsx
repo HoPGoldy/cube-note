@@ -4,7 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
 import { useGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
 import { useAppDispatch, useAppSelector } from '../../store'
-import { updateCurrentTabTitle } from '../../store/tab'
+import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
 import Editor from './Editor'
@@ -59,7 +59,7 @@ const About: FC = () => {
     useEffect(() => {
         if (!articleResp?.data) return
 
-        dispatch(updateCurrentTabTitle(articleResp.data.title))
+        dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
         setContent(articleResp.data.content)
         setVisibleContent(articleResp.data.content)
@@ -76,7 +76,7 @@ const About: FC = () => {
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('保存成功')
-        dispatch(updateCurrentTabTitle(title))
+        dispatch(updateCurrentTab({ title }))
     }
 
     const endEdit = async () => {

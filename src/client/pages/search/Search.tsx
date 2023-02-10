@@ -18,6 +18,13 @@ const getQueryByParams = (params: URLSearchParams) => {
 }
 
 /**
+ * 搜索条件是否为空
+ */
+const isQueryEmpty = (query: QueryArticleReqData) => {
+    return !query.keyword && (!query.tagIds || query.tagIds.length <= 0)
+}
+
+/**
  * 搜索页面
  * 可以通过关键字和标签来搜索笔记
  */
@@ -37,28 +44,25 @@ const Search: FC = () => {
 
     const searchArticle = async () => {
         const query = getQueryByParams(searchParams)
+        if (isQueryEmpty(query)) {
+            setIsSearchFinished(true)
+            return
+        }
         query.page = pageRef.current
 
-        console.log('发起查询', query)
         const resp = await fetchArticleList(query).unwrap()
         if (resp.code !== STATUS_CODE.SUCCESS || !resp.data) return
 
-        if (resp.data.length <= 0) {
-            setIsSearchFinished(true)
-            console.log('🚀 ~ 搜索完成', query)
-        }
-        else {
-            setArticleList(oldList => [...oldList, ...(resp.data || [])])
-            console.log('🚀 ~ 搜索结果', query, resp.data)
-        }
+        // 没有更多数据了
+        if (resp.data.length <= 0) setIsSearchFinished(true)
+        // 追加数据到列表
+        else setArticleList(oldList => [...oldList, ...(resp.data || [])])
     }
 
     useEffect(() => {
         setIsSearchFinished(false)
         setArticleList([])
         pageRef.current = 1
-        console.log('🚀 ~ 刷新 ', pageRef.current)
-        searchArticle()
     }, [searchParams])
 
     const onTagChange = (tagIds: string[]) => {
@@ -93,6 +97,21 @@ const Search: FC = () => {
         )
     }
 
+    const renderBottomTip = () => {
+        const query = getQueryByParams(searchParams)
+        if (isQueryEmpty(query)) {
+            return <div>输入关键字或者选择标签来搜索内容</div>
+        }
+
+        if (!isSearchFinished) return null
+
+        if (articleList.length > 0) {
+            return <div>到底了</div>
+        }
+
+        return <div>未找到相关内容</div>
+    }
+
     return (<>
         <PageContent>
             <div className='w-full p-4'>
@@ -113,13 +132,13 @@ const Search: FC = () => {
                     finished={isSearchFinished}
                     errorText='请求失败，点击重新加载'
                     onLoad={async () => {
-                        pageRef.current += 1
-                        console.log('🚀 ~ 懒加载', pageRef.current)
                         await searchArticle()
+                        pageRef.current += 1
                     }}
                 >
                     {articleList.map(renderSearchItem)}
                 </List>
+                {renderBottomTip()}
             </div>
         </PageContent>
         <PageAction>
