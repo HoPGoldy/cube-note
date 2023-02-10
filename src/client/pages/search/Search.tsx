@@ -7,6 +7,9 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
 import { useTagArea } from './TagArea'
 import { STATUS_CODE } from '@/config'
+import { useGetTagListQuery } from '@/client/services/tag'
+import { useTagDict } from '../tagManager/tagHooks'
+import { Tag } from '@/client/components/Tag'
 
 const getQueryByParams = (params: URLSearchParams) => {
     const query: QueryArticleReqData = {}
@@ -33,6 +36,10 @@ const Search: FC = () => {
     const [searchParams, setSearchParams] = useSearchParams()
     // 搜索关键字
     const [keyword, setKeyword] = useState(searchParams.get('keyword') || '')
+    // 获取标签列表
+    const { data: tagListResp, isLoading: isTagLoading } = useGetTagListQuery()
+    // 标签映射
+    const tagDict = useTagDict(tagListResp?.data || [])
     // 当前展示的搜索结果列表
     const [articleList, setArticleList] = useState<ArticleContentResp[]>([])
     // 是否搜索完成
@@ -71,11 +78,25 @@ const Search: FC = () => {
     }
 
     // 功能 - 标签选择
-    const { renderTagSelectPanel } = useTagArea({ onTagChange })
+    const { renderTagSelectPanel } = useTagArea({ onTagChange, isTagLoading, tagList: tagListResp?.data })
 
     const onInputChange = () => {
         searchParams.set('keyword', keyword)
         setSearchParams(searchParams)
+    }
+
+    const renderTagItem = (tagId: string) => {
+        const item = tagDict.get(tagId)
+        if (!item) return null
+
+        return (
+            <Tag
+                key={item._id}
+                label={item.title}
+                id={item._id}
+                color={item.color}
+            />
+        )
     }
 
     const renderSearchItem = (item: ArticleContentResp) => {
@@ -92,6 +113,9 @@ const Search: FC = () => {
                         className='text-sm text-gray-600'
                         dangerouslySetInnerHTML={{ __html: colorfulContent }}
                     />
+                    <div className='flex flex-warp'>
+                        {item.tagIds.map(renderTagItem)}
+                    </div>
                 </div>
             </Link>
         )

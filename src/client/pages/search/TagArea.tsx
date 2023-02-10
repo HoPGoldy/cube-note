@@ -1,22 +1,28 @@
 import { Tag } from '@/client/components/Tag'
 import Loading from '@/client/layouts/Loading'
+import { useGetTagGroupQuery } from '@/client/services/tag'
 import { TagGroupListItem, TagListItem } from '@/types/tag'
 import React, { useState } from 'react'
-import { useAllTagGroup, useGroupedTag } from '../tagManager/useTagGroupInfo'
+import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
 
 interface Props {
     onTagChange: (tagIds: string[]) => void
+    tagList?: TagListItem[]
+    isTagLoading: boolean
 }
 
 export const useTagArea = (props: Props) => {
+    const { tagList, isTagLoading, onTagChange } = props
     // 当前选中的标签
     const [selectedTag, setSelectedTag] = useState<string[]>([])
     // 是否展开面板
     const [isExpand, setIsExpand] = useState(false)
+    // 获取标签分组
+    const { data: tagGroupResp, isLoading: isLoadingGroup } = useGetTagGroupQuery()
     // 分组列表
-    const { tagGroups, isLoading: isLoadingGroup } = useAllTagGroup()
+    const { tagGroups } = useAllTagGroup(tagGroupResp?.data)
     // 分好组的标签
-    const { tagListResp, groupedTagDict, isLoading: isLoadingTag } = useGroupedTag()
+    const { groupedTagDict } = useGroupedTag(tagList)
 
     const isTagSelected = (id: string) => {
         return selectedTag.includes(id)
@@ -27,7 +33,7 @@ export const useTagArea = (props: Props) => {
         // 如果有了就删除，没有就添加
         const newTags = isTagSelected(id) ? selectedTag.filter(item => item !== id) : [...selectedTag, id]
 
-        props.onTagChange(newTags)
+        onTagChange(newTags)
         setSelectedTag(newTags)
     }
 
@@ -63,10 +69,10 @@ export const useTagArea = (props: Props) => {
     }
 
     const renderTagSelectPanel = () => {
-        if (!isExpand && isLoadingTag) return <Loading tip='加载标签中...' />
+        if (!isExpand && isTagLoading) return <Loading tip='加载标签中...' />
 
         if (!isExpand) {
-            const selectedTags = tagListResp?.data?.filter(item => isTagSelected(item._id)) || []
+            const selectedTags = tagList?.filter(item => isTagSelected(item._id)) || []
             return (
                 <div
                     className='flex flex-wrap min-h-[50px]'

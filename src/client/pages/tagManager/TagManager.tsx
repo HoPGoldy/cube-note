@@ -2,7 +2,7 @@ import React, { FC, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
 import { TagGroupListItem, TagListItem, TagStorage } from '@/types/tag'
-import { useAddTagGroupMutation, useAddTagMutation, useUpdateTagGroupMutation } from '../../services/tag'
+import { useAddTagGroupMutation, useAddTagMutation, useGetTagGroupQuery, useGetTagListQuery, useUpdateTagGroupMutation } from '../../services/tag'
 import Loading from '../../layouts/Loading'
 import { Button } from '../../components/Button'
 import dayjs from 'dayjs'
@@ -13,7 +13,7 @@ import { useDeleteGroup } from './DeleteGroup'
 import { useSetGroupColor } from './SetGroupColor'
 import { useTagConfig } from './TagConfig'
 import { useBatchOperation } from './BatchOperation'
-import { useAllTagGroup, useGroupedTag } from './useTagGroupInfo'
+import { useAllTagGroup, useGroupedTag } from './tagHooks'
 
 /**
  * 标签管理
@@ -22,9 +22,13 @@ import { useAllTagGroup, useGroupedTag } from './useTagGroupInfo'
 const TagManager: FC = () => {
     const navigate = useNavigate()
     // 获取标签分组
-    const { isLoading, tagGroups, setTagGroups } = useAllTagGroup()
+    const { data: tagGroupResp, isLoading } = useGetTagGroupQuery()
+    // 获取标签分组
+    const { tagGroups, setTagGroups } = useAllTagGroup(tagGroupResp?.data)
+    // 获取标签列表
+    const { data: tagListResp, isLoading: isLoadingTagList } = useGetTagListQuery()
     // 分组后的标签列表
-    const { groupedTagDict, isLoading: isLoadingTagList } = useGroupedTag()
+    const { groupedTagDict } = useGroupedTag(tagListResp?.data)
     // 新增分组
     const [addTagGroup, { isLoading: isAddingGroup }] = useAddTagGroupMutation()
     // 标题输入框引用
