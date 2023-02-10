@@ -36,8 +36,13 @@ export const articleApi = baseApi.injectEndpoints({
 
                 // 如果修改了标题，就要修改父节点的侧边栏（子节点名称）和树菜单
                 if (title) {
-                    tags.push({ type: 'articleLink', id: res?.data?.parentArticleId }, 'menu')
+                    // 如果没有父节点的话就不需要重载侧边栏了
+                    if (res?.data?.parentArticleId) {
+                        tags.push({ type: 'articleLink', id: res.data.parentArticleId })
+                    }
+                    tags.push('menu')
                 }
+
                 // 如果收藏改了，就要修改侧边栏的收藏夹
                 if (favorite !== undefined) {
                     tags.push('favorite')

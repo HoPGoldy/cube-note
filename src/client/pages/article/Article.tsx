@@ -17,6 +17,7 @@ import { UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import { Button } from '@/client/components/Button'
+import { useAutoSave } from './AutoSave'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -31,6 +32,8 @@ const About: FC = () => {
     const [updateArticle, { isLoading: updatingArticle }] = useUpdateArticleMutation()
     // 根节点文章
     const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
+    // 保存按钮的文本
+    const [saveBtnText, setSaveBtnText] = useState('保存')
     // 标题输入框
     const titleInputRef = useRef<HTMLInputElement>(null)
     // 正在编辑的标题内容
@@ -41,16 +44,25 @@ const About: FC = () => {
     const [isFavorite, setIsFavorite] = useState(false)
     // 渲染的内容
     const [visibleContent, setVisibleContent] = useState('')
-    // 编辑时的节流
-    const onContentChangeThrottle = useMemo(() => throttle(setVisibleContent, 500), [])
-    // 页面是否在编辑中
-    const isEdit = (searchParams.get('mode') === 'edit')
     // 是否正在编辑标签
     const [isEditTag, setIsEditTag] = useState(false)
+    // 页面是否在编辑中
+    const isEdit = (searchParams.get('mode') === 'edit')
+    // 功能 - 自动保存
+    const { saveToLocal, getLocalSaveContent, contentRef } = useAutoSave(isEdit, currentArticleId, setSaveBtnText)
+
+    // 编辑时的节流
+    const onContentChangeThrottle = useMemo(() => throttle(newContent => {
+        setVisibleContent(newContent)
+        if (contentRef.current) saveToLocal(newContent)
+        contentRef.current = newContent
+    }, 500), [])
 
     useEffect(() => {
+        if (content === null) return
         onContentChangeThrottle(content)
     }, [content])
+
 
     useEffect(() => {
         dispatch(setCurrentArticle(currentArticleId))
@@ -59,9 +71,20 @@ const About: FC = () => {
     useEffect(() => {
         if (!articleResp?.data) return
 
+        // 获取本地数据
+        const localData = getLocalSaveContent()
+        // 本地没有，直接使用接口数据
+        if (!localData) setContent(articleResp.data.content)
+        // 本地有数据，比较两者，谁新用谁
+        else {
+            const newContent = localData.saveDate > articleResp.data.updateTime
+                ? localData.content
+                : articleResp.data.content
+            setContent(newContent)
+        }
+
         dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
-        setContent(articleResp.data.content)
         setVisibleContent(articleResp.data.content)
         setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
@@ -76,24 +99,25 @@ const About: FC = () => {
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('保存成功')
+        setSaveBtnText('保存')
         dispatch(updateCurrentTab({ title }))
     }
 
     const endEdit = async () => {
         searchParams.delete('mode')
         setSearchParams(searchParams)
+        setSaveBtnText('保存')
     }
 
     const onClickSaveBtn = async () => {
         await saveEdit({ title, content, favorite: isFavorite })
-        await endEdit()
     }
 
     const renderContent = () => {
         if (isLoading) return <Loading tip='信息加载中...' />
 
         return (
-            <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
+            <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 mt-4'>
                 <div className="flex mb-2">
                     <input
                         ref={titleInputRef}
@@ -120,11 +144,16 @@ const About: FC = () => {
                             currentArticleId={currentArticleId}
                         />}
 
-                        <div className='w-20 ml-2' >
-                            {isEdit ? (
-                                <Button className='w-full' onClick={onClickSaveBtn}>保存</Button>
-                            ) : (
-                                <Button className='w-full' onClick={startEdit}>编辑</Button>
+                        <div className='ml-2 flex' >
+                            {isEdit ? (<>
+                                <Button className='w-60' onClick={onClickSaveBtn}>
+                                    {updatingArticle ? '保存中' : saveBtnText}
+                                </Button>
+                                <Button className='w-40' onClick={endEdit}>
+                                    退出编辑
+                                </Button>
+                            </>) : (
+                                <Button className='w-40' onClick={startEdit}>编辑</Button>
                             )}
                         </div>
                     </div>

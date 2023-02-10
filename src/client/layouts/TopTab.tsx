@@ -23,16 +23,21 @@ export const useTabControl = () => {
         if (location.pathname === '/') return
 
         const index = tabList.findIndex((item) => item.path === location.pathname)
-        const payload = {
-            path: location.pathname,
-            search: location.search,
-            // 优先用路由状态里传递的 tabTitle，这样可以直接显示出名字
-            // 不然就要等待页面加载完成后，页面组件里主动设置名字了，这样会有延迟
-            title: location.state?.tabTitle || routeName[location.pathname] || '新标签页'
-        }
 
-        const action = index === -1 ? addTab(payload) : updateCurrentTab(payload)
-        dispatch(action)
+        // 标签没有就新建
+        if (index === -1) {
+            dispatch(addTab({
+                path: location.pathname,
+                search: location.search,
+                // 优先用路由状态里传递的 tabTitle，这样可以直接显示出名字
+                // 不然就要等待页面加载完成后，页面组件里主动设置名字了，这样会有延迟
+                title: location.state?.tabTitle || routeName[location.pathname] || '新标签页'
+            }))
+        }
+        // 有的话就把最新的搜索参数更新进去
+        else {
+            dispatch(updateCurrentTab({ search: location.search }))
+        }
 
         dispatch(setCurrentTab(location.pathname))
     }, [location.pathname, location.search])
