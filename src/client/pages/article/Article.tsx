@@ -27,7 +27,7 @@ const About: FC = () => {
     // 当前文章 id
     const currentArticleId = params.articleId as string
     // 获取详情
-    const { data: articleResp, isLoading } = useGetArticleContentQuery(currentArticleId)
+    const { data: articleResp, isFetching: isLoadingArticle } = useGetArticleContentQuery(currentArticleId)
     // 保存详情
     const [updateArticle, { isLoading: updatingArticle }] = useUpdateArticleMutation()
     // 根节点文章
@@ -114,10 +114,10 @@ const About: FC = () => {
     }
 
     const renderContent = () => {
-        if (isLoading) return <Loading tip='信息加载中...' />
+        if (isLoadingArticle) return <Loading tip='信息加载中...' />
 
         return (
-            <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 mt-4'>
+            <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-4/5 mt-4'>
                 <div className="flex mb-2">
                     <input
                         ref={titleInputRef}
@@ -146,7 +146,7 @@ const About: FC = () => {
 
                         <div className='ml-2 flex' >
                             {isEdit ? (<>
-                                <Button className='w-60' onClick={onClickSaveBtn}>
+                                <Button className='w-60 !mr-2' onClick={onClickSaveBtn}>
                                     {updatingArticle ? '保存中' : saveBtnText}
                                 </Button>
                                 <Button className='w-40' onClick={endEdit}>
@@ -195,20 +195,6 @@ const About: FC = () => {
         <PageAction>
             <ActionButton onClick={() => navigate(-1)}>返回</ActionButton>
         </PageAction>
-
-        {/* <DesktopArea>
-            <div className='fixed bottom-0 right-0 m-4'>
-                {isEdit ? (
-                    <div className='cursor-pointer' onClick={onClickSaveBtn}>
-                        保存
-                    </div>
-                ) : (<>
-                    <div className='cursor-pointer' onClick={startEdit}>
-                        编辑
-                    </div>
-                </>)}
-            </div>
-        </DesktopArea> */}
     </>)
 }
 
