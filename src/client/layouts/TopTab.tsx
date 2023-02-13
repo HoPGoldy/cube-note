@@ -1,9 +1,9 @@
 import { Cross } from '@react-vant/icons'
 import React, { FC, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ReactSortable } from 'react-sortablejs'
 import { useAppDispatch, useAppSelector } from '../store'
 import { addTab, removeTab, setCurrentTab, setTabList, TabItem, updateCurrentTab } from '../store/tab'
+import { Draggable } from '../components/Draggable'
 
 const routeName: Record<string, string> = {
     '/setting': '设置',
@@ -58,6 +58,10 @@ const TopTab: FC<Props> = (props) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
+    const onDragEnd = (newList: TabItem[]) => {
+        dispatch(setTabList(newList))
+    }
+
     useEffect(() => {
         dispatch(setCurrentTab(location.pathname))
     }, [location.pathname])
@@ -72,19 +76,22 @@ const TopTab: FC<Props> = (props) => {
         e.stopPropagation()
         dispatch(removeTab([closedItem.id]))
 
-        // 如果关闭的是当前选项卡，跳转到上一个选项卡
+        // 如果关闭的是当前选项卡，跳转到其他选项卡
         if (closedItem.id !== location.pathname || tabList.length <= 1) return
-        const prevTab = tabList.find(item => item.id === item.id)
-        if (!prevTab) return
+        const closedIndex = tabList.findIndex(item => item.id === closedItem.id)
+        if (!closedIndex) return
 
-        navigate(prevTab.id + prevTab.search)
+        // 优先跳转到下一个选项卡，如果没有下一个就跳转到上一个
+        const nextTabIndex = closedIndex < tabList.length - 1 ? closedIndex + 1 : closedIndex - 1
+        const nextTab = tabList[nextTabIndex]
+        navigate(nextTab.id + nextTab.search)
     }
 
     const renderTabItem = (item: TabItem) => {
         return (
             <div
                 className={
-                    'm-1 p-1 cursor-pointer ' +
+                    'm-1 p-1 cursor-pointer select-none ' +
                     (item.id === currentTab ? 'bg-slate-600 text-white' : '')
                 }
                 key={item.id}
@@ -99,13 +106,12 @@ const TopTab: FC<Props> = (props) => {
     }
 
     return (
-        <ReactSortable
+        <Draggable
             className={'flex ' + props?.className}
-            list={tabList}
-            setList={newList => dispatch(setTabList(newList))}
-        >
-            {tabList.map(renderTabItem)}
-        </ReactSortable>
+            value={tabList}
+            renderItem={renderTabItem}
+            onChange={onDragEnd}
+        />
     )
 }
 

@@ -27,9 +27,33 @@ type State = {
     currentTabIndex: string
 }
 
+const saveTabList = (tabList: TabItem[]) => {
+    localStorage.setItem('tabList', JSON.stringify(tabList))
+}
+
+const saveCurrentTabIndex = (currentTabIndex: string) => {
+    localStorage.setItem('currentTabIndex', currentTabIndex)
+}
+
+export const loadTabList = () => {
+    const tabList = localStorage.getItem('tabList')
+    if (tabList) {
+        return JSON.parse(tabList) as TabItem[]
+    }
+    return []
+}
+
+export const loadCurrentTabIndex = () => {
+    const currentTabIndex = localStorage.getItem('currentTabIndex')
+    if (currentTabIndex) {
+        return currentTabIndex
+    }
+    return ''
+}
+
 const initialState: State = {
-    tabList: [],
-    currentTabIndex: '',
+    tabList: loadTabList(),
+    currentTabIndex: loadCurrentTabIndex(),
 }
 
 export const tabSlice = createSlice({
@@ -38,18 +62,23 @@ export const tabSlice = createSlice({
     reducers: {
         setTabList: (state, action: PayloadAction<TabItem[]>) => {
             state.tabList = action.payload
+            saveTabList(action.payload)
         },
         addTab: (state, action: PayloadAction<TabItem>) => {
             state.tabList.push(action.payload)
             state.currentTabIndex = action.payload.id
+            saveTabList(state.tabList)
+            saveCurrentTabIndex(state.currentTabIndex)
         },
         // 移除时不需要手动调整当前 currentTab，因为在 TopTab 组件里会 useEffect 自动调整
         removeTab: (state, action: PayloadAction<string[]>) => {
             if (action.payload.length <= 0) return
             state.tabList = state.tabList.filter(item => !action.payload.includes(item.id))
+            saveTabList(state.tabList)
         },
         setCurrentTab: (state, action: PayloadAction<string>) => {
             state.currentTabIndex = action.payload
+            saveCurrentTabIndex(action.payload)
         },
         updateCurrentTab: (state, action: PayloadAction<Partial<TabItem>>) => {
             const targetTab = state.tabList.find(item => item.id === state.currentTabIndex)
@@ -61,6 +90,7 @@ export const tabSlice = createSlice({
             if (action.payload.search && action.payload.search !== targetTab.search) {
                 targetTab.search = action.payload.search
             }
+            saveTabList(state.tabList)
         }
     },
 })
