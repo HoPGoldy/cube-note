@@ -113,6 +113,10 @@ const About: FC = () => {
         await saveEdit({ title, content, favorite: isFavorite })
     }
 
+    const onUploadFile = async (files: File[]) => {
+        console.log('🚀 ~ file: Article.tsx:117 ~ onUploadFile ~ files', files)
+    }
+
     const renderContent = () => {
         if (isLoadingArticle) return <Loading tip='信息加载中...' />
 
@@ -169,7 +173,11 @@ const About: FC = () => {
                 <div className='flex md:flex-row flex-col flex-nowrap'>
                     {isEdit && (
                         <div className='md:w-[50%]'>
-                            <Editor value={content} onChange={setContent} />
+                            <Editor
+                                value={content}
+                                onChange={setContent}
+                                onUploadFile={onUploadFile}
+                            />
                         </div>
                     )}
 
