@@ -1,9 +1,4 @@
 /**
- * 数据存放路径
- */
-export const STORAGE_PATH = './.storage'
-
-/**
  * 接口返回的状态码
  */
 export const STATUS_CODE = {

@@ -1,4 +1,3 @@
-import { STORAGE_PATH } from '@/config'
 import { AppKoaContext, AppResponse } from '@/types/global'
 import { ensureFile } from 'fs-extra'
 import { readFile, writeFile } from 'fs/promises'
@@ -76,6 +75,11 @@ interface CreateFileReaderProps {
 }
 
 /**
+ * 获取文件存储路径
+ */
+export const getStoragePath = (subpath = '') => path.join(process.cwd(), './.storage', subpath)
+
+/**
  * 创建本地文件内容读取器
  */
 export const createFileReader = (props: CreateFileReaderProps) => {
@@ -87,7 +91,7 @@ export const createFileReader = (props: CreateFileReaderProps) => {
         if (cache) return cache
 
         // 读取本地文件
-        const filePath = path.join(STORAGE_PATH, fileName)
+        const filePath = getStoragePath(fileName)
         await ensureFile(filePath)
         const content = await readFile(filePath)
         const contentStr = content.toString()

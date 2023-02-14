@@ -4,6 +4,7 @@ import { response, validate } from '@/server/utils'
 import { FileService } from './service'
 import Joi from 'joi'
 import fs from 'fs'
+import { UploadedFile } from '@/types/file'
 
 interface Props {
     service: FileService
@@ -20,59 +21,26 @@ export const createRouter = (props: Props) => {
     /**
      * 查询当前文章上传到哪个分片了
      */
-    router.get('/uploaded/count', async ctx => {
-        const query = validate(ctx, queryCountSchema)
-        if (!query) return
+    // router.get('/uploaded/count', async ctx => {
+    //     const query = validate(ctx, queryCountSchema)
+    //     if (!query) return
 
-        const data = await service.getUploadedCount(query.hash)
+    //     const data = await service.getUploadedCount(query.hash)
+    //     response(ctx, { code: 200, data })
+    // })
+
+    router.post('/upload', async ctx => {
+        const originFiles = ctx.request.files?.file || []
+        const files = Array.isArray(originFiles) ? Array.from(originFiles) : [originFiles]
+
+        const uploadedFiles: UploadedFile[] = files.map(f => ({
+            filename: f.originalFilename || f.newFilename,
+            type: f.mimetype || 'unknown',
+            tempPath: f.filepath
+        }))
+
+        const data = await service.uploadFile(uploadedFiles)
         response(ctx, { code: 200, data })
-    })
-
-    const uploadSchema = Joi.object<{ fileName: string }>({
-        fileName: Joi.string().required(),
-    })
-
-    router.post('/upload', async (ctx, next) => {
-        const body = validate(ctx, uploadSchema)
-        if (!body) return
-
-        const file = ctx.request.files?.chunk // 获取上传文件
-        if (!file || Array.isArray(file)) {
-            response(ctx, { code: 400, msg: '文件规格不符' })
-            return
-        }
-        console.log('🚀 ~ file: router.ts:40 ~ router.post ~ file', file)
-        response(ctx, { code: 200, data: { hash: '123', index: 1 } })
-
-        // const {
-        //   filename,
-        // } = ctx.request.body;
-        // const reader = fs.createReadStream(file.path);
-        // const [hash, suffix] = filename.split('_');
-        // const folder = uploadDir + hash;
-        // !fs.existsSync(folder) && fs.mkdirSync(folder);
-        // const filePath =  `${folder}/${filename}`;
-        // const upStream = fs.createWriteStream(filePath);
-        // reader.pipe(upStream);
-        // ctx.body = await new Promise((resolve, reject) => {
-        //   reader.on('error', () => {
-        //     reject({
-        //       code: 0,
-        //       massage: '上传失败',
-        //     })
-        //   })
-        //   reader.on('close', () => {    
-        //     resolve({
-        //       code: 1,
-        //       massage: '上传成功',
-        //       data: {
-        //         hash,
-        //         index: Number(suffix.split('.')[0])
-        //       }
-        //     })
-        //   })
-        // })
-        
     })
 
     return router

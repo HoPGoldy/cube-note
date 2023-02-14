@@ -1,4 +1,5 @@
 import { ArticleStorage } from '@/types/article'
+import { FileStorage } from '@/types/file'
 import { TagGroupStorage, TagStorage } from '@/types/tag'
 import { UserStorage } from '@/types/user'
 import { MongoClient } from 'mongodb'
@@ -58,9 +59,6 @@ export const createDb = (props: Props) => {
      */
     const getArticleCollection = () => database.collection<ArticleStorage>('articles')
 
-    // 文章内容和标题使用全文索引
-    getArticleCollection().createIndex({ content: 'text', title: 'text' })
-
     /**
      * 获取标签集合
      */
@@ -72,13 +70,22 @@ export const createDb = (props: Props) => {
     const getTagGroupCollection = () => database.collection<TagGroupStorage>('tagGroups')
 
     /**
+     * 获取文件集合
+     */
+    const getFileCollection = () => database.collection<FileStorage>('files')
+
+    // 文件访问主要靠 md5
+    getFileCollection().createIndex({ md5: 1 })
+
+    /**
      * 获取数据库状态
      */
     const getDatabaseStats = async () => database.stats()
 
     return {
         getUserCollection, getUserStorage, updateUserStorage, getReplayAttackNonceCollection,
-        getArticleCollection, getTagCollection, getDatabaseStats, getTagGroupCollection
+        getArticleCollection, getTagCollection, getDatabaseStats, getTagGroupCollection,
+        getFileCollection
     }
 }
 

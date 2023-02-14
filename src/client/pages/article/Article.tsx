@@ -18,6 +18,7 @@ import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import { Button } from '@/client/components/Button'
 import { useAutoSave } from './AutoSave'
+import { useUpload } from './Upload'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -50,6 +51,8 @@ const About: FC = () => {
     const isEdit = (searchParams.get('mode') === 'edit')
     // 功能 - 自动保存
     const { saveToLocal, getLocalSaveContent, contentRef } = useAutoSave(isEdit, currentArticleId, setSaveBtnText)
+    // 功能 - 附件上传
+    const { upload } = useUpload()
 
     // 编辑时的节流
     const onContentChangeThrottle = useMemo(() => throttle(newContent => {
@@ -115,6 +118,7 @@ const About: FC = () => {
 
     const onUploadFile = async (files: File[]) => {
         console.log('🚀 ~ file: Article.tsx:117 ~ onUploadFile ~ files', files)
+        upload(files)
     }
 
     const renderContent = () => {
