@@ -61,15 +61,16 @@ export const aesDecrypt = (str: string, key: CryptoJS.lib.WordArray, iv: CryptoJ
  * @param body 请求 body
  * @param secretKey 签名私钥
  */
-export const setReplayAttackHeaders = (request: Request, secretKey: string) => {
-    const url = '/api' + request.url.split('/api')[1]
+export const createReplayAttackHeaders = (url: string, secretKey: string) => {
     const timestamp = Date.now()
     const nonce = nanoid()
     const sign = sha(`${url}${nonce}${timestamp}${secretKey}`)
 
-    request.headers.set('X-cubnote-temestamp', timestamp.toString())
-    request.headers.set('X-cubnote-nonce', nonce)
-    request.headers.set('X-cubnote-signature', sign)
+    return {
+        'X-cubnote-temestamp': timestamp.toString(),
+        'X-cubnote-nonce': nonce,
+        'X-cubnote-signature': sign
+    }
 }
 
 interface ReplayAttackData {

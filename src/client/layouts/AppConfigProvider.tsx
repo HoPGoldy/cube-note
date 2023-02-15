@@ -10,7 +10,7 @@ export const AppConfigProvider: FC = (props) => {
     const appConfig = useAppSelector(s => s.global.appConfig)
     const dispatch = useAppDispatch()
 
-    const { data } = useAppConfigQuery()
+    const { data, isError } = useAppConfigQuery()
 
     useEffect(() => {
         if (!data || !data.data) return
@@ -24,7 +24,7 @@ export const AppConfigProvider: FC = (props) => {
     return (
         <>{
             !appConfig 
-                ? <Loading tip="正在加载应用配置..." />
+                ? <Loading tip={isError ? '加载失败，请刷新重试' : '正在加载应用配置...'} />
                 : props.children
         }</>
     )
