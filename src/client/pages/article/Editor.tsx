@@ -1,4 +1,5 @@
-import React, { FC, useRef, useEffect, useState } from 'react'
+/* eslint-disable react/display-name */
+import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react'
 
 interface Props {
     value: string
@@ -9,7 +10,11 @@ interface Props {
     onUploadFile: (files: File[]) => Promise<unknown>
 }
 
-const Editor: FC<Props> = (props) => {
+export interface EditorRef {
+    el: HTMLTextAreaElement | null
+}
+
+const Editor = forwardRef<EditorRef, Props>((props, ref) => {
     // 文本输入框引用
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
     // 是否拖动文件过来了
@@ -17,6 +22,10 @@ const Editor: FC<Props> = (props) => {
     // 文件选择回调引用
     const onUploadFileRef = useRef(props.onUploadFile)
     onUploadFileRef.current = props.onUploadFile
+
+    useImperativeHandle(ref, () => ({
+        el: textAreaRef.current
+    }))
 
     useEffect(() => {
         const el = textAreaRef.current
@@ -68,6 +77,6 @@ const Editor: FC<Props> = (props) => {
             onChange={e => props.onChange(e.target.value)}
         />
     )
-}
+}) 
 
 export default Editor

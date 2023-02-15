@@ -27,12 +27,14 @@ export const createService = (props: Props) => {
     const { saveDir } = props
     const { getFileCollection } = props.db
 
-    // const getUploadedCount = async (fileHash: string) => {
-    //     const filePath = path.resolve(uploadTempDir, fileHash)
-    //     const fileList = (fs.existsSync(filePath) && fs.readdirSync(filePath)) || []
+    const readFile = async (hash: string) => {
+        const collection = await getFileCollection()
+        const fileInfo = await collection.findOne({ md5: hash })
+        if (!fileInfo) return
 
-    //     return fileList.length
-    // }
+        const filePath = path.resolve(saveDir, 'file', fileInfo.username, fileInfo.filename)
+        return { filePath, fileInfo }
+    }
 
     const isFileExist = async (fileMd5s: string[]) => {
         const collection = await getFileCollection()
@@ -44,13 +46,13 @@ export const createService = (props: Props) => {
         }, {} as Record<string, WithId<FileStorage>>)
     }
 
-    const uploadFile = async (files: UploadedFile[]) => {
+    const uploadFile = async (files: UploadedFile[], username: string) => {
         const filesWithMd5 = await Promise.all(files.map(async f => ({
             ...f,
             md5: await getFileMd5(f.tempPath, f.filename)
         })))
 
-        const fileSavePath = path.resolve(saveDir, 'file')
+        const fileSavePath = path.resolve(saveDir, 'file', username)
         await ensureDir(fileSavePath)
         const existFiles = await isFileExist(filesWithMd5.map(f => f.md5))
 
@@ -59,7 +61,7 @@ export const createService = (props: Props) => {
                 console.log('文件已存在，跳过', f.filename, f.md5)
                 return
             }
-            const newFilePath = path.resolve(fileSavePath, f.md5)
+            const newFilePath = path.resolve(fileSavePath, f.filename)
 
             try {
                 await move(f.tempPath, newFilePath)
@@ -70,19 +72,24 @@ export const createService = (props: Props) => {
             }
         }))
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const fileWithoutTempPath = filesWithMd5.map(({ tempPath, ...file }) => file)
-        const newFiles = fileWithoutTempPath.filter(f => !existFiles[f.md5])
+        const fileInfos = filesWithMd5.map(file => ({
+            md5: file.md5,
+            filename: file.filename,
+            type: file.type,
+            size: file.size,
+            username,
+        }))
+        const newFiles = fileInfos.filter(f => !existFiles[f.md5])
 
         if (newFiles.length > 0) {
             const fileCollection = await getFileCollection()
             await fileCollection.insertMany(newFiles)
         }
 
-        return fileWithoutTempPath
+        return fileInfos
     }
 
-    return { uploadFile }
+    return { readFile, uploadFile }
 }
 
 export type FileService = ReturnType<typeof createService>

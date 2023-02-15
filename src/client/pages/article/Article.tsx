@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
-import Editor from './Editor'
+import Editor, { EditorRef } from './Editor'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
@@ -25,6 +25,8 @@ const About: FC = () => {
     const params = useParams()
     const dispatch = useAppDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
+    // 编辑器引用
+    const editorRef = useRef<EditorRef>(null)
     // 当前文章 id
     const currentArticleId = params.articleId as string
     // 获取详情
@@ -52,7 +54,7 @@ const About: FC = () => {
     // 功能 - 自动保存
     const { saveToLocal, getLocalSaveContent, contentRef } = useAutoSave(isEdit, currentArticleId, setSaveBtnText)
     // 功能 - 附件上传
-    const { upload } = useUpload()
+    const { upload } = useUpload({ editorRef, setContent })
 
     // 编辑时的节流
     const onContentChangeThrottle = useMemo(() => throttle(newContent => {
@@ -65,7 +67,6 @@ const About: FC = () => {
         if (content === null) return
         onContentChangeThrottle(content)
     }, [content])
-
 
     useEffect(() => {
         dispatch(setCurrentArticle(currentArticleId))
@@ -116,16 +117,11 @@ const About: FC = () => {
         await saveEdit({ title, content, favorite: isFavorite })
     }
 
-    const onUploadFile = async (files: File[]) => {
-        console.log('🚀 ~ file: Article.tsx:117 ~ onUploadFile ~ files', files)
-        upload(files)
-    }
-
     const renderContent = () => {
         if (isLoadingArticle) return <Loading tip='信息加载中...' />
 
         return (
-            <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-4/5 mt-4'>
+            <div className='px-4 lg:px-auto lg:mx-auto w-full mt-4'>
                 <div className="flex mb-2">
                     <input
                         ref={titleInputRef}
@@ -178,9 +174,10 @@ const About: FC = () => {
                     {isEdit && (
                         <div className='md:w-[50%]'>
                             <Editor
+                                ref={editorRef}
                                 value={content}
                                 onChange={setContent}
-                                onUploadFile={onUploadFile}
+                                onUploadFile={upload}
                             />
                         </div>
                     )}

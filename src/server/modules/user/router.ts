@@ -5,6 +5,7 @@ import { UserService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
 import { ChangePasswordReqData, LoginReqData, SetThemeReqData } from '@/types/user'
+import { getUsernameFromCtx } from '@/server/lib/auth'
 
 interface Props {
     service: UserService
@@ -29,11 +30,8 @@ export const createRouter = (props: Props) => {
     })
 
     router.get('/getInfo', async ctx => {
-        const username = ctx.state?.user?.username
-        if (!username) {
-            response(ctx, { code: 400, msg: '未知用户，请重新登录' })
-            return
-        }
+        const username = getUsernameFromCtx(ctx)
+        if (!username) return
 
         const resp = await service.getUserInfo(username, getIp(ctx) || 'anonymous')
         response(ctx, resp)

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import jwtKoa from 'koa-jwt'
 import { nanoid } from 'nanoid'
 import { createFileReader, response } from '../utils'
+import { AppKoaContext } from '@/types/global'
 
 /**
  * 获取 jwt 密钥
@@ -22,6 +23,16 @@ export const middlewareJwtCatcher = async (ctx: Context, next: Next) => {
             throw err
         }
     }
+}
+
+export const getUsernameFromCtx = (ctx: AppKoaContext) => {
+    const username: string = ctx.state?.user?.username
+    if (!username) {
+        response(ctx, { code: 400, msg: '未知用户，请重新登录' })
+        return
+    }
+
+    return username
 }
 
 export const verifyToken = async (token: string) => {

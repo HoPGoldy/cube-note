@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import { AppKoaContext } from '@/types/global'
 import { response } from '@/server/utils'
 import { GlobalService } from './service'
+import { getUsernameFromCtx } from '@/server/lib/auth'
 
 interface Props {
     service: GlobalService
@@ -21,7 +22,9 @@ export const createRouter = (props: Props) => {
     })
 
     router.get('/userDataInfo', async ctx => {
-        const username = ctx.state?.user?.username
+        const username = getUsernameFromCtx(ctx)
+        if (!username) return
+
         const data = await service.getUserDataInfo(username)
         response(ctx, data)
     })

@@ -1,9 +1,13 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
+import { FileStorage } from '@/types/file'
 
 const fileApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        upload: build.mutation<AppResponse, FormData>({
+        getFile: build.query<AppResponse<FileStorage>, string>({
+            query: (id) => `file/${id}`
+        }),
+        upload: build.mutation<AppResponse<FileStorage[]>, FormData>({
             query: body => ({
                 url: 'file/upload',
                 method: 'POST',
@@ -13,4 +17,4 @@ const fileApi = baseApi.injectEndpoints({
     })
 })
 
-export const { useUploadMutation } = fileApi
+export const { useLazyGetFileQuery, useUploadMutation } = fileApi

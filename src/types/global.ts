@@ -10,6 +10,7 @@ export type AppResponse<T = unknown> = {
 }
 
 export interface MyJwtPayload {
+    username: string
     groups?: number[]
     lat: number
     exp: number
