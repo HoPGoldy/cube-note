@@ -20,7 +20,7 @@ interface Props {
  */
 export const createCheckReplayAttack = (props: Props) => {
     const checkReplayAttack = async (ctx: AppKoaContext, next: Next) => {
-        const isAccessPath = !!props.excludePath.find(path => ctx.url.endsWith(path))
+        const isAccessPath = !!props.excludePath.find(path => ctx.url.endsWith(path) || ctx.url.startsWith(path))
         // 允许 excludePath 接口正常访问
         if (isAccessPath) return await next()
 

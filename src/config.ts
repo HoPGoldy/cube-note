@@ -24,7 +24,7 @@ export const DATE_FORMATTER = 'YYYY-MM-DD HH:mm:ss'
  * 无需登录即可访问的接口
  */
 export const AUTH_EXCLUDE = [
-    '/api/global', '/api/user/login', '/api/user/register', '/api/user/createAdmin'
+    '/api/global', '/api/user/login', '/api/user/register', '/api/user/createAdmin', '/api/file/content'
 ]
 
 /**

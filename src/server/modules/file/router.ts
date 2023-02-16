@@ -14,7 +14,7 @@ export const createRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/file' })
 
-    router.get('/:hashName', async ctx => {
+    router.get('/content/:hashName', async ctx => {
         const { hashName } = ctx.params
         // 这个链接里可能会有后缀名，所以需要去掉
         const [hash] = hashName.split('.')
@@ -25,7 +25,7 @@ export const createRouter = (props: Props) => {
         }
 
         const { filename, type, size } = data.fileInfo
-        ctx.set('Content-disposition', `attachment; filename=${filename}`)
+        ctx.set('Content-disposition', `attachment; filename=${encodeURIComponent(filename)}`)
         ctx.set('Content-Type', type)
         ctx.set('Content-Length', size.toString())
         ctx.body = await readFile(data.filePath)

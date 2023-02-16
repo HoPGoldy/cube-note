@@ -1,3 +1,4 @@
+import { fetchFile } from '@/client/services/download'
 import { useLazyGetFileQuery } from '@/client/services/file'
 import React, { FC, useEffect, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -15,18 +16,21 @@ const Accessory: FC<AccessoryProps> = (props) => {
     // 是否为图片
     const isPic = useMemo(() => PIC_SUFFIX.includes(src.split('.').pop() || 'unknow'), [src])
     // 获取图片数据
-    const [getPicSource] = useLazyGetFileQuery()
+    // const [getPicSource] = useLazyGetFileQuery()
     // 图片引用
     const imgRef = React.createRef<HTMLImageElement>()
 
     const fetchPic = async (hash: string) => {
-        const resp = await getPicSource(hash)
-        console.log('🚀 ~ file: Preview.tsx:21 ~ useEffect ~ resp', resp)
+        console.log('🚀 ~ 刷新图片', src, isPic)
+        // const resp = await fetchFile(hash)
     }
 
     // 如果是本地图片，就获取数据并显示
     useEffect(() => {
+        console.log(imgRef.current?.src)
         if (!isPic) return
+
+        // if (imgRef.current) imgRef.current.src = src
         
         // 网络图片，直接显示
         if (src.startsWith('http') || src.startsWith('//')) {
@@ -42,7 +46,7 @@ const Accessory: FC<AccessoryProps> = (props) => {
         }
 
         fetchPic(picHash)
-    }, [src, isPic, getPicSource])
+    }, [src, isPic])
 
     // 不是图片，渲染为附件格式
     if (!isPic) return (
@@ -52,7 +56,8 @@ const Accessory: FC<AccessoryProps> = (props) => {
         </div>
     )
 
-    return <img ref={imgRef} />
+    // return <img ref={imgRef} />
+    return <>123</>
 }
 
 interface Props {
@@ -68,9 +73,9 @@ const Preview: FC<Props> = (props) => {
             <ReactMarkdown
                 className='prose'
                 remarkPlugins={[remarkGfm]}
-                components={{
-                    img: ({ src, alt }) => <Accessory src={src || ''} alt={alt || ''} />,
-                }}
+                // components={{
+                //     img: ({ src, alt }) => <Accessory src={src || ''} alt={alt || ''} />,
+                // }}
             >
                 {props.value}
             </ReactMarkdown>
