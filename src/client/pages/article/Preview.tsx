@@ -3,6 +3,7 @@ import { useLazyGetFileQuery } from '@/client/services/file'
 import React, { FC, useEffect, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Viewer } from '@bytemd/react'
 
 const PIC_SUFFIX = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 
@@ -70,7 +71,7 @@ const Preview: FC<Props> = (props) => {
         <div
             style={{ height: 'calc(100vh - 186px)', overflowY: 'auto' }}
         >
-            <ReactMarkdown
+            {/* <ReactMarkdown
                 className='prose'
                 remarkPlugins={[remarkGfm]}
                 // components={{
@@ -78,7 +79,8 @@ const Preview: FC<Props> = (props) => {
                 // }}
             >
                 {props.value}
-            </ReactMarkdown>
+            </ReactMarkdown> */}
+            <Viewer value={props.value} />
         </div>
     )
 }

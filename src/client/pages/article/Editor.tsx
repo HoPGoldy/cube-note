@@ -1,6 +1,12 @@
 /* eslint-disable react/display-name */
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react'
+import gfm from '@bytemd/plugin-gfm'
+import { Editor as MdEditor } from '@bytemd/react'
 
+const plugins = [
+    gfm(),
+    // Add more plugins here
+]
 interface Props {
     value: string
     onChange: (value: string) => void
@@ -67,14 +73,20 @@ const Editor = forwardRef<EditorRef, Props>((props, ref) => {
     }, [])
 
     return (
-        <textarea
-            ref={textAreaRef}
-            placeholder="写点什么"
-            autoFocus
-            className={'w-full ' + (isDragFile ? 'ring-2 ring-green-400' : '')}
-            style={{ height: 'calc(100vh - 186px)', resize: 'none' }}
+        // <textarea
+        //     ref={textAreaRef}
+        //     placeholder="写点什么"
+        //     autoFocus
+        //     className={'w-full ' + (isDragFile ? 'ring-2 ring-green-400' : '')}
+        //     style={{ height: 'calc(100vh - 186px)', resize: 'none' }}
+        //     value={props.value}
+        //     onChange={e => props.onChange(e.target.value)}
+        // />
+        <MdEditor
             value={props.value}
-            onChange={e => props.onChange(e.target.value)}
+            mode="split"
+            plugins={plugins}
+            onChange={props.onChange}
         />
     )
 }) 
