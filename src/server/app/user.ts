@@ -4,14 +4,14 @@ import { createToken } from '@/server/lib/auth'
 import { getReplayAttackSecret } from '@/server/lib/replayAttackDefense'
 import { loginLocker } from './LoginLocker'
 import { articleService } from './article'
-import { db } from './database'
+import { sqlDb } from './database'
 
 
 export const userService = createService({
     loginLocker,
     createToken: createToken,
     getReplayAttackSecret,
-    db,
+    db: sqlDb,
     addArticle: articleService.addArticle
 })
 

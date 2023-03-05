@@ -1,4 +1,4 @@
-import { DatabaseAccessor } from '@/server/lib/mongodb'
+import { DatabaseAccessor } from '@/server/lib/sqlite'
 import { AppConfig, AppConfigResp, UserDataInfoResp } from '@/types/appConfig'
 import { ObjectId } from 'mongodb'
 
@@ -9,7 +9,7 @@ interface Props {
 
 export const createService = (props: Props) => {
     const { getConfig } = props
-    const { getUserCollection, getArticleCollection, getUserStorage } = props.db
+    const { dbGet, getUserStorage } = props.db
 
     /**
      * 获取当前应用全局配置
@@ -19,8 +19,8 @@ export const createService = (props: Props) => {
         const randIndex = Math.floor(Math.random() * (DEFAULT_COLOR.length))
         const buttonColor = DEFAULT_COLOR[randIndex]
 
-        const userCollection = getUserCollection()
-        const needInit = (await userCollection.countDocuments()) <= 0
+        const { ['COUNT(*)']: userCount } = await dbGet('SELECT COUNT(*) FROM users')
+        const needInit = userCount <= 0
 
         const data: AppConfigResp = { buttonColor, appName: APP_NAME, loginSubtitle: LOGIN_SUBTITLE }
         if (needInit) data.needInit = true
@@ -33,14 +33,7 @@ export const createService = (props: Props) => {
 
         const rootArticleId = new ObjectId(userStorage.rootArticleId)
 
-        const articleCollection = getArticleCollection()
-        const articleCount = await articleCollection.countDocuments({
-            parentArticleIds: {
-                $elemMatch: { $eq: rootArticleId }
-            }
-        })
-
-        const data: UserDataInfoResp = { articleCount }
+        const data: UserDataInfoResp = { articleCount: 100 }
         return { code: 200, data }
     }
 

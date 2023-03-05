@@ -1,11 +1,11 @@
 import { createRouter } from '../modules/global/router'
 import { createService } from '../modules/global/service'
 import { getAppConfig } from '../lib/appConfig'
-import { db } from './database'
+import { sqlDb } from './database'
 
 export const globalService = createService({
     getConfig: getAppConfig,
-    db
+    db: sqlDb
 })
 
 export const globalRouter = createRouter({

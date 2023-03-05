@@ -5,7 +5,7 @@ import { sha } from '@/utils/crypto'
 import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
 import { ArticleService } from '../article/service'
-import { DatabaseAccessor } from '@/server/lib/mongodb'
+import { DatabaseAccessor } from '@/server/lib/sqlite'
 
 interface Props {
     loginLocker: LoginLocker
@@ -21,7 +21,7 @@ export const createService = (props: Props) => {
         getReplayAttackSecret,
         addArticle,
     } = props
-    const { getUserCollection, getUserStorage, updateUserStorage } = props.db
+    const { dbGet, getUserStorage, updateUserStorage } = props.db
 
     const loginFail = (ip: string, msg = '账号或密码错误') => {
         const lockInfo = loginLocker.recordLoginFail(ip)
@@ -73,7 +73,7 @@ export const createService = (props: Props) => {
     /**
      * 注册
      */
-    const register = async (username: string, passwordHash: string): Promise<AppResponse> => {
+    const register = async (username: string, passwordHash: string, isAdmin = false): Promise<AppResponse> => {
         const userStorage = await getUserStorage(username)
         if (userStorage) {
             return { code: STATUS_CODE.ALREADY_REGISTER, msg: '已经注册' }
@@ -91,7 +91,8 @@ export const createService = (props: Props) => {
             passwordSalt,
             initTime: Date.now(),
             rootArticleId: createResp.data,
-            theme: AppTheme.Light
+            theme: AppTheme.Light,
+            isAdmin,
         }
 
         await updateUserStorage(username, initStorage)
@@ -103,19 +104,12 @@ export const createService = (props: Props) => {
      * 创建管理员
      */
     const createAdmin = async (username: string, passwordHash: string): Promise<AppResponse> => {
-        const userCollection = getUserCollection()
-        const userNumber = await userCollection.countDocuments()
-        if (userNumber > 0) {
+        const { ['COUNT(*)']: userCount } = await dbGet('SELECT COUNT(*) FROM users')
+        if (userCount > 0) {
             return { code: 400, msg: '管理员已存在' }
         }
 
-        const registerResult = await register(username, passwordHash)
-        if (registerResult.code !== 200) {
-            return registerResult
-        }
-
-        await updateUserStorage(username, { isAdmin: true })
-        return { code: 200 }
+        return await register(username, passwordHash, true)
     }
 
     /**

@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react'
-import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
+import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article.new'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '../store/menu'
 import { Link, useNavigate } from 'react-router-dom'
@@ -70,14 +70,16 @@ export const Sidebar: FC = () => {
         navigate(`/article/${resp.data}?mode=edit`)
     }
 
+    // 选择了新的文章，把该文章的父级信息更新到 store
     useEffect(() => {
         if (!articleLink || !articleLink.data) return
         dispatch(setParentArticle(articleLink.data))
     }, [articleLink])
 
+    // 查看了相关条目，更新信息，让设置相关条目时可以高亮已关联文章
     useEffect(() => {
         if (!articleRelatedLink || !articleRelatedLink.data) return
-        dispatch(setRelatedArticleIds(articleRelatedLink.data.relatedArticles.map(item => item._id)))
+        dispatch(setRelatedArticleIds(articleRelatedLink.data.relatedArticles.map(item => item.id)))
     }, [articleRelatedLink])
 
     // 把选择的相关文章更新到后端
@@ -95,12 +97,12 @@ export const Sidebar: FC = () => {
         dispatch(articleApi.util.updateQueryData('getArticleRelated', currentArticleId, (data) => {
             if (!data?.data) return
             // 不存在就添加
-            if (!currentLinks.find(item => item._id === newItem.value)) {
-                data.data.relatedArticles?.push({ _id: newItem.value, title: newItem.title })
+            if (!currentLinks.find(item => item.id === newItem.value)) {
+                data.data.relatedArticles?.push({ id: newItem.value, title: newItem.title })
                 return
             }
             // 存在就移除
-            data.data.relatedArticles = data.data.relatedArticles.filter(item => item._id !== newItem.value)
+            data.data.relatedArticles = data.data.relatedArticles.filter(item => item.id !== newItem.value)
         }))
     }
 
@@ -120,9 +122,9 @@ export const Sidebar: FC = () => {
     const renderMenuItem = (item: ArticleMenuItem) => {
         return (
             <div
-                key={item._id}
+                key={item.id}
                 className={menuItemClassname}
-                onClick={() => onClickTreeItem({ value: item._id, title: item.title })}
+                onClick={() => onClickTreeItem({ value: item.id, title: item.title })}
             >
                 {item.title}
             </div>

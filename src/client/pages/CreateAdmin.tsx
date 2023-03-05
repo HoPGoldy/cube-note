@@ -79,8 +79,12 @@ const Register = () => {
     }
 
     const onSubmit = async () => {
-        const resp = await createAdmin({ username, password: sha(password) })
-        console.log('resp', resp)
+        const resp = await createAdmin({ username, password: sha(password) }).unwrap()
+        if (resp.code !== 200) {
+            Notify.show({ type: 'danger', message: resp.msg })
+            return
+        }
+
         Notify.show({ type: 'success', message: '初始化完成' })
         dispatch(initSuccess())
     }

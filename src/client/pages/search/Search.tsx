@@ -1,7 +1,7 @@
 import { useLazyQueryArticleListQuery } from '@/client/services/article'
 import { List } from 'react-vant'
 import { blurOnEnter } from '@/client/utils/input'
-import { ArticleContentResp, QueryArticleReqData } from '@/types/article'
+import { ArticleContent, QueryArticleReqData } from '@/types/article.new'
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
@@ -41,7 +41,7 @@ const Search: FC = () => {
     // 标签映射
     const tagDict = useTagDict(tagListResp?.data || [])
     // 当前展示的搜索结果列表
-    const [articleList, setArticleList] = useState<ArticleContentResp[]>([])
+    const [articleList, setArticleList] = useState<ArticleContent[]>([])
     // 是否搜索完成
     const [isSearchFinished, setIsSearchFinished] = useState(true)
     // 当前搜索的页码
@@ -91,19 +91,19 @@ const Search: FC = () => {
 
         return (
             <Tag
-                key={item._id}
+                key={item.id}
                 label={item.title}
-                id={item._id}
+                id={item.id}
                 color={item.color}
             />
         )
     }
 
-    const renderSearchItem = (item: ArticleContentResp) => {
+    const renderSearchItem = (item: ArticleContent) => {
         const colorfulTitle = item.title.replace(keyword, `<span class='text-red-500'>${keyword}</span>`)
         const colorfulContent = item.content.replace(keyword, `<span class='text-red-500'>${keyword}</span>`)
         return (
-            <Link to={`/article/${item._id}`} key={item._id}>
+            <Link to={`/article/${item.id}`} key={item.id}>
                 <div className='p-4 border-b border-gray-200 cursor-pointer hover:bg-slate-300'>
                     <div
                         className='font-bold'

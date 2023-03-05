@@ -1,19 +1,19 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
 import {
-    AddArticleReqData, ArticleContentResp, ArticleDeleteResp, ArticleLinkResp,
+    AddArticleReqData, ArticleContent, ArticleDeleteResp, ArticleLinkResp,
     ArticleMenuItem,
     ArticleRelatedResp,
     ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
     QueryArticleReqData,
     UpdateArticleReqData
-} from '@/types/article'
+} from '@/types/article.new'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
 import { STATUS_CODE } from '@/config'
 
 export const articleApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        getArticleContent: build.query<AppResponse<ArticleContentResp>, string>({
+        getArticleContent: build.query<AppResponse<ArticleContent>, string>({
             query: (id) => `article/${id}/getContent`,
             providesTags: (res, err, id) => [{ type: 'articleContent', id }]
         }),
@@ -71,7 +71,7 @@ export const articleApi = baseApi.injectEndpoints({
                 }
             },
         }),
-        queryArticleList: build.query<AppResponse<ArticleContentResp[]>, QueryArticleReqData>({
+        queryArticleList: build.query<AppResponse<ArticleContent[]>, QueryArticleReqData>({
             query: query => ({
                 url: 'article/getList',
                 method: 'POST',

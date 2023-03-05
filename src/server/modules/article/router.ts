@@ -5,6 +5,7 @@ import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
 import { AddArticleReqData, DeleteArticleMutation, QueryArticleReqData, UpdateArticleReqData } from '@/types/article'
+import { getUsernameFromCtx } from '@/server/lib/auth'
 
 interface Props {
     service: ArticleService
@@ -108,13 +109,17 @@ export const createRouter = (props: Props) => {
     // 查询文章树
     router.get('/:rootArticleId/tree', async ctx => {
         const { rootArticleId } = ctx.params
+
         const resp = await service.getArticleTree(rootArticleId)
         response(ctx, resp)
     })
 
     // 获取所有收藏的文章
     router.get('/favorite', async ctx => {
-        const resp = await service.getFavoriteArticles()
+        const username = getUsernameFromCtx(ctx)
+        if (!username) return
+
+        const resp = await service.getFavoriteArticles(username)
         response(ctx, resp)
     })
 

@@ -1,139 +1,111 @@
-import { Filter, ObjectId, RootFilterOperators, WithId } from 'mongodb'
-import { ArticleDeleteResp, ArticleLinkResp, ArticleMenuItem, ArticleRelatedResp, ArticleStorage, ArticleTreeNode, ArticleUpdateResp, QueryArticleReqData, UpdateArticleReqData } from '@/types/article'
-import { cloneDeep, isNil } from 'lodash'
-import { DatabaseAccessor } from '@/server/lib/mongodb'
+import { ArticleContent, ArticleStorage, ArticleDeleteResp, ArticleUpdateResp, QueryArticleReqData, UpdateArticleReqData, ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp } from '@/types/article.new'
+import { DatabaseAccessor } from '@/server/lib/sqlite'
+import { createId, createSqlInsert, createSqlSelect, createSqlUpdate, SqlWhere } from '@/utils/sqlite'
 
 interface Props {
     db: DatabaseAccessor
 }
 
 export const createService = (props: Props) => {
-    const {
-        getArticleCollection,
-    } = props.db
+    const { dbGet, dbAll, dbRun, getUserStorage } = props.db
+
+    /**
+     * 把数据库中的数据格式化成前端需要的格式
+     */
+    const formatArticle = (article: ArticleStorage): ArticleContent => {
+        const { tagIds, relatedArticleIds, ...rest } = article
+
+        const fontendArticle: Partial<ArticleContent> = { ...rest }
+        if (tagIds) fontendArticle.tagIds = tagIds.split(',')
+
+        return {
+            ...rest,
+            tagIds: tagIds ? tagIds.split(',') : [],
+        }
+    }
 
     const addArticle = async (title: string, content: string, parentId?: string) => {
-        const articleCollection = getArticleCollection()
-        let parentArticle: WithId<ArticleStorage> | null = null
         if (parentId) {
-            const _id = new ObjectId(parentId)
-            parentArticle = await articleCollection.findOne({ _id })
+            const parentArticle = await dbGet(createSqlSelect('articles', { id: parentId }))
             if (!parentArticle) {
                 return { code: 400, msg: '父条目不存在' }
             }
         }
 
-        const parentArticleIds = parentArticle ? cloneDeep(parentArticle.parentArticleIds) : []
-        if (parentId) parentArticleIds.push(parentId)
-
-        const newArticle = await articleCollection.insertOne({
+        const newArticle: ArticleStorage = {
+            id: createId(),
             title,
             content,
             createTime: Date.now(),
             updateTime: Date.now(),
-            parentArticleIds,
-            relatedArticleIds: [],
-            tagIds: [],
-            favorite: false
-        })
+            parentArticleId: parentId || '',
+            relatedArticleIds: '',
+            tagIds: '',
+        }
 
-        return { code: 200, data: newArticle.insertedId.toString() }
+        await dbAll(createSqlInsert('articles', newArticle))
+        return { code: 200, data: newArticle.id }
     }
 
     /**
      * 删除文章
      */
     const removeArticle = async (id: string, force: boolean) => {
-        const articleCollection = getArticleCollection()
-        const _id = new ObjectId(id)
-        const article = await articleCollection.findOne({ _id })
-        if (!article) {
-            return { code: 200 }
-        }
+        const removedArticle = await dbGet<ArticleStorage>(createSqlSelect('articles', { id }))
+        if (!removedArticle) return { code: 200 }
 
-        const childrenArticles = await articleCollection.find({
-            parentArticleIds: {
-                $elemMatch: { $eq: id }
-            }
-        }, {
-            projection: { title: 1 }
-        }).toArray()
+        const childrenArticles = await dbAll<ArticleStorage>(createSqlSelect('articles', { parentArticleId: id }))
 
-        const deleteIds = [_id]
-
+        const deleteIds = [id]
         if (childrenArticles.length > 0) {
             if (!force) return { code: 400, msg: '包含子条目，无法删除' }
-            deleteIds.push(...childrenArticles.map(item => item._id))
+            deleteIds.push(...childrenArticles.map(item => item.id))
         }
-
-        await articleCollection.deleteMany({
-            _id: { $in: deleteIds }
-        })
 
         const data: ArticleDeleteResp = {
-            parentArticleId: article.parentArticleIds[article.parentArticleIds.length - 1],
-            deletedArticleIds: deleteIds.map(item => item.toString()),
+            // 返回父级文章 id，删除后会跳转至这个文章
+            parentArticleId: removedArticle.parentArticleId,
+            deletedArticleIds: deleteIds,
         }
 
-        // 返回父级文章 id，删除后会跳转至这个文章
         return { code: 200, data }
     }
 
     const updateArticle = async (detail: UpdateArticleReqData) => {
-        const articleCollection = getArticleCollection()
-        const _id = new ObjectId(detail.id)
-        const article = await articleCollection.findOne({ _id })
-        if (!article) {
-            return { code: 400, msg: '文章不存在' }
+        const { id, tagIds, relatedArticleIds, ...restDetail } = detail
+        const targetArticle = await dbGet<ArticleStorage>(createSqlSelect('articles', { id: id }))
+        if (!targetArticle) return { code: 400, msg: '文章不存在' }
+
+        const newArticle: Partial<ArticleStorage> = {
+            ...restDetail,
+            updateTime: Date.now(),
         }
 
-        const parentArticleIds = cloneDeep(article.parentArticleIds)
-        if (detail.parentId) {
-            parentArticleIds.pop()
-            parentArticleIds.push(detail.parentId)
-        }
+        if (relatedArticleIds) newArticle.relatedArticleIds = relatedArticleIds.join(',')
+        if (tagIds) newArticle.tagIds = tagIds.join(',')
 
-        await articleCollection.updateOne({ _id }, { $set: {
-            title: detail.title || article.title,
-            content: detail.content || article.content,
-            parentArticleIds,
-            relatedArticleIds: detail.relatedArticleIds || article.relatedArticleIds,
-            favorite: isNil(detail.favorite) ? article.favorite : detail.favorite,
-            tagIds: detail.tagIds || article.tagIds,
-            updateTime: Date.now()
-        } })
+        await dbRun(createSqlUpdate('articles', newArticle, { id }))
 
         const data: ArticleUpdateResp = {
-            parentArticleId: parentArticleIds[parentArticleIds.length - 1],
+            parentArticleId: targetArticle.parentArticleId,
         }
 
         return { code: 200, data }
     }
 
     const getArticleList = async (query: QueryArticleReqData) => {
-        const collection = getArticleCollection()
+        /** TODO: tag id 搜索 */
         const { page = 1, tagIds, keyword } = query
+        console.log('🚀 ~ file: service.ts:99 ~ getArticleList ~ query:', query)
 
-        const filterObj: Filter<ArticleStorage> & RootFilterOperators<ArticleStorage> = {}
-        if (tagIds && tagIds.length > 0) {
-            filterObj.tagIds = { $elemMatch: { $in: tagIds } }
-        }
-        if (keyword) {
-            filterObj.$or = [
-                { title: { $regex: keyword } },
-                { content: { $regex: keyword } }
-            ]
-        }
+        const sql = `
+            SELECT id, title, content, tagIds, updateTime, createTime FROM articles
+            WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'
+            ORDER BY updateTime DESC
+            LIMIT 15 OFFSET ${(page - 1) * 15}
+        `
 
-        const result = await collection
-            .find(filterObj, {
-                projection: { content: 1, title: 1, updateTime: 1, favorite: 1, tagIds: 1 }
-            })
-            .sort({ updateTime: -1 })
-            .skip((page - 1) * 15)
-            .limit(15)
-            .toArray()
-
+        const result = await dbAll<ArticleStorage>(sql)
         const data = result.map(item =>  {
             let content = ''
             // 截取正文中关键字前后的内容
@@ -145,116 +117,83 @@ export const createService = (props: Props) => {
             }
             if (!content) content = item.content.slice(0, 30)
 
-            return { ...item, content }
+            return {
+                ...item,
+                content,
+                tagIds: item.tagIds ? item.tagIds.split(',') : [],
+            }
         })
 
         return { code: 200, data }
     }
 
     const getArticleContent = async (id: string) => {
-        const articleCollection = getArticleCollection()
-        const _id = new ObjectId(id)
-        const article = await articleCollection.findOne(
-            { _id },
-            {
-                projection: {
-                    childrenArticleIds: 0,
-                    relatedArticleIds: 0,
-                    parentArticleId: 0
-                }
-            }
-        )
-        if (!article) {
-            return { code: 400, msg: '文章不存在' }
-        }
+        const article = await dbGet<ArticleStorage>(createSqlSelect('articles', { id }))
+        if (!article) return { code: 400, msg: '文章不存在' }
 
-        return { code: 200, data: article }
+        return { code: 200, data: formatArticle(article) }
     }
-
-    const formatArticleListItem = (item: WithId<ArticleStorage>) => ({
-        title: item.title,
-        _id: item._id.toString(),
-    })
 
     // 获取子代的文章列表（也会包含父级文章）
     const getChildren = async (id: string) => {
-        const articleCollection = getArticleCollection()
-        const _id = new ObjectId(id)
-        const article = await articleCollection.findOne({ _id })
-        if (!article) {
-            return { code: 400, msg: '文章不存在' }
+        const article = await dbGet<ArticleStorage>(createSqlSelect('articles', { id }))
+        if (!article) return { code: 400, msg: '文章不存在' }
+
+        const where: SqlWhere = [{ parentArticleId: id }]
+        // 如果有父级文章，就把父级文章也查出来
+        if (article.parentArticleId) {
+            where.push('OR', { id: article.parentArticleId })
         }
-
-        const targetArticleIds = [
-            ...article.parentArticleIds,
-            id
-        ]
-
-        const parentArticleId = article.parentArticleIds[article.parentArticleIds.length - 1]
-
-        const queryPromises: [
-            Promise<WithId<ArticleStorage>[]>,
-            Promise<WithId<ArticleStorage> | null>
-        ] = [
-            articleCollection.find({
-                parentArticleIds: { $eq: targetArticleIds }
-            }, {
-                projection: { title: 1 }
-            }).toArray(),
-            articleCollection.findOne({
-                _id: new ObjectId(parentArticleId)
-            }, {
-                projection: { title: 1 }
-            })
-        ]
-
-        const [childrenArticles, parentArticle] = await Promise.all(queryPromises)
 
         const data: ArticleLinkResp = {
-            parentArticleId: parentArticleId,
-            parentArticleTitle: parentArticle?.title || '',
-            childrenArticles: childrenArticles.map(formatArticleListItem),
+            parentArticleId: '',
+            parentArticleTitle: '',
+            childrenArticles: [],
         }
+
+        const querySql = createSqlSelect<ArticleStorage>('articles', where, ['id', 'title'])
+        const childrenArticles = await dbAll<ArticleStorage>(querySql)
+        // 因为父级是跟子级一起查出来的，所以这里要筛一下
+        data.childrenArticles = childrenArticles.filter(item => {
+            if (item.id === article.parentArticleId) {
+                data.parentArticleId = item.id
+                data.parentArticleTitle = item.title
+                return false
+            }
+            return true
+        })
 
         return { code: 200, data }
     }
 
     // 获取相关的文章列表
     const getRelatives = async (id: string) => {
-        const articleCollection = getArticleCollection()
-        const _id = new ObjectId(id)
-        const article = await articleCollection.findOne({ _id })
-        if (!article) {
-            return { code: 400, msg: '文章不存在' }
-        }
+        const article = await dbGet<ArticleStorage>(createSqlSelect('articles', { id }))
+        if (!article) return { code: 400, msg: '文章不存在' }
 
-        const relatedArticles = await articleCollection.find({
-            _id: { $in: article.relatedArticleIds.map(id => new ObjectId(id)) }
-        }, {
-            projection: { title: 1 }
-        }).toArray()
+        const data: ArticleRelatedResp = { relatedArticles: [] }
+        if (!article.relatedArticleIds) return { code: 200, data }
 
-        const data: ArticleRelatedResp = {
-            relatedArticles: relatedArticles.map(formatArticleListItem),
-        }
+        const ids = article.relatedArticleIds.split(',').map(item => `'${item}'`).join(',')
+        data.relatedArticles = await dbAll<ArticleStorage>(
+            `SELECT id, title FROM articles WHERE id IN(${ids});`
+        )
 
         return { code: 200, data }
     }
 
-    const arrayToTree = (rootId: string, data: WithId<ArticleStorage>[]) => {
+    const arrayToTree = (rootId: string, data: ArticleStorage[]) => {
         if (!data || data.length <= 0) return []
         const cache = new Map<string, ArticleTreeNode>()
         const roots: ArticleTreeNode[] = []
 
         data.forEach(item => {
-            const newItem: ArticleTreeNode = { title: item.title, value: item._id.toString() }
-            if (item.parentArticleIds.length === 1 && item.parentArticleIds[0] === rootId) {
-                roots.push(newItem)
-            }
+            const newItem: ArticleTreeNode = { title: item.title, value: item.id }
+            if (item.parentArticleId === rootId) roots.push(newItem)
 
             cache.set(newItem.value, newItem)
 
-            const parent = cache.get(item.parentArticleIds[item.parentArticleIds.length - 1])
+            const parent = cache.get(item.parentArticleId)
             if (parent) {
                 if (!parent.children) parent.children = []
                 parent.children.push(newItem)
@@ -269,30 +208,26 @@ export const createService = (props: Props) => {
      * @param rootId 根节点的id
      */
     const getArticleTree = async (rootId: string) => {
-        const articleCollection = getArticleCollection()
-        // 查询 parentArticleIds 包含 rootId 的文章
-        const articles = await articleCollection.find({
-            parentArticleIds: {
-                $elemMatch: { $eq: rootId }
-            }
-        }, {
-            projection: {
-                title: 1, parentArticleIds: 1
-            }
-        }).toArray()
+        const articles = await dbAll(`
+            WITH RECURSIVE
+                tree AS (
+                    SELECT * FROM articles WHERE id = '${rootId}'
+                    UNION ALL
+                    SELECT articles.* FROM tree JOIN articles ON tree.id = articles.parentArticleId
+                )
+            SELECT id, title, parentArticleId FROM tree;
+        `)
 
         return { code: 200, data: arrayToTree(rootId, articles) }
     }
 
-    const getFavoriteArticles = async () => {
-        const articleCollection = getArticleCollection()
-        const articles = await articleCollection.find({
-            favorite: true
-        }, {
-            projection: { title: 1 }
-        }).toArray()
+    const getFavoriteArticles = async (username: string) => {
+        /** TDOO: 收藏 */
+        const { favoriteArticleIds } = await getUserStorage(username)
+        if (!favoriteArticleIds || favoriteArticleIds.length <= 0) return { code: 200, data: [] }
 
-        const data: ArticleMenuItem[] = articles.map(formatArticleListItem)
+        const ids = favoriteArticleIds.split(',').map(item => `'${item}'`).join(',')
+        const data = await dbAll<ArticleStorage>(`SELECT id, title FROM articles WHERE id IN(${ids});`)
         return { code: 200, data }
     }
 

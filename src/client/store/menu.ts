@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { ArticleLinkResp, TabTypes } from '@/types/article'
+import { ArticleLinkResp, TabTypes } from '@/types/article.new'
 
 type State = {
     /**

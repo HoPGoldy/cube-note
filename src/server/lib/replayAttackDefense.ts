@@ -3,7 +3,6 @@ import { AppKoaContext } from '@/types/global'
 import { getReplayAttackData, validateReplayAttackData } from '@/utils/crypto'
 import { Next } from 'koa'
 import { createFileReader, response } from '../utils'
-import { DatabaseAccessor } from './mongodb'
 
 /**
  * 获取防重放密钥
@@ -11,7 +10,6 @@ import { DatabaseAccessor } from './mongodb'
 export const getReplayAttackSecret = createFileReader({ fileName: 'replayAttackSecret' })
 
 interface Props {
-    db: DatabaseAccessor
     excludePath: string[]
 }
 
@@ -19,6 +17,24 @@ interface Props {
  * 创建检查中间件 - 防重放攻击
  */
 export const createCheckReplayAttack = (props: Props) => {
+    const nonceCache = new Map<string, number>()
+
+    const addNonceToCache = (nonce: string) => {
+        nonceCache.set(nonce, Date.now())
+    }
+
+    const isNonceTimeout = (createTime: number, nowTime: number) => {
+        return nowTime - createTime > 60 * 1000
+    }
+
+    // 每十分钟清理一次 nonce 缓存
+    setInterval(() => {
+        const now = Date.now()
+        nonceCache.forEach((time, nonce) => {
+            if (isNonceTimeout(time, now)) nonceCache.delete(nonce)
+        })
+    }, 10 * 60 * 1000)
+
     const checkReplayAttack = async (ctx: AppKoaContext, next: Next) => {
         const isAccessPath = !!props.excludePath.find(path => ctx.url.endsWith(path) || ctx.url.startsWith(path))
         // 允许 excludePath 接口正常访问
@@ -31,9 +47,9 @@ export const createCheckReplayAttack = (props: Props) => {
             }
 
             const replayAttackSecret = await getReplayAttackSecret()
-            const nonceCollection = await props.db.getReplayAttackNonceCollection()
+            const existNonceDate = nonceCache.get(replayAttackData.nonce)
             // 如果有重复的随机码
-            if (await nonceCollection.findOne({ value: replayAttackData.nonce })) {
+            if (existNonceDate && !isNonceTimeout(existNonceDate, Date.now())) {
                 throw new Error(`伪造请求攻击，请求路径：${ctx.path}。已被拦截，原因为重复的 nonce。`)
             }
 
@@ -42,6 +58,7 @@ export const createCheckReplayAttack = (props: Props) => {
                 throw new Error(`伪造请求攻击，请求路径：${ctx.path}。已被拦截，原因为请求签名异常。`)
             }
 
+            addNonceToCache(replayAttackData.nonce)
             await next()
         }
         catch (e) {
