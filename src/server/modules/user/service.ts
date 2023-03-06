@@ -6,7 +6,7 @@ import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
 import { ArticleService } from '../article/service'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { createSqlInsert, sqlSelect, sqlUpdate } from '@/utils/sqlite'
+import { sqlInsert, sqlSelect, sqlUpdate } from '@/utils/sqlite'
 
 interface Props {
     loginLocker: LoginLocker
@@ -35,7 +35,7 @@ export const createService = (props: Props) => {
      * 直接获取用户信息
      */
     const getUserInfo = async (userId: number, ip: string): Promise<AppResponse> => {
-        const userStorage = await dbGet<UserStorage>(sqlSelect('users', { userId }))
+        const userStorage = await dbGet<UserStorage>(sqlSelect('users', { id: userId }))
         if (!userStorage) return loginFail(ip, '用户不存在')
 
         const { username, theme, initTime, isAdmin, rootArticleId } = userStorage
@@ -92,7 +92,7 @@ export const createService = (props: Props) => {
             isAdmin,
         }
 
-        await dbRun(createSqlInsert('users', initStorage))
+        await dbRun(sqlInsert('users', initStorage))
 
         // 获取新用户的 id
         const { id } = await dbGet<UserStorage>(sqlSelect('users', { username }, ['id']))

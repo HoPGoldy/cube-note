@@ -51,6 +51,17 @@ export const createDb = (props: Props) => {
         title TEXT NOT NULL
     )`)
 
+    // 附件表
+    db.run(`CREATE TABLE IF NOT EXISTS files (
+        id TEXT PRIMARY KEY NOT NULL,
+        md5 TEXT NOT NULL,
+        filename TEXT NOT NULL,
+        type TEXT NOT NULL,
+        size INTEGER NOT NULL,
+        createUserId INTEGER NOT NULL,
+        createTime INTEGER NOT NULL
+    )`)
+
     const dbRun = <T = any>(sql: string, params?: T[]) => {
         return new Promise<void>((resolve, reject) => {
             db.run(sql, params, err => {

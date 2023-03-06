@@ -2,7 +2,7 @@ import { AppKoaContext, AppResponse } from '@/types/global'
 import { ensureFile } from 'fs-extra'
 import { readFile, writeFile } from 'fs/promises'
 import Joi from 'joi'
-import { Context } from 'koa'
+import { Context, Next } from 'koa'
 import { nanoid } from 'nanoid'
 import path from 'path'
 
@@ -17,6 +17,16 @@ export const response = (ctx: Context, { code, msg, data }: AppResponse = initia
         code,
         msg,
         data
+    }
+}
+
+export const errorWapper = async (ctx: AppKoaContext, next: Next) => {
+    try {
+        await next()
+    }
+    catch (e)  {
+        console.error(e)
+        response(ctx, { code: 500, msg: '服务异常' })
     }
 }
 

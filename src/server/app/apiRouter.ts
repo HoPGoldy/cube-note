@@ -9,6 +9,7 @@ import { userRouter } from './user'
 import { tagRouter } from './tag'
 import { articleRouter } from './article'
 import { fileRouter } from './file'
+import { errorWapper } from '../utils'
 
 export const createApiRouter = () => {
     const routes = [globalRouter, userRouter, tagRouter, articleRouter, fileRouter]
@@ -20,7 +21,7 @@ export const createApiRouter = () => {
         .use(middlewareJwtCatcher)
         .use(middlewareJwt.unless({ path: AUTH_EXCLUDE }))
 
-    routes.forEach(route => apiRouter.use('/api', route.routes(), route.allowedMethods()))
+    routes.forEach(route => apiRouter.use('/api', errorWapper, route.routes(), route.allowedMethods()))
 
     return apiRouter
 }

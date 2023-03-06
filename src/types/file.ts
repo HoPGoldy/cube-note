@@ -1,7 +1,9 @@
 export interface FileStorage {
+    id: string
     md5: string
     filename: string
-    userId: number
+    createUserId: number
+    createTime: number
     size: number
     type: string
 }

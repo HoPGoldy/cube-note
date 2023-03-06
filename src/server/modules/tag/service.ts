@@ -1,6 +1,6 @@
 import { TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { sqlDelete, createSqlInsert, sqlSelect, sqlUpdate } from '@/utils/sqlite'
+import { sqlDelete, sqlInsert, sqlSelect, sqlUpdate } from '@/utils/sqlite'
 
 interface Props {
     db: DatabaseAccessor
@@ -10,10 +10,10 @@ export const createService = (props: Props) => {
     const { dbRun, dbGet, dbAll } = props.db
 
     const addTag = async (newTag: TagStorage) => {
-        const existTag = await dbGet(sqlSelect('tags', { name: newTag.title, createUserId: newTag.createUserId }))
+        const existTag = await dbGet(sqlSelect('tags', { title: newTag.title, createUserId: newTag.createUserId }))
         if (existTag) return { code: 400, msg: '标签已存在' }
 
-        await dbRun(createSqlInsert('tags', newTag))
+        await dbRun(sqlInsert('tags', newTag))
         return { code: 200, msg: '添加成功', data: newTag.id }
     }
 
@@ -40,10 +40,10 @@ export const createService = (props: Props) => {
     }
 
     const addGroup = async (data: TagGroupStorage) => {
-        const existTag = await dbGet(sqlSelect('tagGroups', { name: data.title, createUserId: data.createUserId }))
+        const existTag = await dbGet(sqlSelect('tagGroups', { title: data.title, createUserId: data.createUserId }))
         if (existTag) return { code: 400, msg: '分组已存在' }
 
-        await dbRun(createSqlInsert('tagGroups', data))
+        await dbRun(sqlInsert('tagGroups', data))
         return { code: 200, msg: '添加成功', data: data.id }
     }
 
@@ -75,21 +75,21 @@ export const createService = (props: Props) => {
 
     const batchSetColor = async (ids: string[], color: string, userId: number) => {
         const tagIds = ids.map(id => `'${id}'`).join(',')
-        await dbRun(sqlUpdate('tags', { color }, `id IN(${tagIds}) AND createUserId=${userId}`))
+        await dbRun(sqlUpdate('tags', { color }, `id IN (${tagIds}) AND createUserId=${userId}`))
 
         return { code: 200 }
     }
 
     const batchSetGroup = async (ids: string[], groupId: string, userId: number) => {
         const tagIds = ids.map(id => `'${id}'`).join(',')
-        await dbRun(sqlUpdate('tags', { groupId }, `id IN(${tagIds}) AND createUserId=${userId}`))
+        await dbRun(sqlUpdate('tags', { groupId }, `id IN (${tagIds}) AND createUserId=${userId}`))
 
         return { code: 200 }
     }
 
     const batchRemoveTag = async (ids: string[], userId: number) => {
         const tagIds = ids.map(id => `'${id}'`).join(',')
-        await dbRun(sqlDelete('tags', `id IN(${tagIds}) AND createUserId=${userId}`))
+        await dbRun(sqlDelete('tags', `id IN (${tagIds}) AND createUserId=${userId}`))
 
         return { code: 200 }
     }

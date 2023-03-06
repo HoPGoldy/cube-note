@@ -3,7 +3,7 @@ import {
     ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp
 } from '@/types/article.new'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { createId, createSqlInsert, sqlSelect, sqlUpdate, SqlWhere } from '@/utils/sqlite'
+import { createId, sqlInsert, sqlSelect, sqlUpdate, SqlWhere } from '@/utils/sqlite'
 import { UserStorage } from '@/types/user'
 
 interface Props {
@@ -48,7 +48,7 @@ export const createService = (props: Props) => {
             tagIds: '',
         }
 
-        await dbAll(createSqlInsert('articles', newArticle))
+        await dbAll(sqlInsert('articles', newArticle))
         return { code: 200, data: newArticle.id }
     }
 

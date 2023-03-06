@@ -39,13 +39,32 @@ export const createSqlValueSet = (value: Record<string, any>) => {
 /**
  * 生成 sql 插入语句
  */
-export const createSqlInsert = (tableName: string, value: Record<string, any>) => {
+export const sqlInsert = (tableName: string, value: Record<string, any>) => {
     const { keys, values } = formatSqlValues(value)
 
     return `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${values.join(', ')});`
 }
 
+/**
+ * 生成 sql 插入多条语句
+ */
+export const sqlInsertMany = (tableName: string, values: Record<string, any>[]) => {
+    const { keys } = formatSqlValues(values[0])
+
+    const valueSets = values.map(value => {
+        const { values } = formatSqlValues(value)
+        return `SELECT ${values.join(', ')}`
+    })
+
+    return `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES ${valueSets.join(' UNION ALL ')};`
+}
+
 export type SqlWhere<T = Record<string, any>> = T | string | Array<T | string | 'AND' | 'OR'>
+
+const sqlWhereSet = (value: Record<string, any>) => {
+    const { keys, values } = formatSqlValues(value)
+    return keys.map((key, index) => `${key} = ${values[index]}`).join(' AND ')
+}
 
 /**
  * 生成 sql where 部分
@@ -53,15 +72,13 @@ export type SqlWhere<T = Record<string, any>> = T | string | Array<T | string | 
 export const createSqlWhere = <T extends Record<string, any>>(where: SqlWhere<T>) => {
     if (typeof where === 'string') return where
 
-    if (!Array.isArray(where)) {
-        return createSqlValueSet(where)
-    }
+    if (!Array.isArray(where)) return sqlWhereSet(where)
 
     const whereSet: string[] = []
     where.forEach(item => {
         if (item === 'AND' || item === 'OR') whereSet.push(item)
         else if (typeof item === 'string') whereSet.push(item)
-        else whereSet.push(createSqlValueSet(item))
+        else whereSet.push(sqlWhereSet(item))
     })
 
     return whereSet.join(' ')

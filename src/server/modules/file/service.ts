@@ -1,10 +1,10 @@
-import { DatabaseAccessor } from '@/server/lib/mongodb'
+import { DatabaseAccessor } from '@/server/lib/sqlite'
 import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import { FileStorage, UploadedFile } from '@/types/file'
 import { ensureDir, move } from 'fs-extra'
-import { WithId } from 'mongodb'
+import { sqlInsertMany, sqlSelect } from '@/utils/sqlite'
 
 interface Props {
     saveDir: string
@@ -25,25 +25,24 @@ const getFileMd5 = async (filePath: string, fileName: string) => {
 
 export const createService = (props: Props) => {
     const { saveDir } = props
-    const { getFileCollection } = props.db
+    const { dbRun, dbGet, dbAll } = props.db
 
-    const readFile = async (hash: string) => {
-        const collection = await getFileCollection()
-        const fileInfo = await collection.findOne({ md5: hash })
+    const readFile = async (hash: string, createUserId: number) => {
+        const fileInfo = await dbGet<FileStorage>(sqlSelect('files', { md5: hash, createUserId }))
         if (!fileInfo) return
 
-        const filePath = path.resolve(saveDir, 'file', fileInfo.userId.toString(), fileInfo.filename)
+        const filePath = path.resolve(saveDir, 'file', fileInfo.createUserId.toString(), fileInfo.filename)
         return { filePath, fileInfo }
     }
 
     const isFileExist = async (fileMd5s: string[]) => {
-        const collection = await getFileCollection()
-        const files = await collection.find({ md5: { $in: fileMd5s } }).toArray()
+        const md5s = fileMd5s.map(item => `'${item}'`).join(',')
+        const files = await dbAll<FileStorage>(sqlSelect('files', `md5 IN (${md5s})`))
 
         return files.reduce((existMap, f) => {
             existMap[f.md5] = f
             return existMap
-        }, {} as Record<string, WithId<FileStorage>>)
+        }, {} as Record<string, FileStorage>)
     }
 
     const uploadFile = async (files: UploadedFile[], userId: number) => {
@@ -82,8 +81,7 @@ export const createService = (props: Props) => {
         const newFiles = fileInfos.filter(f => !existFiles[f.md5])
 
         if (newFiles.length > 0) {
-            const fileCollection = await getFileCollection()
-            await fileCollection.insertMany(newFiles)
+            await dbRun(sqlInsertMany('files', newFiles))
         }
 
         return fileInfos

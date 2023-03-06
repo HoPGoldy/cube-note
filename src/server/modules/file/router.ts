@@ -15,10 +15,13 @@ export const createRouter = (props: Props) => {
     const router = new Router<any, AppKoaContext>({ prefix: '/file' })
 
     router.get('/content/:hashName', async ctx => {
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
         const { hashName } = ctx.params
         // 这个链接里可能会有后缀名，所以需要去掉
         const [hash] = hashName.split('.')
-        const data = await service.readFile(hash)
+        const data = await service.readFile(hash, payload.userId)
         if (!data) {
             ctx.status = 404
             return
