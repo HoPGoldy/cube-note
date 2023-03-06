@@ -11,8 +11,5 @@
     // 应用的名称，会显示在登录页和主页中
     "APP_NAME": "方块笔记",
     // 登录页的副标题
-    "LOGIN_SUBTITLE": "记录你的生活",
-    // mongodb 的连接地址
-    // 可以不填写，选择在启动时通过 --mongodb-url 参数传入
-    "MONGODB_URL": "mongodb://localhost:27017"
+    "LOGIN_SUBTITLE": "记录你的生活"
 }

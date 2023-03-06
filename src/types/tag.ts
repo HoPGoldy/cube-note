@@ -42,3 +42,6 @@ export interface SetTagGroupReqData {
 export interface DeleteTagReqData {
     ids: string[]
 }
+
+/** 请求 - 添加标签 */
+export type AddTagReqData = Omit<TagStorage, 'createUserId' | 'id'>

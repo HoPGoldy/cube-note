@@ -1,7 +1,7 @@
 import React, { FC, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
-import { TagGroupListItem, TagListItem, TagStorage } from '@/types/tag'
+import { AddTagReqData, TagGroupListItem, TagListItem } from '@/types/tag'
 import { useAddTagGroupMutation, useAddTagMutation, useGetTagGroupQuery, useGetTagListQuery, useUpdateTagGroupMutation } from '../../services/tag'
 import Loading from '../../layouts/Loading'
 import { Button } from '../../components/Button'
@@ -66,18 +66,18 @@ const TagManager: FC = () => {
     }
 
     const onSaveGroupTitle = async (item: TagGroupListItem) => {
-        updateGroup({ id: item._id, title: item.title }) 
+        updateGroup({ ...item }) 
     }
 
     const onClickTag = (item: TagListItem) => {
-        if (isBatch) onSelectTag(item._id)
+        if (isBatch) onSelectTag(item.id)
         else showTagDetail(item)
     }
 
     const onClickAddBtn = async (title: string, groupId: string) => {
         if (!title) return
 
-        const data: TagStorage = { title, color: '#404040' }
+        const data: AddTagReqData = { title, color: '#404040' }
         if (groupId !== DEFAULT_TAG_GROUP) data.groupId = groupId
 
         const resp = await addTag(data).unwrap()
@@ -87,28 +87,28 @@ const TagManager: FC = () => {
     const renderTagItem = (item: TagListItem) => {
         return (
             <Tag
-                key={item._id}
+                key={item.id}
                 label={item.title}
-                id={item._id}
+                id={item.id}
                 color={item.color}
-                selected={isBatch ? isTagSelected(item._id) : undefined}
+                selected={isBatch ? isTagSelected(item.id) : undefined}
                 onClick={() => onClickTag(item)}
             />
         )
     }
 
     const renderTagGroupItem = (item: TagGroupListItem) => {
-        const tags = groupedTagDict[item._id] || []
+        const tags = groupedTagDict[item.id] || []
         return (
-            <div key={item._id} className='bg-slate-300 m-2'>
+            <div key={item.id} className='bg-slate-300 m-2'>
                 <input
-                    ref={ins => ins && (titleInputRefs.current[item._id] = ins)}
+                    ref={ins => ins && (titleInputRefs.current[item.id] = ins)}
                     className='font-bold'
                     value={item.title}
                     onChange={e => onTitleChange(e.target.value, item)}
                     onKeyUp={blurOnEnter}
                     onBlur={() => onSaveGroupTitle(item)}
-                    disabled={item._id === DEFAULT_TAG_GROUP}
+                    disabled={item.id === DEFAULT_TAG_GROUP}
                 />
 
                 {!isBatch && <Button
@@ -123,7 +123,7 @@ const TagManager: FC = () => {
                 <div className='flex flex-wrap min-h-[50px]'>
                     {tags.map(renderTagItem)}
                     {!isBatch && <AddTag
-                        onFinish={title => onClickAddBtn(title, item._id)}
+                        onFinish={title => onClickAddBtn(title, item.id)}
                         loading={isAddingTag}
                     />}
                 </div>

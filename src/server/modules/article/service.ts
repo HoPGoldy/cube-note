@@ -1,7 +1,7 @@
 import {
     ArticleContent, ArticleStorage, ArticleDeleteResp, ArticleUpdateResp, QueryArticleReqData, UpdateArticleReqData,
     ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp
-} from '@/types/article.new'
+} from '@/types/article'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
 import { createId, sqlInsert, sqlSelect, sqlUpdate, SqlWhere } from '@/utils/sqlite'
 import { UserStorage } from '@/types/user'

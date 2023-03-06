@@ -40,20 +40,20 @@ export const useTagArea = (props: Props) => {
     const renderTag = (item: TagListItem) => {
         return (
             <Tag
-                key={item._id}
+                key={item.id}
                 label={item.title}
-                id={item._id}
+                id={item.id}
                 color={item.color}
-                selected={isExpand ? isTagSelected(item._id) : true}
+                selected={isExpand ? isTagSelected(item.id) : true}
                 onClick={onSelectTag}
             />
         )
     }
 
     const renderGroupItem = (item: TagGroupListItem) => {
-        const tags = groupedTagDict[item._id] || []
+        const tags = groupedTagDict[item.id] || []
         return (
-            <div key={item._id} className='bg-slate-300 m-2'>
+            <div key={item.id} className='bg-slate-300 m-2'>
                 <div>{item.title}</div>
 
                 <div className='flex flex-wrap min-h-[50px]'>
@@ -64,7 +64,7 @@ export const useTagArea = (props: Props) => {
     }
 
     const hasSubTag = (item: TagGroupListItem) => {
-        const tags = groupedTagDict[item._id] || []
+        const tags = groupedTagDict[item.id] || []
         return tags.length > 0
     }
 
@@ -72,7 +72,7 @@ export const useTagArea = (props: Props) => {
         if (!isExpand && isTagLoading) return <Loading tip='加载标签中...' />
 
         if (!isExpand) {
-            const selectedTags = tagList?.filter(item => isTagSelected(item._id)) || []
+            const selectedTags = tagList?.filter(item => isTagSelected(item.id)) || []
             return (
                 <div
                     className='flex flex-wrap min-h-[50px]'

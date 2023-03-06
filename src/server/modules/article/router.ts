@@ -52,9 +52,8 @@ export const createRouter = (props: Props) => {
         id: Joi.string(),
         title: Joi.string().allow(null),
         content: Joi.string().allow('', null),
-        favorite: Joi.boolean().allow(null),
         relatedArticleIds: Joi.array().items(Joi.string()).allow(null),
-        parentId: Joi.string().allow(null),
+        parentArticleId: Joi.string().allow(null),
         tagIds: Joi.array().items(Joi.string()).allow(null),
     })
 

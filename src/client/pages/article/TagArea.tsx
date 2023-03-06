@@ -39,7 +39,7 @@ const TagArea: FC<Props> = (props) => {
         if (editing) return tagListResp.data
 
         // 非编辑状态下，只显示当前文章选中的标签
-        return tagListResp.data.filter(tag => value.includes(tag._id))
+        return tagListResp.data.filter(tag => value.includes(tag.id))
     }, [tagListResp, editing, value])
 
     const onClickAddBtn = async (newLabel: string) => {
@@ -67,12 +67,12 @@ const TagArea: FC<Props> = (props) => {
     const renderTagItem = (item: TagListItem) => {
         return (
             <Tag
-                key={item._id}
+                key={item.id}
                 label={item.title}
-                id={item._id}
+                id={item.id}
                 color={item.color}
-                selected={editing ? value.includes(item._id) : true}
-                onClick={() => onClickTag(item._id)}
+                selected={editing ? value.includes(item.id) : true}
+                onClick={() => onClickTag(item.id)}
             />
         )
     }

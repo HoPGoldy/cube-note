@@ -19,7 +19,7 @@ export const useDeleteGroup = () => {
     const onDelete = async() => {
         if (!deleteGroup) return
         await deleteTagGroup({
-            id: deleteGroup._id,
+            id: deleteGroup.id,
             method: deleteChildren ? 'force' : 'move'
         })
 

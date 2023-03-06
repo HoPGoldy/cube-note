@@ -25,9 +25,9 @@ export const useSetGroupColor = (props: Props) => {
 
     const onSelectedColor = async (color: string) => {
         if (!currentGroup) return
-        const tagIds = props.groupedTagDict[currentGroup._id]
+        const tagIds = props.groupedTagDict[currentGroup.id]
             ?.filter(item => item.color !== color)
-            .map(item => item._id) || []
+            .map(item => item.id) || []
         
         if (tagIds.length === 0) {
             messageWarning('没有需要修改的标签')

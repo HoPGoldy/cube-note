@@ -106,7 +106,7 @@ export const useBatchOperation = () => {
                 onClose={() => setShowColorPicker(false)}
             />
             <GroupPicker
-                onChange={group => onSaveGroup(group._id)}
+                onChange={group => onSaveGroup(group.id)}
                 visible={showGroupPicker}
                 onClose={() => setShowGroupPicker(false)}
             />

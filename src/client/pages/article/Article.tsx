@@ -90,7 +90,6 @@ const About: FC = () => {
         dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
         setVisibleContent(articleResp.data.content)
-        setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
 
     const saveEdit = async (data: Partial<UpdateArticleReqData>) => {
@@ -114,7 +113,7 @@ const About: FC = () => {
     }
 
     const onClickSaveBtn = async () => {
-        await saveEdit({ title, content, favorite: isFavorite })
+        await saveEdit({ title, content })
     }
 
     const renderContent = () => {
@@ -139,7 +138,6 @@ const About: FC = () => {
                             fontSize="1.5rem"
                             color={isFavorite ? 'yellow' : 'gray'}
                             onClick={() => {
-                                saveEdit({ favorite: !isFavorite })
                                 setIsFavorite(!isFavorite)
                             }}
                         />

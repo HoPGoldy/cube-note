@@ -7,7 +7,7 @@ import {
     ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
     QueryArticleReqData,
     UpdateArticleReqData
-} from '@/types/article.new'
+} from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
 import { STATUS_CODE } from '@/config'
 
@@ -31,7 +31,7 @@ export const articleApi = baseApi.injectEndpoints({
                 method: 'PUT',
                 body: detail
             }),
-            invalidatesTags: (res, err, { title, favorite }) => {
+            invalidatesTags: (res, err, { title }) => {
                 const tags: TagDescription<any>[] = []
 
                 // 如果修改了标题，就要修改父节点的侧边栏（子节点名称）和树菜单
@@ -41,11 +41,6 @@ export const articleApi = baseApi.injectEndpoints({
                         tags.push({ type: 'articleLink', id: res.data.parentArticleId })
                     }
                     tags.push('menu')
-                }
-
-                // 如果收藏改了，就要修改侧边栏的收藏夹
-                if (favorite !== undefined) {
-                    tags.push('favorite')
                 }
 
                 return tags
@@ -58,7 +53,6 @@ export const articleApi = baseApi.injectEndpoints({
                             if (!draft.data) return
                             if (patch.content) draft.data.content = patch.content
                             if (patch.title) draft.data.title = patch.title
-                            if (patch.favorite !== undefined) draft.data.favorite = patch.favorite
                             if (patch.tagIds) draft.data.tagIds = patch.tagIds
                         })
                     )

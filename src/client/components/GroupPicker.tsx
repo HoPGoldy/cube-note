@@ -21,11 +21,11 @@ export const GroupPicker: FC<Props> = (props) => {
     const renderGroupItem = (item: TagGroupListItem) => {
         return (
             <div
-                key={item._id}
+                key={item.id}
                 className={
                     'rounded-lg  ring-slate-300 py-2 mt-2 transition border border-slate-300 cursor-pointer ' +
                     'hover:ring hover:ring-slate-500 active:scale-90 dark:text-slate-200 ' +
-                    (value === item._id
+                    (value === item.id
                         // 选中样式
                         ? 'bg-slate-500 text-white hover:bg-slate-500 dark:hover:bg-slate-800'
                         // 未选中样式

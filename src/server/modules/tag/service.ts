@@ -30,12 +30,20 @@ export const createService = (props: Props) => {
     }
 
     const getTagList = async (userId: number) => {
-        const data = await dbAll(sqlSelect('tags', { createUserId: userId }))
+        const data = await dbAll(sqlSelect<TagStorage>(
+            'tags',
+            { createUserId: userId },
+            ['id', 'title', 'color', 'groupId']
+        ))
         return { code: 200, data }
     }
 
     const getGroupList = async (userId: number) => {
-        const data = await dbAll(sqlSelect('tagGroups', { createUserId: userId }))
+        const data = await dbAll(sqlSelect(
+            'tagGroups',
+            { createUserId: userId },
+            ['id', 'title']
+        ))
         return { code: 200, data }
     }
 

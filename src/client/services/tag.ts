@@ -1,6 +1,6 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagListItem, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { AddTagReqData, DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagListItem, TagStorage, TagUpdateReqData } from '@/types/tag'
 import { STATUS_CODE } from '@/config'
 
 export const tagApi = baseApi.injectEndpoints({
@@ -9,7 +9,7 @@ export const tagApi = baseApi.injectEndpoints({
             query: () => 'tag/list',
             providesTags: ['tagList'],
         }),
-        addTag: build.mutation<AppResponse<string>, TagStorage>({
+        addTag: build.mutation<AppResponse<string>, AddTagReqData>({
             query: data => ({
                 url: 'tag/add',
                 method: 'POST',
@@ -19,11 +19,11 @@ export const tagApi = baseApi.injectEndpoints({
                 const { data: updatedPost } = await queryFulfilled
                 if (updatedPost.code !== STATUS_CODE.SUCCESS || !updatedPost.data) return
 
-                const _id = updatedPost.data
+                const id = updatedPost.data
                 dispatch(
                     tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
                         if (!draft.data) return
-                        draft.data.push({ _id, ...reqData })
+                        draft.data.push({ ...reqData, id })
                     })
                 )
             }
@@ -34,14 +34,14 @@ export const tagApi = baseApi.injectEndpoints({
                 method: 'PUT',
                 body: data
             }),
-            async onQueryStarted({ _id, ...newTag }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({ id, ...newTag }, { dispatch, queryFulfilled }) {
                 const { data: updatedPost } = await queryFulfilled
                 if (updatedPost.code !== STATUS_CODE.SUCCESS) return
 
                 dispatch(
                     tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
                         if (!draft.data) return
-                        const targetTag = draft.data.find(item => item._id === _id)
+                        const targetTag = draft.data.find(item => item.id === id)
                         if (!targetTag) return
                         Object.assign(targetTag, newTag)
                     })
@@ -57,7 +57,7 @@ export const tagApi = baseApi.injectEndpoints({
                 dispatch(
                     tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
                         if (!draft.data) return
-                        draft.data = draft.data.filter((item) => item._id !== id)
+                        draft.data = draft.data.filter((item) => item.id !== id)
                     })
                 )
             }
@@ -66,7 +66,7 @@ export const tagApi = baseApi.injectEndpoints({
             query: () => 'tag/group/list',
             providesTags: ['tagGroupList'],
         }),
-        addTagGroup: build.mutation<AppResponse<string>, TagGroupStorage>({
+        addTagGroup: build.mutation<AppResponse<string>, Omit<TagGroupStorage, 'createUserId' | 'id'>>({
             query: data => ({
                 url: 'tag/group/add',
                 method: 'POST',
@@ -76,16 +76,16 @@ export const tagApi = baseApi.injectEndpoints({
                 const { data: updatedPost } = await queryFulfilled
                 if (updatedPost.code !== STATUS_CODE.SUCCESS || !updatedPost.data) return
 
-                const _id = updatedPost.data
+                const id = updatedPost.data
                 dispatch(
                     tagApi.util.updateQueryData('getTagGroup', undefined, (draft) => {
                         if (!draft.data) return
-                        draft.data.push({ _id, ...reqData })
+                        draft.data.push({ ...reqData, id })
                     })
                 )
             }
         }),
-        updateTagGroup: build.mutation<AppResponse<string>, Partial<TagGroupStorage> >({
+        updateTagGroup: build.mutation<AppResponse<string>, Omit<TagGroupStorage, 'createUserId'>>({
             query: data => ({
                 url: 'tag/group/update',
                 method: 'PUT',
@@ -135,7 +135,7 @@ export const tagApi = baseApi.injectEndpoints({
                 dispatch(
                     tagApi.util.updateQueryData('getTagList', undefined, (draft) => {
                         if (!draft.data) return
-                        draft.data = draft.data.filter((item) => !reqData.ids.includes(item._id))
+                        draft.data = draft.data.filter((item) => !reqData.ids.includes(item.id))
                     })
                 )
             }

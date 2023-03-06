@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react'
-import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article.new'
+import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '../store/menu'
 import { Link, useNavigate } from 'react-router-dom'

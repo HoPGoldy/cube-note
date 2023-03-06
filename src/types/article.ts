@@ -1,26 +1,25 @@
 export interface ArticleStorage {
+    id: string
     title: string
     content: string
+    createUserId: number
     createTime: number
     updateTime: number
     /**
-     * 该文章是否收藏
+     * 祖先文章 id
+     * 如果是根节点的话，就没有这个属性
      */
-    favorite: boolean
-    /**
-     * 祖先文章 id 列表
-     * 如果是跟节点的话，就没有这个属性
-     * 会包含当前文章的所有祖先节点
-     */
-    parentArticleIds: string[]
+    parentArticleId: string
     /**
      * 相关文章 id 列表
+     * 逗号分隔
      */
-    relatedArticleIds: string[]
+    relatedArticleIds: string
     /**
      * 相关 tag id 列表
+     * 逗号分隔
      */
-    tagIds: string[]
+    tagIds: string
 }
 
 export interface AddArticleReqData {
@@ -35,12 +34,8 @@ export interface QueryArticleReqData {
     page?: number
 }
 
-export type UpdateArticleReqData = Partial<Omit<ArticleContent, 'parentArticleIds'>> & {
+export type UpdateArticleReqData = Partial<ArticleContent> & {
     id: string
-    /**
-     * 更新时只需要指定父节点 id
-     */
-    parentId?: string
     relatedArticleIds?: string[]
 }
 
@@ -50,7 +45,7 @@ export interface DeleteArticleMutation {
 }
 
 export interface ArticleMenuItem {
-    _id: string
+    id: string
     title: string
 }
 
@@ -60,23 +55,15 @@ export enum TabTypes {
     Favorite = 'favorite',
 }
 
-export type ArticleMenuResp = {
-    [key in TabTypes]: ArticleMenuItem[]
-}
-
-interface ArticleContent {
+export interface ArticleContent {
+    id: string
     title: string
     content: string
     createTime: number
     updateTime: number
-    parentArticleIds: string[]
-    favorite: boolean
+    parentArticleId: string
     tagIds: string[]
 }
-
-export type ArticleContentResp = {
-    _id: string
-} & ArticleContent
 
 export interface ArticleLinkResp {
     parentArticleId: string

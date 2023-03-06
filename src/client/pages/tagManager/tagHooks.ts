@@ -15,7 +15,7 @@ export const useAllTagGroup = (tagGroupList?: TagGroupListItem[]) => {
         if (!tagGroupList) return
         const groups = cloneDeep(tagGroupList)
         groups.unshift({
-            _id: DEFAULT_TAG_GROUP,
+            id: DEFAULT_TAG_GROUP,
             title: '未分组'
         })
         setTagGroups(groups)
@@ -48,7 +48,7 @@ export const useGroupedTag = (tagList?: TagListItem[]) => {
  */
 export const useTagDict = (tagList?: TagListItem[]) => {
     return useMemo(() => {
-        const data = tagList?.map((item) => [item._id, item] as [string, TagListItem]) || []
+        const data = tagList?.map((item) => [item.id, item] as [string, TagListItem]) || []
         return new Map<string, TagListItem>(data)
     }, [tagList])
 }

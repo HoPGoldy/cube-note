@@ -1,7 +1,7 @@
 import { useLazyQueryArticleListQuery } from '@/client/services/article'
 import { List } from 'react-vant'
 import { blurOnEnter } from '@/client/utils/input'
-import { ArticleContent, QueryArticleReqData } from '@/types/article.new'
+import { ArticleContent, QueryArticleReqData } from '@/types/article'
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'

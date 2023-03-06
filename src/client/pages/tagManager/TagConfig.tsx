@@ -41,7 +41,7 @@ export const useTagConfig = () => {
 
     const onDeleteTag = async () => {
         if (!currentTag) return
-        const resp = await deleteTag({ ids: [currentTag._id] }).unwrap()
+        const resp = await deleteTag({ ids: [currentTag.id] }).unwrap()
         if (resp.code !== STATUS_CODE.SUCCESS) return
         messageSuccess('删除成功')
         onClose()
@@ -107,7 +107,7 @@ export const useTagConfig = () => {
             />
             <GroupPicker
                 value={currentTag?.groupId || ''}
-                onChange={group => onChangeDetail({ groupId: group._id })}
+                onChange={group => onChangeDetail({ groupId: group.id })}
                 visible={showGroupPicker}
                 onClose={() => setShowGroupPicker(false)}
             />
