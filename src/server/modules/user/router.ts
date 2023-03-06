@@ -5,7 +5,7 @@ import { UserService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
 import { ChangePasswordReqData, LoginReqData, SetThemeReqData } from '@/types/user'
-import { getUsernameFromCtx } from '@/server/lib/auth'
+import { getJwtPayload } from '@/server/lib/auth'
 
 interface Props {
     service: UserService
@@ -30,10 +30,10 @@ export const createRouter = (props: Props) => {
     })
 
     router.get('/getInfo', async ctx => {
-        const username = getUsernameFromCtx(ctx)
-        if (!username) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.getUserInfo(username, getIp(ctx) || 'anonymous')
+        const resp = await service.getUserInfo(payload.userId, getIp(ctx) || 'anonymous')
         response(ctx, resp)
     })
 
@@ -70,13 +70,10 @@ export const createRouter = (props: Props) => {
         if (!body) return
         const { newP, oldP } = body
 
-        const username = ctx.state?.user?.username
-        if (!username) {
-            response(ctx, { code: 400, msg: '未知用户，请重新登录' })
-            return
-        }
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.changePassword(username, newP, oldP)
+        const resp = await service.changePassword(payload.userId, newP, oldP)
         response(ctx, resp)
     })
 
@@ -89,13 +86,10 @@ export const createRouter = (props: Props) => {
         if (!body) return
         const { theme } = body
 
-        const username = ctx.state?.user?.username
-        if (!username) {
-            response(ctx, { code: 400, msg: '未知用户，请重新登录' })
-            return
-        }
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.setTheme(username, theme)
+        const resp = await service.setTheme(payload.userId, theme)
         response(ctx, resp)
     })
 

@@ -32,7 +32,7 @@ export const createService = (props: Props) => {
         const fileInfo = await collection.findOne({ md5: hash })
         if (!fileInfo) return
 
-        const filePath = path.resolve(saveDir, 'file', fileInfo.username, fileInfo.filename)
+        const filePath = path.resolve(saveDir, 'file', fileInfo.userId.toString(), fileInfo.filename)
         return { filePath, fileInfo }
     }
 
@@ -46,13 +46,13 @@ export const createService = (props: Props) => {
         }, {} as Record<string, WithId<FileStorage>>)
     }
 
-    const uploadFile = async (files: UploadedFile[], username: string) => {
+    const uploadFile = async (files: UploadedFile[], userId: number) => {
         const filesWithMd5 = await Promise.all(files.map(async f => ({
             ...f,
             md5: await getFileMd5(f.tempPath, f.filename)
         })))
 
-        const fileSavePath = path.resolve(saveDir, 'file', username)
+        const fileSavePath = path.resolve(saveDir, 'file', userId.toString())
         await ensureDir(fileSavePath)
         const existFiles = await isFileExist(filesWithMd5.map(f => f.md5))
 
@@ -77,7 +77,7 @@ export const createService = (props: Props) => {
             filename: file.filename,
             type: file.type,
             size: file.size,
-            username,
+            userId,
         }))
         const newFiles = fileInfos.filter(f => !existFiles[f.md5])
 

@@ -1,11 +1,13 @@
 export interface TagStorage {
+    id: string
     title: string
     color: string
     groupId?: string
+    createUserId: number
 }
 
 export interface TagListItem {
-    _id: string
+    id: string
     title: string
     color: string
     groupId?: string
@@ -13,16 +15,14 @@ export interface TagListItem {
 
 export type TagUpdateReqData = Partial<TagListItem>
 
-export type TagGroupUpdateReqData = Partial<TagGroupStorage> & {
-    id: string
-}
-
 export interface TagGroupStorage {
+    id: string
+    createUserId: number
     title: string
 }
 
 export interface TagGroupListItem {
-    _id: string
+    id: string
     title: string
 }
 

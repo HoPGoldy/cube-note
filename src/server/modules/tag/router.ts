@@ -4,7 +4,9 @@ import { response } from '@/server/utils'
 import { TagService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupStorage, TagGroupUpdateReqData, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { getJwtPayload } from '@/server/lib/auth'
+import { createId } from '@/utils/sqlite'
 
 interface Props {
     service: TagService
@@ -25,12 +27,16 @@ export const createRouter = (props: Props) => {
         const body = validate(ctx, addSchema)
         if (!body) return
 
-        const resp = await service.addTag(body)
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const tagInfo: TagStorage = { ...body, id: createId(), createUserId: payload.userId }
+        const resp = await service.addTag(tagInfo)
         response(ctx, resp)
     })
 
     const updateSchema = Joi.object<TagUpdateReqData>({
-        _id: Joi.string().required(),
+        id: Joi.string().required(),
         title: Joi.string().allow(null),
         color: Joi.string().allow(null),
         groupId: Joi.string().allow(null),
@@ -48,19 +54,26 @@ export const createRouter = (props: Props) => {
     // 删除标签
     router.delete('/:id/remove', async ctx => {
         const { id } = ctx.params
-        const resp = await service.removeTag(id)
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.removeTag(id, payload.userId)
         response(ctx, resp)
     })
 
     // 查询标签列表（不分页）
     router.get('/list', async ctx => {
-        const resp = await service.getTagList()
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+        const resp = await service.getTagList(payload.userId)
         response(ctx, resp)
     })
 
     // 查询标签分组列表（不分页）
     router.get('/group/list', async ctx => {
-        const resp = await service.getGroupList()
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+        const resp = await service.getGroupList(payload.userId)
         response(ctx, resp)
     })
 
@@ -72,19 +85,30 @@ export const createRouter = (props: Props) => {
     router.post('/group/add', async ctx => {
         const body = validate(ctx, addGroupSchema)
         if (!body) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.addGroup(body)
+        const data: TagGroupStorage = {
+            ...body,
+            id: createId(),
+            createUserId: payload.userId,
+        }
+
+        const resp = await service.addGroup(data)
         response(ctx, resp)
     })
 
     // 删除分组
     router.delete('/group/:id/:method/removeGroup', async ctx => {
         const { id, method } = ctx.params
-        const resp = await service.removeGroup(id, method)
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.removeGroup(id, method, payload.userId)
         response(ctx, resp)
     })
 
-    const updateGroupSchema = Joi.object<TagGroupUpdateReqData>({
+    const updateGroupSchema = Joi.object<Omit<TagGroupStorage, 'createUserId'>>({
         id: Joi.string().required(),
         title: Joi.string().allow(null),
     })
@@ -93,8 +117,12 @@ export const createRouter = (props: Props) => {
     router.put('/group/update', async ctx => {
         const body = validate(ctx, updateGroupSchema)
         if (!body) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.updateGroup(body)
+        const data: TagGroupStorage = { ...body, createUserId: payload.userId }
+
+        const resp = await service.updateGroup(data)
         response(ctx, resp)
     })
 
@@ -107,8 +135,10 @@ export const createRouter = (props: Props) => {
     router.post('/batch/setColor', async ctx => {
         const body = validate(ctx, batchSetColorSchema)
         if (!body) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.batchSetColor(body.ids, body.color)
+        const resp = await service.batchSetColor(body.ids, body.color, payload.userId)
         response(ctx, resp)
     })
 
@@ -121,8 +151,10 @@ export const createRouter = (props: Props) => {
     router.post('/batch/setGroup', async ctx => {
         const body = validate(ctx, batchSetGroupSchema)
         if (!body) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.batchSetGroup(body)
+        const resp = await service.batchSetGroup(body.ids, body.groupId, payload.userId)
         response(ctx, resp)
     })
 
@@ -134,8 +166,10 @@ export const createRouter = (props: Props) => {
     router.post('/batch/remove', async ctx => {
         const body = validate(ctx, batchRemoveSchema)
         if (!body) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.batchRemoveTag(body.ids)
+        const resp = await service.batchRemoveTag(body.ids, payload.userId)
         response(ctx, resp)
     })
 

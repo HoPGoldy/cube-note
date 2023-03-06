@@ -3,7 +3,7 @@ import { AppKoaContext } from '@/types/global'
 import { response } from '@/server/utils'
 import { FileService } from './service'
 import { UploadedFile } from '@/types/file'
-import { getUsernameFromCtx } from '@/server/lib/auth'
+import { getJwtPayload } from '@/server/lib/auth'
 import { readFile } from 'fs-extra'
 
 interface Props {
@@ -32,8 +32,8 @@ export const createRouter = (props: Props) => {
     })
 
     router.post('/upload', async ctx => {
-        const username = getUsernameFromCtx(ctx)
-        if (!username) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
         const originFiles = ctx.request.files?.file || []
         const files = Array.isArray(originFiles) ? Array.from(originFiles) : [originFiles]
@@ -45,7 +45,7 @@ export const createRouter = (props: Props) => {
             size: f.size,
         }))
 
-        const data = await service.uploadFile(uploadedFiles, username)
+        const data = await service.uploadFile(uploadedFiles, payload.userId)
         response(ctx, { code: 200, data })
     })
 

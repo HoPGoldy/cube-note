@@ -2,6 +2,7 @@ export interface ArticleStorage {
     id: string
     title: string
     content: string
+    createUserId: number
     createTime: number
     updateTime: number
     /**

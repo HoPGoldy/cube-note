@@ -1,5 +1,6 @@
 
 export interface UserStorage {
+    id: number
     /**
      *用户名
      */

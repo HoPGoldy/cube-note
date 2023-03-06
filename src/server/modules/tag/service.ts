@@ -1,135 +1,95 @@
-import { SetTagGroupReqData, TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
-import { DatabaseAccessor } from '@/server/lib/mongodb'
-import { ObjectId } from 'mongodb'
-import isNil from 'lodash/isNil'
-import { DEFAULT_TAG_GROUP } from '@/constants'
+import { TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { DatabaseAccessor } from '@/server/lib/sqlite'
+import { sqlDelete, createSqlInsert, sqlSelect, sqlUpdate } from '@/utils/sqlite'
 
 interface Props {
     db: DatabaseAccessor
 }
 
 export const createService = (props: Props) => {
-    const { getTagCollection, getTagGroupCollection } = props.db
+    const { dbRun, dbGet, dbAll } = props.db
 
-    const addTag = async (data: TagStorage) => {
-        const tagCollection = getTagCollection()
-        const existTag = await tagCollection.findOne({ title: data.title })
+    const addTag = async (newTag: TagStorage) => {
+        const existTag = await dbGet(sqlSelect('tags', { name: newTag.title, createUserId: newTag.createUserId }))
         if (existTag) return { code: 400, msg: '标签已存在' }
 
-        const newTag = await tagCollection.insertOne(data)
-        return { code: 200, msg: '添加成功', data: newTag.insertedId.toString() }
+        await dbRun(createSqlInsert('tags', newTag))
+        return { code: 200, msg: '添加成功', data: newTag.id }
     }
 
-    const removeTag = async (id: string) => {
-        const tagCollection = getTagCollection()
-        await tagCollection.deleteOne({ _id: new ObjectId(id) })
+    const removeTag = async (id: string, userId: number) => {
+        await dbRun(sqlDelete<TagStorage>('tags', { id, createUserId: userId }))
         return { code: 200 }
     }
 
     const updateTag = async (detail: TagUpdateReqData) => {
-        const collection = getTagCollection()
-        const _id = new ObjectId(detail._id)
-        const oldTag = await collection.findOne({ _id })
-        if (!oldTag) {
-            return { code: 400, msg: '标签不存在' }
-        }
+        const { id, ...rest } = detail
 
-
-        await collection.updateOne({ _id }, { $set: {
-            title: detail.title || oldTag.title,
-            color: detail.color || oldTag.color,
-            groupId: isNil(detail.groupId) ? oldTag.groupId : detail.groupId,
-        } })
-
+        await dbRun(sqlUpdate('tags', { ...rest }, { id }))
         return { code: 200 }
     }
 
-    const getTagList = async () => {
-        const tagCollection = getTagCollection()
-        const tagList = await tagCollection.find().toArray()
-
-        return { code: 200, data: tagList }
+    const getTagList = async (userId: number) => {
+        const data = await dbAll(sqlSelect('tags', { createUserId: userId }))
+        return { code: 200, data }
     }
 
-    const getGroupList = async () => {
-        const collection = getTagGroupCollection()
-        const groupList = await collection.find().toArray()
-
-        return { code: 200, data: groupList }
+    const getGroupList = async (userId: number) => {
+        const data = await dbAll(sqlSelect('tagGroups', { createUserId: userId }))
+        return { code: 200, data }
     }
 
     const addGroup = async (data: TagGroupStorage) => {
-        const collection = getTagGroupCollection()
-        const existGroup = await collection.findOne({ title: data.title })
-        if (existGroup) return { code: 400, msg: '分组已存在' }
+        const existTag = await dbGet(sqlSelect('tagGroups', { name: data.title, createUserId: data.createUserId }))
+        if (existTag) return { code: 400, msg: '分组已存在' }
 
-        const newGroup = await collection.insertOne(data)
-        return { code: 200, msg: '添加成功', data: newGroup.insertedId.toString() }
+        await dbRun(createSqlInsert('tagGroups', data))
+        return { code: 200, msg: '添加成功', data: data.id }
     }
 
     /**
      * 删除分组
      * mehtod 为 force 时，删除分组下的所有标签，否则会移动到未命名分组
      */
-    const removeGroup = async (id: string, method: string) => {
-        const collection = getTagGroupCollection()
-        await collection.deleteOne({ _id: new ObjectId(id) })
+    const removeGroup = async (id: string, method: string, userId: number) => {
+        await dbRun(sqlDelete('tagGroups', { id, createUserId: userId }))
 
-        const tagCollection = getTagCollection()
         // 删掉下属标签
         if (method === 'force') {
-            await tagCollection.deleteMany({ groupId: id })
+            await dbRun(sqlDelete('tags', { groupId: id, createUserId: userId }))
         }
         // 把该分组下的标签移动到未分组
         else {
-            await tagCollection.updateMany({ groupId: id }, { $set: { groupId: '' } })
+            await dbRun(sqlUpdate('tags', { groupId: '' }, { groupId: id, createUserId: userId }))
         }
 
         return { code: 200 }
     }
 
-    const updateGroup = async (detail: TagUpdateReqData) => {
-        const collection = getTagGroupCollection()
-        const _id = new ObjectId(detail._id)
-
-        await collection.updateOne({ _id }, { $set: {
-            title: detail.title
-        } })
+    const updateGroup = async (detail: TagGroupStorage) => {
+        const { id, title, createUserId } = detail
+        await dbRun(sqlUpdate('tagGroups', { title }, { id, createUserId }))
 
         return { code: 200 }
     }
 
-    const batchSetColor = async (ids: string[], color: string) => {
-        const collection = getTagCollection()
-        await collection.updateMany({
-            _id: {
-                $in: ids.map(id => new ObjectId(id))
-            }
-        }, {
-            $set: { color }
-        })
+    const batchSetColor = async (ids: string[], color: string, userId: number) => {
+        const tagIds = ids.map(id => `'${id}'`).join(',')
+        await dbRun(sqlUpdate('tags', { color }, `id IN(${tagIds}) AND createUserId=${userId}`))
 
         return { code: 200 }
     }
 
-    const batchSetGroup = async ({ ids, groupId }: SetTagGroupReqData) => {
-        const collection = getTagCollection()
-        await collection.updateMany({
-            _id: { $in: ids.map(id => new ObjectId(id)) }
-        }, {
-            $set: { groupId: groupId === DEFAULT_TAG_GROUP ? '' : groupId }
-        })
+    const batchSetGroup = async (ids: string[], groupId: string, userId: number) => {
+        const tagIds = ids.map(id => `'${id}'`).join(',')
+        await dbRun(sqlUpdate('tags', { groupId }, `id IN(${tagIds}) AND createUserId=${userId}`))
 
         return { code: 200 }
     }
 
-    const batchRemoveTag = async (ids: string[]) => {
-        const collection = getTagCollection()
-        await collection.deleteMany({
-            _id: {
-                $in: ids.map(id => new ObjectId(id))
-            }
-        })
+    const batchRemoveTag = async (ids: string[], userId: number) => {
+        const tagIds = ids.map(id => `'${id}'`).join(',')
+        await dbRun(sqlDelete('tags', `id IN(${tagIds}) AND createUserId=${userId}`))
 
         return { code: 200 }
     }

@@ -25,14 +25,14 @@ export const middlewareJwtCatcher = async (ctx: Context, next: Next) => {
     }
 }
 
-export const getUsernameFromCtx = (ctx: AppKoaContext) => {
-    const username: string = ctx.state?.user?.username
-    if (!username) {
+export const getJwtPayload = (ctx: AppKoaContext) => {
+    const userId = ctx.state?.user?.userId
+    if (!userId) {
         response(ctx, { code: 400, msg: '未知用户，请重新登录' })
         return
     }
 
-    return username
+    return { userId }
 }
 
 export const verifyToken = async (token: string) => {

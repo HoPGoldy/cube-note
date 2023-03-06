@@ -5,7 +5,7 @@ import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
 import { AddArticleReqData, DeleteArticleMutation, QueryArticleReqData, UpdateArticleReqData } from '@/types/article'
-import { getUsernameFromCtx } from '@/server/lib/auth'
+import { getJwtPayload } from '@/server/lib/auth'
 
 interface Props {
     service: ArticleService
@@ -27,7 +27,10 @@ export const createRouter = (props: Props) => {
         if (!body) return
         const { title, content, parentId } = body
 
-        const resp = await service.addArticle(title, content, parentId)
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.addArticle(title, content, payload.userId, parentId)
         response(ctx, resp)
     })
 
@@ -116,10 +119,10 @@ export const createRouter = (props: Props) => {
 
     // 获取所有收藏的文章
     router.get('/favorite', async ctx => {
-        const username = getUsernameFromCtx(ctx)
-        if (!username) return
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
 
-        const resp = await service.getFavoriteArticles(username)
+        const resp = await service.getFavoriteArticles(payload.userId)
         response(ctx, resp)
     })
 

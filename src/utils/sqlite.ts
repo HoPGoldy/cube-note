@@ -45,12 +45,14 @@ export const createSqlInsert = (tableName: string, value: Record<string, any>) =
     return `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${values.join(', ')});`
 }
 
-export type SqlWhere<T = Record<string, any>> = T | Array<T | 'AND' | 'OR'>
+export type SqlWhere<T = Record<string, any>> = T | string | Array<T | string | 'AND' | 'OR'>
 
 /**
  * 生成 sql where 部分
  */
 export const createSqlWhere = <T extends Record<string, any>>(where: SqlWhere<T>) => {
+    if (typeof where === 'string') return where
+
     if (!Array.isArray(where)) {
         return createSqlValueSet(where)
     }
@@ -58,6 +60,7 @@ export const createSqlWhere = <T extends Record<string, any>>(where: SqlWhere<T>
     const whereSet: string[] = []
     where.forEach(item => {
         if (item === 'AND' || item === 'OR') whereSet.push(item)
+        else if (typeof item === 'string') whereSet.push(item)
         else whereSet.push(createSqlValueSet(item))
     })
 
@@ -67,7 +70,7 @@ export const createSqlWhere = <T extends Record<string, any>>(where: SqlWhere<T>
 /**
  * 生成 sql 更新语句
  */
-export const createSqlUpdate = (tableName: string, value: Record<string, any>, where: SqlWhere) => {
+export const sqlUpdate = (tableName: string, value: Record<string, any>, where: SqlWhere) => {
     const valueSet = createSqlValueSet(value)
     const whereSet = createSqlWhere(where)
 
@@ -77,10 +80,10 @@ export const createSqlUpdate = (tableName: string, value: Record<string, any>, w
 /**
  * 生成 sql 查询语句
  */
-export const createSqlSelect = <T extends Record<string, any>>(
+export const sqlSelect = <T extends Record<string, any>>(
     tableName: string,
     where: SqlWhere<Partial<T>>,
-    select?: Array<keyof T>
+    select?: Array<keyof T | string>
 ) => {
     const whereSet = createSqlWhere(where)
     return `SELECT ${select ? select.join(', ') : '*'} FROM ${tableName} WHERE ${whereSet};`
@@ -89,9 +92,9 @@ export const createSqlSelect = <T extends Record<string, any>>(
 /**
  * 生成 sql 删除语句
  */
-export const createSqlDelete = <T extends Record<string, any>>(
+export const sqlDelete = <T extends Record<string, any>>(
     tableName: string,
-    where: SqlWhere<T>
+    where: SqlWhere<Partial<T>>
 ) => {
     const whereSet = createSqlWhere(where)
     return `DELETE FROM ${tableName} WHERE ${whereSet};`

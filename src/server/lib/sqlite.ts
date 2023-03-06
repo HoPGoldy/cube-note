@@ -1,5 +1,3 @@
-import { UserStorage } from '@/types/user'
-import { createSqlInsert, createSqlUpdate } from '@/utils/sqlite'
 import sqlite3 from 'sqlite3'
 
 interface Props {
@@ -10,9 +8,11 @@ const { Database } = sqlite3.verbose()
 
 export const createDb = (props: Props) => {
     const db = new Database(props.dbPath)
-    
+
+    // 用户表
     db.run(`CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        username TEXT NOT NULL,
         passwordHash TEXT NOT NULL,
         passwordSalt TEXT NOT NULL,
         initTime INTEGER NOT NULL,
@@ -22,6 +22,7 @@ export const createDb = (props: Props) => {
         isAdmin INTEGER
     )`)
 
+    // 文章表
     db.run(`CREATE TABLE IF NOT EXISTS articles (
         id TEXT PRIMARY KEY NOT NULL,
         title TEXT NOT NULL,
@@ -30,7 +31,24 @@ export const createDb = (props: Props) => {
         updateTime INTEGER NOT NULL,
         relatedArticleIds TEXT,
         parentArticleId TEXT,
+        createUserId TEXT NOT NULL,
         tagIds TEXT
+    )`)
+
+    // 标签表
+    db.run(`CREATE TABLE IF NOT EXISTS tags (
+        id TEXT PRIMARY KEY NOT NULL,
+        title TEXT NOT NULL,
+        color TEXT NOT NULL,
+        createUserId TEXT NOT NULL,
+        groupId TEXT
+    )`)
+
+    // 标签分组表
+    db.run(`CREATE TABLE IF NOT EXISTS tagGroups (
+        id TEXT PRIMARY KEY NOT NULL,
+        createUserId TEXT NOT NULL,
+        title TEXT NOT NULL
     )`)
 
     const dbRun = <T = any>(sql: string, params?: T[]) => {
@@ -60,30 +78,7 @@ export const createDb = (props: Props) => {
         })
     }
 
-    /**
-     * 获取用户基本数据
-     * @param username 用户名
-     */
-    const getUserStorage = async (username: string) => {
-        return dbGet<UserStorage>('SELECT * FROM users WHERE username = ?', [username])
-    }
-
-    /**
-     * 更新指定用户基本数据
-     * 若不存在该用户则新增
-     */
-    const updateUserStorage = async (username: string, next: Partial<UserStorage>) => {
-        const prev = await getUserStorage(username)
-        if (!prev) return dbRun(createSqlInsert('users', { ...next, username }))
-
-        return dbRun(createSqlUpdate(
-            'users',
-            { ...prev, ...next },
-            { username }
-        ))
-    }
-
-    return { dbRun, dbGet, dbAll, getUserStorage, updateUserStorage }
+    return { dbRun, dbGet, dbAll }
 }
 
 export type DatabaseAccessor = ReturnType<typeof createDb>

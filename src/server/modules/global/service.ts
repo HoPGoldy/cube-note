@@ -1,6 +1,5 @@
 import { DatabaseAccessor } from '@/server/lib/sqlite'
 import { AppConfig, AppConfigResp, UserDataInfoResp } from '@/types/appConfig'
-import { ObjectId } from 'mongodb'
 
 interface Props {
     getConfig: () => AppConfig
@@ -9,7 +8,7 @@ interface Props {
 
 export const createService = (props: Props) => {
     const { getConfig } = props
-    const { dbGet, getUserStorage } = props.db
+    const { dbGet } = props.db
 
     /**
      * 获取当前应用全局配置
@@ -27,13 +26,10 @@ export const createService = (props: Props) => {
         return data
     }
 
-    const getUserDataInfo = async (username: string) => {
-        const userStorage = await getUserStorage(username)
-        if (!userStorage) return { code: 404, message: '用户不存在' }
+    const getUserDataInfo = async (userId: number) => {
+        const { ['COUNT(*)']: articleCount } = await dbGet(`SELECT COUNT(*) FROM articles WHERE createUserId = ${userId}`)
 
-        const rootArticleId = new ObjectId(userStorage.rootArticleId)
-
-        const data: UserDataInfoResp = { articleCount: 100 }
+        const data: UserDataInfoResp = { articleCount }
         return { code: 200, data }
     }
 

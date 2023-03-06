@@ -1,6 +1,6 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagGroupUpdateReqData, TagListItem, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagListItem, TagStorage, TagUpdateReqData } from '@/types/tag'
 import { STATUS_CODE } from '@/config'
 
 export const tagApi = baseApi.injectEndpoints({
@@ -85,7 +85,7 @@ export const tagApi = baseApi.injectEndpoints({
                 )
             }
         }),
-        updateTagGroup: build.mutation<AppResponse<string>, TagGroupUpdateReqData>({
+        updateTagGroup: build.mutation<AppResponse<string>, Partial<TagGroupStorage> >({
             query: data => ({
                 url: 'tag/group/update',
                 method: 'PUT',
@@ -96,7 +96,7 @@ export const tagApi = baseApi.injectEndpoints({
                     tagApi.util.updateQueryData('getTagGroup', undefined, (draft) => {
                         if (!draft.data) return
                         if (reqData.title) {
-                            const target = draft.data.find(item => item._id === reqData.id)
+                            const target = draft.data.find(item => item.id === reqData.id)
                             if (target) target.title = reqData.title
                         }
                     })
