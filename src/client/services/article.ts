@@ -6,6 +6,7 @@ import {
     ArticleRelatedResp,
     ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
     QueryArticleReqData,
+    SetArticleRelatedReqData,
     UpdateArticleReqData
 } from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
@@ -13,15 +14,15 @@ import { STATUS_CODE } from '@/config'
 
 export const articleApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        getArticleContent: build.query<AppResponse<ArticleContent>, string>({
+        getArticleContent: build.query<AppResponse<ArticleContent>, number>({
             query: (id) => `article/${id}/getContent`,
             providesTags: (res, err, id) => [{ type: 'articleContent', id }]
         }),
-        getArticleLink: build.query<AppResponse<ArticleLinkResp>, string>({
+        getArticleLink: build.query<AppResponse<ArticleLinkResp>, number>({
             query: (id) => `article/${id}/getLink`,
             providesTags: (res, err, id) => [{ type: 'articleLink', id }]
         }),
-        getArticleRelated: build.query<AppResponse<ArticleRelatedResp>, string>({
+        getArticleRelated: build.query<AppResponse<ArticleRelatedResp>, number>({
             query: (id) => `article/${id}/getRelated`,
             providesTags: (res, err, id) => [{ type: 'articleRelated', id }]
         }),
@@ -93,13 +94,28 @@ export const articleApi = baseApi.injectEndpoints({
                 return tags
             }
         }),
-        getArticleTree: build.query<AppResponse<ArticleTreeNode[]>, string | undefined>({
+        getArticleTree: build.query<AppResponse<ArticleTreeNode[]>, number | undefined>({
             query: (id) => `article/${id}/tree`,
             providesTags: ['menu']
         }),
         getFavorite: build.query<AppResponse<ArticleMenuItem[]>, void>({
             query: () => 'article/favorite',
             providesTags: ['favorite']
+        }),
+        setFavorite: build.mutation<AppResponse, { id: number, favorite: boolean }>({
+            query: (detail) => ({
+                url: 'article/setFavorite',
+                method: 'POST',
+                body: detail
+            }),
+        }),
+        // 关联文章
+        setArticleRelated: build.mutation<AppResponse, SetArticleRelatedReqData>({
+            query: (detail) => ({
+                url: 'article/setRelated',
+                method: 'POST',
+                body: detail
+            }),
         }),
     })
 })
@@ -115,4 +131,6 @@ export const {
     useGetArticleRelatedQuery,
     useDeleteArticleMutation,
     useGetFavoriteQuery,
+    useSetFavoriteMutation,
+    useSetArticleRelatedMutation
 } = articleApi

@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
 import {
     useAddArticleMutation, useGetArticleLinkQuery, useGetArticleRelatedQuery, useGetArticleTreeQuery,
-    useGetFavoriteQuery, useUpdateArticleMutation, articleApi
+    useGetFavoriteQuery, useUpdateArticleMutation, articleApi, useSetArticleRelatedMutation
 } from '../services/article'
 import { TreeMenu } from '../components/TreeMenu'
 
@@ -52,7 +52,7 @@ export const Sidebar: FC = () => {
     // 新增文章
     const [addArticle] = useAddArticleMutation()
     // 更新选中的相关文章
-    const [updateArticle] = useUpdateArticleMutation()
+    const [setArticleRelated] = useSetArticleRelatedMutation()
 
     const onClickTreeItem = (item: ArticleTreeNode) => {
         navigate(`/article/${item.value}`, { state: { tabTitle: item.title }})
@@ -83,21 +83,26 @@ export const Sidebar: FC = () => {
     }, [articleRelatedLink])
 
     // 把选择的相关文章更新到后端
-    const onUpdateRelatedArticleIds = (newIds: string[]) => {
+    const onUpdateRelatedArticleIds = (newIds: number[]) => {
         dispatch(setRelatedArticleIds(newIds))
-        updateArticle({
-            id: currentArticleId,
-            relatedArticleIds: newIds
-        })
     }
 
     // 把选择的相关文章更新到相关列表
     const onUpdateRelatedList = (newItem: ArticleTreeNode) => {
         const currentLinks = articleRelatedLink?.data?.relatedArticles || []
+        // 如果已经关联了，就移除
+        const hasLink = currentLinks.find(item => item.id === newItem.value)
+
+        setArticleRelated({
+            link: !hasLink,
+            fromArticleId: currentArticleId,
+            toArticleId: newItem.value
+        })
+
         dispatch(articleApi.util.updateQueryData('getArticleRelated', currentArticleId, (data) => {
             if (!data?.data) return
             // 不存在就添加
-            if (!currentLinks.find(item => item.id === newItem.value)) {
+            if (!hasLink) {
                 data.data.relatedArticles?.push({ id: newItem.value, title: newItem.title })
                 return
             }

@@ -4,7 +4,7 @@ import { response } from '@/server/utils'
 import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { AddArticleReqData, DeleteArticleMutation, QueryArticleReqData, UpdateArticleReqData } from '@/types/article'
+import { AddArticleReqData, DeleteArticleMutation, QueryArticleReqData, SetArticleRelatedReqData, UpdateArticleReqData } from '@/types/article'
 import { getJwtPayload } from '@/server/lib/auth'
 
 interface Props {
@@ -49,10 +49,9 @@ export const createRouter = (props: Props) => {
     })
 
     const updateArticleSchema = Joi.object<UpdateArticleReqData>({
-        id: Joi.string(),
+        id: Joi.number(),
         title: Joi.string().allow(null),
         content: Joi.string().allow('', null),
-        relatedArticleIds: Joi.array().items(Joi.string()).allow(null),
         parentArticleId: Joi.string().allow(null),
         tagIds: Joi.array().items(Joi.string()).allow(null),
     })
@@ -70,7 +69,11 @@ export const createRouter = (props: Props) => {
     // 包含内容、标题等正文详情
     router.get('/:id/getContent', async ctx => {
         const { id } = ctx.params
-        const resp = await service.getArticleContent(+id)
+        
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.getArticleContent(+id, payload.userId)
         response(ctx, resp)
     })
 
@@ -99,7 +102,10 @@ export const createRouter = (props: Props) => {
     // 获取相关文章信息
     router.get('/:id/getRelated', async ctx => {
         const { id } = ctx.params
-        const resp = await service.getRelatives(id)
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.getRelatives(id, payload.userId)
         response(ctx, resp)
     })
 
@@ -122,6 +128,41 @@ export const createRouter = (props: Props) => {
         if (!payload) return
 
         const resp = await service.getFavoriteArticles(payload.userId)
+        response(ctx, resp)
+    })
+
+    const setFavoriteSchame = Joi.object<{ id: number, favorite: boolean }>({
+        id: Joi.number().required(),
+        favorite: Joi.boolean().required(),
+    })
+
+    // 设置文章收藏状态
+    router.post('/setFavorite', async ctx => {
+        const body = validate(ctx, setFavoriteSchame)
+        if (!body) return
+
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.setFavorite(body.favorite, body.id, payload.userId)
+        response(ctx, resp)
+    })
+
+    const setRelatedSchame = Joi.object<SetArticleRelatedReqData>({
+        link: Joi.boolean().required(),
+        fromArticleId: Joi.number().required(),
+        toArticleId: Joi.number().required(),
+    })
+
+    // 设置文章关联关系
+    router.post('/setRelated', async ctx => {
+        const body = validate(ctx, setRelatedSchame)
+        if (!body) return
+
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.setArticleRelate(body, payload.userId)
         response(ctx, resp)
     })
 

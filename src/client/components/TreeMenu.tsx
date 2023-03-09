@@ -8,8 +8,8 @@ interface Props {
     treeData: ArticleTreeNode[]
     onClickNode?: (node: ArticleTreeNode) => void
     onClickRoot?: () => void
-    value?: string[]
-    onChange?: (value: string[]) => void
+    value?: number[]
+    onChange?: (value: number[]) => void
 }
 
 interface MenuList {

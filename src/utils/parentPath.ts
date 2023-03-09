@@ -40,3 +40,11 @@ export const replaceParentId = (path: string, newId: number) => {
 
     return '#' + pathArr.join('#') + '#'
 }
+
+/**
+ * 路径转数组
+ */
+export const pathToArray = (path: string): number[] => {
+    if (!path) return []
+    return path.split('#').slice(1, -1).map(id => +id)
+}

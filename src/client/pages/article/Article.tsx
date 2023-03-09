@@ -2,7 +2,7 @@ import React, { FC, useState, useEffect, useMemo, useRef } from 'react'
 import throttle from 'lodash/throttle'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
-import { useGetArticleContentQuery, useUpdateArticleMutation } from '../../services/article'
+import { useGetArticleContentQuery, useSetFavoriteMutation, useUpdateArticleMutation } from '../../services/article'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
@@ -28,11 +28,13 @@ const About: FC = () => {
     // 编辑器引用
     const editorRef = useRef<EditorRef>(null)
     // 当前文章 id
-    const currentArticleId = params.articleId as string
+    const currentArticleId = +(params.articleId as string)
     // 获取详情
     const { data: articleResp, isFetching: isLoadingArticle } = useGetArticleContentQuery(currentArticleId)
     // 保存详情
     const [updateArticle, { isLoading: updatingArticle }] = useUpdateArticleMutation()
+    // 切换收藏状态
+    const [updateFavoriteState] = useSetFavoriteMutation()
     // 根节点文章
     const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     // 保存按钮的文本
@@ -90,6 +92,7 @@ const About: FC = () => {
         dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
         setVisibleContent(articleResp.data.content)
+        setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
 
     const saveEdit = async (data: Partial<UpdateArticleReqData>) => {
@@ -138,6 +141,7 @@ const About: FC = () => {
                             fontSize="1.5rem"
                             color={isFavorite ? 'yellow' : 'gray'}
                             onClick={() => {
+                                updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
                                 setIsFavorite(!isFavorite)
                             }}
                         />
@@ -146,7 +150,7 @@ const About: FC = () => {
                             currentArticleId={currentArticleId}
                         />}
 
-                        <div className='ml-2 flex' >
+                        <div className='ml-2 flex'>
                             {isEdit ? (<>
                                 <Button className='w-60 !mr-2' onClick={onClickSaveBtn}>
                                     {updatingArticle ? '保存中' : saveBtnText}

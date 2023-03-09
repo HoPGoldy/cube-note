@@ -10,7 +10,7 @@ type State = {
     /**
      * 当前显示的哪个文章
      */
-    currentArticleId: string
+    currentArticleId: number
     /**
      * 父文章 id
      */
@@ -22,7 +22,7 @@ type State = {
     /**
      * 当前选中的相关文章 id
      */
-    selectedRelatedArticleIds: string[]
+    selectedRelatedArticleIds: number[]
 }
 
 const initialState: State = {
@@ -44,10 +44,10 @@ export const menuSlice = createSlice({
         setCurrentMenu: (state, action: PayloadAction<TabTypes>) => {
             state.currentTab = action.payload
         },
-        setCurrentArticle: (state, action: PayloadAction<string>) => {
+        setCurrentArticle: (state, action: PayloadAction<number>) => {
             state.currentArticleId = action.payload
         },
-        setRelatedArticleIds: (state, action: PayloadAction<string[]>) => {
+        setRelatedArticleIds: (state, action: PayloadAction<number[]>) => {
             state.selectedRelatedArticleIds = action.payload
         }
     },

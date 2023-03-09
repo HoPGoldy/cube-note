@@ -1,9 +1,10 @@
 import {
     ArticleContent, ArticleStorage, ArticleDeleteResp, QueryArticleReqData, UpdateArticleReqData,
-    ArticleTreeNode, ArticleLinkResp
+    ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp, SetArticleRelatedReqData
 } from '@/types/article'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { appendIdToPath, getParentIdByPath, replaceParentId } from '@/utils/parentPath'
+import { appendIdToPath, getParentIdByPath, pathToArray, replaceParentId } from '@/utils/parentPath'
+import { TABLE_NAME } from '@/constants'
 
 interface Props {
     db: DatabaseAccessor
@@ -15,12 +16,14 @@ export const createService = (props: Props) => {
     /**
      * 把数据库中的数据格式化成前端需要的格式
      */
-    const formatArticle = (article: ArticleStorage): ArticleContent => {
-        const { parentPath, ...rest } = article
+    const formatArticle = (article: ArticleStorage & { favoriteId?: number }): ArticleContent => {
+        const { parentPath, tagIds, favoriteId, ...rest } = article
 
         const fontendArticle = {
             ...rest,
             parentArticleId: getParentIdByPath(parentPath),
+            favorite: !!favoriteId,
+            tagIds: tagIds ? pathToArray(tagIds) : []
         }
 
         return fontendArticle
@@ -45,6 +48,20 @@ export const createService = (props: Props) => {
 
         const [id] = await db.article().insert(newArticle)
         return { code: 200, data: id }
+    }
+
+    const setFavorite = async (favorite: boolean, articleId: number, userId: number) => {
+        const article = await db.article().select().where('id', articleId).first()
+        if (!article) return { code: 400, msg: '文章不存在' }
+
+        if (favorite) {
+            await db.favoriteArticle().insert({ articleId, userId })
+        }
+        else {
+            await db.favoriteArticle().delete().where({ articleId, userId })
+        }
+
+        return { code: 200 }
     }
 
     /**
@@ -74,7 +91,7 @@ export const createService = (props: Props) => {
     }
 
     const updateArticle = async (detail: UpdateArticleReqData) => {
-        const { id, tagIds, relatedArticleIds, parentArticleId, ...restDetail } = detail
+        const { id, tagIds, parentArticleId, ...restDetail } = detail
         const oldArticle = await db.article().select().where({ id }).first()
         if (!oldArticle) return { code: 400, msg: '文章不存在' }
 
@@ -123,8 +140,14 @@ export const createService = (props: Props) => {
         return { code: 200, data }
     }
 
-    const getArticleContent = async (id: number) => {
-        const article = await db.article().select().where('id', id).first()
+    const getArticleContent = async (id: number, userId: number) => {
+        const article = await db.article()
+            .select('articles.*')
+            .select('favorites.id as favoriteId')
+            .leftJoin(db.knex.raw(`${TABLE_NAME.FAVORITE} ON articles.id = favorites.articleId AND favorites.userId = ?`, [userId]))
+            .where('articles.id', id)
+            .first()
+
         if (!article) return { code: 400, msg: '文章不存在' }
 
         return { code: 200, data: formatArticle(article) }
@@ -159,19 +182,34 @@ export const createService = (props: Props) => {
     }
 
     // 获取相关的文章列表
-    const getRelatives = async (id: string) => {
-        // const article = await dbGet<ArticleStorage>(sqlSelect('articles', { id }))
-        // if (!article) return { code: 400, msg: '文章不存在' }
+    const getRelatives = async (id: string, userId: number) => {
+        const relatedArticles = await db.articleRelation()
+            .select('articles.id', 'articles.title')
+            .leftJoin(db.knex.raw(`${TABLE_NAME.ARTICLE} ON articleRelations.toArticleId = articles.id`))
+            .where('articleRelations.fromArticleId', id)
+            .andWhere('articleRelations.userId', userId)
 
-        // const data: ArticleRelatedResp = { relatedArticles: [] }
-        // if (!article.relatedArticleIds) return { code: 200, data }
+        const data: ArticleRelatedResp = { relatedArticles }
+        return { code: 200, data }
+    }
 
-        // const ids = article.relatedArticleIds.split(',').map(item => `'${item}'`).join(',')
-        // data.relatedArticles = await dbAll<ArticleStorage>(
-        //     `SELECT id, title FROM articles WHERE id IN(${ids});`
-        // )
+    /**
+     * 关联文章 / 解除关联
+     **/
+    const setArticleRelate = async (data: SetArticleRelatedReqData, userId: number) => {
+        const { fromArticleId, toArticleId, link } = data
 
-        return { code: 200, data: [] }
+        if (link) {
+            await db.articleRelation()
+                .insert({ fromArticleId, toArticleId, userId })
+        }
+        else {
+            await db.articleRelation()
+                .delete()
+                .where({ fromArticleId, toArticleId, userId })
+        }
+
+        return { code: 200 }
     }
 
     const arrayToTree = (rootId: number, data: ArticleStorage[]) => {
@@ -182,7 +220,7 @@ export const createService = (props: Props) => {
         const rootPath = `#${rootId}#`
 
         data.forEach(item => {
-            const newItem: ArticleTreeNode = { title: item.title, value: item.id.toString() }
+            const newItem: ArticleTreeNode = { title: item.title, value: item.id }
             if (item.parentPath === rootPath) {
                 roots.push(newItem)
             }
@@ -212,18 +250,17 @@ export const createService = (props: Props) => {
     }
 
     const getFavoriteArticles = async (userId: number) => {
-        /** TDOO: 收藏 */
-        // const { favoriteArticleIds } = await dbGet<UserStorage>(sqlSelect('users', { userId }))
-        // if (!favoriteArticleIds || favoriteArticleIds.length <= 0) return { code: 200, data: [] }
+        const data = await db.favoriteArticle()
+            .select('articles.id', 'articles.title')
+            .leftJoin(db.knex.raw(`${TABLE_NAME.ARTICLE} ON favorites.articleId = articles.id`))
+            .where('favorites.userId', userId)
 
-        // const ids = favoriteArticleIds.split(',').map(item => `'${item}'`).join(',')
-        // const data = await dbAll<ArticleStorage>(`SELECT id, title FROM articles WHERE id IN(${ids});`)
-        return { code: 200, data: [] }
+        return { code: 200, data }
     }
 
     return {
         addArticle, getArticleContent, updateArticle, getChildren, getRelatives, getArticleTree, removeArticle,
-        getFavoriteArticles, getArticleList
+        getFavoriteArticles, getArticleList, setFavorite, setArticleRelate
     }
 }
 

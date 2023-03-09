@@ -9,7 +9,7 @@ interface Props {
     /**
      * 当前文章 id
      */
-    articleId: string
+    articleId: number
     /**
      * 当前文章选中的标签
      */

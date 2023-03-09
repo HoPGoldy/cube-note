@@ -10,7 +10,7 @@ import { Button } from '@/client/components/Button'
 
 interface Props {
     title: string
-    currentArticleId: string
+    currentArticleId: number
 }
 
 const DeleteBtn: FC<Props> = (props) => {

@@ -1,7 +1,7 @@
 import knex from 'knex'
-import {UserStorage } from '@/types/user'
+import { UserStorage } from '@/types/user'
 import { TABLE_NAME } from '@/constants'
-import { ArticleStorage } from '@/types/article'
+import { ArticleFavoriteStorage, ArticleRelatedStorage, ArticleStorage } from '@/types/article'
 import { TagGroupStorage, TagStorage } from '@/types/tag'
 import { FileStorage } from '@/types/file'
 
@@ -81,9 +81,33 @@ export const createDb = (props: Props) => {
         })
     })
 
+    // 收藏表
+    sqliteDb.schema.hasTable(TABLE_NAME.FAVORITE).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.FAVORITE, t => {
+            t.increments('id').primary()
+            t.integer('articleId').notNullable()
+            t.integer('userId').notNullable()
+        })
+    })
+
+    // 文章相互关联表
+    sqliteDb.schema.hasTable(TABLE_NAME.ARTICLE_RELATION).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.ARTICLE_RELATION, t => {
+            t.increments('id').primary()
+            t.integer('fromArticleId').notNullable()
+            t.integer('toArticleId').notNullable()
+            t.integer('userId').notNullable()
+        })
+    })
+
     return {
+        knex: sqliteDb,
         user: () => sqliteDb<UserStorage>(TABLE_NAME.USER),
         article: () => sqliteDb<ArticleStorage>(TABLE_NAME.ARTICLE),
+        favoriteArticle: () => sqliteDb<ArticleFavoriteStorage>(TABLE_NAME.FAVORITE),
+        articleRelation: () => sqliteDb<ArticleRelatedStorage>(TABLE_NAME.ARTICLE_RELATION),
         tag: () => sqliteDb<TagStorage>(TABLE_NAME.TAG),
         tagGroup: () => sqliteDb<TagGroupStorage>(TABLE_NAME.TAG_GROUP),
         file: () => sqliteDb<FileStorage>(TABLE_NAME.FILE),

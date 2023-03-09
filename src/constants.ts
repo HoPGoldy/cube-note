@@ -29,5 +29,9 @@ export const TABLE_NAME = {
     /** 标签分组表 */
     TAG_GROUP: 'tagGroups',
     /** 附件表 */
-    FILE: 'files'
+    FILE: 'files',
+    /** 用户收藏文章表 */
+    FAVORITE: 'favorites',
+    /** 文章相互关联表 */
+    ARTICLE_RELATION: 'articleRelations'
 } as const

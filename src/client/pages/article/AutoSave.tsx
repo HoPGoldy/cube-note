@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react'
  * 自动保存 hook
  * 将每隔一段时间自动将内容提交到后端，并把保存结果返回出去
  */
-export const useAutoSave = function (isEdit: boolean, articleId: string, setSaveBtnText: (text: string) => void) {
+export const useAutoSave = function (isEdit: boolean, articleId: number, setSaveBtnText: (text: string) => void) {
     // 保存详情
     const [updateArticle] = useUpdateArticleMutation()
     // 文本内容引用
