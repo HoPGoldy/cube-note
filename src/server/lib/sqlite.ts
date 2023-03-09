@@ -1,19 +1,15 @@
-import sqlite3 from 'sqlite3'
 import knex from 'knex'
-import { AppTheme, UserStorage } from '@/types/user'
+import {UserStorage } from '@/types/user'
 import { TABLE_NAME } from '@/constants'
 import { ArticleStorage } from '@/types/article'
-import { TagStorage } from '@/types/tag'
+import { TagGroupStorage, TagStorage } from '@/types/tag'
+import { FileStorage } from '@/types/file'
 
 interface Props {
     dbPath: string
 }
 
-const { Database } = sqlite3.verbose()
-
 export const createDb = (props: Props) => {
-    const db = new Database(props.dbPath)
-
     const sqliteDb = knex({
         client: 'sqlite3',
         connection: { filename: props.dbPath },
@@ -35,8 +31,6 @@ export const createDb = (props: Props) => {
         })
     })
 
-    const queryUser = () => sqliteDb<UserStorage>(TABLE_NAME.USER)
-
     // 文章表
     sqliteDb.schema.hasTable(TABLE_NAME.ARTICLE).then(exists => {
         if (exists) return
@@ -51,8 +45,6 @@ export const createDb = (props: Props) => {
         })
     })
 
-    const queryArticle = () => sqliteDb<ArticleStorage>(TABLE_NAME.ARTICLE)
-
     // 标签表
     sqliteDb.schema.hasTable(TABLE_NAME.TAG).then(exists => {
         if (exists) return
@@ -65,8 +57,6 @@ export const createDb = (props: Props) => {
         })
     })
 
-    const queryTag = () => sqliteDb<TagStorage>(TABLE_NAME.TAG)
-
     // 标签分组表
     sqliteDb.schema.hasTable(TABLE_NAME.TAG_GROUP).then(exists => {
         if (exists) return
@@ -76,8 +66,6 @@ export const createDb = (props: Props) => {
             t.integer('createUserId')
         })
     })
-
-    const queryTagGroup = () => sqliteDb<TagStorage>(TABLE_NAME.TAG_GROUP)
 
     // 附件表
     sqliteDb.schema.hasTable(TABLE_NAME.FILE).then(exists => {
@@ -93,36 +81,13 @@ export const createDb = (props: Props) => {
         })
     })
 
-    const queryFile = () => sqliteDb<TagStorage>(TABLE_NAME.FILE)
-
-    const dbRun = <T = any>(sql: string, params?: T[]) => {
-        return new Promise<void>((resolve, reject) => {
-            db.run(sql, params, err => {
-                if (err) reject(err)
-                else resolve()
-            })
-        })
+    return {
+        user: () => sqliteDb<UserStorage>(TABLE_NAME.USER),
+        article: () => sqliteDb<ArticleStorage>(TABLE_NAME.ARTICLE),
+        tag: () => sqliteDb<TagStorage>(TABLE_NAME.TAG),
+        tagGroup: () => sqliteDb<TagGroupStorage>(TABLE_NAME.TAG_GROUP),
+        file: () => sqliteDb<FileStorage>(TABLE_NAME.FILE),
     }
-
-    const dbGet = <R = any, T = any>(sql: string, params?: T[]) => {
-        return new Promise<R>((resolve, reject) => {
-            db.get(sql, params, (err, row) => {
-                if (err) reject(err)
-                else resolve(row)
-            })
-        })
-    }
-
-    const dbAll = <R = any, T = any>(sql: string, params?: T[]) => {
-        return new Promise<R[]>((resolve, reject) => {
-            db.all(sql, params, (err, rows) => {
-                if (err) reject(err)
-                else resolve(rows)
-            })
-        })
-    }
-
-    return { queryUser, queryArticle, queryTag, queryTagGroup, queryFile, dbRun, dbGet, dbAll }
 }
 
 export type DatabaseAccessor = ReturnType<typeof createDb>

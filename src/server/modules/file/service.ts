@@ -4,7 +4,6 @@ import fs from 'fs'
 import path from 'path'
 import { FileStorage, UploadedFile } from '@/types/file'
 import { ensureDir, move } from 'fs-extra'
-import { createId, sqlInsertMany, sqlSelect } from '@/utils/sqlite'
 
 interface Props {
     saveDir: string
@@ -24,11 +23,10 @@ const getFileMd5 = async (filePath: string, fileName: string) => {
 }
 
 export const createService = (props: Props) => {
-    const { saveDir } = props
-    const { dbRun, dbGet, dbAll } = props.db
+    const { saveDir, db } = props
 
     const readFile = async (hash: string, createUserId: number) => {
-        const fileInfo = await dbGet<FileStorage>(sqlSelect('files', { md5: hash, createUserId }))
+        const fileInfo = await db.file().select().where({ md5: hash, createUserId }).first()
         console.log('🚀 ~ file: service.ts:32 ~ readFile ~ fileInfo:', fileInfo)
         if (!fileInfo) return
 
@@ -37,8 +35,7 @@ export const createService = (props: Props) => {
     }
 
     const isFileExist = async (fileMd5s: string[]) => {
-        const md5s = fileMd5s.map(item => `'${item}'`).join(',')
-        const files = await dbAll<FileStorage>(sqlSelect('files', `md5 IN (${md5s})`))
+        const files = await db.file().select().whereIn('md5', fileMd5s)
 
         return files.reduce((existMap, f) => {
             existMap[f.md5] = f
@@ -72,8 +69,7 @@ export const createService = (props: Props) => {
             }
         }))
 
-        const fileInfos: FileStorage[] = filesWithMd5.map(file => ({
-            id: createId(),
+        const fileInfos: Omit<FileStorage, 'id'>[] = filesWithMd5.map(file => ({
             md5: file.md5,
             filename: file.filename,
             type: file.type,
@@ -84,7 +80,7 @@ export const createService = (props: Props) => {
         const newFiles = fileInfos.filter(f => !existFiles[f.md5])
 
         if (newFiles.length > 0) {
-            await dbRun(sqlInsertMany<FileStorage>('files', newFiles))
+            await db.file().insert(newFiles)
         }
 
         return fileInfos

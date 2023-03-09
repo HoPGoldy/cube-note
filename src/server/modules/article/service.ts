@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const createService = (props: Props) => {
-    const { queryArticle } = props.db
+    const { db } = props
 
     /**
      * 把数据库中的数据格式化成前端需要的格式
@@ -29,7 +29,7 @@ export const createService = (props: Props) => {
     const addArticle = async (title: string, content: string, userId: number, parentId?: number) => {
         let parentArticle: ArticleStorage | undefined
         if (parentId) {
-            const detail = await queryArticle().select().where('id', parentId).first()
+            const detail = await db.article().select().where('id', parentId).first()
             parentArticle = detail
             if (!parentArticle) return { code: 400, msg: '父条目不存在' }
         }
@@ -43,7 +43,7 @@ export const createService = (props: Props) => {
             parentPath: (parentArticle && parentId) ? appendIdToPath(parentArticle.parentPath, parentId) : ''
         }
 
-        const [id] = await queryArticle().insert(newArticle)
+        const [id] = await db.article().insert(newArticle)
         return { code: 200, data: id }
     }
 
@@ -51,10 +51,10 @@ export const createService = (props: Props) => {
      * 删除文章
      */
     const removeArticle = async (id: number, force: boolean) => {
-        const removedArticle = await queryArticle().select().where('id', id).first()
+        const removedArticle = await db.article().select().where('id', id).first()
         if (!removedArticle) return { code: 200 }
 
-        const childrenArticles = await queryArticle().select().whereLike({ parentPath: `%#${id}#%` })
+        const childrenArticles = await db.article().select().whereLike({ parentPath: `%#${id}#%` })
 
         const deleteIds = [id]
         if (childrenArticles.length > 0) {
@@ -75,7 +75,7 @@ export const createService = (props: Props) => {
 
     const updateArticle = async (detail: UpdateArticleReqData) => {
         const { id, tagIds, relatedArticleIds, parentArticleId, ...restDetail } = detail
-        const oldArticle = await queryArticle().select().where({ id }).first()
+        const oldArticle = await db.article().select().where({ id }).first()
         if (!oldArticle) return { code: 400, msg: '文章不存在' }
 
         const newArticle: Partial<ArticleStorage> = {
@@ -88,7 +88,7 @@ export const createService = (props: Props) => {
             newArticle.parentPath = replaceParentId(oldArticle.parentPath, parentArticleId)
         }
 
-        await queryArticle().update(newArticle).where({ id })
+        await db.article().update(newArticle).where({ id })
 
         return { code: 200 }
     }
@@ -97,7 +97,7 @@ export const createService = (props: Props) => {
         /** TODO: tag id 搜索 */
         const { page = 1, tagIds, keyword } = query
 
-        const result = await queryArticle()
+        const result = await db.article()
             .select()
             .whereILike({ title: `%${keyword}%`, content: `%${keyword}%` })
             .orderBy('updateTime', 'desc')
@@ -124,7 +124,7 @@ export const createService = (props: Props) => {
     }
 
     const getArticleContent = async (id: number) => {
-        const article = await queryArticle().select().where('id', id).first()
+        const article = await db.article().select().where('id', id).first()
         if (!article) return { code: 400, msg: '文章不存在' }
 
         return { code: 200, data: formatArticle(article) }
@@ -132,10 +132,10 @@ export const createService = (props: Props) => {
 
     // 获取子代的文章列表（也会包含父级文章）
     const getChildren = async (id: number) => {
-        const article = await queryArticle().select().where('id', id).first()
+        const article = await db.article().select().where('id', id).first()
         if (!article) return { code: 400, msg: '文章不存在' }
 
-        const query = queryArticle().select('id', 'title', 'parentPath').whereLike('parentPath', `%#${id}#`)
+        const query = db.article().select('id', 'title', 'parentPath').whereLike('parentPath', `%#${id}#`)
         // 如果有父级文章，就把父级文章也查出来
         const parentId = getParentIdByPath(article.parentPath)
         if (parentId) query.orWhere('id', parentId)
@@ -204,7 +204,7 @@ export const createService = (props: Props) => {
      * @param rootId 根节点的id
      */
     const getArticleTree = async (rootId: number) => {
-        const subArticle = await queryArticle()
+        const subArticle = await db.article()
             .select()
             .whereLike('parentPath', `%#${rootId}#%`)
 

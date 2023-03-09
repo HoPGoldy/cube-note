@@ -1,46 +1,46 @@
 export interface TagStorage {
-    id: string
+    id: number
     title: string
     color: string
-    groupId?: string
+    groupId?: number
     createUserId: number
 }
 
 export interface TagListItem {
-    id: string
+    id: number
     title: string
     color: string
-    groupId?: string
+    groupId?: number
 }
 
 export type TagUpdateReqData = Partial<TagListItem>
 
 export interface TagGroupStorage {
-    id: string
+    id: number
     createUserId: number
     title: string
 }
 
 export interface TagGroupListItem {
-    id: string
+    id: number
     title: string
 }
 
 /** 批量设置标签颜色 */
 export interface SetTagColorReqData {
-    ids: string[]
+    ids: number[]
     color: string
 }
 
 /** 批量设置标签分组 */
 export interface SetTagGroupReqData {
-    ids: string[]
+    ids: number[]
     groupId: string
 }
 
 /** 批量删除标签 */
 export interface DeleteTagReqData {
-    ids: string[]
+    ids: number[]
 }
 
 /** 请求 - 添加标签 */

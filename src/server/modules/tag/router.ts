@@ -6,7 +6,6 @@ import { validate } from '@/server/utils'
 import Joi from 'joi'
 import { DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupStorage, TagStorage, TagUpdateReqData } from '@/types/tag'
 import { getJwtPayload } from '@/server/lib/auth'
-import { createId } from '@/utils/sqlite'
 
 interface Props {
     service: TagService
@@ -30,7 +29,7 @@ export const createRouter = (props: Props) => {
         const payload = getJwtPayload(ctx)
         if (!payload) return
 
-        const tagInfo: TagStorage = { ...body, id: createId(), createUserId: payload.userId }
+        const tagInfo: TagStorage = { ...body, createUserId: payload.userId }
         const resp = await service.addTag(tagInfo)
         response(ctx, resp)
     })
@@ -57,7 +56,7 @@ export const createRouter = (props: Props) => {
         const payload = getJwtPayload(ctx)
         if (!payload) return
 
-        const resp = await service.removeTag(id, payload.userId)
+        const resp = await service.removeTag(+id, payload.userId)
         response(ctx, resp)
     })
 
@@ -77,7 +76,7 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const addGroupSchema = Joi.object<TagGroupStorage>({
+    const addGroupSchema = Joi.object<{ title: string }>({
         title: Joi.string().required(),
     })
 
@@ -88,9 +87,8 @@ export const createRouter = (props: Props) => {
         const payload = getJwtPayload(ctx)
         if (!payload) return
 
-        const data: TagGroupStorage = {
+        const data: Omit<TagGroupStorage, 'id'> = {
             ...body,
-            id: createId(),
             createUserId: payload.userId,
         }
 
@@ -104,7 +102,7 @@ export const createRouter = (props: Props) => {
         const payload = getJwtPayload(ctx)
         if (!payload) return
 
-        const resp = await service.removeGroup(id, method, payload.userId)
+        const resp = await service.removeGroup(+id, method, payload.userId)
         response(ctx, resp)
     })
 
