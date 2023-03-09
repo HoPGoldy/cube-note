@@ -14,3 +14,20 @@ export const DEFAULT_COLOR = [
  * 默认（未分组）的标签分组 ID
  */
 export const DEFAULT_TAG_GROUP = 'default'
+
+
+/**
+ * 数据库表名
+ */
+export const TABLE_NAME = {
+    /** 用户表 */
+    USER: 'users',
+    /** 文章表 */
+    ARTICLE: 'articles',
+    /** 标签表 */
+    TAG: 'tags',
+    /** 标签分组表 */
+    TAG_GROUP: 'tagGroups',
+    /** 附件表 */
+    FILE: 'files'
+} as const

@@ -18,7 +18,7 @@ export const createRouter = (props: Props) => {
     const addArticleSchema = Joi.object<AddArticleReqData>({
         title: Joi.string().required(),
         content: Joi.string().allow('').required(),
-        parentId: Joi.string().required(),
+        parentId: Joi.number().required(),
     })
 
     // 添加文章
@@ -35,7 +35,7 @@ export const createRouter = (props: Props) => {
     })
 
     const removeArticleSchema = Joi.object<DeleteArticleMutation>({
-        id: Joi.string().required(),
+        id: Joi.number().required(),
         force: Joi.boolean().required(),
     })
 
@@ -70,7 +70,7 @@ export const createRouter = (props: Props) => {
     // 包含内容、标题等正文详情
     router.get('/:id/getContent', async ctx => {
         const { id } = ctx.params
-        const resp = await service.getArticleContent(id)
+        const resp = await service.getArticleContent(+id)
         response(ctx, resp)
     })
 
@@ -92,7 +92,7 @@ export const createRouter = (props: Props) => {
     // 获取文章子级、父级文章信息
     router.get('/:id/getLink', async ctx => {
         const { id } = ctx.params
-        const resp = await service.getChildren(id)
+        const resp = await service.getChildren(+id)
         response(ctx, resp)
     })
 
@@ -112,7 +112,7 @@ export const createRouter = (props: Props) => {
     router.get('/:rootArticleId/tree', async ctx => {
         const { rootArticleId } = ctx.params
 
-        const resp = await service.getArticleTree(rootArticleId)
+        const resp = await service.getArticleTree(+rootArticleId)
         response(ctx, resp)
     })
 

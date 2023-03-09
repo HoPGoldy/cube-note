@@ -1,4 +1,9 @@
 import sqlite3 from 'sqlite3'
+import knex from 'knex'
+import { AppTheme, UserStorage } from '@/types/user'
+import { TABLE_NAME } from '@/constants'
+import { ArticleStorage } from '@/types/article'
+import { TagStorage } from '@/types/tag'
 
 interface Props {
     dbPath: string
@@ -9,58 +14,86 @@ const { Database } = sqlite3.verbose()
 export const createDb = (props: Props) => {
     const db = new Database(props.dbPath)
 
+    const sqliteDb = knex({
+        client: 'sqlite3',
+        connection: { filename: props.dbPath },
+        useNullAsDefault: true
+    })
+
     // 用户表
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        username TEXT NOT NULL,
-        passwordHash TEXT NOT NULL,
-        passwordSalt TEXT NOT NULL,
-        initTime INTEGER NOT NULL,
-        rootArticleId TEXT NOT NULL,
-        theme TEXT NOT NULL,
-        favoriteArticleIds TEXT,
-        isAdmin INTEGER
-    )`)
+    sqliteDb.schema.hasTable(TABLE_NAME.USER).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.USER, t => {
+            t.increments('id').primary()
+            t.string('username').notNullable()
+            t.string('passwordHash').notNullable()
+            t.string('passwordSalt').notNullable()
+            t.timestamp('initTime').notNullable()
+            t.integer('rootArticleId')
+            t.string('theme').notNullable()
+            t.boolean('isAdmin').notNullable()
+        })
+    })
+
+    const queryUser = () => sqliteDb<UserStorage>(TABLE_NAME.USER)
 
     // 文章表
-    db.run(`CREATE TABLE IF NOT EXISTS articles (
-        id TEXT PRIMARY KEY NOT NULL,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        createTime INTEGER NOT NULL,
-        updateTime INTEGER NOT NULL,
-        relatedArticleIds TEXT,
-        parentArticleId TEXT,
-        createUserId TEXT NOT NULL,
-        tagIds TEXT
-    )`)
+    sqliteDb.schema.hasTable(TABLE_NAME.ARTICLE).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.ARTICLE, t => {
+            t.increments('id').primary()
+            t.text('title').notNullable()
+            t.text('content').notNullable()
+            t.timestamp('createTime').notNullable()
+            t.timestamp('updateTime').notNullable()
+            t.text('parentPath').notNullable()
+            t.integer('createUserId').notNullable()
+        })
+    })
+
+    const queryArticle = () => sqliteDb<ArticleStorage>(TABLE_NAME.ARTICLE)
 
     // 标签表
-    db.run(`CREATE TABLE IF NOT EXISTS tags (
-        id TEXT PRIMARY KEY NOT NULL,
-        title TEXT NOT NULL,
-        color TEXT NOT NULL,
-        createUserId TEXT NOT NULL,
-        groupId TEXT
-    )`)
+    sqliteDb.schema.hasTable(TABLE_NAME.TAG).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.TAG, t => {
+            t.increments('id').primary()
+            t.text('title').notNullable()
+            t.string('color').notNullable()
+            t.integer('groupId')
+            t.integer('createUserId')
+        })
+    })
+
+    const queryTag = () => sqliteDb<TagStorage>(TABLE_NAME.TAG)
 
     // 标签分组表
-    db.run(`CREATE TABLE IF NOT EXISTS tagGroups (
-        id TEXT PRIMARY KEY NOT NULL,
-        createUserId TEXT NOT NULL,
-        title TEXT NOT NULL
-    )`)
+    sqliteDb.schema.hasTable(TABLE_NAME.TAG_GROUP).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.TAG_GROUP, t => {
+            t.increments('id').primary()
+            t.text('title').notNullable()
+            t.integer('createUserId')
+        })
+    })
+
+    const queryTagGroup = () => sqliteDb<TagStorage>(TABLE_NAME.TAG_GROUP)
 
     // 附件表
-    db.run(`CREATE TABLE IF NOT EXISTS files (
-        id TEXT PRIMARY KEY NOT NULL,
-        md5 TEXT NOT NULL,
-        filename TEXT NOT NULL,
-        type TEXT NOT NULL,
-        size INTEGER NOT NULL,
-        createUserId INTEGER NOT NULL,
-        createTime INTEGER NOT NULL
-    )`)
+    sqliteDb.schema.hasTable(TABLE_NAME.FILE).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.FILE, t => {
+            t.increments('id').primary()
+            t.string('md5').notNullable()
+            t.text('filename').notNullable()
+            t.string('type').notNullable()
+            t.integer('size').notNullable()
+            t.integer('createUserId')
+            t.timestamp('createTime').notNullable()
+        })
+    })
+
+    const queryFile = () => sqliteDb<TagStorage>(TABLE_NAME.FILE)
 
     const dbRun = <T = any>(sql: string, params?: T[]) => {
         return new Promise<void>((resolve, reject) => {
@@ -89,7 +122,7 @@ export const createDb = (props: Props) => {
         })
     }
 
-    return { dbRun, dbGet, dbAll }
+    return { queryUser, queryArticle, queryTag, queryTagGroup, queryFile, dbRun, dbGet, dbAll }
 }
 
 export type DatabaseAccessor = ReturnType<typeof createDb>

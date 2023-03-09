@@ -73,21 +73,21 @@ const Editor = forwardRef<EditorRef, Props>((props, ref) => {
     }, [])
 
     return (
-        // <textarea
-        //     ref={textAreaRef}
-        //     placeholder="写点什么"
-        //     autoFocus
-        //     className={'w-full ' + (isDragFile ? 'ring-2 ring-green-400' : '')}
-        //     style={{ height: 'calc(100vh - 186px)', resize: 'none' }}
-        //     value={props.value}
-        //     onChange={e => props.onChange(e.target.value)}
-        // />
-        <MdEditor
+        <textarea
+            ref={textAreaRef}
+            placeholder="写点什么"
+            autoFocus
+            className={'w-full ' + (isDragFile ? 'ring-2 ring-green-400' : '')}
+            style={{ height: 'calc(100vh - 186px)', resize: 'none' }}
             value={props.value}
-            mode="split"
-            plugins={plugins}
-            onChange={props.onChange}
+            onChange={e => props.onChange(e.target.value)}
         />
+        // <MdEditor
+        //     value={props.value}
+        //     mode="split"
+        //     plugins={plugins}
+        //     onChange={props.onChange}
+        // />
     )
 }) 
 

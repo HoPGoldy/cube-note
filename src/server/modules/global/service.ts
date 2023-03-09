@@ -8,7 +8,7 @@ interface Props {
 
 export const createService = (props: Props) => {
     const { getConfig } = props
-    const { dbGet } = props.db
+    const { queryUser, queryArticle } = props.db
 
     /**
      * 获取当前应用全局配置
@@ -18,7 +18,7 @@ export const createService = (props: Props) => {
         const randIndex = Math.floor(Math.random() * (DEFAULT_COLOR.length))
         const buttonColor = DEFAULT_COLOR[randIndex]
 
-        const { ['COUNT(*)']: userCount } = await dbGet('SELECT COUNT(*) FROM users')
+        const { ['count(*)']: userCount } = await queryUser().count().first() || {}
         const needInit = userCount <= 0
 
         const data: AppConfigResp = { buttonColor, appName: APP_NAME, loginSubtitle: LOGIN_SUBTITLE }
@@ -27,9 +27,12 @@ export const createService = (props: Props) => {
     }
 
     const getUserDataInfo = async (userId: number) => {
-        const { ['COUNT(*)']: articleCount } = await dbGet(`SELECT COUNT(*) FROM articles WHERE createUserId = ${userId}`)
+        const { ['count(*)']: count } = await queryArticle()
+            .where({ createUserId: userId })
+            .count()
+            .first() || {}
 
-        const data: UserDataInfoResp = { articleCount }
+        const data: UserDataInfoResp = { articleCount: +count }
         return { code: 200, data }
     }
 

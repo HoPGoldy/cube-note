@@ -48,7 +48,7 @@ export const sqlInsert = (tableName: string, value: Record<string, any>) => {
 /**
  * 生成 sql 插入多条语句
  */
-export const sqlInsertMany = (tableName: string, values: Record<string, any>[]) => {
+export const sqlInsertMany = <T extends Record<string, any>>(tableName: string, values: T[]) => {
     const { keys } = formatSqlValues(values[0])
 
     const valueSets = values.map(value => {
@@ -56,7 +56,7 @@ export const sqlInsertMany = (tableName: string, values: Record<string, any>[]) 
         return `SELECT ${values.join(', ')}`
     })
 
-    return `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES ${valueSets.join(' UNION ALL ')};`
+    return `INSERT INTO ${tableName} (${keys.join(', ')}) ${valueSets.join(' UNION ALL ')};`
 }
 
 export type SqlWhere<T = Record<string, any>> = T | string | Array<T | string | 'AND' | 'OR'>

@@ -169,8 +169,8 @@ const About: FC = () => {
                 />
 
                 <div className='flex md:flex-row flex-col flex-nowrap'>
-                    {isEdit ? (
-                        <div className='md:w-[100%] prose' style={{ maxWidth: 'none' }}>
+                    {isEdit && (
+                        <div className='md:w-[50%]'>
                             <Editor
                                 ref={editorRef}
                                 value={content}
@@ -178,13 +178,10 @@ const About: FC = () => {
                                 onUploadFile={upload}
                             />
                         </div>
-                    ) : (
-                        <div className='md:w-[100%]'>
-                            <Preview value={visibleContent} />
-                        </div>
                     )}
-
-
+                    <div className={isEdit ? 'md:w-[50%]' : 'md:w-[100%]'}>
+                        <Preview value={visibleContent} />
+                    </div>
                 </div>
             </div>
         )

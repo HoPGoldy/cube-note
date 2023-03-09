@@ -1,31 +1,21 @@
 export interface ArticleStorage {
-    id: string
+    id: number
     title: string
     content: string
     createUserId: number
     createTime: number
     updateTime: number
     /**
-     * 祖先文章 id
-     * 如果是根节点的话，就没有这个属性
+     * 祖先文章路径，用于快速查询
+     * 以#分隔，如：#1#2#3
      */
-    parentArticleId: string
-    /**
-     * 相关文章 id 列表
-     * 逗号分隔
-     */
-    relatedArticleIds: string
-    /**
-     * 相关 tag id 列表
-     * 逗号分隔
-     */
-    tagIds: string
+    parentPath: string
 }
 
 export interface AddArticleReqData {
     title: string
     content: string
-    parentId: string
+    parentId: number
 }
 
 export interface QueryArticleReqData {
@@ -40,12 +30,12 @@ export type UpdateArticleReqData = Partial<ArticleContent> & {
 }
 
 export interface DeleteArticleMutation {
-    id: string
+    id: number
     force: boolean
 }
 
 export interface ArticleMenuItem {
-    id: string
+    id: number
     title: string
 }
 
@@ -56,17 +46,17 @@ export enum TabTypes {
 }
 
 export interface ArticleContent {
-    id: string
+    id: number
     title: string
     content: string
     createTime: number
     updateTime: number
-    parentArticleId: string
-    tagIds: string[]
+    parentArticleId: number
+    tagIds?: string[]
 }
 
 export interface ArticleLinkResp {
-    parentArticleId: string
+    parentArticleId: number
     parentArticleTitle: string
     childrenArticles: ArticleMenuItem[]
 }
@@ -82,10 +72,6 @@ export interface ArticleTreeNode {
 }
 
 export interface ArticleDeleteResp {
-    deletedArticleIds: string[]
-    parentArticleId: string
-}
-
-export interface ArticleUpdateResp {
-    parentArticleId: string
+    deletedArticleIds: number[]
+    parentArticleId?: number
 }

@@ -28,7 +28,7 @@ export interface UserStorage {
     /**
      * 用户当前根节点文章的 id
      */
-    rootArticleId: string
+    rootArticleId: number
     /**
      * 该用户收藏的文章 id
      * 逗号分割
@@ -102,7 +102,7 @@ export interface FrontendUserInfo {
     /**
      * 笔记根节点 id
      */
-    rootArticleId: string
+    rootArticleId: number
     /**
      * 是否为管理员
      */

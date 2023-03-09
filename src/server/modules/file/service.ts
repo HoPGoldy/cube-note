@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import { FileStorage, UploadedFile } from '@/types/file'
 import { ensureDir, move } from 'fs-extra'
-import { sqlInsertMany, sqlSelect } from '@/utils/sqlite'
+import { createId, sqlInsertMany, sqlSelect } from '@/utils/sqlite'
 
 interface Props {
     saveDir: string
@@ -29,6 +29,7 @@ export const createService = (props: Props) => {
 
     const readFile = async (hash: string, createUserId: number) => {
         const fileInfo = await dbGet<FileStorage>(sqlSelect('files', { md5: hash, createUserId }))
+        console.log('🚀 ~ file: service.ts:32 ~ readFile ~ fileInfo:', fileInfo)
         if (!fileInfo) return
 
         const filePath = path.resolve(saveDir, 'file', fileInfo.createUserId.toString(), fileInfo.filename)
@@ -71,17 +72,19 @@ export const createService = (props: Props) => {
             }
         }))
 
-        const fileInfos = filesWithMd5.map(file => ({
+        const fileInfos: FileStorage[] = filesWithMd5.map(file => ({
+            id: createId(),
             md5: file.md5,
             filename: file.filename,
             type: file.type,
             size: file.size,
-            userId,
+            createUserId: userId,
+            createTime: Date.now()
         }))
         const newFiles = fileInfos.filter(f => !existFiles[f.md5])
 
         if (newFiles.length > 0) {
-            await dbRun(sqlInsertMany('files', newFiles))
+            await dbRun(sqlInsertMany<FileStorage>('files', newFiles))
         }
 
         return fileInfos

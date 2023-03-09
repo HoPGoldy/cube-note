@@ -6,7 +6,6 @@ import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
 import { ArticleService } from '../article/service'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { sqlInsert, sqlSelect, sqlUpdate } from '@/utils/sqlite'
 
 interface Props {
     loginLocker: LoginLocker
@@ -22,7 +21,7 @@ export const createService = (props: Props) => {
         getReplayAttackSecret,
         addArticle,
     } = props
-    const { dbGet, dbRun } = props.db
+    const { queryUser } = props.db
 
     const loginFail = (ip: string, msg = '账号或密码错误') => {
         const lockInfo = loginLocker.recordLoginFail(ip)
@@ -35,7 +34,7 @@ export const createService = (props: Props) => {
      * 直接获取用户信息
      */
     const getUserInfo = async (userId: number, ip: string): Promise<AppResponse> => {
-        const userStorage = await dbGet<UserStorage>(sqlSelect('users', { id: userId }))
+        const userStorage = await queryUser().select().where({ id: userId }).first()
         if (!userStorage) return loginFail(ip, '用户不存在')
 
         const { username, theme, initTime, isAdmin, rootArticleId } = userStorage
@@ -63,7 +62,7 @@ export const createService = (props: Props) => {
      * 登录
      */
     const login = async (username: string, password: string, ip: string): Promise<AppResponse> => {
-        const userStorage = await dbGet<UserStorage>(sqlSelect('users', { username }))
+        const userStorage = await queryUser().select().where({ username }).first()
         if (!userStorage) return loginFail(ip)
 
         const { passwordHash, passwordSalt } = userStorage
@@ -76,7 +75,7 @@ export const createService = (props: Props) => {
      * 注册
      */
     const register = async (username: string, passwordHash: string, isAdmin = false): Promise<AppResponse> => {
-        const userStorage = await dbGet<UserStorage>(sqlSelect('users', { username }))
+        const userStorage = await queryUser().select('id').where({ username }).first()
         if (userStorage) {
             return { code: STATUS_CODE.ALREADY_REGISTER, msg: '已经注册' }
         }
@@ -87,22 +86,20 @@ export const createService = (props: Props) => {
             passwordHash: sha(passwordSalt + passwordHash),
             passwordSalt,
             initTime: Date.now(),
-            rootArticleId: '',
+            rootArticleId: -1,
             theme: AppTheme.Light,
             isAdmin,
         }
 
-        await dbRun(sqlInsert('users', initStorage))
-
         // 获取新用户的 id
-        const { id } = await dbGet<UserStorage>(sqlSelect('users', { username }, ['id']))
+        const [id] = await queryUser().insert(initStorage)
 
         // 给这个用户创建一个根节点文章
         const createResp = await addArticle('首页', '第一个笔记', id)
         if (!createResp.data) return createResp
 
         // 把根节点文章 id 存到用户表
-        await dbRun(sqlUpdate('users', { rootArticleId: createResp.data }, { id }))
+        await queryUser().update({ rootArticleId: createResp.data }).where({ id })
         return { code: 200 }
     }
 
@@ -110,7 +107,7 @@ export const createService = (props: Props) => {
      * 创建管理员
      */
     const createAdmin = async (username: string, passwordHash: string): Promise<AppResponse> => {
-        const { ['COUNT(*)']: userCount } = await dbGet('SELECT COUNT(*) FROM users')
+        const [{ ['count(*)']: userCount }] = await queryUser().count()
         if (userCount > 0) {
             return { code: 400, msg: '管理员已存在' }
         }
@@ -126,7 +123,7 @@ export const createService = (props: Props) => {
         oldPasswordHash: string,
         newPasswordHash: string
     ): Promise<AppResponse> => {
-        const userStorage = await dbGet<UserStorage>(sqlSelect('users', { id: userId }))
+        const userStorage = await queryUser().select().where({ id: userId }).first()
         if (!userStorage) {
             return { code: 400, msg: '用户不存在' }
         }
@@ -142,7 +139,7 @@ export const createService = (props: Props) => {
             passwordSalt: newPasswordSalt
         }
 
-        await dbRun(sqlUpdate('users', newStorage, { id: userId }))
+        await queryUser().update(newStorage).where({ id: userId })
         return { code: 200 }
     }
 
@@ -150,12 +147,12 @@ export const createService = (props: Props) => {
      * 设置应用主题色
      */
     const setTheme = async (userId: number, theme: AppTheme) => {
-        const userStorage = await dbGet<UserStorage>(sqlSelect('users', { userId }))
+        const userStorage = await queryUser().select().where({ id: userId }).first()
         if (!userStorage) {
             return { code: 400, msg: '用户不存在' }
         }
 
-        await dbRun(sqlUpdate('users', { theme }, { id: userId }))
+        await queryUser().update({ theme }).where({ id: userId })
         return { code: 200 }
     }
 
