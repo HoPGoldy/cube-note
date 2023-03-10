@@ -13,7 +13,7 @@ export const DEFAULT_COLOR = [
 /**
  * 默认（未分组）的标签分组 ID
  */
-export const DEFAULT_TAG_GROUP = 'default'
+export const DEFAULT_TAG_GROUP = -1
 
 
 /**

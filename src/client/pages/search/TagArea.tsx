@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
 
 interface Props {
-    onTagChange: (tagIds: string[]) => void
+    onTagChange: (tagIds: number[]) => void
     tagList?: TagListItem[]
     isTagLoading: boolean
 }
@@ -14,7 +14,7 @@ interface Props {
 export const useTagArea = (props: Props) => {
     const { tagList, isTagLoading, onTagChange } = props
     // 当前选中的标签
-    const [selectedTag, setSelectedTag] = useState<string[]>([])
+    const [selectedTag, setSelectedTag] = useState<number[]>([])
     // 是否展开面板
     const [isExpand, setIsExpand] = useState(false)
     // 获取标签分组
@@ -24,11 +24,11 @@ export const useTagArea = (props: Props) => {
     // 分好组的标签
     const { groupedTagDict } = useGroupedTag(tagList)
 
-    const isTagSelected = (id: string) => {
+    const isTagSelected = (id: number) => {
         return selectedTag.includes(id)
     }
 
-    const onSelectTag = (id: string) => {
+    const onSelectTag = (id: number) => {
         if (!isExpand) return
         // 如果有了就删除，没有就添加
         const newTags = isTagSelected(id) ? selectedTag.filter(item => item !== id) : [...selectedTag, id]

@@ -6,7 +6,8 @@
 /**
  * 从父代路径中获取父代 id
  */
-export const getParentIdByPath = (path: string) => {
+export const getParentIdByPath = (path?: string) => {
+    if (!path) return undefined
     const pathArr = path.split('#')
     return +pathArr[pathArr.length - 2]
 }

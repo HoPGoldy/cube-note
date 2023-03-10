@@ -3,12 +3,12 @@ import { blurOnEnter } from '../utils/input'
 
 interface Props {
     label: string
-    id: string
+    id: number
     color?: string
     /** 是否被选中 */
     selected?: boolean
     /** 标签被点击 */
-    onClick?: (id: string) => void
+    onClick?: (id: number) => void
 }
 
 export const Tag: FC<Props> = (props) => {

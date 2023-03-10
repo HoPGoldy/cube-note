@@ -1,6 +1,6 @@
 import { baseApi } from './base'
 import { AppResponse } from '@/types/global'
-import { AddTagReqData, DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagListItem, TagStorage, TagUpdateReqData } from '@/types/tag'
+import { AddTagReqData, DeleteTagReqData, SetTagColorReqData, SetTagGroupReqData, TagGroupListItem, TagGroupStorage, TagListItem, TagUpdateReqData } from '@/types/tag'
 import { STATUS_CODE } from '@/config'
 
 export const tagApi = baseApi.injectEndpoints({
@@ -9,7 +9,7 @@ export const tagApi = baseApi.injectEndpoints({
             query: () => 'tag/list',
             providesTags: ['tagList'],
         }),
-        addTag: build.mutation<AppResponse<string>, AddTagReqData>({
+        addTag: build.mutation<AppResponse<number>, AddTagReqData>({
             query: data => ({
                 url: 'tag/add',
                 method: 'POST',
@@ -48,7 +48,7 @@ export const tagApi = baseApi.injectEndpoints({
                 )
             }
         }),
-        deleteTag: build.mutation<AppResponse<string>, string>({
+        deleteTag: build.mutation<AppResponse, number>({
             query: (id) => ({
                 url: `tag/${id}/remove`,
                 method: 'POST'
@@ -66,7 +66,7 @@ export const tagApi = baseApi.injectEndpoints({
             query: () => 'tag/group/list',
             providesTags: ['tagGroupList'],
         }),
-        addTagGroup: build.mutation<AppResponse<string>, Omit<TagGroupStorage, 'createUserId' | 'id'>>({
+        addTagGroup: build.mutation<AppResponse<number>, Omit<TagGroupStorage, 'createUserId' | 'id'>>({
             query: data => ({
                 url: 'tag/group/add',
                 method: 'POST',
@@ -140,7 +140,7 @@ export const tagApi = baseApi.injectEndpoints({
                 )
             }
         }),
-        deleteTagGroup: build.mutation<AppResponse<string>, { id: string, method: string }>({
+        deleteTagGroup: build.mutation<AppResponse<string>, { id: number, method: string }>({
             query: data => ({
                 url: `tag/group/${data.id}/${data.method}/removeGroup`,
                 method: 'DELETE'

@@ -4,7 +4,7 @@ import {
     AddArticleReqData, ArticleContent, ArticleDeleteResp, ArticleLinkResp,
     ArticleMenuItem,
     ArticleRelatedResp,
-    ArticleTreeNode, ArticleUpdateResp, DeleteArticleMutation,
+    ArticleTreeNode, DeleteArticleMutation,
     QueryArticleReqData,
     SetArticleRelatedReqData,
     UpdateArticleReqData
@@ -26,7 +26,18 @@ export const articleApi = baseApi.injectEndpoints({
             query: (id) => `article/${id}/getRelated`,
             providesTags: (res, err, id) => [{ type: 'articleRelated', id }]
         }),
-        updateArticle: build.mutation<AppResponse<ArticleUpdateResp>, UpdateArticleReqData & { id: number }>({
+        updateArticleTitle: build.mutation<AppResponse, { id: number, parentId: number, title: string }>({
+            query: (detail) => ({
+                url: 'article/update',
+                method: 'POST',
+                body: { id: detail.id, title: detail.title }
+            }),
+            invalidatesTags: (res, err, { parentId }) => {
+                if (!parentId) return []
+                return [{ type: 'articleLink', id: parentId }]
+            },
+        }),
+        updateArticle: build.mutation<AppResponse, UpdateArticleReqData>({
             query: detail => ({
                 url: 'article/update',
                 method: 'PUT',
@@ -36,34 +47,28 @@ export const articleApi = baseApi.injectEndpoints({
                 const tags: TagDescription<any>[] = []
 
                 // 如果修改了标题，就要修改父节点的侧边栏（子节点名称）和树菜单
-                if (title) {
-                    // 如果没有父节点的话就不需要重载侧边栏了
-                    if (res?.data?.parentArticleId) {
-                        tags.push({ type: 'articleLink', id: res.data.parentArticleId })
-                    }
-                    tags.push('menu')
+                if (!title) return []
+                
+                // 如果没有父节点的话就不需要重载侧边栏了
+                if (res?.data?.parentArticleId) {
+                    tags.push({ type: 'articleLink', id: res.data.parentArticleId })
                 }
-
+                tags.push('menu')
                 return tags
             },
             async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
-                try {
-                    // 把修改乐观更新到缓存
-                    const { undo } = dispatch(
-                        articleApi.util.updateQueryData('getArticleContent', id, (draft) => {
-                            if (!draft.data) return
-                            if (patch.content) draft.data.content = patch.content
-                            if (patch.title) draft.data.title = patch.title
-                            if (patch.tagIds) draft.data.tagIds = patch.tagIds
-                        })
-                    )
+                // 把修改乐观更新到缓存
+                const { undo } = dispatch(
+                    articleApi.util.updateQueryData('getArticleContent', id, (draft) => {
+                        if (!draft.data) return
+                        if (patch.content) draft.data.content = patch.content
+                        if (patch.title) draft.data.title = patch.title
+                        if (patch.tagIds) draft.data.tagIds = patch.tagIds
+                    })
+                )
 
-                    const resp = await queryFulfilled
-                    if (resp.data.code !== STATUS_CODE.SUCCESS) undo()
-                }
-                catch (e) {
-                    console.error(e)
-                }
+                const resp = await queryFulfilled
+                if (resp.data.code !== STATUS_CODE.SUCCESS) undo()
             },
         }),
         queryArticleList: build.query<AppResponse<ArticleContent[]>, QueryArticleReqData>({

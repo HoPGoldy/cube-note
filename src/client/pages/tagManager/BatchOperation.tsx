@@ -10,7 +10,7 @@ export const useBatchOperation = () => {
     // 是否处于批量操作模式
     const [isBatch, setIsBatch] = useState(false)
     // 当前选中的标签
-    const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+    const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
     // 删除标签
     const [deleteTag] = useDeleteTagsMutation()
     // 批量设置标签颜色
@@ -22,11 +22,11 @@ export const useBatchOperation = () => {
     // 是否显示分组选择弹窗
     const [showGroupPicker, setShowGroupPicker] = useState(false)
 
-    const isTagSelected = (id: string) => {
+    const isTagSelected = (id: number) => {
         return selectedTagIds.includes(id)
     }
 
-    const onSelectTag = (id: string) => {
+    const onSelectTag = (id: number) => {
         // 如果有了就删除，没有就添加
         if (isTagSelected(id)) setSelectedTagIds(selectedTagIds.filter(item => item !== id))
         else setSelectedTagIds([...selectedTagIds, id])
@@ -57,7 +57,7 @@ export const useBatchOperation = () => {
         setSelectedTagIds([])
     }
 
-    const onSaveGroup = async (groupId: string) => {
+    const onSaveGroup = async (groupId: number) => {
         if (selectedTagIds.length === 0) {
             messageWarning('请选择需要设置分组的标签')
             return

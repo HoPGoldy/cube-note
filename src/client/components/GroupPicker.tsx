@@ -5,7 +5,7 @@ import { useAllTagGroup } from '../pages/tagManager/tagHooks'
 import { useGetTagGroupQuery } from '../services/tag'
 
 interface Props {
-  value?: string
+  value?: number
   onChange?: (item: TagGroupListItem) => void
   visible: boolean
   onClose: () => void

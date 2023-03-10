@@ -106,7 +106,7 @@ export const useTagConfig = () => {
                 onClose={() => setShowColorPicker(false)}
             />
             <GroupPicker
-                value={currentTag?.groupId || ''}
+                value={currentTag?.groupId}
                 onChange={group => onChangeDetail({ groupId: group.id })}
                 visible={showGroupPicker}
                 onClose={() => setShowGroupPicker(false)}

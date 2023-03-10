@@ -111,7 +111,7 @@ export const createService = (props: Props) => {
 
         await db.article().update(newArticle).where({ id })
 
-        return { code: 200 }
+        return { code: 200, parentArticleId: getParentIdByPath(newArticle.parentPath) }
     }
 
     const getArticleList = async (reqData: QueryArticleReqData) => {
@@ -183,8 +183,8 @@ export const createService = (props: Props) => {
         if (parentId) query.orWhere('id', parentId)
 
         const data: ArticleLinkResp = {
-            parentArticleId: -1,
-            parentArticleTitle: '',
+            parentArticleId: undefined,
+            parentArticleTitle: undefined,
             childrenArticles: [],
         }
 

@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
 import {
     useAddArticleMutation, useGetArticleLinkQuery, useGetArticleRelatedQuery, useGetArticleTreeQuery,
-    useGetFavoriteQuery, useUpdateArticleMutation, articleApi, useSetArticleRelatedMutation
+    useGetFavoriteQuery, articleApi, useSetArticleRelatedMutation
 } from '../services/article'
 import { TreeMenu } from '../components/TreeMenu'
 
@@ -38,11 +38,11 @@ export const Sidebar: FC = () => {
         skip: !currentRootArticleId
     })
     // 获取当前文章的子级、父级文章
-    const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId, {
+    const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId || -1, {
         skip: !currentArticleId || currentTab !== TabTypes.Sub,
     })
     // 获取当前文章的相关文章
-    const { data: articleRelatedLink, isFetching: relatedLinkLoading } = useGetArticleRelatedQuery(currentArticleId, {
+    const { data: articleRelatedLink, isFetching: relatedLinkLoading } = useGetArticleRelatedQuery(currentArticleId || -1, {
         skip: !currentArticleId || currentTab !== TabTypes.Related,
     })
     // 获取收藏文章
@@ -59,11 +59,16 @@ export const Sidebar: FC = () => {
     }
 
     const createArticle = async () => {
+        if (!currentArticleId) {
+            console.error('当前文章不存在，无法创建子文章')
+            return
+        }
+
         const title = `新笔记-${new Date().toLocaleString()}`
         const resp = await addArticle({
             title,
             content: '',
-            parentId: currentArticleId
+            parentId: currentArticleId,
         }).unwrap()
         if (!resp.data) return
 
@@ -92,6 +97,11 @@ export const Sidebar: FC = () => {
         const currentLinks = articleRelatedLink?.data?.relatedArticles || []
         // 如果已经关联了，就移除
         const hasLink = currentLinks.find(item => item.id === newItem.value)
+
+        if (!currentArticleId) {
+            console.error('当前文章不存在，无法更新相关文章')
+            return
+        }
 
         setArticleRelated({
             link: !hasLink,

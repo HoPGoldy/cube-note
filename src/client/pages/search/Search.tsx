@@ -72,7 +72,7 @@ const Search: FC = () => {
         pageRef.current = 1
     }, [searchParams])
 
-    const onTagChange = (tagIds: string[]) => {
+    const onTagChange = (tagIds: number[]) => {
         searchParams.set('tagIds', tagIds.join(','))
         setSearchParams(searchParams)
     }
@@ -85,7 +85,7 @@ const Search: FC = () => {
         setSearchParams(searchParams)
     }
 
-    const renderTagItem = (tagId: string) => {
+    const renderTagItem = (tagId: number) => {
         const item = tagDict.get(tagId)
         if (!item) return null
 
@@ -114,7 +114,7 @@ const Search: FC = () => {
                         dangerouslySetInnerHTML={{ __html: colorfulContent }}
                     />
                     <div className='flex flex-warp'>
-                        {item.tagIds.map(renderTagItem)}
+                        {item.tagIds?.map(renderTagItem)}
                     </div>
                 </div>
             </Link>

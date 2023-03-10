@@ -48,7 +48,9 @@ export interface QueryArticleReqData {
     page?: number
 }
 
-export type UpdateArticleReqData = Partial<ArticleContent>
+export type UpdateArticleReqData = Partial<ArticleContent> & {
+    id: number
+}
 
 export interface DeleteArticleMutation {
     id: number
@@ -73,7 +75,7 @@ export interface ArticleContent {
     content: string
     createTime: number
     updateTime: number
-    parentArticleId: number
+    parentArticleId?: number
     tagIds?: number[]
 }
 
@@ -83,8 +85,8 @@ export interface ArticleLinkResp {
      * 父节点 id
      * 因为下属文章列表有个返回父级文章的按钮，所以需要返回父级文章 id
      */
-    parentArticleId: number
-    parentArticleTitle: string
+    parentArticleId?: number
+    parentArticleTitle?: string
     /** 子文章列表 */
     childrenArticles: ArticleMenuItem[]
 }

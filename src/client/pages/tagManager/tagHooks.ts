@@ -29,7 +29,7 @@ export const useAllTagGroup = (tagGroupList?: TagGroupListItem[]) => {
  */
 export const useGroupedTag = (tagList?: TagListItem[]) => {
     // 分组后的标签列表
-    const [groupedTagDict, setGroupedTagDict] = useState<Record<string, TagListItem[]>>({})
+    const [groupedTagDict, setGroupedTagDict] = useState<Record<string | number, TagListItem[]>>({})
 
     useEffect(() => {
         if (!tagList) return
@@ -48,7 +48,7 @@ export const useGroupedTag = (tagList?: TagListItem[]) => {
  */
 export const useTagDict = (tagList?: TagListItem[]) => {
     return useMemo(() => {
-        const data = tagList?.map((item) => [item.id, item] as [string, TagListItem]) || []
-        return new Map<string, TagListItem>(data)
+        const data = tagList?.map((item) => [item.id, item] as [number, TagListItem]) || []
+        return new Map<string | number, TagListItem>(data)
     }, [tagList])
 }

@@ -52,7 +52,8 @@ const TagManager: FC = () => {
         if (!resp.data) return
 
         const timer = setTimeout(() => {
-            const input = titleInputRefs.current[resp.data as string]
+            if (!resp.data) return
+            const input = titleInputRefs.current[resp.data]
             input?.focus()
             input?.setSelectionRange(0, title.length)
         }, 200)
@@ -74,7 +75,7 @@ const TagManager: FC = () => {
         else showTagDetail(item)
     }
 
-    const onClickAddBtn = async (title: string, groupId: string) => {
+    const onClickAddBtn = async (title: string, groupId: number) => {
         if (!title) return
 
         const data: AddTagReqData = { title, color: '#404040' }

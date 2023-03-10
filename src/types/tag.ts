@@ -35,7 +35,7 @@ export interface SetTagColorReqData {
 /** 批量设置标签分组 */
 export interface SetTagGroupReqData {
     ids: number[]
-    groupId: string
+    groupId: number
 }
 
 /** 批量删除标签 */

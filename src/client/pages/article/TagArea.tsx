@@ -13,7 +13,7 @@ interface Props {
     /**
      * 当前文章选中的标签
      */
-    value: string[]
+    value: number[]
     /**
      * 是否处于编辑模式
      */
@@ -52,7 +52,7 @@ const TagArea: FC<Props> = (props) => {
         updateArticle({ id: articleId, tagIds: [...value, resp.data] })
     }
 
-    const onClickTag = (id: string) => {
+    const onClickTag = (id: number) => {
         // TODO: 跳转到搜索页
         if (!editing) return
 
