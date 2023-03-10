@@ -18,7 +18,7 @@ export const createRouter = (props: Props) => {
     const addSchema = Joi.object<TagStorage>({
         title: Joi.string().required(),
         color: Joi.string().required(),
-        groupId: Joi.string().allow(null),
+        groupId: Joi.number().allow(null),
     })
 
     // 添加标签
@@ -35,10 +35,10 @@ export const createRouter = (props: Props) => {
     })
 
     const updateSchema = Joi.object<TagUpdateReqData>({
-        id: Joi.string().required(),
+        id: Joi.number().required(),
         title: Joi.string().allow(null),
         color: Joi.string().allow(null),
-        groupId: Joi.string().allow(null),
+        groupId: Joi.number().allow(null),
     })
 
     // 更新标签
@@ -107,7 +107,7 @@ export const createRouter = (props: Props) => {
     })
 
     const updateGroupSchema = Joi.object<Omit<TagGroupStorage, 'createUserId'>>({
-        id: Joi.string().required(),
+        id: Joi.number().required(),
         title: Joi.string().allow(null),
     })
 
@@ -126,7 +126,7 @@ export const createRouter = (props: Props) => {
 
     const batchSetColorSchema = Joi.object<SetTagColorReqData>({
         color: Joi.string().required(),
-        ids: Joi.array().items(Joi.string()).required(),
+        ids: Joi.array().items(Joi.number()).required(),
     })
 
     // 批量设置标签颜色
@@ -141,8 +141,8 @@ export const createRouter = (props: Props) => {
     })
 
     const batchSetGroupSchema = Joi.object<SetTagGroupReqData>({
-        groupId: Joi.string().required(),
-        ids: Joi.array().items(Joi.string()).required(),
+        groupId: Joi.number().required(),
+        ids: Joi.array().items(Joi.number()).required(),
     })
 
     // 批量设置标签分组
@@ -157,7 +157,7 @@ export const createRouter = (props: Props) => {
     })
 
     const batchRemoveSchema = Joi.object<DeleteTagReqData>({
-        ids: Joi.array().items(Joi.string()).required(),
+        ids: Joi.array().items(Joi.number()).required(),
     })
 
     // 批量删除标签

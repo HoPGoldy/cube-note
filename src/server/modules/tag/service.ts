@@ -48,6 +48,7 @@ export const createService = (props: Props) => {
         const existGroup = await db.tagGroup()
             .select('id')
             .where({ title: data.title, createUserId: data.createUserId })
+            .first()
         if (existGroup) return { code: 400, msg: '分组已存在' }
 
         const [id] = await db.tagGroup().insert(data)

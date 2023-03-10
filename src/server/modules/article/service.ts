@@ -116,12 +116,16 @@ export const createService = (props: Props) => {
 
     const getArticleList = async (reqData: QueryArticleReqData) => {
         const { page = 1, tagIds, keyword } = reqData
+        const query = db.article().select()
 
-        const query = db.article().select().whereILike({ title: `%${keyword}%`, content: `%${keyword}%` })
+        if (keyword) {
+            query.whereLike('title', `%${keyword}%`)
+                .andWhereLike('content', `%${keyword}%`)
+        }
 
         if (tagIds) {
             tagIds.forEach(tagId => {
-                query.orWhereLike({ tagIds: `%#${tagId}#%` })
+                query.andWhereLike('tagIds', `%#${tagId}#%`)
             })
         }
 
@@ -129,6 +133,7 @@ export const createService = (props: Props) => {
             .orderBy('updateTime', 'desc')
             .limit(15)
             .offset((page - 1) * 15)
+
         const data = result.map(item =>  {
             let content = ''
             // 截取正文中关键字前后的内容
@@ -140,8 +145,13 @@ export const createService = (props: Props) => {
             }
             if (!content) content = item.content.slice(0, 30)
 
+            const tagIds = item.tagIds ? pathToArray(item.tagIds) : []
+
             return {
-                ...item,
+                id: item.id,
+                title: item.title,
+                updateTime: item.updateTime,
+                tagIds,
                 content,
             }
         })
