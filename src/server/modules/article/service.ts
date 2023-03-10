@@ -71,7 +71,7 @@ export const createService = (props: Props) => {
         const removedArticle = await db.article().select().where('id', id).first()
         if (!removedArticle) return { code: 200 }
 
-        const childrenArticles = await db.article().select().whereLike({ parentPath: `%#${id}#%` })
+        const childrenArticles = await db.article().select().whereLike('parentPath', `%#${id}#%`)
 
         const deleteIds = [id]
         if (childrenArticles.length > 0) {
@@ -79,11 +79,12 @@ export const createService = (props: Props) => {
             deleteIds.push(...childrenArticles.map(item => item.id))
         }
 
-        const parentId = getParentIdByPath(removedArticle.parentPath)
+        await db.article().delete().whereIn('id', deleteIds)
 
+        // 返回父级文章 id，删除后会跳转至这个文章
+        const parentId = getParentIdByPath(removedArticle.parentPath)
         const data: ArticleDeleteResp = {
-            // 返回父级文章 id，删除后会跳转至这个文章
-            parentArticleId: parentId ? +parentId : undefined,
+            parentArticleId: parentId,
             deletedArticleIds: deleteIds,
         }
 
@@ -110,8 +111,9 @@ export const createService = (props: Props) => {
         }
 
         await db.article().update(newArticle).where({ id })
+        const data = { parentArticleId: getParentIdByPath(newArticle.parentPath) }
 
-        return { code: 200, parentArticleId: getParentIdByPath(newArticle.parentPath) }
+        return { code: 200, data }
     }
 
     const getArticleList = async (reqData: QueryArticleReqData) => {
@@ -120,7 +122,7 @@ export const createService = (props: Props) => {
 
         if (keyword) {
             query.whereLike('title', `%${keyword}%`)
-                .andWhereLike('content', `%${keyword}%`)
+                .orWhereLike('content', `%${keyword}%`)
         }
 
         if (tagIds) {

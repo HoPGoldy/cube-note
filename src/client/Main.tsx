@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import './styles/index.css'
 import 'bytemd/dist/index.css'
 import App from './App'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter as BrowserRouter } from 'react-router-dom'
 
 ReactDOM.render(
     <React.StrictMode>

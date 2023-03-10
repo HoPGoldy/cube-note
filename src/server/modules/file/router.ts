@@ -1,10 +1,11 @@
 import Router from 'koa-router'
 import { AppKoaContext } from '@/types/global'
-import { response } from '@/server/utils'
+import { response, validate } from '@/server/utils'
 import { FileService } from './service'
 import { UploadedFile } from '@/types/file'
 import { getJwtPayload } from '@/server/lib/auth'
 import { readFile } from 'fs-extra'
+import Joi from 'joi'
 
 interface Props {
     service: FileService
@@ -14,14 +15,18 @@ export const createRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/file' })
 
-    router.get('/content/:hashName', async ctx => {
+    const fileGetSchema = Joi.object<{ id: number }>({
+        id: Joi.number().required(),
+    })
+
+    router.get('/get', async ctx => {
         const payload = getJwtPayload(ctx)
         if (!payload) return
 
-        const { hashName } = ctx.params
-        // 这个链接里可能会有后缀名，所以需要去掉
-        const [hash] = hashName.split('.')
-        const data = await service.readFile(hash, payload.userId)
+        const queryData = validate(ctx, fileGetSchema)
+        if (!queryData) return
+
+        const data = await service.readFile(queryData.id, payload.userId)
         if (!data) {
             ctx.status = 404
             return
@@ -31,6 +36,8 @@ export const createRouter = (props: Props) => {
         ctx.set('Content-disposition', `attachment; filename=${encodeURIComponent(filename)}`)
         ctx.set('Content-Type', type)
         ctx.set('Content-Length', size.toString())
+        // 缓存一个月
+        ctx.set('Cache-Control', 'max-age=2592000')
         ctx.body = await readFile(data.filePath)
     })
 

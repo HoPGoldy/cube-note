@@ -23,7 +23,7 @@ export const useUpload = function (props: Props) {
             const newInsertContent = fileInfo.map(f => {
                 // 后缀名
                 const [name, suffix ] = f.filename.split('.')
-                return `\n![${name}](/api/file/${f.md5}.${suffix})\n`
+                return `\n![${name}](/api/file/get?id=${f.id}&suffix=${suffix})\n`
             }).join('')
             const newContent = oldContent.slice(0, selectionStart) + newInsertContent + oldContent.slice(selectionEnd)
             return newContent

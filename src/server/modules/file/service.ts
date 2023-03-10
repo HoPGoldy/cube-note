@@ -25,8 +25,8 @@ const getFileMd5 = async (filePath: string, fileName: string) => {
 export const createService = (props: Props) => {
     const { saveDir, db } = props
 
-    const readFile = async (hash: string, createUserId: number) => {
-        const fileInfo = await db.file().select().where({ md5: hash, createUserId }).first()
+    const readFile = async (id: number, createUserId: number) => {
+        const fileInfo = await db.file().select().where({ id, createUserId }).first()
         console.log('🚀 ~ file: service.ts:32 ~ readFile ~ fileInfo:', fileInfo)
         if (!fileInfo) return
 

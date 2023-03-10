@@ -93,7 +93,7 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
-    const batchSetGroup = async (ids: number[], groupId: string, userId: number) => {
+    const batchSetGroup = async (ids: number[], groupId: number, userId: number) => {
         await db.tag()
             .update('groupId', groupId)
             .whereIn('id', ids)

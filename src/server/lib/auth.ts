@@ -50,7 +50,13 @@ export const verifyToken = async (token: string) => {
 /**
  * JWT 鉴权中间件
  */
-export const middlewareJwt = jwtKoa({ secret: getJwtSecretKey })
+export const middlewareJwt = jwtKoa({
+    secret: getJwtSecretKey,
+    getToken: ctx => {
+        if (ctx.header.authorization) return ctx.header.authorization.replace('Bearer ', '')
+        return ctx.cookies.get('cube-note-token') || null
+    },
+})
 
 /**
  * 生成新的 jwt token
