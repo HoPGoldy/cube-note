@@ -26,7 +26,7 @@ export const articleApi = baseApi.injectEndpoints({
             query: (id) => `article/${id}/getRelated`,
             providesTags: (res, err, id) => [{ type: 'articleRelated', id }]
         }),
-        updateArticle: build.mutation<AppResponse<ArticleUpdateResp>, UpdateArticleReqData>({
+        updateArticle: build.mutation<AppResponse<ArticleUpdateResp>, UpdateArticleReqData & { id: number }>({
             query: detail => ({
                 url: 'article/update',
                 method: 'PUT',

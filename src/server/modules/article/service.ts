@@ -3,7 +3,7 @@ import {
     ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp, SetArticleRelatedReqData
 } from '@/types/article'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { appendIdToPath, getParentIdByPath, pathToArray, replaceParentId } from '@/utils/parentPath'
+import { appendIdToPath, arrayToPath, getParentIdByPath, pathToArray, replaceParentId } from '@/utils/parentPath'
 import { TABLE_NAME } from '@/constants'
 
 interface Props {
@@ -105,18 +105,27 @@ export const createService = (props: Props) => {
             newArticle.parentPath = replaceParentId(oldArticle.parentPath, parentArticleId)
         }
 
+        if (tagIds) {
+            newArticle.tagIds = arrayToPath(tagIds)
+        }
+
         await db.article().update(newArticle).where({ id })
 
         return { code: 200 }
     }
 
-    const getArticleList = async (query: QueryArticleReqData) => {
-        /** TODO: tag id 搜索 */
-        const { page = 1, tagIds, keyword } = query
+    const getArticleList = async (reqData: QueryArticleReqData) => {
+        const { page = 1, tagIds, keyword } = reqData
 
-        const result = await db.article()
-            .select()
-            .whereILike({ title: `%${keyword}%`, content: `%${keyword}%` })
+        const query = db.article().select().whereILike({ title: `%${keyword}%`, content: `%${keyword}%` })
+
+        if (tagIds) {
+            tagIds.forEach(tagId => {
+                query.orWhereLike({ tagIds: `%#${tagId}#%` })
+            })
+        }
+
+        const result = await query
             .orderBy('updateTime', 'desc')
             .limit(15)
             .offset((page - 1) * 15)

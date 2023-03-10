@@ -42,6 +42,7 @@ export const createDb = (props: Props) => {
             t.timestamp('updateTime').notNullable()
             t.text('parentPath').notNullable()
             t.integer('createUserId').notNullable()
+            t.text('tagIds').notNullable()
         })
     })
 

@@ -10,11 +10,11 @@ type State = {
     /**
      * 当前显示的哪个文章
      */
-    currentArticleId: number
+    currentArticleId?: number
     /**
      * 父文章 id
      */
-    parentArticleId: string
+    parentArticleId?: number
     /**
      * 父文章标题
      */
@@ -26,10 +26,10 @@ type State = {
 }
 
 const initialState: State = {
-    parentArticleId: '',
+    parentArticleId: undefined,
     parentArticleTitle: '',
     currentTab: TabTypes.Sub,
-    currentArticleId: '',
+    currentArticleId: undefined,
     selectedRelatedArticleIds: [],
 }
 

@@ -48,3 +48,10 @@ export const pathToArray = (path: string): number[] => {
     if (!path) return []
     return path.split('#').slice(1, -1).map(id => +id)
 }
+
+/**
+ * 数组转路径
+ */
+export const arrayToPath = (arr: number[]): string => {
+    return '#' + arr.join('#') + '#'
+}
