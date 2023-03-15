@@ -25,9 +25,8 @@ const getFileMd5 = async (filePath: string, fileName: string) => {
 export const createService = (props: Props) => {
     const { saveDir, db } = props
 
-    const readFile = async (id: number, createUserId: number) => {
-        const fileInfo = await db.file().select().where({ id, createUserId }).first()
-        console.log('🚀 ~ file: service.ts:32 ~ readFile ~ fileInfo:', fileInfo)
+    const readFile = async (hash: string, createUserId: number) => {
+        const fileInfo = await db.file().select().where({ md5: hash, createUserId }).first()
         if (!fileInfo) return
 
         const filePath = path.resolve(saveDir, 'file', fileInfo.createUserId.toString(), fileInfo.filename)
@@ -43,7 +42,7 @@ export const createService = (props: Props) => {
         }, {} as Record<string, FileStorage>)
     }
 
-    const uploadFile = async (files: UploadedFile[], userId: number) => {
+    const uploadFile = async (files: Omit<UploadedFile, 'md5'>[], userId: number) => {
         const filesWithMd5 = await Promise.all(files.map(async f => ({
             ...f,
             md5: await getFileMd5(f.tempPath, f.filename)
@@ -65,7 +64,7 @@ export const createService = (props: Props) => {
             }
             catch (e) {
                 // 如果是因为文件已存在，就不用管
-                if (!e.message.includes('dest already exists')) throw e
+                if (!e.message.includes('already exists')) throw e
             }
         }))
 

@@ -15,8 +15,8 @@ export const createRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/file' })
 
-    const fileGetSchema = Joi.object<{ id: number }>({
-        id: Joi.number().required(),
+    const fileGetSchema = Joi.object<{ hash: string }>({
+        hash: Joi.string().required(),
     })
 
     router.get('/get', async ctx => {
@@ -26,7 +26,7 @@ export const createRouter = (props: Props) => {
         const queryData = validate(ctx, fileGetSchema)
         if (!queryData) return
 
-        const data = await service.readFile(queryData.id, payload.userId)
+        const data = await service.readFile(queryData.hash, payload.userId)
         if (!data) {
             ctx.status = 404
             return
@@ -48,7 +48,7 @@ export const createRouter = (props: Props) => {
         const originFiles = ctx.request.files?.file || []
         const files = Array.isArray(originFiles) ? Array.from(originFiles) : [originFiles]
 
-        const uploadedFiles: UploadedFile[] = files.map(f => ({
+        const uploadedFiles: Omit<UploadedFile, 'md5'>[] = files.map(f => ({
             filename: f.originalFilename || f.newFilename,
             type: f.mimetype || 'unknown',
             tempPath: f.filepath,

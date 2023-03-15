@@ -13,5 +13,5 @@ export interface UploadedFile {
     type: string
     tempPath: string
     size: number
-    md5?: string
+    md5: string
 }
