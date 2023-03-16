@@ -2,11 +2,12 @@
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react'
 import gfm from '@bytemd/plugin-gfm'
 import { Editor as MdEditor } from '@bytemd/react'
+import mediumZoom from '@bytemd/plugin-medium-zoom'
 import { fileUploader } from '@/client/components/FileUploaderPlugin'
-
 
 const plugins = [
     gfm(),
+    mediumZoom(),
     fileUploader()
     // Add more plugins here
 ]

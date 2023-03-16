@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@bytemd/plugin-gfm": "^1.20.2",
+    "@bytemd/plugin-medium-zoom": "^1.20.2",
     "@bytemd/react": "^1.20.2",
     "@react-vant/icons": "^0.0.6",
     "@reduxjs/toolkit": "^1.9.1",

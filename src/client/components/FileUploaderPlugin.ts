@@ -6,9 +6,62 @@ import { UploadedFile } from '@/types/file'
 
 const getFileUrl = (file: UploadedFile) => {
     // 后缀名
-    const [name, suffix] = file.filename.split('.')
-    const isImg = ['png', 'jpg', 'jpeg', 'gif', 'bmp'].includes(suffix?.toLocaleLowerCase())
-    return `\n${isImg ? '!' : ''}[${file.filename}](/api/file/get?hash=${file.md5}&suffix=${suffix})`
+    const suffix = file.filename?.split('.')?.pop()
+    const isImg = ['png', 'jpg', 'jpeg', 'gif', 'bmp'].includes(suffix?.toLocaleLowerCase() || 'unknown')
+    return `\n${isImg ? '!' : ''}[${file.filename}](/api/file/get?hash=${file.md5})`
+}
+
+const FILE_ICON_CONFIG = [
+    // word
+    { suffix: ['doc', 'docx'], icon: 'file_word' },
+    // excel
+    { suffix: ['xls', 'xlsx'], icon: 'file_excel' },
+    // ppt
+    { suffix: ['ppt', 'pptx'], icon: 'file_ppt' },
+    // pdf
+    { suffix: ['pdf'], icon: 'file_pdf' },
+    // 压缩包
+    { suffix: ['zip', 'rar', '7z', 'tar', 'gz'], icon: 'file_zip' },
+    // txt
+    { suffix: ['txt'], icon: 'file_text' },
+    // 视频
+    { suffix: ['mp4', 'avi', 'rmvb', 'rm', 'flv', 'wmv', 'mov', 'mkv', 'mpg', 'mpeg'], icon: 'file_video' },
+    // 音频
+    { suffix: ['mp3', 'wav', 'wma', 'ogg', 'ape', 'flac'], icon: 'file_audio' },
+    // 可执行文件
+    { suffix: ['exe', 'msi'], icon: 'file_exe' },
+    // psd
+    { suffix: ['psd'], icon: 'file_psd' },
+    // 图片
+    { suffix: ['png', 'jpg', 'jpeg', 'gif', 'bmp'], icon: 'file_img' },
+]
+
+const getFileIcon = (suffix?: string) => {
+    if (!suffix) return 'file_cloud'
+
+    const config = FILE_ICON_CONFIG.find((item) => item.suffix.includes(suffix))
+    return config?.icon || 'file_cloud'
+
+}
+
+const defaultRenderLink = (link: HTMLAnchorElement) => {
+    // 通过后缀名获取 icon
+    const suffix = link.innerText?.split(']')?.[0]?.split('.')?.pop()
+
+    link.target = '_blank'
+    link.innerHTML = `
+        <div
+            class="rounded-md p-4 my-2 bg-slate-200 flex"
+        >
+            <svg class="icon" aria-hidden="true" style="font-size: 3rem;">
+                <use xlink:href="#icon-${getFileIcon(suffix)}"></use>
+            </svg>
+            <div style="margin-left: 0.5rem">
+                <div class="text-slate-800 font-bold">${link.innerText}</div>
+                <div class="text-slate-600">点击下载附件</div>
+            </div>
+        </div>
+    `
 }
 
 const uploadFunc = async (cm: CodeMirror.Editor, files: FileList) => {
@@ -19,7 +72,6 @@ const uploadFunc = async (cm: CodeMirror.Editor, files: FileList) => {
     }
 
     const insertFileText = resp.data.map(getFileUrl).join('\n')
-    console.log('🚀 ~ file: FileUploaderPlugin.ts:22 ~ uploadFunc ~ insertFileText:', insertFileText)
     cm.replaceSelection(insertFileText)
 }
 
@@ -36,11 +88,21 @@ const dropFileCallback = async (cm: CodeMirror.Editor, e: DragEvent) => {
 export const fileUploader = (): BytemdPlugin => {
     return {
         editorEffect: (ctx) => {
-            console.log('🚀 ~ 重载', ctx)
             ctx.editor.off('paste' as any, pasteFileCallback)
             ctx.editor.on('paste' as any, pasteFileCallback)
             ctx.editor.off('drop', dropFileCallback)
             ctx.editor.on('drop', dropFileCallback)
+        },
+        viewerEffect: (ctx) => {
+            const { markdownBody } = ctx
+            console.log(markdownBody)
+            const links = markdownBody.querySelectorAll('a')
+            links.forEach(link => {
+                const parent = link.parentElement
+                // 单独一行的链接才渲染
+                if (parent?.childNodes.length !== 1) return
+                defaultRenderLink(link)
+            })
         }
     }
 }
