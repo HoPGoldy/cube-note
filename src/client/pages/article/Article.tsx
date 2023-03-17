@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
-import Editor, { EditorRef } from './Editor'
+import Editor from './Editor'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
@@ -18,15 +18,12 @@ import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import { Button } from '@/client/components/Button'
 import { useAutoSave } from './AutoSave'
-import { useUpload } from './Upload'
 
 const About: FC = () => {
     const navigate = useNavigate()
     const params = useParams()
     const dispatch = useAppDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
-    // 编辑器引用
-    const editorRef = useRef<EditorRef>(null)
     // 当前文章 id
     const currentArticleId = +(params.articleId as string)
     // 获取详情
@@ -55,8 +52,6 @@ const About: FC = () => {
     const isEdit = (searchParams.get('mode') === 'edit')
     // 功能 - 自动保存
     const { saveToLocal, getLocalSaveContent, contentRef } = useAutoSave(isEdit, currentArticleId, setSaveBtnText)
-    // 功能 - 附件上传
-    const { upload } = useUpload({ editorRef, setContent })
 
     // 编辑时的节流
     const onContentChangeThrottle = useMemo(() => throttle(newContent => {
@@ -176,10 +171,8 @@ const About: FC = () => {
                     {isEdit ? (
                         <div className='md:w-[100%]'>
                             <Editor
-                                ref={editorRef}
                                 value={content}
                                 onChange={setContent}
-                                onUploadFile={upload}
                             />
                         </div>
                     ) : (

@@ -3,6 +3,8 @@ import { uploadFiles } from '@/client/services/base'
 import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
 import { UploadedFile } from '@/types/file'
+import gfm from '@bytemd/plugin-gfm'
+import mediumZoom from '@bytemd/plugin-medium-zoom'
 
 const getFileUrl = (file: UploadedFile) => {
     // 后缀名
@@ -95,7 +97,6 @@ export const fileUploader = (): BytemdPlugin => {
         },
         viewerEffect: (ctx) => {
             const { markdownBody } = ctx
-            console.log(markdownBody)
             const links = markdownBody.querySelectorAll('a')
             links.forEach(link => {
                 const parent = link.parentElement
@@ -106,3 +107,9 @@ export const fileUploader = (): BytemdPlugin => {
         }
     }
 }
+
+export const plugins = [
+    gfm(),
+    mediumZoom(),
+    fileUploader()
+]
