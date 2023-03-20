@@ -62,6 +62,7 @@ export const articleApi = baseApi.injectEndpoints({
                     articleApi.util.updateQueryData('getArticleContent', id, (draft) => {
                         if (!draft.data) return
                         if (patch.content) draft.data.content = patch.content
+                        console.log('draft:', draft)
                         if (patch.title) draft.data.title = patch.title
                         if (patch.tagIds) draft.data.tagIds = patch.tagIds
                     })

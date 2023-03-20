@@ -7,6 +7,7 @@ import { createReplayAttackHeaders } from '@/utils/crypto'
 import axios from 'axios'
 import type { AxiosRequestConfig, AxiosError } from 'axios'
 import { UploadedFile } from '@/types/file'
+import { QueryClient } from 'react-query'
 
 /**
  * 是否为标准后端数据结构
@@ -45,6 +46,8 @@ axiosInstance.interceptors.response.use(resp => {
 
     return resp
 })
+
+export const queryClient = new QueryClient()
 
 const axiosBaseQuery: BaseQueryFn<
     {

@@ -1,5 +1,4 @@
-import React, { FC, useState, useEffect, useMemo, useRef } from 'react'
-import throttle from 'lodash/throttle'
+import React, { FC, useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
 import { useGetArticleContentQuery, useSetFavoriteMutation, useUpdateArticleMutation } from '../../services/article'
@@ -7,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
-import Editor from './Editor'
+import { useEditor } from './Editor'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
@@ -17,7 +16,7 @@ import { UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import { Button } from '@/client/components/Button'
-import { useAutoSave } from './AutoSave'
+import dayjs from 'dayjs'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -40,30 +39,21 @@ const About: FC = () => {
     const titleInputRef = useRef<HTMLInputElement>(null)
     // 正在编辑的标题内容
     const [title, setTitle] = useState('')
-    // 正在编辑的文本内容
+    // 当前正文内容
     const [content, setContent] = useState('')
     // 是否收藏
     const [isFavorite, setIsFavorite] = useState(false)
-    // 渲染的内容
-    const [visibleContent, setVisibleContent] = useState('')
     // 是否正在编辑标签
     const [isEditTag, setIsEditTag] = useState(false)
     // 页面是否在编辑中
     const isEdit = (searchParams.get('mode') === 'edit')
-    // 功能 - 自动保存
-    const { saveToLocal, getLocalSaveContent, contentRef } = useAutoSave(isEdit, currentArticleId, setSaveBtnText)
 
-    // 编辑时的节流
-    const onContentChangeThrottle = useMemo(() => throttle(newContent => {
-        setVisibleContent(newContent)
-        if (contentRef.current) saveToLocal(newContent)
-        contentRef.current = newContent
-    }, 500), [])
-
-    useEffect(() => {
-        if (content === null) return
-        onContentChangeThrottle(content)
-    }, [content])
+    // 功能 - 编辑器
+    const { renderEditor, setEditorContent } = useEditor({
+        onChange: setContent,
+        onAutoSave: () => setSaveBtnText(`自动保存于 ${dayjs().format('HH:mm')}`),
+        articleId: currentArticleId
+    })
 
     useEffect(() => {
         dispatch(setCurrentArticle(currentArticleId))
@@ -72,21 +62,10 @@ const About: FC = () => {
     useEffect(() => {
         if (!articleResp?.data) return
 
-        // 获取本地数据
-        const localData = getLocalSaveContent()
-        // 本地没有，直接使用接口数据
-        if (!localData) setContent(articleResp.data.content)
-        // 本地有数据，比较两者，谁新用谁
-        else {
-            const newContent = localData.saveDate > articleResp.data.updateTime
-                ? localData.content
-                : articleResp.data.content
-            setContent(newContent)
-        }
-
         dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
-        setVisibleContent(articleResp.data.content)
+        setContent(articleResp.data.content)
+        setEditorContent(articleResp.data.content)
         setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
 
@@ -170,14 +149,11 @@ const About: FC = () => {
                 <div className='flex md:flex-row flex-col flex-nowrap'>
                     {isEdit ? (
                         <div className='md:w-[100%]'>
-                            <Editor
-                                value={content}
-                                onChange={setContent}
-                            />
+                            {renderEditor()}
                         </div>
                     ) : (
                         <div className={'md:w-[100%]'}>
-                            <Preview value={visibleContent} />
+                            <Preview value={content} />
                         </div>
                     )}
                 </div>

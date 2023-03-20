@@ -5,6 +5,9 @@ import { Routes } from './Route'
 import { AppConfigProvider } from './layouts/AppConfigProvider'
 import { ConfigProvider } from 'react-vant'
 import { ResponsiveProvider } from './layouts/Responsive'
+import { QueryClientProvider } from 'react-query'
+import { queryClient } from './services/base'
+import { ReactQueryDevtools } from 'react-query/devtools'
 
 const themeVars = {
     buttonBorderRadius: 'var(--rv-border-radius-lg)',
@@ -15,11 +18,14 @@ function App() {
     return (
         <Provider store={store}>
             <ConfigProvider themeVars={themeVars}>
-                <AppConfigProvider>
-                    <ResponsiveProvider>
-                        <Routes />
-                    </ResponsiveProvider>
-                </AppConfigProvider>
+                <QueryClientProvider client={queryClient}>
+                    <AppConfigProvider>
+                        <ResponsiveProvider>
+                            <Routes />
+                        </ResponsiveProvider>
+                    </AppConfigProvider>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </QueryClientProvider>
             </ConfigProvider>
         </Provider>
     )
