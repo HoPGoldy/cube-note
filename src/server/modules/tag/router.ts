@@ -42,7 +42,7 @@ export const createRouter = (props: Props) => {
     })
 
     // 更新标签
-    router.put('/update', async ctx => {
+    router.post('/update', async ctx => {
         const body = validate(ctx, updateSchema)
         if (!body) return
 
@@ -51,7 +51,7 @@ export const createRouter = (props: Props) => {
     })
 
     // 删除标签
-    router.delete('/:id/remove', async ctx => {
+    router.post('/:id/remove', async ctx => {
         const { id } = ctx.params
         const payload = getJwtPayload(ctx)
         if (!payload) return
@@ -97,7 +97,7 @@ export const createRouter = (props: Props) => {
     })
 
     // 删除分组
-    router.delete('/group/:id/:method/removeGroup', async ctx => {
+    router.post('/group/:id/:method/removeGroup', async ctx => {
         const { id, method } = ctx.params
         const payload = getJwtPayload(ctx)
         if (!payload) return
@@ -111,8 +111,8 @@ export const createRouter = (props: Props) => {
         title: Joi.string().allow(null),
     })
 
-    // 更新标签
-    router.put('/group/update', async ctx => {
+    // 更新标签分组
+    router.post('/group/update', async ctx => {
         const body = validate(ctx, updateGroupSchema)
         if (!body) return
         const payload = getJwtPayload(ctx)

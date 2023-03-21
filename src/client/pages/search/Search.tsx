@@ -7,7 +7,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
 import { useTagArea } from './TagArea'
 import { STATUS_CODE } from '@/config'
-import { useGetTagListQuery } from '@/client/services/tag'
+import { useQueryTagList } from '@/client/services/tag'
 import { useTagDict } from '../tagManager/tagHooks'
 import { Tag } from '@/client/components/Tag'
 
@@ -37,7 +37,7 @@ const Search: FC = () => {
     // 搜索关键字
     const [keyword, setKeyword] = useState(searchParams.get('keyword') || '')
     // 获取标签列表
-    const { data: tagListResp, isLoading: isTagLoading } = useGetTagListQuery()
+    const { data: tagListResp, isLoading: isTagLoading } = useQueryTagList()
     // 标签映射
     const tagDict = useTagDict(tagListResp?.data || [])
     // 当前展示的搜索结果列表

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { TagGroupListItem } from '@/types/tag'
-import { useDeleteTagGroupMutation } from '../../services/tag'
+import { useDeleteTagGroup } from '../../services/tag'
 import { messageSuccess } from '../../utils/message'
 import { Checkbox, Dialog } from 'react-vant'
 
@@ -10,7 +10,7 @@ export const useDeleteGroup = () => {
     // 是否删除子文章
     const [deleteChildren, setDeleteChildren] = useState(false)
     // 删除分组请求
-    const [deleteTagGroup] = useDeleteTagGroupMutation()
+    const { mutateAsync: deleteTagGroup } = useDeleteTagGroup()
 
     const onClickDeleteGroup = (item: TagGroupListItem) => {
         setDeleteGroup(item)

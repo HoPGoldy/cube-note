@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { TagGroupListItem, TagListItem } from '@/types/tag'
-import { useSetTagColorMutation } from '../../services/tag'
+import { useBatchSetTagColor } from '../../services/tag'
 import { messageSuccess, messageWarning } from '../../utils/message'
 import { ColorPicker } from '@/client/components/ColorPicker'
 import { STATUS_CODE } from '@/config'
@@ -13,7 +13,7 @@ export const useSetGroupColor = (props: Props) => {
     // 当前选中的分组
     const [currentGroup, setCurrentGroup] = useState<TagGroupListItem | null>(null)
     // 批量设置分组颜色
-    const [setGroupColor] = useSetTagColorMutation()
+    const { mutateAsync: setGroupColor } = useBatchSetTagColor()
 
     const onClickSetGroupColor = (item: TagGroupListItem) => {
         setCurrentGroup(item)
@@ -34,7 +34,7 @@ export const useSetGroupColor = (props: Props) => {
             return
         }
 
-        const resp = await setGroupColor({ ids: tagIds, color }).unwrap()
+        const resp = await setGroupColor({ ids: tagIds, color })
         if (resp.code !== STATUS_CODE.SUCCESS) return
         messageSuccess('修改成功')
     }

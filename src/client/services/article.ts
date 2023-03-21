@@ -1,4 +1,4 @@
-import { baseApi } from './base'
+import { baseApi, requestPost } from './base'
 import { AppResponse } from '@/types/global'
 import {
     AddArticleReqData, ArticleContent, ArticleDeleteResp, ArticleLinkResp,
@@ -11,6 +11,10 @@ import {
 } from '@/types/article'
 import { TagDescription } from '@reduxjs/toolkit/dist/query'
 import { STATUS_CODE } from '@/config'
+
+export const updateArticle = (data: UpdateArticleReqData) => {
+    return requestPost('article/update', data)
+}
 
 export const articleApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -40,7 +44,7 @@ export const articleApi = baseApi.injectEndpoints({
         updateArticle: build.mutation<AppResponse, UpdateArticleReqData>({
             query: detail => ({
                 url: 'article/update',
-                method: 'PUT',
+                method: 'POST',
                 body: detail
             }),
             invalidatesTags: (res, err, { title }) => {

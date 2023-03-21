@@ -1,27 +1,24 @@
-import { baseApi } from './base'
-import { AppResponse } from '@/types/global'
+import { requestGet, requestPost } from './base'
 import { LoginReqData, LoginResp } from '@/types/user'
+import { useQuery, useMutation } from 'react-query'
 
-const extendedApi = baseApi.injectEndpoints({
-    endpoints: (build) => ({
-        getUserInfo: build.query<AppResponse<LoginResp>, void>({
-            query: () => 'user/getInfo'
-        }),
-        postLogin: build.mutation<AppResponse<LoginResp>, LoginReqData>({
-            query: body => ({
-                url: 'user/login',
-                method: 'POST',
-                body
-            })
-        }),
-        createAdmin: build.mutation<AppResponse, LoginReqData>({
-            query: body => ({
-                url: 'user/createAdmin',
-                method: 'POST',
-                body
-            })
-        }),
+/** 查询用户信息 */
+export const useQueryUserInfo = (enabled: boolean) => {
+    return useQuery('userInfo', () => {
+        return requestGet<LoginResp>('user/getInfo')
+    }, { enabled })
+}
+
+/** 登录 */
+export const useLogin = () => {
+    return useMutation((data: LoginReqData) => {
+        return requestPost<LoginResp>('user/login', data)
     })
-})
+}
 
-export const { useLazyGetUserInfoQuery, usePostLoginMutation, useCreateAdminMutation } = extendedApi
+/** 创建管理员账号 */
+export const useCreateAdmin = () => {
+    return useMutation((data: LoginReqData) => {
+        return requestPost('user/createAdmin', data)
+    })
+}

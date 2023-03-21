@@ -19,6 +19,7 @@ export const userSlice = createSlice({
     reducers: {
         login: (state, action: PayloadAction<LoginSuccessResp>) => {
             const { token, replayAttackSecret, ...userInfo } = action.payload
+            console.log('🚀 ~ file: user.ts:22 ~ token, replayAttackSecret, ...userInfo:', token, replayAttackSecret, userInfo)
             state.token = token
             state.replayAttackSecret = replayAttackSecret
             state.userInfo = userInfo

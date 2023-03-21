@@ -2,7 +2,7 @@ import { STATUS_CODE } from '@/config'
 import { LoginSuccessResp } from '@/types/user'
 import React, { FC, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { useLazyGetUserInfoQuery } from '../services/user'
+import { useQueryUserInfo } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentArticle } from '../store/menu'
 import { login } from '../store/user'
@@ -12,12 +12,7 @@ export const LoginAuth: FC = ({ children }) => {
     const userInfo = useAppSelector(s => s.user.userInfo)
     const token = useAppSelector(s => s.user.token)
     const dispatch = useAppDispatch()
-    const [getUserInfo, { data: userInfoResp }] = useLazyGetUserInfoQuery()
-
-    useEffect(() => {
-        if (!token || userInfo) return
-        getUserInfo()
-    }, [token])
+    const { data: userInfoResp } = useQueryUserInfo(!!(token && !userInfo))
 
     useEffect(() => {
         if (!userInfoResp || userInfoResp.code !== STATUS_CODE.SUCCESS) return

@@ -1,6 +1,6 @@
 import { Tag } from '@/client/components/Tag'
 import Loading from '@/client/layouts/Loading'
-import { useGetTagGroupQuery } from '@/client/services/tag'
+import { useQueryTagGroup } from '@/client/services/tag'
 import { TagGroupListItem, TagListItem } from '@/types/tag'
 import React, { useState } from 'react'
 import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
@@ -18,7 +18,7 @@ export const useTagArea = (props: Props) => {
     // 是否展开面板
     const [isExpand, setIsExpand] = useState(false)
     // 获取标签分组
-    const { data: tagGroupResp, isLoading: isLoadingGroup } = useGetTagGroupQuery()
+    const { data: tagGroupResp, isLoading: isLoadingGroup } = useQueryTagGroup()
     // 分组列表
     const { tagGroups } = useAllTagGroup(tagGroupResp?.data)
     // 分好组的标签

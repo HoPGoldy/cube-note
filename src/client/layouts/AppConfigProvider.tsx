@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react'
-import { useAppConfigQuery } from '../services/global'
+import { useQueryAppConfig } from '../services/global'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setAppConfig } from '../store/global'
 import { Navigate, useLocation } from 'react-router-dom'
@@ -10,7 +10,7 @@ export const AppConfigProvider: FC = (props) => {
     const appConfig = useAppSelector(s => s.global.appConfig)
     const dispatch = useAppDispatch()
 
-    const { data, isError } = useAppConfigQuery()
+    const { data, isError } = useQueryAppConfig()
 
     useEffect(() => {
         if (!data || !data.data) return

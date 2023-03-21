@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react'
 import { AddTag, EditTagEntry, Tag } from '@/client/components/Tag'
-import { useAddTagMutation, useGetTagListQuery } from '@/client/services/tag'
+import { useAddTag, useQueryTagList } from '@/client/services/tag'
 import { TagListItem } from '@/types/tag'
 import Loading from '@/client/layouts/Loading'
 import { useUpdateArticleMutation } from '@/client/services/article'
@@ -27,9 +27,9 @@ interface Props {
 const TagArea: FC<Props> = (props) => {
     const { articleId, value = [], editing = false, onEditFinish } = props
     // 新增标签
-    const [addTag, { isLoading: isAddingTag }] = useAddTagMutation()
+    const { mutateAsync: addTag, isLoading: isAddingTag } = useAddTag()
     // 整个标签列表
-    const { data: tagListResp, isLoading: isLoadingTagList } = useGetTagListQuery()
+    const { data: tagListResp, isLoading: isLoadingTagList } = useQueryTagList()
     // 更新文章选中的标签列表
     const [updateArticle] = useUpdateArticleMutation()
 
@@ -45,7 +45,7 @@ const TagArea: FC<Props> = (props) => {
     const onClickAddBtn = async (newLabel: string) => {
         if (!newLabel) return
         // 先添加标签
-        const resp = await addTag({ title: newLabel, color: '#404040' }).unwrap()
+        const resp = await addTag({ title: newLabel, color: '#404040' })
         if (!resp?.data) return
 
         // 再更新文章的标签列表

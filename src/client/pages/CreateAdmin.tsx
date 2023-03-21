@@ -4,7 +4,7 @@ import React, { FC, useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Notify, Swiper, SwiperInstance } from 'react-vant'
 import { Button } from '../components/Button'
-import { useCreateAdminMutation } from '../services/user'
+import { useCreateAdmin } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
 import { initSuccess } from '../store/global'
 
@@ -42,7 +42,7 @@ const Register = () => {
     // 重复密码错误提示
     const [repeatPwdError, setRepeatPwdError] = useState('')
     // 提交注册
-    const [createAdmin, { isLoading: isCreating }] = useCreateAdminMutation()
+    const { mutateAsync: createAdmin, isLoading: isCreating } = useCreateAdmin()
     // 是否需要初始化，初始化完成后这个值就变成 false 了
     const needInit = useAppSelector(s => s.global.appConfig?.needInit)
 
@@ -79,7 +79,7 @@ const Register = () => {
     }
 
     const onSubmit = async () => {
-        const resp = await createAdmin({ username, password: sha(password) }).unwrap()
+        const resp = await createAdmin({ username, password: sha(password) })
         if (resp.code !== 200) {
             Notify.show({ type: 'danger', message: resp.msg })
             return

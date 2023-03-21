@@ -2,7 +2,7 @@ import { TagGroupListItem } from '@/types/tag'
 import React, { FC } from 'react'
 import { Popup } from 'react-vant'
 import { useAllTagGroup } from '../pages/tagManager/tagHooks'
-import { useGetTagGroupQuery } from '../services/tag'
+import { useQueryTagGroup } from '../services/tag'
 
 interface Props {
   value?: number
@@ -14,7 +14,7 @@ interface Props {
 export const GroupPicker: FC<Props> = (props) => {
     const { value, onChange, visible, onClose } = props
     // 获取标签分组
-    const { data: tagGroupResp } = useGetTagGroupQuery()
+    const { data: tagGroupResp } = useQueryTagGroup()
     // 获取标签分组
     const { tagGroups } = useAllTagGroup(tagGroupResp?.data)
 

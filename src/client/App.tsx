@@ -24,7 +24,7 @@ function App() {
                             <Routes />
                         </ResponsiveProvider>
                     </AppConfigProvider>
-                    <ReactQueryDevtools initialIsOpen={false} />
+                    <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
                 </QueryClientProvider>
             </ConfigProvider>
         </Provider>

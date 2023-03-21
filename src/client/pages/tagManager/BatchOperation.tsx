@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useDeleteTagsMutation, useSetTagColorMutation, useSetTagGroupMutation } from '../../services/tag'
+import { useBatchDeleteTag, useBatchSetTagGroup, useBatchSetTagColor } from '../../services/tag'
 import { Button } from '../../components/Button'
 import { messageSuccess, messageWarning } from '../../utils/message'
 import { STATUS_CODE } from '@/config'
@@ -12,11 +12,11 @@ export const useBatchOperation = () => {
     // 当前选中的标签
     const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
     // 删除标签
-    const [deleteTag] = useDeleteTagsMutation()
+    const { mutateAsync: deleteTag } = useBatchDeleteTag()
     // 批量设置标签颜色
-    const [updateTagColor] = useSetTagColorMutation()
+    const { mutateAsync: updateTagColor } = useBatchSetTagColor()
     // 批量设置标签分组
-    const [updateTagGroup] = useSetTagGroupMutation()
+    const { mutateAsync: updateTagGroup } = useBatchSetTagGroup()
     // 是否显示颜色选择弹窗
     const [showColorPicker, setShowColorPicker] = useState(false)
     // 是否显示分组选择弹窗
@@ -37,7 +37,7 @@ export const useBatchOperation = () => {
             messageWarning('请选择需要删除的标签')
             return
         }
-        const resp = await deleteTag({ ids: selectedTagIds }).unwrap()
+        const resp = await deleteTag({ ids: selectedTagIds })
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('删除成功')
@@ -50,7 +50,7 @@ export const useBatchOperation = () => {
             return
         }
 
-        const resp = await updateTagColor({ ids: selectedTagIds, color }).unwrap()
+        const resp = await updateTagColor({ ids: selectedTagIds, color })
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('设置成功')
@@ -63,7 +63,7 @@ export const useBatchOperation = () => {
             return
         }
 
-        const resp = await updateTagGroup({ ids: selectedTagIds, groupId }).unwrap()
+        const resp = await updateTagGroup({ ids: selectedTagIds, groupId })
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('设置成功')

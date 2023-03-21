@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { TagListItem } from '@/types/tag'
-import { useDeleteTagsMutation, useUpdateTagMutation } from '../../services/tag'
+import { useDeleteTag, useUpdateTag } from '../../services/tag'
 import { Button } from '../../components/Button'
 import { messageSuccess } from '../../utils/message'
 import { ColorPicker } from '@/client/components/ColorPicker'
@@ -17,9 +17,9 @@ export const useTagConfig = () => {
     // 是否显示分组选择弹窗
     const [showGroupPicker, setShowGroupPicker] = useState(false)
     // 删除标签
-    const [deleteTag] = useDeleteTagsMutation()
+    const { mutateAsync: deleteTag } = useDeleteTag()
     // 更新标签
-    const [updateTag, { isLoading: isSavingTag }] = useUpdateTagMutation()
+    const { mutateAsync: updateTag, isLoading: isSavingTag } = useUpdateTag()
 
     const showTagDetail = (item: TagListItem) => {
         setCurrentTag(item)
@@ -41,7 +41,7 @@ export const useTagConfig = () => {
 
     const onDeleteTag = async () => {
         if (!currentTag) return
-        const resp = await deleteTag({ ids: [currentTag.id] }).unwrap()
+        const resp = await deleteTag(currentTag.id)
         if (resp.code !== STATUS_CODE.SUCCESS) return
         messageSuccess('删除成功')
         onClose()
@@ -49,7 +49,7 @@ export const useTagConfig = () => {
 
     const saveChange = async () => {
         if (!currentTag) return
-        const resp = await updateTag(currentTag).unwrap()
+        const resp = await updateTag(currentTag)
         if (resp.code !== STATUS_CODE.SUCCESS) return
         messageSuccess('保存成功')
         onClose()

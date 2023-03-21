@@ -2,7 +2,7 @@ import React, { FC, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
 import { AddTagReqData, TagGroupListItem, TagListItem } from '@/types/tag'
-import { useAddTagGroupMutation, useAddTagMutation, useGetTagGroupQuery, useGetTagListQuery, useUpdateTagGroupMutation } from '../../services/tag'
+import { useAddTag, useAddTagGroup, useQueryTagGroup, useQueryTagList, useUpdateTagGroup } from '../../services/tag'
 import Loading from '../../layouts/Loading'
 import { Button } from '../../components/Button'
 import dayjs from 'dayjs'
@@ -22,21 +22,21 @@ import { useAllTagGroup, useGroupedTag } from './tagHooks'
 const TagManager: FC = () => {
     const navigate = useNavigate()
     // 获取标签分组
-    const { data: tagGroupResp, isLoading } = useGetTagGroupQuery()
+    const { data: tagGroupResp, isLoading } = useQueryTagGroup()
     // 获取标签分组
     const { tagGroups, setTagGroups } = useAllTagGroup(tagGroupResp?.data)
     // 获取标签列表
-    const { data: tagListResp, isLoading: isLoadingTagList } = useGetTagListQuery()
+    const { data: tagListResp, isLoading: isLoadingTagList } = useQueryTagList()
     // 分组后的标签列表
     const { groupedTagDict } = useGroupedTag(tagListResp?.data)
     // 新增分组
-    const [addTagGroup, { isLoading: isAddingGroup }] = useAddTagGroupMutation()
+    const { mutateAsync: addTagGroup, isLoading: isAddingGroup } = useAddTagGroup()
     // 标题输入框引用
     const titleInputRefs = useRef<Record<string, HTMLInputElement>>({})
     // 更新分组标题
-    const [updateGroup] = useUpdateTagGroupMutation()
+    const { mutateAsync: updateGroup } = useUpdateTagGroup()
     // 新增标签
-    const [addTag, { isLoading: isAddingTag }] = useAddTagMutation()
+    const { mutateAsync: addTag, isLoading: isAddingTag } = useAddTag()
     // 功能 - 删除分组
     const { onClickDeleteGroup, renderDeleteModal } = useDeleteGroup()
     // 功能 - 设置分组内标签颜色
@@ -48,7 +48,7 @@ const TagManager: FC = () => {
 
     const onAddGroup = async () => {
         const title = `新分组 ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`
-        const resp = await addTagGroup({ title }).unwrap()
+        const resp = await addTagGroup({ title })
         if (!resp.data) return
 
         const timer = setTimeout(() => {
@@ -81,7 +81,7 @@ const TagManager: FC = () => {
         const data: AddTagReqData = { title, color: '#404040' }
         if (groupId !== DEFAULT_TAG_GROUP) data.groupId = groupId
 
-        const resp = await addTag(data).unwrap()
+        const resp = await addTag(data)
         if (!resp?.data) return
     }
 

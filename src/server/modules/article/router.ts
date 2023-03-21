@@ -57,7 +57,7 @@ export const createRouter = (props: Props) => {
     })
 
     // 更新文章
-    router.put('/update', async ctx => {
+    router.post('/update', async ctx => {
         const body = validate(ctx, updateArticleSchema)
         if (!body) return
 

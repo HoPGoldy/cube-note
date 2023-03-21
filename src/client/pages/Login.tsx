@@ -4,7 +4,7 @@ import { sha } from '@/utils/crypto'
 import React, { useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { usePostLoginMutation } from '../services/user'
+import { useLogin } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentArticle } from '../store/menu'
 import { login } from '../store/user'
@@ -28,12 +28,12 @@ const Register = () => {
     // 应用配置
     const config = useAppSelector(s => s.global.appConfig)
     // 提交登录
-    const [postLogin, { isLoading: isLogin }] = usePostLoginMutation()
+    const { mutateAsync: postLogin, isLoading: isLogin } = useLogin()
     // store 里的用户信息
     const userInfo = useAppSelector(s => s.user.userInfo)
 
     const onSubmit = async () => {
-        const resp = await postLogin({ username, password: sha(password) }).unwrap()
+        const resp = await postLogin({ username, password: sha(password) })
         if (resp.code !== STATUS_CODE.SUCCESS) {
             messageError(resp.msg || '登录失败')
             return
