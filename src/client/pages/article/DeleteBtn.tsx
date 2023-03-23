@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react'
 import { Dialog, Checkbox } from 'react-vant'
 import { useNavigate } from 'react-router-dom'
-import { useDeleteArticleMutation } from '../../services/article'
+import { useDeleteArticle } from '../../services/article'
 import { useAppDispatch } from '../../store'
 import { removeTab } from '../../store/tab'
 import { messageSuccess } from '@/client/utils/message'
@@ -18,7 +18,7 @@ const DeleteBtn: FC<Props> = (props) => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     // 删除文章
-    const [deleteArticle] = useDeleteArticleMutation()
+    const { mutateAsync: deleteArticle } = useDeleteArticle()
     // 是否显示删除弹窗
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     // 是否删除子文章
@@ -28,7 +28,7 @@ const DeleteBtn: FC<Props> = (props) => {
         const resp = await deleteArticle({
             id: currentArticleId,
             force: deleteChildren
-        }).unwrap()
+        })
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('删除成功')

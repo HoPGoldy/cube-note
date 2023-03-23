@@ -5,8 +5,8 @@ import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '../store
 import { Link, useNavigate } from 'react-router-dom'
 import { DesktopArea } from './Responsive'
 import {
-    useAddArticleMutation, useGetArticleLinkQuery, useGetArticleRelatedQuery, useGetArticleTreeQuery,
-    useGetFavoriteQuery, articleApi, useSetArticleRelatedMutation
+    useAddArticle, useQueryArticleTree,
+    useQueryArticleFavorite, useSetArticleRelated, useQueryArticleLink, useQueryArticleRelated
 } from '../services/article'
 import { TreeMenu } from '../components/TreeMenu'
 
@@ -34,25 +34,25 @@ export const Sidebar: FC = () => {
     const parentArticleTitle = useAppSelector(s => s.menu.parentArticleTitle)
     const selectedRelatedArticleIds = useAppSelector(s => s.menu.selectedRelatedArticleIds)
     // 获取左下角菜单树
-    const { data: articleTree } = useGetArticleTreeQuery(currentRootArticleId, {
-        skip: !currentRootArticleId
-    })
+    const { data: articleTree } = useQueryArticleTree(currentRootArticleId)
     // 获取当前文章的子级、父级文章
-    const { data: articleLink, isFetching: linkLoading } = useGetArticleLinkQuery(currentArticleId || -1, {
-        skip: !currentArticleId || currentTab !== TabTypes.Sub,
-    })
+    const { data: articleLink, isLoading: linkLoading } = useQueryArticleLink(
+        currentArticleId,
+        !!(currentArticleId && currentTab === TabTypes.Sub)
+    )
     // 获取当前文章的相关文章
-    const { data: articleRelatedLink, isFetching: relatedLinkLoading } = useGetArticleRelatedQuery(currentArticleId || -1, {
-        skip: !currentArticleId || currentTab !== TabTypes.Related,
-    })
+    const { data: articleRelatedLink, isLoading: relatedLinkLoading } = useQueryArticleRelated(
+        currentArticleId,
+        !!(currentArticleId && currentTab === TabTypes.Related)
+    )
     // 获取收藏文章
-    const { data: articleFavorite, isLoading: favoriteLoading } = useGetFavoriteQuery(undefined, {
-        skip: currentTab !== TabTypes.Favorite,
-    })
+    const { data: articleFavorite, isLoading: favoriteLoading } = useQueryArticleFavorite(
+        currentTab === TabTypes.Favorite
+    )
     // 新增文章
-    const [addArticle] = useAddArticleMutation()
+    const { mutateAsync: addArticle } = useAddArticle()
     // 更新选中的相关文章
-    const [setArticleRelated] = useSetArticleRelatedMutation()
+    const { mutateAsync: setArticleRelated } = useSetArticleRelated()
 
     const onClickTreeItem = (item: ArticleTreeNode) => {
         navigate(`/article/${item.value}`, { state: { tabTitle: item.title }})
@@ -69,7 +69,7 @@ export const Sidebar: FC = () => {
             title,
             content: '',
             parentId: currentArticleId,
-        }).unwrap()
+        })
         if (!resp.data) return
 
         navigate(`/article/${resp.data}?mode=edit`)
@@ -108,17 +108,6 @@ export const Sidebar: FC = () => {
             fromArticleId: currentArticleId,
             toArticleId: newItem.value
         })
-
-        dispatch(articleApi.util.updateQueryData('getArticleRelated', currentArticleId, (data) => {
-            if (!data?.data) return
-            // 不存在就添加
-            if (!hasLink) {
-                data.data.relatedArticles?.push({ id: newItem.value, title: newItem.title })
-                return
-            }
-            // 存在就移除
-            data.data.relatedArticles = data.data.relatedArticles.filter(item => item.id !== newItem.value)
-        }))
     }
 
     const renderTabBtn = (item: TabDetail) => {

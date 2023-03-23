@@ -1,4 +1,4 @@
-import { useLazyQueryArticleListQuery } from '@/client/services/article'
+import { useQueryArticleList } from '@/client/services/article'
 import { List } from 'react-vant'
 import { blurOnEnter } from '@/client/utils/input'
 import { ArticleContent, QueryArticleReqData } from '@/types/article'
@@ -47,23 +47,26 @@ const Search: FC = () => {
     // 当前搜索的页码
     const pageRef = useRef(1)
     // 发起搜索
-    const [fetchArticleList] = useLazyQueryArticleListQuery()
+    // const { fetchNextPage } = useQueryArticleList({ keyword })
 
     const searchArticle = async () => {
-        const query = getQueryByParams(searchParams)
-        if (isQueryEmpty(query)) {
-            setIsSearchFinished(true)
-            return
-        }
-        query.page = pageRef.current
+        if (keyword.trim().length <= 0) return
+        console.log('执行搜索')
+        // fetchNextPage()
+        // const query = getQueryByParams(searchParams)
+        // if (isQueryEmpty(query)) {
+        //     setIsSearchFinished(true)
+        //     return
+        // }
+        // query.page = pageRef.current
 
-        const resp = await fetchArticleList(query).unwrap()
-        if (resp.code !== STATUS_CODE.SUCCESS || !resp.data) return
+        // const resp = await fetchArticleList(query).unwrap()
+        // if (resp.code !== STATUS_CODE.SUCCESS || !resp.data) return
 
-        // 没有更多数据了
-        if (resp.data.length <= 0) setIsSearchFinished(true)
-        // 追加数据到列表
-        else setArticleList(oldList => [...oldList, ...(resp.data || [])])
+        // // 没有更多数据了
+        // if (resp.data.length <= 0) setIsSearchFinished(true)
+        // // 追加数据到列表
+        // else setArticleList(oldList => [...oldList, ...(resp.data || [])])
     }
 
     useEffect(() => {

@@ -1,20 +1,18 @@
-import { baseApi } from './base'
+import { UploadedFile } from '@/types/file'
 import { AppResponse } from '@/types/global'
-import { FileStorage } from '@/types/file'
+import { axiosInstance } from './base'
 
-const fileApi = baseApi.injectEndpoints({
-    endpoints: (build) => ({
-        getFile: build.query<AppResponse<FileStorage>, string>({
-            query: (id) => `file/${id}`
-        }),
-        upload: build.mutation<AppResponse<FileStorage[]>, FormData>({
-            query: body => ({
-                url: 'file/upload',
-                method: 'POST',
-                body
-            })
-        }),
+export const uploadFiles = async (fileList: FileList) => {
+    const formData = new FormData()
+    const files = Array.from(fileList)
+    files.forEach(file => formData.append('file', file))
+  
+    const result = await axiosInstance.request<AppResponse<UploadedFile[]>>({
+        method: 'post',
+        url: 'file/upload',
+        data: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
     })
-})
 
-export const { useLazyGetFileQuery, useUploadMutation } = fileApi
+    return result.data
+}

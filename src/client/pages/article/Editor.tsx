@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Editor as MdEditor } from '@bytemd/react'
 import { plugins } from '@/client/components/FileUploaderPlugin'
 import throttle from 'lodash/throttle'
-import { updateArticle } from '@/client/services/article'
+import { useUpdateArticle } from '@/client/services/article'
 import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
 
@@ -17,6 +17,7 @@ export const useEditor = (props: Props) => {
     const [content, setContent] = useState('')
     // 自动保存的引用，防止闭包陷阱
     const contentRef = useRef(content)
+    const { mutateAsync: updateArticle } = useUpdateArticle()
 
     useEffect(() => {
         contentRef.current = content

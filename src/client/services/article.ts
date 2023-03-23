@@ -1,4 +1,4 @@
-import { baseApi, requestPost } from './base'
+import { baseApi, queryClient, requestGet, requestPost } from './base'
 import { AppResponse } from '@/types/global'
 import {
     AddArticleReqData, ArticleContent, ArticleDeleteResp, ArticleLinkResp,
@@ -9,138 +9,133 @@ import {
     SetArticleRelatedReqData,
     UpdateArticleReqData
 } from '@/types/article'
-import { TagDescription } from '@reduxjs/toolkit/dist/query'
-import { STATUS_CODE } from '@/config'
+import { useInfiniteQuery, useMutation, useQuery } from 'react-query'
+import isNil from 'lodash/isNil'
 
-export const updateArticle = (data: UpdateArticleReqData) => {
-    return requestPost('article/update', data)
+/** 查询文章正文 */
+export const useQueryArticleContent = (id: number) => {
+    return useQuery(['articleContent', id], () => {
+        return requestGet<ArticleContent>(`article/${id}/getContent`)
+    }, {
+        refetchOnWindowFocus: false
+    })
 }
 
-export const articleApi = baseApi.injectEndpoints({
-    endpoints: (build) => ({
-        getArticleContent: build.query<AppResponse<ArticleContent>, number>({
-            query: (id) => `article/${id}/getContent`,
-            providesTags: (res, err, id) => [{ type: 'articleContent', id }]
-        }),
-        getArticleLink: build.query<AppResponse<ArticleLinkResp>, number>({
-            query: (id) => `article/${id}/getLink`,
-            providesTags: (res, err, id) => [{ type: 'articleLink', id }]
-        }),
-        getArticleRelated: build.query<AppResponse<ArticleRelatedResp>, number>({
-            query: (id) => `article/${id}/getRelated`,
-            providesTags: (res, err, id) => [{ type: 'articleRelated', id }]
-        }),
-        updateArticleTitle: build.mutation<AppResponse, { id: number, parentId: number, title: string }>({
-            query: (detail) => ({
-                url: 'article/update',
-                method: 'POST',
-                body: { id: detail.id, title: detail.title }
-            }),
-            invalidatesTags: (res, err, { parentId }) => {
-                if (!parentId) return []
-                return [{ type: 'articleLink', id: parentId }]
-            },
-        }),
-        updateArticle: build.mutation<AppResponse, UpdateArticleReqData>({
-            query: detail => ({
-                url: 'article/update',
-                method: 'POST',
-                body: detail
-            }),
-            invalidatesTags: (res, err, { title }) => {
-                const tags: TagDescription<any>[] = []
+/** 更新文章详情 hook */
+export const useUpdateArticle = () => {
+    return useMutation((data: UpdateArticleReqData) => {
+        return requestPost('article/update', data)
+    }, {
+        onMutate: async (data) => {
+            // 把修改乐观更新到缓存
+            const oldData = queryClient.getQueryData<AppResponse<ArticleContent>>(['articleContent', data.id])
+            if (!oldData) return
 
-                // 如果修改了标题，就要修改父节点的侧边栏（子节点名称）和树菜单
-                if (!title) return []
-                
-                // 如果没有父节点的话就不需要重载侧边栏了
-                if (res?.data?.parentArticleId) {
-                    tags.push({ type: 'articleLink', id: res.data.parentArticleId })
-                }
-                tags.push('menu')
-                return tags
-            },
-            async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
-                // 把修改乐观更新到缓存
-                const { undo } = dispatch(
-                    articleApi.util.updateQueryData('getArticleContent', id, (draft) => {
-                        if (!draft.data) return
-                        if (patch.content) draft.data.content = patch.content
-                        console.log('draft:', draft)
-                        if (patch.title) draft.data.title = patch.title
-                        if (patch.tagIds) draft.data.tagIds = patch.tagIds
-                    })
-                )
-
-                const resp = await queryFulfilled
-                if (resp.data.code !== STATUS_CODE.SUCCESS) undo()
-            },
-        }),
-        queryArticleList: build.query<AppResponse<ArticleContent[]>, QueryArticleReqData>({
-            query: query => ({
-                url: 'article/getList',
-                method: 'POST',
-                body: query
-            }),
-            providesTags: ['articleContent']
-        }),
-        addArticle: build.mutation<AppResponse<string>, AddArticleReqData>({
-            query: (detail) => ({
-                url: 'article/add',
-                method: 'POST',
-                body: detail
-            }),
-            invalidatesTags: (res, err, { parentId }) => [{ type: 'articleLink', parentId }, 'menu']
-        }),
-        deleteArticle: build.mutation<AppResponse<ArticleDeleteResp>, DeleteArticleMutation>({
-            query: (detail) => ({
-                url: 'article/remove',
-                method: 'POST',
-                body: detail
-            }),
-            invalidatesTags: (res) => {
-                const tags: TagDescription<any>[] = ['menu']
-                tags.push({ type: 'articleLink', id: res?.data?.parentArticleId })
-                return tags
+            const newData = {
+                ...oldData,
+                data: { ...oldData.data, ...data }
             }
-        }),
-        getArticleTree: build.query<AppResponse<ArticleTreeNode[]>, number | undefined>({
-            query: (id) => `article/${id}/tree`,
-            providesTags: ['menu']
-        }),
-        getFavorite: build.query<AppResponse<ArticleMenuItem[]>, void>({
-            query: () => 'article/favorite',
-            providesTags: ['favorite']
-        }),
-        setFavorite: build.mutation<AppResponse, { id: number, favorite: boolean }>({
-            query: (detail) => ({
-                url: 'article/setFavorite',
-                method: 'POST',
-                body: detail
-            }),
-        }),
-        // 关联文章
-        setArticleRelated: build.mutation<AppResponse, SetArticleRelatedReqData>({
-            query: (detail) => ({
-                url: 'article/setRelated',
-                method: 'POST',
-                body: detail
-            }),
-        }),
+            queryClient.setQueryData(['articleContent', data.id], newData)
+        },
+        onSuccess: (resp, data) => {
+            queryClient.invalidateQueries(['articleLink', data.id])
+            queryClient.invalidateQueries('menu')
+        }
     })
-})
+}
 
-export const {
-    useGetArticleContentQuery,
-    useUpdateArticleMutation,
-    useAddArticleMutation,
-    useQueryArticleListQuery,
-    useLazyQueryArticleListQuery,
-    useGetArticleTreeQuery,
-    useGetArticleLinkQuery,
-    useGetArticleRelatedQuery,
-    useDeleteArticleMutation,
-    useGetFavoriteQuery,
-    useSetFavoriteMutation,
-    useSetArticleRelatedMutation
-} = articleApi
+/** 查询本文的下属文章 */
+export const useQueryArticleLink = (id: number | undefined, enabled: boolean) => {
+    return useQuery(['articleLink', id], () => {
+        return requestGet<ArticleLinkResp>(`article/${id}/getLink`)
+    }, { enabled })
+}
+
+/** 查询本文的相关文章 */
+export const useQueryArticleRelated = (id: number | undefined, enabled: boolean) => {
+    return useQuery(['articleRelated', id], () => {
+        return requestGet<ArticleRelatedResp>(`article/${id}/getRelated`)
+    }, { enabled })
+}
+
+/** 新增文章 */
+export const useAddArticle = () => {
+    return useMutation((data: AddArticleReqData) => {
+        return requestPost('article/add', data)
+    }, {
+        onSuccess: (resp, data) => {
+            queryClient.invalidateQueries(['articleLink', data.parentId])
+            queryClient.invalidateQueries('menu')
+        }
+    })
+}
+
+/** 删除文章 */
+export const useDeleteArticle = () => {
+    return useMutation((data: DeleteArticleMutation) => {
+        return requestPost<ArticleDeleteResp>('article/remove', data)
+    }, {
+        onSuccess: (resp) => {
+            queryClient.invalidateQueries(['articleLink', resp?.data?.parentArticleId])
+            queryClient.invalidateQueries('menu')
+        }
+    })
+}
+
+/** 搜索文章列表 */
+export const useQueryArticleList = (data: { keyword: string }) => {
+    return useInfiniteQuery('search', async (context) => {
+        console.log('🚀 ~ file: article.ts:89 ~ returnuseInfiniteQuery ~ context:', context)
+        // return requestPost<ArticleContent[]>('article/getList', data)
+    }, {
+        refetchOnWindowFocus: false,
+        enabled: !!data.keyword,
+        getNextPageParam: (lastPage, pages) => {
+            // if (lastPage.data.length < 10) return undefined
+            // return pages.length + 1
+            console.log('🚀 ~ file: article.ts:98 ~ returnuseInfiniteQuery ~ lastPage, pages:', lastPage, pages)
+        }
+    })
+}
+
+/** 查询文章树 */
+export const useQueryArticleTree = (id?: number) => {
+    return useQuery('menu', () => {
+        return requestGet<ArticleTreeNode[]>(`article/${id}/tree`)
+    }, {
+        refetchOnWindowFocus: false,
+        enabled: !isNil(id)
+    })
+}
+
+/** 查询收藏列表 */
+export const useQueryArticleFavorite = (enabled: boolean) => {
+    return useQuery('favorite', () => {
+        return requestGet<ArticleMenuItem[]>('article/favorite')
+    }, {
+        refetchOnWindowFocus: false,
+        enabled
+    })
+}
+
+/** 收藏文章 */
+export const useFavoriteArticle = () => {
+    return useMutation((data: { id: number, favorite: boolean }) => {
+        return requestPost('article/setFavorite', data)
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('favorite')
+        }
+    })
+}
+
+/** 关联文章 */
+export const useSetArticleRelated = () => {
+    return useMutation((data: SetArticleRelatedReqData) => {
+        return requestPost('article/setRelated', data)
+    }, {
+        onSuccess: (resp, data) => {
+            queryClient.invalidateQueries(['articleRelated', data.fromArticleId])
+        }
+    })
+}

@@ -6,7 +6,6 @@ import { message } from '../utils/message'
 import { createReplayAttackHeaders } from '@/utils/crypto'
 import axios from 'axios'
 import type { AxiosRequestConfig, AxiosError } from 'axios'
-import { UploadedFile } from '@/types/file'
 import { QueryClient } from 'react-query'
 
 /**
@@ -85,20 +84,6 @@ const axiosBaseQuery: BaseQueryFn<
     }
 }
 
-export const uploadFiles = async (fileList: FileList) => {
-    const formData = new FormData()
-    const files = Array.from(fileList)
-    files.forEach(file => formData.append('file', file))
-  
-    const result = await axiosInstance.request<AppResponse<UploadedFile[]>>({
-        method: 'post',
-        url: 'file/upload',
-        data: formData,
-        headers: { 'Content-Type': 'multipart/form-data' },
-    })
-
-    return result.data
-}
 
 export const baseApi = createApi({
     baseQuery: axiosBaseQuery,

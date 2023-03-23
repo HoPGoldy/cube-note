@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
-import { useGetArticleContentQuery, useSetFavoriteMutation, useUpdateArticleMutation } from '../../services/article'
+import { useQueryArticleContent, useFavoriteArticle, useUpdateArticle } from '../../services/article'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
@@ -26,11 +26,11 @@ const About: FC = () => {
     // 当前文章 id
     const currentArticleId = +(params.articleId as string)
     // 获取详情
-    const { data: articleResp, isFetching: isLoadingArticle } = useGetArticleContentQuery(currentArticleId)
+    const { data: articleResp, isFetching: isLoadingArticle } = useQueryArticleContent(currentArticleId)
     // 保存详情
-    const [updateArticle, { isLoading: updatingArticle }] = useUpdateArticleMutation()
+    const { mutateAsync: updateArticle, isLoading: updatingArticle } = useUpdateArticle()
     // 切换收藏状态
-    const [updateFavoriteState] = useSetFavoriteMutation()
+    const { mutateAsync: updateFavoriteState } = useFavoriteArticle()
     // 根节点文章
     const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     // 保存按钮的文本
@@ -75,7 +75,7 @@ const About: FC = () => {
             return
         }
 
-        const resp = await updateArticle({ ...data, id: currentArticleId }).unwrap()
+        const resp = await updateArticle({ ...data, id: currentArticleId })
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('保存成功')

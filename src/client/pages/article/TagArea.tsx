@@ -3,7 +3,7 @@ import { AddTag, EditTagEntry, Tag } from '@/client/components/Tag'
 import { useAddTag, useQueryTagList } from '@/client/services/tag'
 import { TagListItem } from '@/types/tag'
 import Loading from '@/client/layouts/Loading'
-import { useUpdateArticleMutation } from '@/client/services/article'
+import { useUpdateArticle } from '@/client/services/article'
 
 interface Props {
     /**
@@ -31,7 +31,7 @@ const TagArea: FC<Props> = (props) => {
     // 整个标签列表
     const { data: tagListResp, isLoading: isLoadingTagList } = useQueryTagList()
     // 更新文章选中的标签列表
-    const [updateArticle] = useUpdateArticleMutation()
+    const { mutateAsync: updateArticle } = useUpdateArticle()
 
     // 当前要显示的标签列表
     const tagList = useMemo(() => {

@@ -1,5 +1,5 @@
 import type { BytemdPlugin } from 'bytemd'
-import { uploadFiles } from '@/client/services/base'
+import { uploadFiles } from '@/client/services/file'
 import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
 import { UploadedFile } from '@/types/file'
@@ -43,7 +43,6 @@ const getFileIcon = (suffix?: string) => {
 
     const config = FILE_ICON_CONFIG.find((item) => item.suffix.includes(suffix))
     return config?.icon || 'file_cloud'
-
 }
 
 const defaultRenderLink = (link: HTMLAnchorElement) => {
