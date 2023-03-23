@@ -1,11 +1,10 @@
 import { AppResponse } from '@/types/global'
 import { store } from '@/client/store'
 import { logout } from '@/client/store/user'
-import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react'
 import { message } from '../utils/message'
 import { createReplayAttackHeaders } from '@/utils/crypto'
 import axios from 'axios'
-import type { AxiosRequestConfig, AxiosError } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
 import { QueryClient } from 'react-query'
 
 /**
@@ -57,36 +56,3 @@ export const requestPost = async <T = any, D = any>(url: string, data?: D, confi
 }
 
 export const queryClient = new QueryClient()
-
-const axiosBaseQuery: BaseQueryFn<
-    {
-        url: string
-        method: AxiosRequestConfig['method']
-        body?: AxiosRequestConfig['data']
-        params?: AxiosRequestConfig['params']
-    } | string
-> = async arg => {
-    // RTK query 的 arg 有可能只有一个 url 字符串，所以这里需要处理下
-    const reqArgs = typeof arg === 'string' ? { url: arg, method: 'GET', body: undefined, params: undefined } : arg
-    const { url, method, body, params } = reqArgs
-
-    try {
-        const result = await axiosInstance({ url, method, data: body, params })
-        return { data: result.data }
-    } catch (axiosError) {
-        const err = axiosError as AxiosError
-        return {
-            error: {
-                status: err.response?.status,
-                data: err.response?.data || err.message,
-            },
-        }
-    }
-}
-
-
-export const baseApi = createApi({
-    baseQuery: axiosBaseQuery,
-    endpoints: () => ({}),
-    tagTypes: ['menu', 'articleContent', 'articleLink', 'articleRelated', 'favorite', 'tagList', 'tagGroupList']
-})

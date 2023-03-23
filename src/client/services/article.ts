@@ -1,4 +1,4 @@
-import { baseApi, queryClient, requestGet, requestPost } from './base'
+import { queryClient, requestGet, requestPost } from './base'
 import { AppResponse } from '@/types/global'
 import {
     AddArticleReqData, ArticleContent, ArticleDeleteResp, ArticleLinkResp,
@@ -9,7 +9,7 @@ import {
     SetArticleRelatedReqData,
     UpdateArticleReqData
 } from '@/types/article'
-import { useInfiniteQuery, useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import isNil from 'lodash/isNil'
 
 /** 查询文章正文 */
@@ -83,19 +83,8 @@ export const useDeleteArticle = () => {
 }
 
 /** 搜索文章列表 */
-export const useQueryArticleList = (data: { keyword: string }) => {
-    return useInfiniteQuery('search', async (context) => {
-        console.log('🚀 ~ file: article.ts:89 ~ returnuseInfiniteQuery ~ context:', context)
-        // return requestPost<ArticleContent[]>('article/getList', data)
-    }, {
-        refetchOnWindowFocus: false,
-        enabled: !!data.keyword,
-        getNextPageParam: (lastPage, pages) => {
-            // if (lastPage.data.length < 10) return undefined
-            // return pages.length + 1
-            console.log('🚀 ~ file: article.ts:98 ~ returnuseInfiniteQuery ~ lastPage, pages:', lastPage, pages)
-        }
-    })
+export const queryArticleList = async (data: QueryArticleReqData) => {
+    return requestPost<ArticleContent[]>('article/getList', data)
 }
 
 /** 查询文章树 */
