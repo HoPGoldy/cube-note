@@ -9,7 +9,7 @@ import {
     useQueryArticleFavorite, useSetArticleRelated, useQueryArticleLink, useQueryArticleRelated
 } from '../services/article'
 import { TreeMenu } from '../components/TreeMenu'
-import { Button, Stack } from '@mui/material'
+import { Button, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
 
 interface TabDetail {
     name: string
@@ -18,9 +18,9 @@ interface TabDetail {
 }
 
 const tabOptions: TabDetail[] = [
-    { name: '下属条目', type: TabTypes.Sub },
-    { name: '相关条目', type: TabTypes.Related },
-    { name: '收藏条目', type: TabTypes.Favorite },
+    { name: '子级', type: TabTypes.Sub },
+    { name: '相关', type: TabTypes.Related },
+    { name: '收藏', type: TabTypes.Favorite },
 ]
 
 const menuItemClassname = 'cursor-pointer hover:bg-slate-600 dark:hover:bg-slate-800 border border-white p-2 my-2'
@@ -113,14 +113,9 @@ export const Sidebar: FC = () => {
 
     const renderTabBtn = (item: TabDetail) => {
         return (
-            <div
-                className={
-                    'backdrop-brightness-75 cursor-pointer ' +
-                    (currentTab === item.type ? 'bg-slate-600 dark:bg-slate-800' : 'bg-slate-500 dark:bg-slate-700')
-                }
-                key={item.name}
-                onClick={() => dispatch(setCurrentMenu(item.type))}
-            >{item.name}</div>
+            <ToggleButton key={item.name} value={item.type} onClick={() => dispatch(setCurrentMenu(item.type))}>
+                {item.name}
+            </ToggleButton>
         )
     }
 
@@ -232,9 +227,15 @@ export const Sidebar: FC = () => {
                         <div>设置</div>
                     </Link>
                 </div>
-                <div className='flex justify-between'>
+                <ToggleButtonGroup
+                    value={currentTab}
+                    exclusive
+                    color="primary"
+                    size="medium"
+                >
                     {tabOptions.map(renderTabBtn)}
-                </div>
+                </ToggleButtonGroup>
+
                 <div className='mt-2 flex-grow'>
                     <Stack
                         direction="column"

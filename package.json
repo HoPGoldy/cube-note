@@ -20,6 +20,7 @@
     "@bytemd/react": "^1.20.2",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.14",
     "@react-vant/icons": "^0.0.6",
     "@reduxjs/toolkit": "^1.9.1",
