@@ -13,7 +13,7 @@ interface FieldProps {
 }
 
 export const Field: FC<FieldProps> = (props) => {
-    const { type = 'text', label, value, onChange, error, errorMessage, labelClass = '', onKeyUp, placeholder } = props
+    const { type = 'text', label, value = '', onChange, error, errorMessage, labelClass = '', onKeyUp, placeholder } = props
 
     const colorClass = error
         ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500'

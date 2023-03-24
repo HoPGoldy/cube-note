@@ -9,6 +9,7 @@ import {
     useQueryArticleFavorite, useSetArticleRelated, useQueryArticleLink, useQueryArticleRelated
 } from '../services/article'
 import { TreeMenu } from '../components/TreeMenu'
+import { Button, Stack } from '@mui/material'
 
 interface TabDetail {
     name: string
@@ -125,13 +126,15 @@ export const Sidebar: FC = () => {
 
     const renderMenuItem = (item: ArticleMenuItem) => {
         return (
-            <div
+            <Button
                 key={item.id}
-                className={menuItemClassname}
+                color="primary"
+                style={{ width: '100%' }}
+                variant="contained"
                 onClick={() => onClickTreeItem({ value: item.id, title: item.title })}
             >
                 {item.title}
-            </div>
+            </Button>
         )
     }
 
@@ -141,20 +144,26 @@ export const Sidebar: FC = () => {
 
         return (<>
             {parentArticleId && (
-                <Link to={`/article/${parentArticleId}`}>
-                    <div
-                        className={menuItemClassname + ' text-center'}
-                    >返回{parentArticleTitle}</div>
+                <Link to={`/article/${parentArticleId}`} style={{ width: '100%' }}>
+                    <Button
+                        style={{ width: '100%' }}
+                        variant="outlined"
+                    >
+                        返回{parentArticleTitle}
+                    </Button>
                 </Link>
             )}
             {currentMenu.length === 0
                 ? (<div className='text-center'>暂无笔记</div>)
                 : currentMenu.map(renderMenuItem)
             }
-            <div
-                className={menuItemClassname + ' text-center'}
+            <Button
+                style={{ width: '100%' }}
+                variant="outlined"
                 onClick={createArticle}
-            >创建子笔记</div>
+            >
+                创建子笔记
+            </Button>
         </>)
     }
 
@@ -227,7 +236,14 @@ export const Sidebar: FC = () => {
                     {tabOptions.map(renderTabBtn)}
                 </div>
                 <div className='mt-2 flex-grow'>
-                    {renderCurrentMenu()}
+                    <Stack
+                        direction="column"
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={1}
+                    >
+                        {renderCurrentMenu()}
+                    </Stack>
                 </div>
                 <TreeMenu
                     treeData={articleTree?.data || []}
