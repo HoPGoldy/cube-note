@@ -22,3 +22,10 @@ export const useCreateAdmin = () => {
         return requestPost('user/createAdmin', data)
     })
 }
+
+/** 统计文章 */
+export const useQueryArticleCount = () => {
+    return useQuery('userStatistic', () => {
+        return requestGet('user/statistic')
+    })
+}

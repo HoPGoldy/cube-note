@@ -9,7 +9,7 @@
 }
 
 body {
-    @apply dark:bg-slate-800 transition;
+    @apply bg-gray-100 dark:bg-gray-800 transition;
     font-size: 16px;
 }
 

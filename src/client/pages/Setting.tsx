@@ -7,13 +7,14 @@ import { Statistic } from '../components/Statistic'
 import { AppTheme } from '@/types/user'
 import { useAppDispatch, useAppSelector } from '../store'
 import { changeTheme, logout } from '../store/user'
+import { useQueryArticleCount } from '../services/user'
 
 const SettingPage = () => {
     const userInfo = useAppSelector(s => s.user.userInfo)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     // 数量统计接口
-    // const { data: countInfo } = useQuery('/getCountInfo', fetchCountInfo)
+    const { data: countInfo } = useQueryArticleCount()
 
     const onSwitchDark = () => {
         const newTheme = userInfo?.theme === AppTheme.Light ? AppTheme.Dark : AppTheme.Light
@@ -32,8 +33,8 @@ const SettingPage = () => {
                     <Card round>
                         <Card.Body>
                             <div className="flex flex-row justify-around">
-                                <Statistic label="分组数量" value={11 || '---'} />
-                                <Statistic label="凭证数量" value={222 || '---'} />
+                                <Statistic label="文章数量" value={countInfo?.data?.articleCount || '---'} />
+                                <Statistic label="总字数" value={countInfo?.data?.articleLength || '---'} />
                             </div>
                         </Card.Body>
                     </Card>

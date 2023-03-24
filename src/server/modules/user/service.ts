@@ -156,7 +156,21 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
-    return { getUserInfo, login, register, createAdmin, changePassword, setTheme }
+    /**
+     * 文章统计
+     */
+    const getArticleCount = async (userId: number) => {
+        const [countResult] = await db.article().count().where('createUserId', userId)
+        const [lengthResult] = await db.article().sum(db.knex.raw('LENGTH(content)')).where('createUserId', userId) as any
+
+        const data = {
+            articleCount: countResult['count(*)'],
+            articleLength: lengthResult['sum(LENGTH(content))'],
+        }
+        return { code: 200, data }
+    }
+
+    return { getUserInfo, login, register, createAdmin, changePassword, setTheme, getArticleCount }
 }
 
 export type UserService = ReturnType<typeof createService>

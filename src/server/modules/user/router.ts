@@ -93,5 +93,14 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
+    // 统计文章
+    router.get('/statistic', async ctx => {
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.getArticleCount(payload.userId)
+        response(ctx, resp)
+    })
+
     return router
 }

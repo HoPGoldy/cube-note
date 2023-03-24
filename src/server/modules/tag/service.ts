@@ -21,6 +21,11 @@ export const createService = (props: Props) => {
 
     const removeTag = async (id: number, userId: number) => {
         await db.tag().delete().where({ id, createUserId: userId })
+        // 文章表里还存着被删除的标签的 id，需要把它清掉
+        await db.article().update('tagIds', '').where('tagIds', `#${id}#`)
+        await db.article()
+            .update('tagIds', db.knex.raw('REPLACE(tagIds, ?, "#")', [`#${id}#`]))
+            .whereLike('tagIds', `%#${id}#%`)
         return { code: 200 }
     }
 
