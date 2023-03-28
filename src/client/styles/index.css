@@ -27,3 +27,7 @@ input {
 .bytemd {
     height: 100% !important;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

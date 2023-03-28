@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { TagGroupListItem } from '@/types/tag'
 import { useDeleteTagGroup } from '../../services/tag'
 import { messageSuccess } from '../../utils/message'
-import { Checkbox, Dialog } from 'react-vant'
+import { Button, Modal } from 'antd'
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 
 export const useDeleteGroup = () => {
     // 要删除的分组信息
@@ -33,33 +34,34 @@ export const useDeleteGroup = () => {
 
     const renderDeleteModal = () => {
         return (
-            <Dialog
-                visible={!!deleteGroup}
-                title={`删除${deleteGroup?.title}`}
-                showCancelButton
-                confirmButtonText='删除'
-                confirmButtonColor='red'
-                cancelButtonText='取消'
-                onConfirm={async () => {
+            <Modal
+                title={`${deleteGroup?.title || ''} 分组删除`}
+                open={!!deleteGroup}
+                onOk={async () => {
                     await onDelete()
                     closeDeleteModal()
                 }}
                 onCancel={closeDeleteModal}
+                okText='删除'
+                cancelText='取消'
+                okButtonProps={{ danger: true }}
             >
-                <div className='text-center'>删除后分组将无法恢复，请谨慎操作</div>
-                <div className='text-center'>
-                    {deleteChildren ? '子标签将会被删除' : '子标签将会被移动到默认分组'}
+                <div style={{ marginBottom: '0.2rem' }}>
+                    删除后分组将无法恢复，请谨慎操作
                 </div>
-
-                <Checkbox.Group value={deleteChildren ? ['deleteChildren'] : []}>
-                    <div className='flex justify-center mt-4'>
-                        删除下属标签 <Checkbox
-                            name='deleteChildren'
-                            onClick={() => setDeleteChildren(!deleteChildren)}
-                        />
-                    </div>
-                </Checkbox.Group>
-            </Dialog>
+                <div style={{ marginBottom: '0.8rem' }}>
+                    {deleteChildren ? '下属标签将会直接删除' : '下属标签将会被移至默认分组'}
+                </div>
+                <Button
+                    block
+                    danger
+                    type={deleteChildren ? 'primary' : 'default'}
+                    onClick={() => setDeleteChildren(!deleteChildren)}
+                    icon={deleteChildren ? <CheckOutlined /> : <CloseOutlined />}
+                >
+                    删除子文章
+                </Button>
+            </Modal>
         )
     }
 

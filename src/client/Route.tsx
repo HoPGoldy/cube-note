@@ -25,7 +25,7 @@ export const Routes: FC = () => {
                 { path: '/article/:articleId', element: <Article /> },
                 { path: '/search', element: <Search /> },
                 { path: '/tags', element: lazyLoad(() => import('./pages/tagManager/TagManager')) },
-                { path: '/setting', element: lazyLoad(() => import('./pages/Setting')) },
+                { path: '/setting', element: lazyLoad(() => import('./pages/userSetting')) },
                 // 修改密码
                 { path: '/changePassword', element: lazyLoad(() => import('./pages/ChangePassword')) },
                 { path: '/about', element: lazyLoad(() => import('./pages/About')) },

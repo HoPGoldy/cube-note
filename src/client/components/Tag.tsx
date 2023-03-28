@@ -3,8 +3,6 @@ import { blurOnEnter } from '../utils/input'
 import { Tag as AntdTag } from 'antd'
 
 interface Props {
-    label: string
-    id: number
     color?: string
     /** 是否被选中 */
     selected?: boolean
@@ -51,6 +49,7 @@ export const AddTag: FC<AddTagProps> = (props) => {
                 autoFocus
                 onKeyUp={blurOnEnter}
                 onBlur={onInputed}
+                style={{ width: '4rem' }}
                 disabled={loading}
             />
         )

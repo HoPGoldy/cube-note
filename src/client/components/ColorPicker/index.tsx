@@ -1,5 +1,6 @@
+import { Modal, Space } from 'antd'
 import React, { FC } from 'react'
-import { Popup } from 'react-vant'
+import s from './styles.module.css'
 
 interface Props {
   value?: string
@@ -17,18 +18,17 @@ export const ColorPicker: FC<Props> = (props) => {
     const { value, onChange, visible, onClose } = props
 
     const renderMarkColor = (color: string) => {
+        const classes = [s.colorBtn]
+        if (value === color) classes.push(s.selectedColor)
+        if (color === '') classes.push(s.removeBtn)
+
         return (
             <div
                 key={color}
-                className={
-                    'w-6 h-6 rounded-full cursor-pointer m-4 hover:ring-2 hover:ring-gray-300 ' +
-                    'active:ring-slate-700 dark:active:ring-slate-300 transition ' +
-                    (value === color ? 'ring-2 ring-slate-700 dark:ring-slate-300 ' : '') +
-                    (color === '' ? 'remove-mark-color' : '')
-                }
+                className={classes.join(' ')}
                 style={{ backgroundColor: color }}
                 onClick={() => {
-                    onChange?.(color)
+                    onChange?.(color || '#000')
                     onClose()
                 }}
             />
@@ -36,16 +36,16 @@ export const ColorPicker: FC<Props> = (props) => {
     }
 
     return (
-        <Popup
-            round
-            className='w-[90%] md:w-1/2'
-            visible={visible}
-            onClose={onClose}
+        <Modal
+            open={visible}
+            onCancel={onClose}
+            footer={null}
+            closable={false}
         >
-            <div className='p-4 flex flex-row flex-wrap justify-center'>
+            <Space size={[16, 16]} wrap>
                 {MARK_COLORS.map(renderMarkColor)}
                 {renderMarkColor('')}
-            </div>
-        </Popup>
+            </Space>
+        </Modal>
     )
 }

@@ -5,6 +5,9 @@ module.exports = {
     content: [
         './src/**/*.{js,ts,jsx,tsx,html}'
     ],
+    corePlugins: {
+        preflight: false,
+    },
     theme: {
         extend: {
             width: {

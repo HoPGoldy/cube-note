@@ -4,7 +4,7 @@ import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAct
 import { AddTagReqData, TagGroupListItem, TagListItem } from '@/types/tag'
 import { useAddTag, useAddTagGroup, useQueryTagGroup, useQueryTagList, useUpdateTagGroup } from '../../services/tag'
 import Loading from '../../layouts/Loading'
-import { Button } from '../../components/Button'
+// import { Button } from '../../components/Button'
 import dayjs from 'dayjs'
 import { AddTag, Tag } from '../../components/Tag'
 import { blurOnEnter } from '../../utils/input'
@@ -14,6 +14,8 @@ import { useSetGroupColor } from './SetGroupColor'
 import { useTagConfig } from './TagConfig'
 import { useBatchOperation } from './BatchOperation'
 import { useAllTagGroup, useGroupedTag } from './tagHooks'
+import { Col, Row, Button, Space, List, Card } from 'antd'
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 
 /**
  * 标签管理
@@ -42,7 +44,7 @@ const TagManager: FC = () => {
     // 功能 - 设置分组内标签颜色
     const { renderColorPicker, onClickSetGroupColor } = useSetGroupColor({ groupedTagDict })
     // 功能 - 标签详情管理
-    const { renderTagDetail, showTagDetail } = useTagConfig()
+    const { renderTagDetail, showTagDetail } = useTagConfig({ tagGroups })
     // 功能 - 批量操作
     const { isBatch, isTagSelected, onSelectTag, renderBatchBtn, renderBatchModal } = useBatchOperation()
 
@@ -89,46 +91,53 @@ const TagManager: FC = () => {
         return (
             <Tag
                 key={item.id}
-                label={item.title}
-                id={item.id}
                 color={item.color}
                 selected={isBatch ? isTagSelected(item.id) : undefined}
                 onClick={() => onClickTag(item)}
-            />
+            >{item.title}</Tag>
         )
     }
 
     const renderTagGroupItem = (item: TagGroupListItem) => {
         const tags = groupedTagDict[item.id] || []
         return (
-            <div key={item.id} className='bg-slate-300 m-2'>
-                <input
-                    ref={ins => ins && (titleInputRefs.current[item.id] = ins)}
-                    className='font-bold'
-                    value={item.title}
-                    onChange={e => onTitleChange(e.target.value, item)}
-                    onKeyUp={blurOnEnter}
-                    onBlur={() => onSaveGroupTitle(item)}
-                    disabled={item.id === DEFAULT_TAG_GROUP}
-                />
+            <List.Item>
+                <Card
+                    title={(
+                        <input
+                            ref={ins => ins && (titleInputRefs.current[item.id] = ins)}
+                            style={{ width: '100%' }}
+                            value={item.title}
+                            onChange={e => onTitleChange(e.target.value, item)}
+                            onKeyUp={blurOnEnter}
+                            onBlur={() => onSaveGroupTitle(item)}
+                            disabled={item.id === DEFAULT_TAG_GROUP}
+                        />
+                    )}
+                    size="small"
+                    extra={(
+                        <Space style={{ margin: '0.8rem 0rem' }}>
+                            {!isBatch && <Button
+                                onClick={() => onClickSetGroupColor(item)}
+                            >调整颜色</Button>}
 
-                {!isBatch && <Button
-                    type="danger"
-                    onClick={() => onClickDeleteGroup(item)}
-                >删除分组</Button>}
-
-                {!isBatch && <Button
-                    onClick={() => onClickSetGroupColor(item)}
-                >设置分组颜色</Button>}
-
-                <div className='flex flex-wrap min-h-[50px]'>
-                    {tags.map(renderTagItem)}
-                    {!isBatch && <AddTag
-                        onFinish={title => onClickAddBtn(title, item.id)}
-                        loading={isAddingTag}
-                    />}
-                </div>
-            </div>
+                            {!isBatch && item.id !== -1 && <Button
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={() => onClickDeleteGroup(item)}
+                            ></Button>}
+                        </Space>
+                    )}
+                >
+                    <Space size={[0, 8]} wrap>
+                        {tags.map(renderTagItem)}
+                        {!isBatch && <AddTag
+                            onFinish={title => onClickAddBtn(title, item.id)}
+                            loading={isAddingTag}
+                        />}
+                    </Space>
+                </Card>
+            </List.Item>
         )
     }
 
@@ -136,9 +145,23 @@ const TagManager: FC = () => {
         if (isLoading || isLoadingTagList) return <Loading />
 
         return (<>
-            <Button onClick={onAddGroup} loading={isAddingGroup}>新增分组</Button>
-            {renderBatchBtn()}
-            {tagGroups.map(renderTagGroupItem)}
+            <Row gutter={[16, 16]}>
+                <Col span={24}>
+                    <Space>
+                        <Button onClick={onAddGroup} loading={isAddingGroup} icon={<PlusOutlined />}>新增分组</Button>
+                        {renderBatchBtn()}
+                    </Space>
+                </Col>
+                <Col span={24}>
+                    <List
+                        grid={{ gutter: 16, column: 3 }}
+                        dataSource={tagGroups}
+                        renderItem={renderTagGroupItem}
+                    />
+                </Col>
+            </Row>
+
+            
         </>)
     }
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { useBatchDeleteTag, useBatchSetTagGroup, useBatchSetTagColor } from '../../services/tag'
-import { Button } from '../../components/Button'
+import { Button } from 'antd'
 import { messageSuccess, messageWarning } from '../../utils/message'
 import { STATUS_CODE } from '@/config'
 import { ColorPicker } from '@/client/components/ColorPicker'
 import { GroupPicker } from '@/client/components/GroupPicker'
+import { SwapOutlined, BgColorsOutlined, DeleteOutlined, DiffOutlined, ExportOutlined } from '@ant-design/icons'
 
 export const useBatchOperation = () => {
     // 是否处于批量操作模式
@@ -75,6 +76,7 @@ export const useBatchOperation = () => {
             return (
                 <Button
                     onClick={() => setIsBatch(true)}
+                    icon={<DiffOutlined />}
                 >批量操作</Button>
             )
         }
@@ -82,18 +84,23 @@ export const useBatchOperation = () => {
         return (<>
             <Button
                 onClick={() => setShowGroupPicker(true)}
+                icon={<SwapOutlined />}
             >批量移动分组</Button>
             <Button
                 onClick={() => setShowColorPicker(true)}
+                icon={<BgColorsOutlined />}
             >批量设置颜色</Button>
             <Button
                 onClick={onSaveDelete}
+                danger
+                icon={<DeleteOutlined />}
             >批量删除</Button>
             <Button
                 onClick={() => {
                     setIsBatch(false)
                     setSelectedTagIds([])
                 }}
+                icon={<ExportOutlined />}
             >退出批量操作</Button>
         </>)
     }

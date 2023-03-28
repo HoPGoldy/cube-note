@@ -1,28 +1,32 @@
 import React, { useState } from 'react'
-import { TagListItem } from '@/types/tag'
+import { TagGroupListItem, TagListItem } from '@/types/tag'
 import { useDeleteTag, useUpdateTag } from '../../services/tag'
-import { Button } from '../../components/Button'
 import { messageSuccess } from '../../utils/message'
 import { ColorPicker } from '@/client/components/ColorPicker'
 import { STATUS_CODE } from '@/config'
-import { Popup } from 'react-vant'
 import { blurOnEnter } from '@/client/utils/input'
-import { GroupPicker } from '@/client/components/GroupPicker'
+import { Modal, Button, Row, Col, Select } from 'antd'
+import { DEFAULT_TAG_GROUP } from '@/constants'
 
-export const useTagConfig = () => {
+interface Props {
+    tagGroups: TagGroupListItem[]
+}
+
+export const useTagConfig = (props: Props) => {
     // 当前选中的标签详情
     const [currentTag, setCurrentTag] = useState<TagListItem | null>(null)
     // 是否显示颜色选择弹窗
     const [showColorPicker, setShowColorPicker] = useState(false)
-    // 是否显示分组选择弹窗
-    const [showGroupPicker, setShowGroupPicker] = useState(false)
     // 删除标签
     const { mutateAsync: deleteTag } = useDeleteTag()
     // 更新标签
     const { mutateAsync: updateTag, isLoading: isSavingTag } = useUpdateTag()
 
     const showTagDetail = (item: TagListItem) => {
-        setCurrentTag(item)
+        setCurrentTag({
+            ...item,
+            groupId: item.groupId || DEFAULT_TAG_GROUP
+        })
     }
 
     const onClose = () => {
@@ -57,59 +61,64 @@ export const useTagConfig = () => {
 
     const renderTagDetail = () => {
         return (<>
-            <Popup
-                round
-                visible={!!currentTag}
-                onClose={onClose}
+            <Modal
+                open={!!currentTag}
+                closable={false}
+                onCancel={onClose}
+                footer={null}
             >
-                <div className='p-4'>
-                    <div>
-                        标签名称：<input
-                            className='font-bold'
+                <Row gutter={[16, 16]}>
+                    <Col flex="auto">
+                        <input
+                            className='font-bold text-lg'
                             value={currentTag?.title || ''}
                             onChange={e => onChangeDetail({ title: e.target.value })}
                             onKeyUp={blurOnEnter}
                         />
-                    </div>
-                    <div>
-                        标签颜色：
+                    </Col>
+                    <Col flex="none">
                         <div
-                            className='inline-block w-6 h-6 ml-2 rounded-full'
+                            className='inline-block w-6 h-6 ml-2 rounded-full cursor-pointer'
                             style={{ backgroundColor: currentTag?.color }}
                             onClick={() => setShowColorPicker(true)}
                         />
-                    </div>
-                    <div>
-                        当前分组 id：
-                        {currentTag?.groupId || '无分组'}
-                    </div>
-                    <div>
+                    </Col>
+                    <Col span={24}>
+                        <div className="w-full flex items-center">
+                            <span>所属分组：</span>
+                            <Select
+                                style={{ width: 'auto' }}
+                                className="flex-1"
+                                value={currentTag?.groupId}
+                                onChange={groupId => onChangeDetail({ groupId })}
+                                options={props.tagGroups}
+                                fieldNames={{ label: 'title', value: 'id' }}
+                            />
+                        </div>
+                    </Col>
+                    <Col span={12}>
                         <Button
-                            type="danger"
+                            key="delete"
+                            danger
+                            block
                             onClick={onDeleteTag}
                         >删除标签</Button>
+                    </Col>
+                    <Col span={12}>
                         <Button
+                            key="save"
                             type="primary"
-                            onClick={() => setShowGroupPicker(true)}
-                        >转移分组</Button>
-                        <Button
-                            type="primary"
+                            block
                             onClick={saveChange}
                             loading={isSavingTag}
                         >保存</Button>
-                    </div>
-                </div>
-            </Popup>
+                    </Col>
+                </Row>
+            </Modal>
             <ColorPicker
                 onChange={color => onChangeDetail({ color })}
                 visible={showColorPicker}
                 onClose={() => setShowColorPicker(false)}
-            />
-            <GroupPicker
-                value={currentTag?.groupId}
-                onChange={group => onChangeDetail({ groupId: group.id })}
-                visible={showGroupPicker}
-                onClose={() => setShowGroupPicker(false)}
             />
         </>
         )
