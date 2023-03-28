@@ -1,21 +1,23 @@
-import { Notify, NotifyType } from 'react-vant'
+import { message as antdMessage } from 'antd'
+import { NoticeType } from 'antd/es/message/interface'
 
-export const message = (type: NotifyType, message: string) => {
-    return Notify.show({ type, message })
+
+export const message = (type: NoticeType, content: string) => {
+    return antdMessage.open({ type, content })
 }
 
 export const messageSuccess = (message: string) => {
-    return Notify.show({ type: 'success', message })
+    return antdMessage.success(message)
 }
 
 export const messageError = (message: string) => {
-    return Notify.show({ type: 'danger', message })
+    return antdMessage.error(message)
 }
 
 export const messageWarning = (message: string) => {
-    return Notify.show({ type: 'warning', message })
+    return antdMessage.warning(message)
 }
 
 export const messageInfo = (message: string) => {
-    return Notify.show({ type: 'primary', message })
+    return antdMessage.info(message)
 }

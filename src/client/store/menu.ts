@@ -39,7 +39,7 @@ export const menuSlice = createSlice({
     reducers: {
         setParentArticle: (state, action: PayloadAction<ArticleLinkResp>) => {
             state.parentArticleId = action.payload.parentArticleId
-            state.parentArticleTitle = action.payload.parentArticleTitle
+            state.parentArticleTitle = action.payload.parentArticleTitle || ''
         },
         setCurrentMenu: (state, action: PayloadAction<TabTypes>) => {
             state.currentTab = action.payload

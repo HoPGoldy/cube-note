@@ -1,29 +1,21 @@
 import React, { FC, useEffect } from 'react'
 import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
-import { useAppDispatch, useAppSelector } from '../store'
-import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '../store/menu'
+import { useAppDispatch, useAppSelector } from '@/client/store'
+import { setCurrentMenu, setParentArticle, setRelatedArticleIds } from '@/client/store/menu'
 import { Link, useNavigate } from 'react-router-dom'
-import { DesktopArea } from './Responsive'
 import {
     useAddArticle, useQueryArticleTree,
     useQueryArticleFavorite, useSetArticleRelated, useQueryArticleLink, useQueryArticleRelated
-} from '../services/article'
-import { TreeMenu } from '../components/TreeMenu'
-import { Button, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
+} from '@/client//services/article'
+import { TreeMenu } from '@/client//components/TreeMenu'
+import { Button, Segmented, Space } from 'antd'
+import s from './styles.module.css'
 
-interface TabDetail {
-    name: string
-    type: TabTypes
-    prefix?: () => JSX.Element
-}
-
-const tabOptions: TabDetail[] = [
-    { name: '子级', type: TabTypes.Sub },
-    { name: '相关', type: TabTypes.Related },
-    { name: '收藏', type: TabTypes.Favorite },
+const tabOptions = [
+    { label: '子级', value: TabTypes.Sub },
+    { label: '相关', value: TabTypes.Related },
+    { label: '收藏', value: TabTypes.Favorite },
 ]
-
-const menuItemClassname = 'cursor-pointer hover:bg-slate-600 dark:hover:bg-slate-800 border border-white p-2 my-2'
 
 export const Sidebar: FC = () => {
     const navigate = useNavigate()
@@ -111,21 +103,12 @@ export const Sidebar: FC = () => {
         })
     }
 
-    const renderTabBtn = (item: TabDetail) => {
-        return (
-            <ToggleButton key={item.name} value={item.type} onClick={() => dispatch(setCurrentMenu(item.type))}>
-                {item.name}
-            </ToggleButton>
-        )
-    }
-
     const renderMenuItem = (item: ArticleMenuItem) => {
         return (
             <Button
+                type="primary"
+                block
                 key={item.id}
-                color="primary"
-                style={{ width: '100%' }}
-                variant="contained"
                 onClick={() => onClickTreeItem({ value: item.id, title: item.title })}
             >
                 {item.title}
@@ -134,39 +117,32 @@ export const Sidebar: FC = () => {
     }
 
     const renderSubMenu = () => {
-        if (linkLoading) return <div className='text-center'>加载中...</div>
+        if (linkLoading) return <div>加载中...</div>
         const currentMenu = articleLink?.data?.childrenArticles || []
 
         return (<>
             {parentArticleId && (
                 <Link to={`/article/${parentArticleId}`} style={{ width: '100%' }}>
-                    <Button
-                        style={{ width: '100%' }}
-                        variant="outlined"
-                    >
+                    <Button ghost block>
                         返回{parentArticleTitle}
                     </Button>
                 </Link>
             )}
             {currentMenu.length === 0
-                ? (<div className='text-center'>暂无笔记</div>)
+                ? (<div>暂无笔记</div>)
                 : currentMenu.map(renderMenuItem)
             }
-            <Button
-                style={{ width: '100%' }}
-                variant="outlined"
-                onClick={createArticle}
-            >
+            <Button ghost block onClick={createArticle}>
                 创建子笔记
             </Button>
         </>)
     }
 
     const renderRelatedMenuList = () => {
-        if (relatedLinkLoading) return <div className='text-center'>加载中...</div>
+        if (relatedLinkLoading) return <div>加载中...</div>
         const currentMenu = articleRelatedLink?.data?.relatedArticles || []
 
-        if (currentMenu.length === 0) return <div className='text-center'>暂无相关笔记</div>
+        if (currentMenu.length === 0) return <div>暂无相关笔记</div>
         return currentMenu.map(renderMenuItem)
     }
 
@@ -180,20 +156,18 @@ export const Sidebar: FC = () => {
                 onClickNode={onUpdateRelatedList}
                 treeData={articleTree?.data || []}
             >
-                <div className={menuItemClassname + ' text-center'}>
-                    关联其他笔记
-                </div>
+                <Button ghost block>关联其他笔记</Button>
             </TreeMenu>
         </>)
     }   
 
     const renderFavoriteMenu = () => {
-        if (favoriteLoading) return <div className='text-center'>加载中...</div>
+        if (favoriteLoading) return <div>加载中...</div>
         const currentMenu = articleFavorite?.data || []
 
         return (<>
             {currentMenu.length === 0
-                ? (<div className='text-center'>暂无收藏</div>)
+                ? (<div>暂无收藏</div>)
                 : currentMenu.map(renderMenuItem)
             }
         </>)
@@ -213,48 +187,24 @@ export const Sidebar: FC = () => {
     }
 
     return (
-        <DesktopArea>
-            <section className='
-                p-4 transition h-screen overflow-y-auto flex flex-col flex-nowrap 
-                bg-slate-700 dark:bg-slate-900 text-white dark:text-gray-200 
-                w-[240px]
-            '>
-                <div className='flex justify-between font-bold text-lg h-[44px] leading-[44px]'>
-                    <Link to='/'>
-                        <div>记事本</div>
-                    </Link>
-                    <Link to='/setting'>
-                        <div>设置</div>
-                    </Link>
-                </div>
-                <ToggleButtonGroup
-                    value={currentTab}
-                    exclusive
-                    color="primary"
-                    size="medium"
-                >
-                    {tabOptions.map(renderTabBtn)}
-                </ToggleButtonGroup>
+        <section className={s.sideberBox}>
+            <Segmented
+                options={tabOptions}
+                block
+                onChange={value => dispatch(setCurrentMenu(value as TabTypes))}
+            />
 
-                <div className='mt-2 flex-grow'>
-                    <Stack
-                        direction="column"
-                        justifyContent="center"
-                        alignItems="center"
-                        spacing={1}
-                    >
-                        {renderCurrentMenu()}
-                    </Stack>
-                </div>
-                <TreeMenu
-                    treeData={articleTree?.data || []}
-                    onClickNode={onClickTreeItem}
-                >
-                    <div className='w-full border border-white text-center p-2 cursor-pointer'>
-                        侧边栏菜单
-                    </div>
-                </TreeMenu>
-            </section>
-        </DesktopArea>
+            <div style={{ marginTop: '0.5rem', flexGrow: 1 }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                    {renderCurrentMenu()}
+                </Space>
+            </div>
+            <TreeMenu
+                treeData={articleTree?.data || []}
+                onClickNode={onClickTreeItem}
+            >
+                <Button type="primary" block>侧边栏菜单</Button>
+            </TreeMenu>
+        </section>
     )
 }

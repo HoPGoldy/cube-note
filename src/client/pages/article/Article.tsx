@@ -12,11 +12,13 @@ import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
 import DeleteBtn from './DeleteBtn'
 import { Star } from '@react-vant/icons'
+import { Space, Button } from 'antd'
 import { UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
-import { Button } from '@/client/components/Button'
 import dayjs from 'dayjs'
+import s from './styles.module.css'
+import { StarFilled } from '@ant-design/icons'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -97,8 +99,8 @@ const About: FC = () => {
         if (isLoadingArticle) return <Loading tip='信息加载中...' />
 
         return (
-            <div className='px-4 lg:px-auto lg:mx-auto w-full mt-4'>
-                <div className="flex mb-2">
+            <div className={s.container}>
+                <div className={s.titleArea}>
                     <input
                         ref={titleInputRef}
                         value={title}
@@ -107,13 +109,11 @@ const About: FC = () => {
                         onKeyUp={blurOnEnter}
                         onBlur={() => saveEdit({ title })}
                         placeholder="请输入笔记名"
-                        className='font-bold dark:text-slate-200 text-xl bg-inherit mb-4 w-full'
+                        className={s.titleInput}
                     />
-                    <div className='flex items-center'>
-                        <Star
-                            className={'mr-2 ' + (updatingArticle ? 'cursor-wait' : 'cursor-pointer')}
-                            fontSize="1.5rem"
-                            color={isFavorite ? 'yellow' : 'gray'}
+                    <Space>
+                        <StarFilled
+                            style={{ fontSize: '1.5rem', color: isFavorite ? 'yellow' : 'gray' }}
                             onClick={() => {
                                 updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
                                 setIsFavorite(!isFavorite)
@@ -124,19 +124,17 @@ const About: FC = () => {
                             currentArticleId={currentArticleId}
                         />}
 
-                        <div className='ml-2 flex'>
-                            {isEdit ? (<>
-                                <Button className='w-60 !mr-2' onClick={onClickSaveBtn}>
-                                    {updatingArticle ? '保存中' : saveBtnText}
-                                </Button>
-                                <Button className='w-40' onClick={endEdit}>
-                                    退出编辑
-                                </Button>
-                            </>) : (
-                                <Button className='w-40' onClick={startEdit}>编辑</Button>
-                            )}
-                        </div>
-                    </div>
+                        {isEdit ? (<>
+                            <Button className='w-60 !mr-2' onClick={onClickSaveBtn}>
+                                {updatingArticle ? '保存中' : saveBtnText}
+                            </Button>
+                            <Button className='w-40' onClick={endEdit}>
+                                退出编辑
+                            </Button>
+                        </>) : (
+                            <Button className='w-40' onClick={startEdit}>编辑</Button>
+                        )}
+                    </Space>
                 </div>
 
                 <TagArea
@@ -146,17 +144,15 @@ const About: FC = () => {
                     onEditFinish={setIsEditTag}
                 />
 
-                <div className='flex md:flex-row flex-col flex-nowrap'>
-                    {isEdit ? (
-                        <div className='md:w-[100%]'>
-                            {renderEditor()}
-                        </div>
-                    ) : (
-                        <div className={'md:w-[100%]'}>
-                            <Preview value={content} />
-                        </div>
-                    )}
-                </div>
+                {isEdit ? (
+                    <div className={s.editorArea}>
+                        {renderEditor()}
+                    </div>
+                ) : (
+                    <div className={'md:w-[100%]'}>
+                        <Preview value={content} />
+                    </div>
+                )}
             </div>
         )
     }

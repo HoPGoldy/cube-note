@@ -6,7 +6,7 @@ import { useAppDispatch } from '../../store'
 import { removeTab } from '../../store/tab'
 import { messageSuccess } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
-import { Button } from '@/client/components/Button'
+import { Button } from 'antd'
 
 interface Props {
     title: string
@@ -42,7 +42,7 @@ const DeleteBtn: FC<Props> = (props) => {
             <Button
                 onClick={() => setShowDeleteDialog(true)}
                 className='w-full'
-                type='danger'
+                danger
             >删除</Button>
         </div>
 

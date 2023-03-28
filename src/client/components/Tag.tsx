@@ -1,5 +1,6 @@
 import React, { FC, useState, FocusEvent } from 'react'
 import { blurOnEnter } from '../utils/input'
+import { Tag as AntdTag } from 'antd'
 
 interface Props {
     label: string
@@ -8,20 +9,19 @@ interface Props {
     /** 是否被选中 */
     selected?: boolean
     /** 标签被点击 */
-    onClick?: (id: number) => void
+    onClick?: () => void
+    children?: React.ReactNode
 }
 
 export const Tag: FC<Props> = (props) => {
-    const { label, onClick, id, color = 'blue', selected = true } = props
+    const { onClick, color = 'blue', selected = true, children } = props
 
     return (
-        <div
-            className='rounded px-2 mb-1 mr-1 text-white cursor-pointer h-min'
-            style={{ backgroundColor: color, opacity: selected ? 1 : 0.3 }}
-            onClick={() => onClick?.(id)}
-        >
-            {label}
-        </div>
+        <AntdTag
+            color={color}
+            style={{ cursor: 'pointer', opacity: selected ? 1 : 0.3 }}
+            onClick={onClick}
+        >{children}</AntdTag>
     )
 }
 
@@ -41,14 +41,13 @@ export const AddTag: FC<AddTagProps> = (props) => {
 
     const renderContent = () => {
         if (!editing) return (
-            <div onClick={() => setEditing(true)}>
+            <span onClick={() => setEditing(true)}>
                 + 新增
-            </div>
+            </span>
         )
 
         return (
             <input
-                className='bg-transparent outline-none'
                 autoFocus
                 onKeyUp={blurOnEnter}
                 onBlur={onInputed}
@@ -58,11 +57,9 @@ export const AddTag: FC<AddTagProps> = (props) => {
     }
 
     return (
-        <div
-            className='rounded px-2 mb-1 mr-1 border border-slate-600 cursor-pointer h-min'
-        >
+        <AntdTag style={{ cursor: 'pointer' }}>
             {renderContent()}
-        </div>
+        </AntdTag>
     )
 }
 
@@ -73,11 +70,9 @@ interface EditTagEntryProps {
 
 export const EditTagEntry: FC<EditTagEntryProps> = (props) => {
     return (
-        <div
-            className='rounded px-2 mb-1 mr-1 border border-slate-600 cursor-pointer'
+        <AntdTag
+            style={{ cursor: 'pointer' }}
             onClick={props.onClick}
-        >
-            {props.label}
-        </div>
+        >{props.label}</AntdTag>
     )
 }

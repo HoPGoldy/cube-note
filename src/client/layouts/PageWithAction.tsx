@@ -12,7 +12,8 @@ import { useAppSelector } from '../store'
  */
 export const PageContent: FC = (props) => {
     return (
-        <div className="overflow-y-auto relative md:h-full h-page-content">
+        // className="overflow-y-auto relative md:h-full h-page-content"
+        <div style={{ height: '100%' }} >
             {props.children}
         </div>
     )

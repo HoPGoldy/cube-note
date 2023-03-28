@@ -1,5 +1,6 @@
 import React, { FC, useMemo } from 'react'
-import { AddTag, EditTagEntry, Tag } from '@/client/components/Tag'
+import { AddTag, EditTagEntry } from '@/client/components/Tag'
+import { Tag } from 'antd'
 import { useAddTag, useQueryTagList } from '@/client/services/tag'
 import { TagListItem } from '@/types/tag'
 import Loading from '@/client/layouts/Loading'
@@ -65,15 +66,14 @@ const TagArea: FC<Props> = (props) => {
     }
 
     const renderTagItem = (item: TagListItem) => {
+        const selected = editing ? value.includes(item.id) : true
         return (
             <Tag
                 key={item.id}
-                label={item.title}
-                id={item.id}
                 color={item.color}
-                selected={editing ? value.includes(item.id) : true}
+                style={{ cursor: 'pointer', opacity: selected ? 1 : 0.3 }}
                 onClick={() => onClickTag(item.id)}
-            />
+            >{item.title}</Tag>
         )
     }
 
@@ -84,7 +84,7 @@ const TagArea: FC<Props> = (props) => {
     }
 
     return (
-        <div className='flex flex-wrap mb-2'>
+        <div style={{ marginBottom: '1rem' }}>
             {renderTagList()}
             {editing && (
                 <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />

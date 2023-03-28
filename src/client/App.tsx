@@ -3,11 +3,11 @@ import { store } from './store'
 import { Provider } from 'react-redux'
 import { Routes } from './Route'
 import { AppConfigProvider } from './layouts/AppConfigProvider'
-import { ConfigProvider } from 'react-vant'
 import { ResponsiveProvider } from './layouts/Responsive'
 import { QueryClientProvider } from 'react-query'
 import { queryClient } from './services/base'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import { ConfigProvider, theme } from 'antd'
 
 const themeVars = {
     buttonBorderRadius: 'var(--rv-border-radius-lg)',
@@ -17,7 +17,9 @@ const themeVars = {
 function App() {
     return (
         <Provider store={store}>
-            <ConfigProvider themeVars={themeVars}>
+            <ConfigProvider theme={{
+                // algorithm: theme.darkAlgorithm
+            }}>
                 <QueryClientProvider client={queryClient}>
                     <AppConfigProvider>
                         <ResponsiveProvider>

@@ -3,6 +3,7 @@ import React, { FC, useState, useMemo, useRef } from 'react'
 import debounce from 'lodash/debounce'
 import { Arrow } from '@react-vant/icons'
 import { nanoid } from 'nanoid'
+import s from './styles.module.css'
 
 interface Props {
     treeData: ArticleTreeNode[]
@@ -103,13 +104,13 @@ export const TreeMenu: FC<Props> = (props) => {
     }
 
     const renderMenuItem = (item: ArticleTreeNode, level: number) => {
+        
         return (
             <div
                 key={item.value}
                 id={item.value.toString()}
                 className={
-                    'p-2 text-white cursor-pointer flex items-center justify-between ' +
-                    (props.value?.includes(item.value) ? 'bg-green-700 hover:bg-green-600' : 'hover:bg-slate-400 ')
+                    [s.treeNode, props.value?.includes(item.value) ? s.selectedTreeNode : s.unselectedTreeNode].join(' ')
                 }
                 onClick={() => onClickNode(item)}
                 onMouseEnter={() => onOpenInnerMenu(item.value.toString(), level, item.children)}
@@ -125,8 +126,7 @@ export const TreeMenu: FC<Props> = (props) => {
         return (
             <div
                 key={item.key}
-                className='bg-slate-600 absolute z-10'
-                style={item.styles}
+                style={{ backgroundColor: 'rgb(71 85 105)', position: 'absolute', zIndex: 10, ...item.styles }}
                 onMouseLeave={mouseLeave}
             >
                 {item.subMenus?.map(item => renderMenuItem(item, index))}

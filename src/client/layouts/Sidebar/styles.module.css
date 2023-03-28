@@ -1,0 +1,10 @@
+.sideberBox {
+    box-sizing: border-box;
+    padding: 1rem;
+    height: 100%;
+    width: 240px;
+    display: flex;
+    flex-flow: column nowrap;
+    text-align: center;
+    color: white;
+}
