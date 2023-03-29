@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(resp => {
     if (code === 401) {
         store.dispatch(logout())
     } else if (code !== 200) {
-        const type = code === 401 ? 'warning' : 'danger'
+        const type = code === 401 ? 'warning' : 'error'
         message(type, msg || '未知错误')
     }
 

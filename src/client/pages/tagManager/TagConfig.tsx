@@ -66,6 +66,7 @@ export const useTagConfig = (props: Props) => {
                 closable={false}
                 onCancel={onClose}
                 footer={null}
+                width="24rem"
             >
                 <Row gutter={[16, 16]}>
                     <Col flex="auto">

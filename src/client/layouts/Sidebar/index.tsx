@@ -106,8 +106,8 @@ export const Sidebar: FC = () => {
     const renderMenuItem = (item: ArticleMenuItem) => {
         return (
             <Button
-                type="primary"
                 block
+                ghost
                 key={item.id}
                 onClick={() => onClickTreeItem({ value: item.id, title: item.title })}
             >
@@ -123,7 +123,7 @@ export const Sidebar: FC = () => {
         return (<>
             {parentArticleId && (
                 <Link to={`/article/${parentArticleId}`} style={{ width: '100%' }}>
-                    <Button ghost block>
+                    <Button ghost type="dashed" block>
                         返回{parentArticleTitle}
                     </Button>
                 </Link>
@@ -132,7 +132,7 @@ export const Sidebar: FC = () => {
                 ? (<div>暂无笔记</div>)
                 : currentMenu.map(renderMenuItem)
             }
-            <Button ghost block onClick={createArticle}>
+            <Button ghost block type="dashed" onClick={createArticle}>
                 创建子笔记
             </Button>
         </>)
@@ -156,7 +156,7 @@ export const Sidebar: FC = () => {
                 onClickNode={onUpdateRelatedList}
                 treeData={articleTree?.data || []}
             >
-                <Button ghost block>关联其他笔记</Button>
+                <Button ghost block type="dashed">关联其他笔记</Button>
             </TreeMenu>
         </>)
     }   

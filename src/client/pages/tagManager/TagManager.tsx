@@ -46,7 +46,7 @@ const TagManager: FC = () => {
     // 功能 - 标签详情管理
     const { renderTagDetail, showTagDetail } = useTagConfig({ tagGroups })
     // 功能 - 批量操作
-    const { isBatch, isTagSelected, onSelectTag, renderBatchBtn, renderBatchModal } = useBatchOperation()
+    const { isBatch, isTagSelected, onSelectTag, renderBatchBtn, renderBatchModal } = useBatchOperation({ tagGroups })
 
     const onAddGroup = async () => {
         const title = `新分组 ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`

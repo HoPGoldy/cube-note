@@ -65,7 +65,7 @@ export const createRouter = (props: Props) => {
         oldP: Joi.string().required()
     })
 
-    router.put('/changePwd', async ctx => {
+    router.post('/changePwd', async ctx => {
         const body = validate(ctx, changePwdSchema)
         if (!body) return
         const { newP, oldP } = body
@@ -73,7 +73,7 @@ export const createRouter = (props: Props) => {
         const payload = getJwtPayload(ctx)
         if (!payload) return
 
-        const resp = await service.changePassword(payload.userId, newP, oldP)
+        const resp = await service.changePassword(payload.userId, oldP, newP)
         response(ctx, resp)
     })
 

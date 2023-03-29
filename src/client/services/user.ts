@@ -1,5 +1,5 @@
 import { requestGet, requestPost } from './base'
-import { LoginReqData, LoginResp } from '@/types/user'
+import { ChangePasswordReqData, LoginReqData, LoginResp } from '@/types/user'
 import { useQuery, useMutation } from 'react-query'
 
 /** 查询用户信息 */
@@ -27,5 +27,12 @@ export const useCreateAdmin = () => {
 export const useQueryArticleCount = () => {
     return useQuery('userStatistic', () => {
         return requestGet('user/statistic')
+    })
+}
+
+/** 修改密码 */
+export const useChangePassword = () => {
+    return useMutation((data: ChangePasswordReqData) => {
+        return requestPost('user/changePwd', data)
     })
 }

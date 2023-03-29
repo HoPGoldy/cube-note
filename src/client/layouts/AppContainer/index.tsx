@@ -50,7 +50,7 @@ export const AppContainer: React.FC = () => {
                         </Space>
                     </div>
                 </header>
-                <main style={{ flexGrow: 1, padding: '0.5rem', height: 'calc(100% - 4rem)' }}>
+                <main style={{ flexGrow: 1, padding: '1rem', height: 'calc(100% - 5rem)' }}>
                     <Outlet />
                 </main>
             </div>

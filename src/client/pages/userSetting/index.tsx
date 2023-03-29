@@ -8,6 +8,7 @@ import { changeTheme, logout } from '@/client/store/user'
 import { useQueryArticleCount } from '@/client/services/user'
 import { Button, Col, Row, Space, Statistic } from 'antd'
 import { SnippetsOutlined, HighlightOutlined, LockOutlined, TagsOutlined, SmileOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { useChangePassword } from '../changePassword'
 
 export const DesktopSetting: FC = () => {
     return (
@@ -23,6 +24,8 @@ const SettingContent: FC = () => {
     const navigate = useNavigate()
     // 数量统计接口
     const { data: countInfo } = useQueryArticleCount()
+    /** 修改密码功能 */
+    const { renderChangePasswordModal, showChangePassword } = useChangePassword()
 
     const onSwitchDark = () => {
         const newTheme = userInfo?.theme === AppTheme.Light ? AppTheme.Dark : AppTheme.Light
@@ -48,9 +51,7 @@ const SettingContent: FC = () => {
             </div>
             <Row gutter={[0, 8]} >
                 <Col span={24}>
-                    <Link to="/ChangePassword">
-                        <Button block icon={<LockOutlined />}>修改密码</Button>
-                    </Link>
+                    <Button block onClick={showChangePassword} icon={<LockOutlined />}>修改密码</Button>
                 </Col>
                 <Col span={24}>
                     <Link to="/tags">
@@ -66,6 +67,7 @@ const SettingContent: FC = () => {
                     <Button block danger onClick={onLogout} icon={<CloseCircleOutlined />}>登出</Button>
                 </Col>
             </Row>
+            {renderChangePasswordModal()}
         </>
     )
 

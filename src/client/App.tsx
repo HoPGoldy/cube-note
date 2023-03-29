@@ -8,6 +8,7 @@ import { QueryClientProvider } from 'react-query'
 import { queryClient } from './services/base'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { ConfigProvider, theme } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
 
 const themeVars = {
     buttonBorderRadius: 'var(--rv-border-radius-lg)',
@@ -17,7 +18,7 @@ const themeVars = {
 function App() {
     return (
         <Provider store={store}>
-            <ConfigProvider theme={{
+            <ConfigProvider locale={zhCN} theme={{
                 // algorithm: theme.darkAlgorithm
             }}>
                 <QueryClientProvider client={queryClient}>

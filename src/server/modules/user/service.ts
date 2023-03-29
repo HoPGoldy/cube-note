@@ -135,7 +135,7 @@ export const createService = (props: Props) => {
 
         const newPasswordSalt = nanoid()
         const newStorage: Partial<UserStorage> = {
-            passwordHash: sha(newPasswordHash + newPasswordSalt),
+            passwordHash: sha(newPasswordSalt + newPasswordHash),
             passwordSalt: newPasswordSalt
         }
 

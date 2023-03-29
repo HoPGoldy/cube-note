@@ -1,13 +1,17 @@
 import React, { useState } from 'react'
 import { useBatchDeleteTag, useBatchSetTagGroup, useBatchSetTagColor } from '../../services/tag'
-import { Button } from 'antd'
+import { Button, Dropdown } from 'antd'
 import { messageSuccess, messageWarning } from '../../utils/message'
 import { STATUS_CODE } from '@/config'
 import { ColorPicker } from '@/client/components/ColorPicker'
-import { GroupPicker } from '@/client/components/GroupPicker'
 import { SwapOutlined, BgColorsOutlined, DeleteOutlined, DiffOutlined, ExportOutlined } from '@ant-design/icons'
+import { TagGroupListItem } from '@/types/tag'
 
-export const useBatchOperation = () => {
+interface Props {
+    tagGroups: TagGroupListItem[]
+}
+
+export const useBatchOperation = (props: Props) => {
     // 是否处于批量操作模式
     const [isBatch, setIsBatch] = useState(false)
     // 当前选中的标签
@@ -20,8 +24,6 @@ export const useBatchOperation = () => {
     const { mutateAsync: updateTagGroup } = useBatchSetTagGroup()
     // 是否显示颜色选择弹窗
     const [showColorPicker, setShowColorPicker] = useState(false)
-    // 是否显示分组选择弹窗
-    const [showGroupPicker, setShowGroupPicker] = useState(false)
 
     const isTagSelected = (id: number) => {
         return selectedTagIds.includes(id)
@@ -71,6 +73,18 @@ export const useBatchOperation = () => {
         setSelectedTagIds([])
     }
 
+    // 批量转移分组的待选项
+    const moveGroupItems = props.tagGroups.map(item => {
+        return {
+            key: item.id,
+            label: (
+                <div onClick={() => onSaveGroup(item.id)}>
+                    {item.title}
+                </div>
+            )
+        }
+    })
+
     const renderBatchBtn = () => {
         if (!isBatch) {
             return (
@@ -83,9 +97,17 @@ export const useBatchOperation = () => {
 
         return (<>
             <Button
-                onClick={() => setShowGroupPicker(true)}
-                icon={<SwapOutlined />}
-            >批量移动分组</Button>
+                onClick={() => {
+                    setIsBatch(false)
+                    setSelectedTagIds([])
+                }}
+                icon={<ExportOutlined />}
+            >退出批量操作</Button>
+            <Dropdown menu={{ items: moveGroupItems }} placement="bottom">
+                <Button
+                    icon={<SwapOutlined />}
+                >批量移动分组</Button>
+            </Dropdown>
             <Button
                 onClick={() => setShowColorPicker(true)}
                 icon={<BgColorsOutlined />}
@@ -95,13 +117,6 @@ export const useBatchOperation = () => {
                 danger
                 icon={<DeleteOutlined />}
             >批量删除</Button>
-            <Button
-                onClick={() => {
-                    setIsBatch(false)
-                    setSelectedTagIds([])
-                }}
-                icon={<ExportOutlined />}
-            >退出批量操作</Button>
         </>)
     }
 
@@ -111,11 +126,6 @@ export const useBatchOperation = () => {
                 onChange={onSaveColor}
                 visible={showColorPicker}
                 onClose={() => setShowColorPicker(false)}
-            />
-            <GroupPicker
-                onChange={group => onSaveGroup(group.id)}
-                visible={showGroupPicker}
-                onClose={() => setShowGroupPicker(false)}
             />
         </>)
     }
