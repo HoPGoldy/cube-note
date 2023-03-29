@@ -4,6 +4,7 @@ import { TABLE_NAME } from '@/constants'
 import { ArticleFavoriteStorage, ArticleRelatedStorage, ArticleStorage } from '@/types/article'
 import { TagGroupStorage, TagStorage } from '@/types/tag'
 import { FileStorage } from '@/types/file'
+import { UserInviteStorage } from '@/types/userInvite'
 
 interface Props {
     dbPath: string
@@ -103,6 +104,18 @@ export const createDb = (props: Props) => {
         })
     })
 
+    // 用户邀请表
+    sqliteDb.schema.hasTable(TABLE_NAME.USER_INVITE).then(exists => {
+        if (exists) return
+        return sqliteDb.schema.createTable(TABLE_NAME.USER_INVITE, t => {
+            t.increments('id').primary()
+            t.string('inviteCode').notNullable()
+            t.string('username')
+            t.timestamp('createTime').notNullable()
+            t.timestamp('useTime')
+        })
+    })
+
     return {
         knex: sqliteDb,
         user: () => sqliteDb<UserStorage>(TABLE_NAME.USER),
@@ -112,6 +125,7 @@ export const createDb = (props: Props) => {
         tag: () => sqliteDb<TagStorage>(TABLE_NAME.TAG),
         tagGroup: () => sqliteDb<TagGroupStorage>(TABLE_NAME.TAG_GROUP),
         file: () => sqliteDb<FileStorage>(TABLE_NAME.FILE),
+        userInvite: () => sqliteDb<UserInviteStorage>(TABLE_NAME.USER_INVITE),
     }
 }
 

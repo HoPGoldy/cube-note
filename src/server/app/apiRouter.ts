@@ -10,9 +10,10 @@ import { tagRouter } from './tag'
 import { articleRouter } from './article'
 import { fileRouter } from './file'
 import { errorWapper } from '../utils'
+import { userInviteRouter } from './userInvite'
 
 export const createApiRouter = () => {
-    const routes = [globalRouter, userRouter, tagRouter, articleRouter, fileRouter]
+    const routes = [globalRouter, userRouter, tagRouter, articleRouter, fileRouter, userInviteRouter]
     const apiRouter = new Router<unknown, AppKoaContext>()
 
     apiRouter

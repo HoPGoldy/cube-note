@@ -33,5 +33,7 @@ export const TABLE_NAME = {
     /** 用户收藏文章表 */
     FAVORITE: 'favorites',
     /** 文章相互关联表 */
-    ARTICLE_RELATION: 'articleRelations'
+    ARTICLE_RELATION: 'articleRelations',
+    /** 用户邀请表 */
+    USER_INVITE: 'userInvites'
 } as const
