@@ -1,19 +1,15 @@
 import { STATUS_CODE } from '@/config'
 import { LoginSuccessResp } from '@/types/user'
 import { sha } from '@/utils/crypto'
+import { Button, Input, InputRef } from 'antd'
 import React, { useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button } from '../components/Button'
 import { useLogin } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentArticle } from '../store/menu'
 import { login } from '../store/user'
 import { messageError, messageSuccess } from '../utils/message'
-
-const fieldClassName = 'block grow px-3 py-2 mb-2 w-full transition ' +
-    'border border-slate-300 rounded-md shadow-sm placeholder-slate-400 ' +
-    'focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 ' +
-    'dark:border-slate-500 dark:bg-slate-700 dark:hover:bg-slate-800 '
+import { UserOutlined, KeyOutlined } from '@ant-design/icons'
 
 const Register = () => {
     const dispatch = useAppDispatch()
@@ -22,9 +18,9 @@ const Register = () => {
     // 密码
     const [password, setPassword] = useState('')
     // 用户名输入框
-    const usernameInputRef = useRef<HTMLInputElement>(null)
+    const usernameInputRef = useRef<InputRef>(null)
     // 密码输入框
-    const passwordInputRef = useRef<HTMLInputElement>(null)
+    const passwordInputRef = useRef<InputRef>(null)
     // 应用配置
     const config = useAppSelector(s => s.global.appConfig)
     // 提交登录
@@ -33,6 +29,18 @@ const Register = () => {
     const userInfo = useAppSelector(s => s.user.userInfo)
 
     const onSubmit = async () => {
+        if (!username) {
+            messageError('请输入用户名')
+            usernameInputRef.current?.focus()
+            return
+        }
+
+        if (!password) {
+            messageError('请输入密码')
+            passwordInputRef.current?.focus()
+            return
+        }
+
         const resp = await postLogin({ username, password: sha(password) })
         if (resp.code !== STATUS_CODE.SUCCESS) {
             messageError(resp.msg || '登录失败')
@@ -56,13 +64,15 @@ const Register = () => {
                 <div className="mt-4 text-xl text-mainColor">{config?.loginSubtitle}</div>
             </header>
             <div className='w-[70%] md:w-[40%] lg:w-[30%] xl:w-[20%] flex flex-col items-center'>
-                <input
+                <Input
+                    size='large'
+                    className='mb-2'
                     ref={usernameInputRef}
-                    className={fieldClassName}
-                    autoFocus
                     placeholder="请输入用户名"
+                    prefix={<UserOutlined />}
+                    autoFocus
                     value={username}
-                    onInput={e => setUsername((e.target as any).value)}
+                    onChange={e => setUsername(e.target.value)}
                     onKeyUp={e => {
                         if (e.key === 'Enter') {
                             passwordInputRef.current?.focus()
@@ -70,26 +80,27 @@ const Register = () => {
                     }}
                 />
 
-                <input
+                <Input.Password
+                    size='large'
+                    className='mb-2'
                     ref={passwordInputRef}
-                    className={fieldClassName}
-                    type='password'
                     placeholder="请输入密码"
+                    prefix={<KeyOutlined />}
                     value={password}
-                    onInput={e => setPassword((e.target as any).value)}
+                    onChange={e => setPassword(e.target.value)}
                     onKeyUp={e => {
                         if (e.key === 'Enter') onSubmit()
                     }}
                 />
 
-                <div className='shrink-0 w-full'>
-                    <Button
-                        block
-                        disabled={isLogin}
-                        color={config?.buttonColor}
-                        onClick={onSubmit}
-                    >登 录</Button>
-                </div>
+                <Button
+                    size='large'
+                    block
+                    disabled={isLogin}
+                    type="primary"
+                    style={{ background: config?.buttonColor }}
+                    onClick={onSubmit}
+                >登 录</Button>
             </div>
         </div>
     )

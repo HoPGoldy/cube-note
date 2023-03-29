@@ -19,7 +19,12 @@ function App() {
     return (
         <Provider store={store}>
             <ConfigProvider locale={zhCN} theme={{
+                
                 // algorithm: theme.darkAlgorithm
+                token: {
+                    lineWidth: 2,
+                    controlOutlineWidth: 1
+                }
             }}>
                 <QueryClientProvider client={queryClient}>
                     <AppConfigProvider>

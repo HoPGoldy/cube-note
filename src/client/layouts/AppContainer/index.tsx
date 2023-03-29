@@ -41,7 +41,7 @@ export const AppContainer: React.FC = () => {
                             </Link>
                             <Popover
                                 placement="bottomRight"
-                                trigger="click"
+                                // trigger="click"
                                 content={<DesktopSetting />}
                                 arrow
                             >
