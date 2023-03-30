@@ -5,6 +5,7 @@ import { getReplayAttackSecret } from '@/server/lib/replayAttackDefense'
 import { loginLocker } from './LoginLocker'
 import { articleService } from './article'
 import { db } from './database'
+import { userInviteService } from './userInvite'
 
 
 export const userService = createService({
@@ -12,7 +13,8 @@ export const userService = createService({
     createToken: createToken,
     getReplayAttackSecret,
     db,
-    addArticle: articleService.addArticle
+    addArticle: articleService.addArticle,
+    finishUserInvite: userInviteService.userRegister,
 })
 
 export const userRouter = createRouter({ service: userService })

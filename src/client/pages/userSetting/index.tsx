@@ -59,6 +59,11 @@ const SettingContent: FC = () => {
                     </Link>
                 </Col>
                 <Col span={24}>
+                    <Link to="/userInvite">
+                        <Button block icon={<TagsOutlined />}>用户管理</Button>
+                    </Link>
+                </Col>
+                <Col span={24}>
                     <Link to="/about">
                         <Button block icon={<SmileOutlined />}>关于</Button>
                     </Link>

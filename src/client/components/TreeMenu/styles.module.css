@@ -9,13 +9,12 @@
 
 .selectedTreeNode {
     background-color: #2f855a;
-    &:hover {
-        background-color: #276749;
-    }
 }
 
-.unselectedTreeNode {
-    &:hover {
-        background-color: #2b6cb0;
-    }
+.selectedTreeNode:hover {
+    background-color: #276749;
+}
+
+.unselectedTreeNode:hover {
+    background-color: #2b6cb0;
 }

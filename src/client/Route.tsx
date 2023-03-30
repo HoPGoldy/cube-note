@@ -28,6 +28,8 @@ export const Routes: FC = () => {
                 { path: '/setting', element: lazyLoad(() => import('./pages/userSetting')) },
                 // 修改密码
                 { path: '/changePassword', element: lazyLoad(() => import('./pages/changePassword')) },
+                // 邀请管理
+                { path: 'userInvite', element: lazyLoad(() => import('./pages/userInvite')) },
                 { path: '/about', element: lazyLoad(() => import('./pages/About')) },
             ],
             element: (
@@ -36,7 +38,11 @@ export const Routes: FC = () => {
                 </LoginAuth>
             )
         },
+        // 登录
         { path: '/login', element: lazyLoad(() => import('./pages/Login')) },
+        // 注册
+        { path: '/register/:inviteCode', element: lazyLoad(() => import('./pages/register')) },
+        // 初始化管理员
         { path: '/init', element: lazyLoad(() => import('./pages/CreateAdmin')) },
     ])
 

@@ -32,12 +32,12 @@ export const AppContainer: React.FC = () => {
             <div style={{ width: collapsed ? '100%' : `calc(100% - ${SIDE_WIDTH})`, transition: 'width 0.3s' }}>
                 <header className={s.headerBox}>
                     <div>
-                        <CollasedIcon onClick={() => setCollapsed(!collapsed)} style={{ fontSize: '1.2rem' }} />
+                        <CollasedIcon onClick={() => setCollapsed(!collapsed)} className="text-xl" />
                     </div>
                     <div>
                         <Space size="middle">
                             <Link to="/search">
-                                <SearchOutlined style={{ fontSize: '1.2rem' }} />
+                                <SearchOutlined className="cursor-pointer text-xl" />
                             </Link>
                             <Popover
                                 placement="bottomRight"
@@ -45,12 +45,12 @@ export const AppContainer: React.FC = () => {
                                 content={<DesktopSetting />}
                                 arrow
                             >
-                                <UserOutlined style={{ fontSize: '1.2rem', cursor: 'pointer' }} />
+                                <UserOutlined className="cursor-pointer text-xl" />
                             </Popover>
                         </Space>
                     </div>
                 </header>
-                <main style={{ flexGrow: 1, padding: '1rem', height: 'calc(100% - 5rem)' }}>
+                <main className="flex-1 p-4 overflow-y-auto" style={{ height: 'calc(100% - 5rem)' }}>
                     <Outlet />
                 </main>
             </div>

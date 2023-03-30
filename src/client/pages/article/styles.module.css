@@ -21,7 +21,8 @@
 
 .editorArea {
     flex-grow: 1;
-    & > div {
-        height: 100%;
-    }
+}
+
+.editorArea > div {
+    height: 100%;
 }

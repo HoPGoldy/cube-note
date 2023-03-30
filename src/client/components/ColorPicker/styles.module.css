@@ -8,14 +8,14 @@
 
 .removeBtn {
     @apply border-2 border-solid border-red-500 relative overflow-hidden;
+}
 
-    &::after {
-        @apply bg-red-500 absolute;
-        content: "";
-        left: -1px;
-        top: 10px;
-        width: 25px;
-        height: 2px;
-        transform: rotateZ(45deg) scale(1);
-    }
+.removeBtn::after {
+    @apply bg-red-500 absolute;
+    content: "";
+    left: -1px;
+    top: 10px;
+    width: 25px;
+    height: 2px;
+    transform: rotateZ(45deg) scale(1);
 }

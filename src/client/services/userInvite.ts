@@ -1,4 +1,4 @@
-import { requestGet, requestPost } from './base'
+import { queryClient, requestGet, requestPost } from './base'
 import { useQuery, useMutation } from 'react-query'
 import { UserInviteStorage } from '@/types/userInvite'
 
@@ -6,6 +6,10 @@ import { UserInviteStorage } from '@/types/userInvite'
 export const useAddInvite = () => {
     return useMutation(() => {
         return requestPost<UserInviteStorage>('userInvite/addInvite')
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('inviteList')
+        }
     })
 }
 
@@ -13,6 +17,10 @@ export const useAddInvite = () => {
 export const useDeleteInvite = () => {
     return useMutation((id: number) => {
         return requestPost(`userInvite/delete/${id}`)
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('inviteList')
+        }
     })
 }
 

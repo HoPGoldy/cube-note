@@ -1,5 +1,5 @@
 import { requestGet, requestPost } from './base'
-import { ChangePasswordReqData, LoginReqData, LoginResp } from '@/types/user'
+import { ChangePasswordReqData, LoginReqData, LoginResp, RegisterReqData } from '@/types/user'
 import { useQuery, useMutation } from 'react-query'
 
 /** 查询用户信息 */
@@ -22,6 +22,14 @@ export const useCreateAdmin = () => {
         return requestPost('user/createAdmin', data)
     })
 }
+
+/** 注册用户 */
+export const useRegister = () => {
+    return useMutation((data: RegisterReqData) => {
+        return requestPost('user/register', data)
+    })
+}
+
 
 /** 统计文章 */
 export const useQueryArticleCount = () => {

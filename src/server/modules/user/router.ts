@@ -4,7 +4,7 @@ import { getIp, response } from '@/server/utils'
 import { UserService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { ChangePasswordReqData, LoginReqData, SetThemeReqData } from '@/types/user'
+import { ChangePasswordReqData, LoginReqData, RegisterReqData, SetThemeReqData } from '@/types/user'
 import { getJwtPayload } from '@/server/lib/auth'
 
 interface Props {
@@ -37,26 +37,26 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const registerSchema = Joi.object<LoginReqData>({
+    const registerSchema = Joi.object<RegisterReqData>({
         username: Joi.string().required(),
-        password: Joi.string().required()
+        passwordHash: Joi.string().required(),
+        inviteCode: Joi.string().required()
     })
 
     router.post('/register', async ctx => {
         const body = validate(ctx, registerSchema)
         if (!body) return
-        const { username, password } = body
 
-        const resp = await service.register(username, password)
+        const resp = await service.register(body)
         response(ctx, resp)
     })
 
     router.post('/createAdmin', async ctx => {
         const body = validate(ctx, registerSchema)
         if (!body) return
-        const { username, password } = body
+        const { username, passwordHash } = body
 
-        const resp = await service.createAdmin(username, password)
+        const resp = await service.createAdmin(username, passwordHash)
         response(ctx, resp)
     })
 

@@ -32,6 +32,13 @@ export interface LoginReqData {
     password: string
 }
 
+/** 注册请求数据 */
+export interface RegisterReqData {
+    username: string
+    passwordHash: string
+    inviteCode: string
+}
+
 /** 登录接口返回值 */
 export type LoginResp = Partial<LoginSuccessResp> & Partial<LoginFailResp>
 

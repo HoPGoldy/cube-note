@@ -1,4 +1,4 @@
-import { AppTheme, UserStorage, LoginSuccessResp } from '@/types/user'
+import { AppTheme, UserStorage, LoginSuccessResp, RegisterReqData } from '@/types/user'
 import { AppResponse } from '@/types/global'
 import { STATUS_CODE } from '@/config'
 import { sha } from '@/utils/crypto'
@@ -6,6 +6,7 @@ import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
 import { ArticleService } from '../article/service'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
+import { UserInviteService } from '../userInvite/service'
 
 interface Props {
     loginLocker: LoginLocker
@@ -13,11 +14,13 @@ interface Props {
     getReplayAttackSecret: () => Promise<string>
     db: DatabaseAccessor
     addArticle: ArticleService['addArticle']
+    finishUserInvite: UserInviteService['userRegister']
 }
 
 export const createService = (props: Props) => {
     const {
         loginLocker, createToken,
+        finishUserInvite,
         getReplayAttackSecret,
         addArticle,
         db,
@@ -74,7 +77,12 @@ export const createService = (props: Props) => {
     /**
      * 注册
      */
-    const register = async (username: string, passwordHash: string, isAdmin = false): Promise<AppResponse> => {
+    const register = async (data: RegisterReqData & { isAdmin?: boolean }): Promise<AppResponse> => {
+        const { username, passwordHash, inviteCode, isAdmin = false } = data
+
+        const inviteResp = await finishUserInvite(username, inviteCode)
+        if (inviteResp.code !== STATUS_CODE.SUCCESS) return inviteResp
+
         const userStorage = await db.user().select('id').where({ username }).first()
         if (userStorage) {
             return { code: STATUS_CODE.ALREADY_REGISTER, msg: '已经注册' }
@@ -112,7 +120,12 @@ export const createService = (props: Props) => {
             return { code: 400, msg: '管理员已存在' }
         }
 
-        return await register(username, passwordHash, true)
+        return await register({
+            username,
+            passwordHash,
+            isAdmin: true,
+            inviteCode: '',
+        })
     }
 
     /**
