@@ -92,7 +92,7 @@ const TagManager: FC = () => {
                 <Spin spinning={isAddingInvite}>
                     <Card
                         onClick={() => addInvite()}
-                        className="cursor-pointer hover:shadow-md active:opacity-80 transition-shadow"
+                        className="cursor-pointer hover:ring-2 ring-gray-300 active:opacity-80 transition-shadow"
                     >
                         <div className="flex justify-center items-center text-gray-400 text-lg">
                             <PlusOutlined />

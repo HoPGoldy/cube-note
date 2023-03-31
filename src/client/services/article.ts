@@ -5,7 +5,8 @@ import {
     ArticleMenuItem,
     ArticleRelatedResp,
     ArticleTreeNode, DeleteArticleMutation,
-    QueryArticleReqData,
+    SearchArticleReqData,
+    SearchArticleResp,
     SetArticleRelatedReqData,
     UpdateArticleReqData
 } from '@/types/article'
@@ -83,8 +84,13 @@ export const useDeleteArticle = () => {
 }
 
 /** 搜索文章列表 */
-export const queryArticleList = async (data: QueryArticleReqData) => {
-    return requestPost<ArticleContent[]>('article/getList', data)
+export const useQueryArticleList = (data: SearchArticleReqData) => {
+    return useQuery(['articleList', data], async () => {
+        return requestPost<SearchArticleResp>('article/getList', data)
+    }, {
+        refetchOnWindowFocus: false,
+        enabled: data.keyword !== '' || (data.tagIds && data.tagIds.length > 0)
+    })
 }
 
 /** 查询文章树 */

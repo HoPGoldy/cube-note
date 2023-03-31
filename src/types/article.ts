@@ -42,10 +42,24 @@ export interface AddArticleReqData {
     parentId: number
 }
 
-export interface QueryArticleReqData {
+export interface SearchArticleReqData {
     keyword?: string
-    tagIds?: string[]
+    tagIds?: number[]
     page?: number
+}
+
+/** 文章查询详情 */
+export interface SearchArticleDetail {
+    id:  number
+    title: string
+    updateTime: number
+    tagIds: number[]
+    content: string
+}
+
+export interface SearchArticleResp {
+    total: number
+    rows: SearchArticleDetail[]
 }
 
 export type UpdateArticleReqData = Partial<ArticleContent> & {

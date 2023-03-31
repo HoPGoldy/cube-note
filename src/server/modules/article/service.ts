@@ -1,10 +1,10 @@
 import {
-    ArticleContent, ArticleStorage, ArticleDeleteResp, QueryArticleReqData, UpdateArticleReqData,
-    ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp, SetArticleRelatedReqData
+    ArticleContent, ArticleStorage, ArticleDeleteResp, SearchArticleReqData, UpdateArticleReqData,
+    ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp, SetArticleRelatedReqData, SearchArticleDetail, SearchArticleResp
 } from '@/types/article'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
 import { appendIdToPath, arrayToPath, getParentIdByPath, pathToArray, replaceParentId } from '@/utils/parentPath'
-import { TABLE_NAME } from '@/constants'
+import { PAGE_SIZE, TABLE_NAME } from '@/constants'
 
 interface Props {
     db: DatabaseAccessor
@@ -116,7 +116,7 @@ export const createService = (props: Props) => {
         return { code: 200, data }
     }
 
-    const getArticleList = async (reqData: QueryArticleReqData) => {
+    const getArticleList = async (reqData: SearchArticleReqData) => {
         const { page = 1, tagIds, keyword } = reqData
         const query = db.article().select()
 
@@ -131,12 +131,14 @@ export const createService = (props: Props) => {
             })
         }
 
+        const { count: total } = await query.clone().count('id as count').first() as any
+
         const result = await query
             .orderBy('updateTime', 'desc')
-            .limit(15)
-            .offset((page - 1) * 15)
+            .limit(PAGE_SIZE)
+            .offset((page - 1) * PAGE_SIZE)
 
-        const data = result.map(item =>  {
+        const rows: SearchArticleDetail[] = result.map(item =>  {
             let content = ''
             // 截取正文中关键字前后的内容
             if (keyword) {
@@ -157,6 +159,8 @@ export const createService = (props: Props) => {
                 content,
             }
         })
+
+        const data: SearchArticleResp = { total, rows }
 
         return { code: 200, data }
     }

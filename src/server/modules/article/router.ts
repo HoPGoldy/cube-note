@@ -4,7 +4,7 @@ import { response } from '@/server/utils'
 import { ArticleService } from './service'
 import { validate } from '@/server/utils'
 import Joi from 'joi'
-import { AddArticleReqData, DeleteArticleMutation, QueryArticleReqData, SetArticleRelatedReqData, UpdateArticleReqData } from '@/types/article'
+import { AddArticleReqData, DeleteArticleMutation, SearchArticleReqData, SetArticleRelatedReqData, UpdateArticleReqData } from '@/types/article'
 import { getJwtPayload } from '@/server/lib/auth'
 
 interface Props {
@@ -77,9 +77,9 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
-    const queryArticleSchema = Joi.object<QueryArticleReqData>({
-        keyword: Joi.string().allow(null),
-        tagIds: Joi.array().items(Joi.string()).allow(null),
+    const queryArticleSchema = Joi.object<SearchArticleReqData>({
+        keyword: Joi.string().allow(null).empty(''),
+        tagIds: Joi.array().items(Joi.number()).allow(null),
         page: Joi.number().allow(null),
     })
 

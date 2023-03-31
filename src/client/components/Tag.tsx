@@ -17,7 +17,7 @@ export const Tag: FC<Props> = (props) => {
     return (
         <AntdTag
             color={color}
-            style={{ cursor: 'pointer', opacity: selected ? 1 : 0.3 }}
+            style={{ cursor: 'pointer', opacity: selected ? 1 : 0.4 }}
             onClick={onClick}
         >{children}</AntdTag>
     )

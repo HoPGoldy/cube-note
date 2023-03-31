@@ -15,6 +15,11 @@ export const DEFAULT_COLOR = [
  */
 export const DEFAULT_TAG_GROUP = -1
 
+/**
+ * 固定分页条数
+ */
+export const PAGE_SIZE = 15
+
 
 /**
  * 数据库表名

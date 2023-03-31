@@ -7,14 +7,17 @@ import {
 } from '@ant-design/icons'
 import { Link, Outlet } from 'react-router-dom'
 import { Sidebar } from '../Sidebar'
-import { Popover, Space } from 'antd'
+import { Button, Popover, Space } from 'antd'
 import s from './styles.module.css'
 import { DesktopSetting } from '@/client/pages/userSetting'
 
 const SIDE_WIDTH = '240px'
 
 export const AppContainer: React.FC = () => {
+    /** 是否展开侧边栏 */
     const [collapsed, setCollapsed] = useState(false)
+    /** 是否打开用户管理菜单 */
+    const [userMenuVisible, setUserMenuVisible] = useState(false)
     const CollasedIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined
 
     return (
@@ -37,12 +40,16 @@ export const AppContainer: React.FC = () => {
                     <div>
                         <Space size="middle">
                             <Link to="/search">
-                                <SearchOutlined className="cursor-pointer text-xl" />
+                                <Button icon={<SearchOutlined />} className="w-60">
+                                    搜索
+                                </Button>
                             </Link>
                             <Popover
                                 placement="bottomRight"
                                 // trigger="click"
-                                content={<DesktopSetting />}
+                                content={<DesktopSetting onClick={() => setUserMenuVisible(false)} />}
+                                open={userMenuVisible}
+                                onOpenChange={setUserMenuVisible}
                                 arrow
                             >
                                 <UserOutlined className="cursor-pointer text-xl" />

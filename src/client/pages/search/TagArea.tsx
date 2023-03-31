@@ -2,21 +2,24 @@ import { Tag } from '@/client/components/Tag'
 import Loading from '@/client/layouts/Loading'
 import { useQueryTagGroup } from '@/client/services/tag'
 import { TagGroupListItem, TagListItem } from '@/types/tag'
-import React, { useState } from 'react'
+import { Collapse, Space } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
 
 interface Props {
-    onTagChange: (tagIds: number[]) => void
     tagList?: TagListItem[]
     isTagLoading: boolean
+    setCurrentPage: (page: number) => void
 }
 
 export const useTagArea = (props: Props) => {
-    const { tagList, isTagLoading, onTagChange } = props
+    const { tagList, isTagLoading, setCurrentPage } = props
+    const [searchParams, setSearchParams] = useSearchParams()
     // 当前选中的标签
-    const [selectedTag, setSelectedTag] = useState<number[]>([])
-    // 是否展开面板
-    const [isExpand, setIsExpand] = useState(false)
+    const [selectedTag, setSelectedTag] = useState<number[]>(() => {
+        return searchParams.get('tagIds')?.split(',')?.map((id) => +id.trim()) || []
+    })
     // 获取标签分组
     const { data: tagGroupResp, isLoading: isLoadingGroup } = useQueryTagGroup()
     // 分组列表
@@ -28,73 +31,57 @@ export const useTagArea = (props: Props) => {
         return selectedTag.includes(id)
     }
 
+    useEffect(() => {
+        if (selectedTag.length > 0) searchParams.set('tagIds', selectedTag.join(','))
+        else searchParams.delete('tagIds')
+        setSearchParams(searchParams)
+    }, [selectedTag])
+    
+
     const onSelectTag = (id: number) => {
-        if (!isExpand) return
         // 如果有了就删除，没有就添加
         const newTags = isTagSelected(id) ? selectedTag.filter(item => item !== id) : [...selectedTag, id]
 
-        onTagChange(newTags)
         setSelectedTag(newTags)
+        setCurrentPage(1)
     }
 
     const renderTag = (item: TagListItem) => {
         return (
             <Tag
                 key={item.id}
-                label={item.title}
-                id={item.id}
                 color={item.color}
-                selected={isExpand ? isTagSelected(item.id) : true}
-                onClick={onSelectTag}
-            />
+                selected={isTagSelected(item.id)}
+                onClick={() => onSelectTag(item.id)}
+            >{item.title}</Tag>
         )
     }
 
     const renderGroupItem = (item: TagGroupListItem) => {
         const tags = groupedTagDict[item.id] || []
         return (
-            <div key={item.id} className='bg-slate-300 m-2'>
-                <div>{item.title}</div>
-
-                <div className='flex flex-wrap min-h-[50px]'>
+            <Collapse.Panel header={item.title} key={item.id}>
+                <Space wrap size={[0, 8]}>
                     {tags.map(renderTag)}
-                </div>
-            </div>
+                </Space>
+            </Collapse.Panel>
         )
     }
-
-    const hasSubTag = (item: TagGroupListItem) => {
-        const tags = groupedTagDict[item.id] || []
-        return tags.length > 0
-    }
+    console.log('🚀 ~ file: TagArea.tsx:78 ~ renderTagSelectPanel ~ tagGroups.map(i => i.id):', tagGroups.map(i => i.id))
 
     const renderTagSelectPanel = () => {
-        if (!isExpand && isTagLoading) return <Loading tip='加载标签中...' />
-
-        if (!isExpand) {
-            const selectedTags = tagList?.filter(item => isTagSelected(item.id)) || []
-            return (
-                <div
-                    className='flex flex-wrap min-h-[50px]'
-                    onClick={() => setIsExpand(true)}
-                >
-                    {selectedTags.length === 0
-                        ? <div>点击展开标签面板</div>
-                        : selectedTags.map(renderTag)
-                    }
-                </div>
-            )
-        }
-
-        if (isExpand && isLoadingGroup) return <Loading tip='加载分组中...' />
+        if (isTagLoading) return <Loading tip='加载标签中...' />
+        if (isLoadingGroup) return <Loading tip='加载分组中...' />
 
         return (
-            <div>
-                {tagGroups.filter(hasSubTag).map(renderGroupItem)}
-                <div onClick={() => setIsExpand(false)}>收起标签面板</div>
-            </div>
+            <Collapse
+                defaultActiveKey={tagGroups.map(i => i.id)}
+                expandIconPosition="start"
+            >
+                {tagGroups.map(renderGroupItem)}
+            </Collapse>
         )
     }
 
-    return { renderTagSelectPanel }
+    return { renderTagSelectPanel, selectedTag }
 }

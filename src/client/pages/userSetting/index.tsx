@@ -1,18 +1,20 @@
 import React, { FC } from 'react'
-// import { Card, Cell, Space, Switch } from 'react-vant'
-// import { Contact, Close, LikeO, StarO, ArrowLeft, Certificate, SendGiftO, EcardPay } from '@react-vant/icons'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppTheme } from '@/types/user'
 import { useAppDispatch, useAppSelector } from '@/client/store'
 import { changeTheme, logout } from '@/client/store/user'
 import { useQueryArticleCount } from '@/client/services/user'
-import { Button, Col, Row, Space, Statistic } from 'antd'
-import { SnippetsOutlined, HighlightOutlined, LockOutlined, TagsOutlined, SmileOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { Button, Col, Row, Statistic } from 'antd'
+import { SnippetsOutlined, HighlightOutlined, LockOutlined, TagsOutlined, SmileOutlined, CloseCircleOutlined, ContactsOutlined } from '@ant-design/icons'
 import { useChangePassword } from '../changePassword'
 
-export const DesktopSetting: FC = () => {
+interface DesktopProps {
+    onClick: () => void
+}
+
+export const DesktopSetting: FC<DesktopProps> = (props) => {
     return (
-        <div style={{ width: '16rem' }}>
+        <div style={{ width: '16rem' }} onClick={props.onClick}>
             <SettingContent />
         </div>
     )
@@ -60,7 +62,7 @@ const SettingContent: FC = () => {
                 </Col>
                 <Col span={24}>
                     <Link to="/userInvite">
-                        <Button block icon={<TagsOutlined />}>用户管理</Button>
+                        <Button block icon={<ContactsOutlined />}>用户管理</Button>
                     </Link>
                 </Col>
                 <Col span={24}>
