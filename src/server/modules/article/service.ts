@@ -80,6 +80,7 @@ export const createService = (props: Props) => {
         }
 
         await db.article().delete().whereIn('id', deleteIds)
+        await db.articleRelation().delete().whereIn('fromArticleId', deleteIds).orWhereIn('toArticleId', deleteIds)
 
         // 返回父级文章 id，删除后会跳转至这个文章
         const parentId = getParentIdByPath(removedArticle.parentPath)
@@ -208,12 +209,13 @@ export const createService = (props: Props) => {
 
     // 获取相关的文章列表
     const getRelatives = async (id: string, userId: number) => {
-        const relatedArticles = await db.articleRelation()
+        const articles = await db.articleRelation()
             .select('articles.id', 'articles.title')
             .leftJoin(db.knex.raw(`${TABLE_NAME.ARTICLE} ON articleRelations.toArticleId = articles.id`))
             .where('articleRelations.fromArticleId', id)
             .andWhere('articleRelations.userId', userId)
 
+        const relatedArticles = articles.filter(item => item.id)
         const data: ArticleRelatedResp = { relatedArticles }
         return { code: 200, data }
     }

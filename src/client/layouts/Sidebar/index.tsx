@@ -8,6 +8,7 @@ import {
     useQueryArticleFavorite, useSetArticleRelated, useQueryArticleLink, useQueryArticleRelated
 } from '@/client//services/article'
 import { TreeMenu } from '@/client//components/TreeMenu'
+import { PlusOutlined, RollbackOutlined, LinkOutlined } from '@ant-design/icons'
 import { Button, Segmented, Space } from 'antd'
 import s from './styles.module.css'
 
@@ -16,6 +17,12 @@ const tabOptions = [
     { label: '相关', value: TabTypes.Related },
     { label: '收藏', value: TabTypes.Favorite },
 ]
+
+/** 列表中工具按钮的样式 */
+const TOOL_BTN_CLASSNAME = 'hover:bg-slate-500 bg-slate-600 transition-all p-1 cursor-pointer rounded truncate text-gray-200'
+
+/** 空列表占位符样式 */
+const EMPTY_CLASSNAME = 'text-gray-300 py-4 cursor-default'
 
 export const Sidebar: FC = () => {
     const navigate = useNavigate()
@@ -105,69 +112,89 @@ export const Sidebar: FC = () => {
 
     const renderMenuItem = (item: ArticleMenuItem) => {
         return (
-            <Button
-                block
-                ghost
+            <div
                 key={item.id}
+                className="hover:bg-slate-500 text-left transition-all py-1 px-2 cursor-pointer rounded truncate"
+                title={item.title}
                 onClick={() => onClickTreeItem({ value: item.id, title: item.title })}
             >
                 {item.title}
-            </Button>
+            </div>
         )
     }
 
+    /** 渲染下属文章列表 */
     const renderSubMenu = () => {
-        if (linkLoading) return <div>加载中...</div>
+        if (linkLoading) return <div className="my-8">加载中...</div>
         const currentMenu = articleLink?.data?.childrenArticles || []
+        // console.log('🚀 ~ 下属文章列表', currentMenu)
 
         return (<>
             {parentArticleId && (
-                <Link to={`/article/${parentArticleId}`} style={{ width: '100%' }}>
-                    <Button ghost type="dashed" block>
+                <Link to={`/article/${parentArticleId}`}>
+                    {/* <Button ghost type="dashed" block>
                         返回{parentArticleTitle}
-                    </Button>
+                    </Button> */}
+                    <div
+                        className={TOOL_BTN_CLASSNAME}
+                    >
+                        <RollbackOutlined /> 返回{parentArticleTitle}
+                    </div>
                 </Link>
             )}
             {currentMenu.length === 0
-                ? (<div>暂无笔记</div>)
+                ? (<div className={EMPTY_CLASSNAME}>暂无笔记</div>)
                 : currentMenu.map(renderMenuItem)
             }
-            <Button ghost block type="dashed" onClick={createArticle}>
-                创建子笔记
-            </Button>
+
+            <div
+                className={TOOL_BTN_CLASSNAME}
+                onClick={createArticle}
+            >
+                <PlusOutlined /> 创建子笔记
+            </div>
         </>)
     }
 
     const renderRelatedMenuList = () => {
-        if (relatedLinkLoading) return <div>加载中...</div>
+        if (relatedLinkLoading) return <div className="my-8">加载中...</div>
         const currentMenu = articleRelatedLink?.data?.relatedArticles || []
+        // console.log('🚀 ~ 相关文章列表', currentMenu)
 
-        if (currentMenu.length === 0) return <div>暂无相关笔记</div>
+        if (currentMenu.length === 0) return <div className={EMPTY_CLASSNAME}>暂无相关笔记</div>
         return currentMenu.map(renderMenuItem)
     }
 
+    /** 渲染相关文章列表 */
     const renderRelatedMenu = () => {
         return (<>
             {renderRelatedMenuList()}
             <TreeMenu
-                key={currentArticleId}
+                key="related-tree"
                 value={selectedRelatedArticleIds}
                 onChange={onUpdateRelatedArticleIds}
                 onClickNode={onUpdateRelatedList}
                 treeData={articleTree?.data || []}
             >
-                <Button ghost block type="dashed">关联其他笔记</Button>
+                <div
+                    className={TOOL_BTN_CLASSNAME}
+                    onClick={createArticle}
+                >
+                    <LinkOutlined /> 关联其他笔记
+                </div>
             </TreeMenu>
         </>)
-    }   
+    }
 
+    /** 渲染收藏文章列表 */
     const renderFavoriteMenu = () => {
-        if (favoriteLoading) return <div>加载中...</div>
+        if (favoriteLoading) return <div className="my-8">加载中...</div>
         const currentMenu = articleFavorite?.data || []
+        // console.log('🚀 ~ 收藏文章列表', currentMenu)
 
         return (<>
             {currentMenu.length === 0
-                ? (<div>暂无收藏</div>)
+                ? (<div className={EMPTY_CLASSNAME}>暂无收藏</div>)
                 : currentMenu.map(renderMenuItem)
             }
         </>)
@@ -193,8 +220,19 @@ export const Sidebar: FC = () => {
                 block
                 onChange={value => dispatch(setCurrentMenu(value as TabTypes))}
             />
+            {/* <Space.Compact block>
+                {tabOptions.map(item => (
+                    <Button
+                        key={item.value}
+                        type={currentTab === item.value ? 'primary' : 'primary'}
+                        onClick={() => dispatch(setCurrentMenu(item.value))}
+                    >
+                        {item.label}
+                    </Button>
+                ))}
+            </Space.Compact> */}
 
-            <div style={{ marginTop: '0.5rem', flexGrow: 1 }}>
+            <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden" style={{ marginTop: '0.5rem', flexGrow: 1 }}>
                 <Space direction="vertical" style={{ width: '100%' }}>
                     {renderCurrentMenu()}
                 </Space>
@@ -203,7 +241,7 @@ export const Sidebar: FC = () => {
                 treeData={articleTree?.data || []}
                 onClickNode={onClickTreeItem}
             >
-                <Button type="primary" block>侧边栏菜单</Button>
+                <Button className="flex-shrink-0 mt-2" type="primary" block>侧边栏菜单</Button>
             </TreeMenu>
         </section>
     )
