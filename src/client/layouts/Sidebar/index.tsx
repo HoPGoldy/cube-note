@@ -213,24 +213,29 @@ export const Sidebar: FC = () => {
         }
     }
 
+    const renderTabBtns = () => {
+        return (
+            <div className={s.tabArea}>
+                {tabOptions.map(item => (
+                    <div
+                        className={[s.tabBtn, currentTab === item.value ? s.selectedTabBtn : s.unselectedTabBtn].join(' ')}
+                        onClick={() => dispatch(setCurrentMenu(item.value))}
+                        key={item.value}
+                    >{item.label}</div>
+                ))}
+            </div>
+        )
+    }
+
     return (
         <section className={s.sideberBox}>
             <Segmented
+                className={s.tabBox}
                 options={tabOptions}
                 block
                 onChange={value => dispatch(setCurrentMenu(value as TabTypes))}
             />
-            {/* <Space.Compact block>
-                {tabOptions.map(item => (
-                    <Button
-                        key={item.value}
-                        type={currentTab === item.value ? 'primary' : 'primary'}
-                        onClick={() => dispatch(setCurrentMenu(item.value))}
-                    >
-                        {item.label}
-                    </Button>
-                ))}
-            </Space.Compact> */}
+            {/* {renderTabBtns()} */}
 
             <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden" style={{ marginTop: '0.5rem', flexGrow: 1 }}>
                 <Space direction="vertical" style={{ width: '100%' }}>
@@ -241,7 +246,7 @@ export const Sidebar: FC = () => {
                 treeData={articleTree?.data || []}
                 onClickNode={onClickTreeItem}
             >
-                <Button className="flex-shrink-0 mt-2" type="primary" block>侧边栏菜单</Button>
+                <Button className={s.treeBtn} type="primary" block>侧边栏菜单</Button>
             </TreeMenu>
         </section>
     )

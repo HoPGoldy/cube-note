@@ -15,6 +15,8 @@ interface Props {
 export const useEditor = (props: Props) => {
     // 正在编辑的文本内容
     const [content, setContent] = useState('')
+    // 内容是否被编辑了
+    const isContentModified = useRef(false)
     // 自动保存的引用，防止闭包陷阱
     const contentRef = useRef(content)
     const { mutateAsync: updateArticle } = useUpdateArticle()
@@ -46,6 +48,7 @@ export const useEditor = (props: Props) => {
     // 编辑时触发节流
     const onContentChange = (newContent: string) => {
         setContent(newContent)
+        isContentModified.current = true
         onContentChangeThrottle(content)
     }
 
@@ -60,5 +63,5 @@ export const useEditor = (props: Props) => {
         )
     }
 
-    return { renderEditor, setEditorContent: setContent }
+    return { renderEditor, setEditorContent: setContent, isContentModified }
 }

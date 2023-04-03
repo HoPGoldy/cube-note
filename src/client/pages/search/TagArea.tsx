@@ -26,10 +26,16 @@ export const useTagArea = (props: Props) => {
     const { tagGroups } = useAllTagGroup(tagGroupResp?.data)
     // 分好组的标签
     const { groupedTagDict } = useGroupedTag(tagList)
+    // 当前展开的标签分组
+    const [expandedTagGroup, setExpandedTagGroup] = useState<string[]>()
 
     const isTagSelected = (id: number) => {
         return selectedTag.includes(id)
     }
+
+    useEffect(() => {
+        setExpandedTagGroup(tagGroups.map((item) => item.id as unknown as string))
+    }, [tagGroups])
 
     useEffect(() => {
         if (selectedTag.length > 0) searchParams.set('tagIds', selectedTag.join(','))
@@ -67,7 +73,6 @@ export const useTagArea = (props: Props) => {
             </Collapse.Panel>
         )
     }
-    console.log('🚀 ~ file: TagArea.tsx:78 ~ renderTagSelectPanel ~ tagGroups.map(i => i.id):', tagGroups.map(i => i.id))
 
     const renderTagSelectPanel = () => {
         if (isTagLoading) return <Loading tip='加载标签中...' />
@@ -75,8 +80,9 @@ export const useTagArea = (props: Props) => {
 
         return (
             <Collapse
-                defaultActiveKey={tagGroups.map(i => i.id)}
                 expandIconPosition="start"
+                activeKey={expandedTagGroup}
+                onChange={keys => setExpandedTagGroup(keys as string[])}
             >
                 {tagGroups.map(renderGroupItem)}
             </Collapse>

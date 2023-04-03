@@ -33,6 +33,13 @@ const SearchArticle: FC = () => {
         tagIds: selectedTag,
         page: currentPage,
     })
+    // 搜索列表占位文本
+    const [listEmptyText, setListEmptyText] = useState<string>()
+
+    useEffect(() => {
+        if (!listEmptyText) setListEmptyText('输入关键字或选择标签进行搜索')
+        else setListEmptyText('没有找到相关笔记')
+    }, [isSearching])
 
     useEffect(() => {
         if (keyword) searchParams.set('keyword', keyword)
@@ -99,6 +106,7 @@ const SearchArticle: FC = () => {
                         loading={isSearching}
                         dataSource={articleListResp?.data?.rows || []}
                         renderItem={renderSearchItem}
+                        locale={{ emptyText: listEmptyText }}
                         pagination={{
                             total: articleListResp?.data?.total || 0,
                             pageSize: PAGE_SIZE,

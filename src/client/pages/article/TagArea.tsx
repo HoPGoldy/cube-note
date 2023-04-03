@@ -5,6 +5,7 @@ import { useAddTag, useQueryTagList } from '@/client/services/tag'
 import { TagListItem } from '@/types/tag'
 import Loading from '@/client/layouts/Loading'
 import { useUpdateArticle } from '@/client/services/article'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
     /**
@@ -23,6 +24,7 @@ interface Props {
 
 const TagArea: FC<Props> = (props) => {
     const { articleId, value = [], disabled } = props
+    const navigate = useNavigate()
     // 新增标签
     const { mutateAsync: addTag, isLoading: isAddingTag } = useAddTag()
     // 整个标签列表
@@ -57,8 +59,10 @@ const TagArea: FC<Props> = (props) => {
     }
 
     const onClickTag = (id: number) => {
-        // TODO: 跳转到搜索页
-        if (!editingTag) return
+        if (!editingTag) {
+            navigate(`/search?tagIds=${id}`)
+            return
+        }
 
         // 更新文章的标签列表
         const newSelected = value.includes(id)

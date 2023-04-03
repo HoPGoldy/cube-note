@@ -36,6 +36,8 @@ const About: FC = () => {
     const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     // 保存按钮的文本
     const [saveBtnText, setSaveBtnText] = useState('')
+    // 标题是否被修改
+    const isTitleModified = useRef(false)
     // 标题输入框
     const titleInputRef = useRef<HTMLInputElement>(null)
     // 正在编辑的标题内容
@@ -48,7 +50,7 @@ const About: FC = () => {
     const isEdit = (searchParams.get('mode') === 'edit')
 
     // 功能 - 编辑器
-    const { renderEditor, setEditorContent } = useEditor({
+    const { renderEditor, setEditorContent, isContentModified } = useEditor({
         onChange: setContent,
         onAutoSave: () => setSaveBtnText(`自动保存于 ${dayjs().format('HH:mm')}`),
         articleId: currentArticleId
@@ -86,9 +88,12 @@ const About: FC = () => {
         searchParams.delete('mode')
         setSearchParams(searchParams)
         setSaveBtnText('')
-        onClickSaveBtn()
+        // 只有在内容变化时，点击退出按钮才会自动保存
+        if (isContentModified.current) onClickSaveBtn()
+        isContentModified.current = false
     }
 
+    /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
     const onClickSaveBtn = async () => {
         await saveEdit({ title, content })
     }
@@ -104,9 +109,15 @@ const About: FC = () => {
                     <input
                         ref={titleInputRef}
                         value={title}
-                        onChange={e => setTitle(e.target.value)}
+                        onChange={e => {
+                            setTitle(e.target.value)
+                            isTitleModified.current = true
+                        }}
                         onKeyUp={blurOnEnter}
-                        onBlur={() => saveEdit({ title })}
+                        onBlur={() => {
+                            if (isTitleModified.current) saveEdit({ title })
+                            isTitleModified.current = false
+                        }}
                         placeholder="请输入笔记名"
                         className="font-bold border-0 text-3xl my-2"
                     />

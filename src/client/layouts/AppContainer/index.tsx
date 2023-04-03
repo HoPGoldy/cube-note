@@ -23,12 +23,8 @@ export const AppContainer: React.FC = () => {
     return (
         <div style={{ height: '100%', display: 'flex' }}>
             <aside
-                style={{
-                    backgroundColor: '#334155',
-                    width: collapsed ? 0 : SIDE_WIDTH,
-                    overflow: 'hidden',
-                    transition: 'width 0.3s'
-                }}
+                className="overflow-hidden transition-w"
+                style={{ width: collapsed ? 0 : SIDE_WIDTH }}
             >
                 <Sidebar />
             </aside>
