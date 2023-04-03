@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import { AddTag, EditTagEntry } from '@/client/components/Tag'
 import { Tag } from 'antd'
 import { useAddTag, useQueryTagList } from '@/client/services/tag'
@@ -16,32 +16,35 @@ interface Props {
      */
     value: number[]
     /**
-     * 是否处于编辑模式
+     * 是否禁用编辑
      */
-    editing?: boolean
-    /**
-     * 编辑状态切换回调
-     */
-    onEditFinish: (editing: boolean) => void
+    disabled?: boolean
 }
 
 const TagArea: FC<Props> = (props) => {
-    const { articleId, value = [], editing = false, onEditFinish } = props
+    const { articleId, value = [], disabled } = props
     // 新增标签
     const { mutateAsync: addTag, isLoading: isAddingTag } = useAddTag()
     // 整个标签列表
     const { data: tagListResp, isLoading: isLoadingTagList } = useQueryTagList()
     // 更新文章选中的标签列表
     const { mutateAsync: updateArticle } = useUpdateArticle()
+    // 是否处于编辑状态
+    const [editingTag, setEditingTag] = useState(false)
 
     // 当前要显示的标签列表
     const tagList = useMemo(() => {
         if (!tagListResp?.data) return []
-        if (editing) return tagListResp.data
+        if (editingTag) return tagListResp.data
 
         // 非编辑状态下，只显示当前文章选中的标签
         return tagListResp.data.filter(tag => value.includes(tag.id))
-    }, [tagListResp, editing, value])
+    }, [tagListResp, editingTag, value])
+    
+    // 禁用时，不显示编辑按钮
+    useEffect(() => {
+        if (disabled) setEditingTag(false)
+    }, [disabled])
 
     const onClickAddBtn = async (newLabel: string) => {
         if (!newLabel) return
@@ -55,7 +58,7 @@ const TagArea: FC<Props> = (props) => {
 
     const onClickTag = (id: number) => {
         // TODO: 跳转到搜索页
-        if (!editing) return
+        if (!editingTag) return
 
         // 更新文章的标签列表
         const newSelected = value.includes(id)
@@ -66,7 +69,7 @@ const TagArea: FC<Props> = (props) => {
     }
 
     const renderTagItem = (item: TagListItem) => {
-        const selected = editing ? value.includes(item.id) : true
+        const selected = editingTag ? value.includes(item.id) : true
         return (
             <Tag
                 key={item.id}
@@ -86,13 +89,15 @@ const TagArea: FC<Props> = (props) => {
     return (
         <div style={{ marginBottom: '1rem' }}>
             {renderTagList()}
-            {editing && (
+            {editingTag && (
                 <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />
             )}
-            <EditTagEntry
-                onClick={() => onEditFinish(!editing)}
-                label={editing ? '结束编辑' : (tagList.length > 0 ? '编辑标签' : '新增标签')}
-            />
+            {!disabled && (
+                <EditTagEntry
+                    onClick={() => setEditingTag(!editingTag)}
+                    label={editingTag ? '结束编辑' : (tagList.length > 0 ? '编辑标签' : '新增标签')}
+                />
+            )}
         </div>
     )
 }

@@ -11,14 +11,13 @@ import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
 import DeleteBtn from './DeleteBtn'
-import { Star } from '@react-vant/icons'
-import { Space, Button } from 'antd'
+import { Space, Tooltip } from 'antd'
 import { UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import dayjs from 'dayjs'
 import s from './styles.module.css'
-import { StarFilled } from '@ant-design/icons'
+import { HeartFilled, EditOutlined, SaveOutlined, RollbackOutlined, LoadingOutlined } from '@ant-design/icons'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -36,7 +35,7 @@ const About: FC = () => {
     // 根节点文章
     const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     // 保存按钮的文本
-    const [saveBtnText, setSaveBtnText] = useState('保存')
+    const [saveBtnText, setSaveBtnText] = useState('')
     // 标题输入框
     const titleInputRef = useRef<HTMLInputElement>(null)
     // 正在编辑的标题内容
@@ -45,8 +44,6 @@ const About: FC = () => {
     const [content, setContent] = useState('')
     // 是否收藏
     const [isFavorite, setIsFavorite] = useState(false)
-    // 是否正在编辑标签
-    const [isEditTag, setIsEditTag] = useState(false)
     // 页面是否在编辑中
     const isEdit = (searchParams.get('mode') === 'edit')
 
@@ -81,58 +78,78 @@ const About: FC = () => {
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('保存成功')
-        setSaveBtnText('保存')
+        setSaveBtnText('')
         dispatch(updateCurrentTab({ title }))
     }
 
     const endEdit = async () => {
         searchParams.delete('mode')
         setSearchParams(searchParams)
-        setSaveBtnText('保存')
+        setSaveBtnText('')
+        onClickSaveBtn()
     }
 
     const onClickSaveBtn = async () => {
         await saveEdit({ title, content })
     }
 
+    const SaveIcon = updatingArticle ? LoadingOutlined : SaveOutlined
+
     const renderContent = () => {
         if (isLoadingArticle) return <Loading tip='信息加载中...' />
 
         return (
-            <div className={s.container}>
-                <div className={s.titleArea}>
+            <div className="box-border w-full h-full flex flex-col flex-nowrap">
+                <div className="flex justify-between items-start">
                     <input
                         ref={titleInputRef}
                         value={title}
-                        disabled={!isEdit}
                         onChange={e => setTitle(e.target.value)}
                         onKeyUp={blurOnEnter}
                         onBlur={() => saveEdit({ title })}
                         placeholder="请输入笔记名"
-                        className={s.titleInput}
+                        className="font-bold border-0 text-3xl my-2"
                     />
-                    <Space>
-                        <StarFilled
-                            style={{ fontSize: '1.5rem', color: isFavorite ? 'yellow' : 'gray' }}
-                            onClick={() => {
-                                updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
-                                setIsFavorite(!isFavorite)
-                            }}
-                        />
+                    <Space className='text-xl text-gray-500'>
+                        {isEdit && (
+                            <div className="text-base">{saveBtnText}</div>
+                        )}
+
+                        <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom">
+                            <HeartFilled
+                                className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
+                                onClick={() => {
+                                    updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
+                                    setIsFavorite(!isFavorite)
+                                }}
+                            />
+                        </Tooltip>
+
                         {currentArticleId !== rootArticleId && <DeleteBtn
                             title={title}
                             currentArticleId={currentArticleId}
                         />}
 
                         {isEdit ? (<>
-                            <Button className='w-60 !mr-2' onClick={onClickSaveBtn}>
-                                {updatingArticle ? '保存中' : saveBtnText}
-                            </Button>
-                            <Button className='w-40' onClick={endEdit}>
-                                退出编辑
-                            </Button>
+                            <Tooltip title="保存" placement="bottom">
+                                <SaveIcon
+                                    className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
+                                    onClick={onClickSaveBtn}
+                                />
+                            </Tooltip>
+                            <Tooltip title="保存并退出" placement="bottomLeft">
+                                <RollbackOutlined
+                                    className="hover:scale-125 transition-all"
+                                    onClick={endEdit}
+                                />
+                            </Tooltip>
                         </>) : (
-                            <Button className='w-40' onClick={startEdit}>编辑</Button>
+                            <Tooltip title="编辑" placement="bottom">
+                                <EditOutlined
+                                    className="hover:scale-125 transition-all"
+                                    onClick={startEdit}
+                                />
+                            </Tooltip>
                         )}
                     </Space>
                 </div>
@@ -140,8 +157,7 @@ const About: FC = () => {
                 <TagArea
                     articleId={currentArticleId}
                     value={articleResp?.data?.tagIds || []}
-                    editing={isEditTag}
-                    onEditFinish={setIsEditTag}
+                    disabled={!isEdit}
                 />
 
                 {isEdit ? (

@@ -1,12 +1,12 @@
 import React, { FC, useState } from 'react'
-import { Dialog, Checkbox } from 'react-vant'
 import { useNavigate } from 'react-router-dom'
 import { useDeleteArticle } from '../../services/article'
 import { useAppDispatch } from '../../store'
 import { removeTab } from '../../store/tab'
 import { messageSuccess } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
-import { Button } from 'antd'
+import { Button, Modal, Tooltip } from 'antd'
+import { DeleteOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons'
 
 interface Props {
     title: string
@@ -38,38 +38,43 @@ const DeleteBtn: FC<Props> = (props) => {
     }
 
     return (<>
-        <div className='w-20'>
-            <Button
+        <Tooltip title='删除' placement="bottom">
+            <DeleteOutlined
+                className="text-xl hover:scale-125 hover:text-red-500 transition-all"
                 onClick={() => setShowDeleteDialog(true)}
-                className='w-full'
-                danger
-            >删除</Button>
-        </div>
+            />
+        </Tooltip>
 
-        <Dialog
-            visible={showDeleteDialog}
+        <Modal
             title={`删除${title}`}
-            showCancelButton
-            confirmButtonText='删除'
-            confirmButtonColor='red'
-            cancelButtonText='取消'
-            onConfirm={async () => {
+            open={showDeleteDialog}
+            onOk={async () => {
                 await onDelete()
                 setShowDeleteDialog(false)
             }}
-            onCancel={() => setShowDeleteDialog(false)}
+            onCancel={() => {
+                setShowDeleteDialog(false)
+                setDeleteChildren(false)
+            }}
+            okText='删除'
+            cancelText='取消'
+            okButtonProps={{ danger: true }}
+            width={400}
         >
-            <div className='text-center'>删除后笔记将无法恢复，请谨慎操作</div>
+            <div className="mb-2">
+                删除后笔记将无法恢复，请谨慎操作
+            </div>
 
-            <Checkbox.Group value={deleteChildren ? ['deleteChildren'] : []}>
-                <div className='flex justify-center'>
-                    删除子笔记 <Checkbox
-                        name='deleteChildren'
-                        onClick={() => setDeleteChildren(!deleteChildren)}
-                    />
-                </div>
-            </Checkbox.Group>
-        </Dialog>
+            <Button
+                block
+                danger
+                type={deleteChildren ? 'primary' : 'default'}
+                onClick={() => setDeleteChildren(!deleteChildren)}
+                icon={deleteChildren ? <CheckOutlined /> : <CloseOutlined />}
+            >
+                删除子笔记
+            </Button>
+        </Modal>
     </>)
 }
 

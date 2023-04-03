@@ -11,8 +11,7 @@ html, body, #root {
 }
 
 body {
-    background-color: rgb(243 244 246);
-    font-size: 16px;
+    @apply bg-white text-base;
 }
 
 /* 关闭 password 自带的显示隐藏功能 */

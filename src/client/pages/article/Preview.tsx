@@ -10,7 +10,8 @@ interface Props {
 const Preview: FC<Props> = (props) => {
     return (
         <div
-            style={{ height: 'calc(100vh - 186px)', overflowY: 'auto' }}
+            // style={{ height: 'calc(100vh - 186px)', overflowY: 'auto' }}
+            className="w-full xl:w-[60%] m-auto"
         >
             <Viewer value={props.value} plugins={plugins} />
         </div>

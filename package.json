@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@bytemd/plugin-gfm": "^1.20.2",
+    "@bytemd/plugin-highlight": "^1.21.0",
     "@bytemd/plugin-medium-zoom": "^1.20.2",
     "@bytemd/react": "^1.20.2",
     "@emotion/react": "^11.10.6",

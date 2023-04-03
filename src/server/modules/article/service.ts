@@ -79,8 +79,12 @@ export const createService = (props: Props) => {
             deleteIds.push(...childrenArticles.map(item => item.id))
         }
 
+        // 删除文章本体
         await db.article().delete().whereIn('id', deleteIds)
+        // 删除文章关联
         await db.articleRelation().delete().whereIn('fromArticleId', deleteIds).orWhereIn('toArticleId', deleteIds)
+        // 删除文章收藏
+        await db.favoriteArticle().delete().whereIn('articleId', deleteIds)
 
         // 返回父级文章 id，删除后会跳转至这个文章
         const parentId = getParentIdByPath(removedArticle.parentPath)

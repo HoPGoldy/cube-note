@@ -57,7 +57,8 @@ export const AppContainer: React.FC = () => {
                         </Space>
                     </div>
                 </header>
-                <main className="flex-1 p-4 overflow-y-auto" style={{ height: 'calc(100% - 5rem)' }}>
+                {/* 后面减去的 1px 是标题栏底部边框的高度 */}
+                <main className="flex-1 p-4 overflow-y-auto" style={{ height: 'calc(100% - 5rem - 1px)' }}>
                     <Outlet />
                 </main>
             </div>

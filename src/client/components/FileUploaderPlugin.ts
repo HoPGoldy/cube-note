@@ -5,6 +5,8 @@ import { messageError } from '@/client/utils/message'
 import { UploadedFile } from '@/types/file'
 import gfm from '@bytemd/plugin-gfm'
 import mediumZoom from '@bytemd/plugin-medium-zoom'
+import highlight from '@bytemd/plugin-highlight'
+import 'highlight.js/styles/foundation.css'
 
 const getFileUrl = (file: UploadedFile) => {
     // 后缀名
@@ -109,6 +111,7 @@ export const fileUploader = (): BytemdPlugin => {
 
 export const plugins = [
     gfm(),
+    highlight(),
     mediumZoom(),
     fileUploader()
 ]

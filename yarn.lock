@@ -309,6 +309,13 @@
   dependencies:
     remark-gfm "^3.0.1"
 
+"@bytemd/plugin-highlight@^1.21.0":
+  version "1.21.0"
+  resolved "https://registry.npmjs.org/@bytemd/plugin-highlight/-/plugin-highlight-1.21.0.tgz#b19cc18847eca10b6f254ff2da6e2d072db0738c"
+  integrity sha512-JM9rwzj9pFBXVwxmD9mgGIQPO4cTFVHvDhffS93IMK+tqvo0Vw76zDIqJWT3f421j8iNxffGsVQQs6389u3Z9A==
+  dependencies:
+    highlight.js "^11.7.0"
+
 "@bytemd/plugin-medium-zoom@^1.20.2":
   version "1.20.2"
   resolved "https://registry.npmjs.org/@bytemd/plugin-medium-zoom/-/plugin-medium-zoom-1.20.2.tgz#93905f721b6147108f57f8322a0ee05f12ca6c83"
@@ -3049,6 +3056,11 @@ hexoid@1.0.0:
   version "1.0.0"
   resolved "https://registry.npmmirror.com/hexoid/-/hexoid-1.0.0.tgz#ad10c6573fb907de23d9ec63a711267d9dc9bc18"
   integrity sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==
+
+highlight.js@^11.7.0:
+  version "11.7.0"
+  resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-11.7.0.tgz#3ff0165bc843f8c9bce1fd89e2fda9143d24b11e"
+  integrity sha512-1rRqesRFhMO/PRF+G86evnyJkCgaZFOI+Z6kdj15TA18funfoqJXvgPCLSf0SWq3SRfg1j3HlDs8o4s3EGq1oQ==
 
 hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"

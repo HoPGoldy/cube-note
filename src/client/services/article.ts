@@ -79,6 +79,7 @@ export const useDeleteArticle = () => {
         onSuccess: (resp) => {
             queryClient.invalidateQueries(['articleLink', resp?.data?.parentArticleId])
             queryClient.invalidateQueries('menu')
+            queryClient.invalidateQueries('favorite')
         }
     })
 }

@@ -6,21 +6,9 @@
     flex-flow: column nowrap;
 }
 
-.titleArea {
-    display: flex;
-    margin-bottom: 0.5rem;
-    justify-content: space-between;
-}
-
-.titleInput {
-    font-weight: bold;
-    font-size: 1.25rem;
-    line-height: 1.75rem;
-    border: 0;
-}
-
 .editorArea {
     flex-grow: 1;
+    height: calc(100vh - 186px);
 }
 
 .editorArea > div {
