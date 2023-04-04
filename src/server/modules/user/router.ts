@@ -52,11 +52,11 @@ export const createRouter = (props: Props) => {
     })
 
     router.post('/createAdmin', async ctx => {
-        const body = validate(ctx, registerSchema)
+        const body = validate(ctx, loginSchema)
         if (!body) return
-        const { username, passwordHash } = body
+        const { username, password } = body
 
-        const resp = await service.createAdmin(username, passwordHash)
+        const resp = await service.createAdmin(username, password)
         response(ctx, resp)
     })
 

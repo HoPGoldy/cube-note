@@ -80,8 +80,10 @@ export const createService = (props: Props) => {
     const register = async (data: RegisterReqData & { isAdmin?: boolean }): Promise<AppResponse> => {
         const { username, passwordHash, inviteCode, isAdmin = false } = data
 
-        const inviteResp = await finishUserInvite(username, inviteCode)
-        if (inviteResp.code !== STATUS_CODE.SUCCESS) return inviteResp
+        if (!isAdmin) {
+            const inviteResp = await finishUserInvite(username, inviteCode)
+            if (inviteResp.code !== STATUS_CODE.SUCCESS) return inviteResp
+        }
 
         const userStorage = await db.user().select('id').where({ username }).first()
         if (userStorage) {
@@ -116,7 +118,7 @@ export const createService = (props: Props) => {
      */
     const createAdmin = async (username: string, passwordHash: string): Promise<AppResponse> => {
         const [{ ['count(*)']: userCount }] = await db.user().count()
-        if (userCount > 0) {
+        if (+userCount > 0) {
             return { code: 400, msg: '管理员已存在' }
         }
 

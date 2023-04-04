@@ -43,7 +43,8 @@ export const createService = (props: Props) => {
             createUserId: userId,
             createTime: Date.now(),
             updateTime: Date.now(),
-            parentPath: (parentArticle && parentId) ? appendIdToPath(parentArticle.parentPath, parentId) : ''
+            parentPath: (parentArticle && parentId) ? appendIdToPath(parentArticle.parentPath, parentId) : '',
+            tagIds: '',
         }
 
         const [id] = await db.article().insert(newArticle)

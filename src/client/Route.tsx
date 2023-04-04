@@ -43,7 +43,7 @@ export const Routes: FC = () => {
         // 注册
         { path: '/register/:inviteCode', element: lazyLoad(() => import('./pages/register')) },
         // 初始化管理员
-        { path: '/init', element: lazyLoad(() => import('./pages/CreateAdmin')) },
+        { path: '/init', element: lazyLoad(() => import('./pages/createAdmin')) },
     ])
 
     return routes
