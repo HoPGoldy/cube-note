@@ -10,6 +10,8 @@ import { Sidebar } from '../Sidebar'
 import { Button, Popover, Space } from 'antd'
 import s from './styles.module.css'
 import { DesktopSetting } from '@/client/pages/userSetting'
+import { isMobile } from 'react-device-detect'
+console.log('isMobile', isMobile)
 
 const SIDE_WIDTH = '240px'
 
@@ -19,6 +21,14 @@ export const AppContainer: React.FC = () => {
     /** 是否打开用户管理菜单 */
     const [userMenuVisible, setUserMenuVisible] = useState(false)
     const CollasedIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined
+
+    if (isMobile) {
+        return (
+            <main className="h-full w-screen">
+                <Outlet />
+            </main>
+        )
+    }
 
     return (
         <div style={{ height: '100%', display: 'flex' }}>
@@ -54,7 +64,10 @@ export const AppContainer: React.FC = () => {
                     </div>
                 </header>
                 {/* 后面减去的 1px 是标题栏底部边框的高度 */}
-                <main className="flex-1 p-4 overflow-y-auto" style={{ height: 'calc(100% - 5rem - 1px)' }}>
+                <main
+                    className="flex-1 p-4 overflow-y-auto"
+                    style={{ height: 'calc(100% - 5rem - 1px)' }}
+                >
                     <Outlet />
                 </main>
             </div>

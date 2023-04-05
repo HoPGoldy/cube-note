@@ -246,7 +246,7 @@ export const Sidebar: FC = () => {
                 treeData={articleTree?.data || []}
                 onClickNode={onClickTreeItem}
             >
-                <Button className={s.treeBtn} type="primary" block>侧边栏菜单</Button>
+                <Button className={s.treeBtn} type="primary" block>笔记树</Button>
             </TreeMenu>
         </section>
     )

@@ -102,7 +102,7 @@ export const TreeMenu: FC<Props> = (props) => {
     /** 打开第一个菜单时调用 */
     const onOpenFirstMenu = () => {
         closeAllThrottle.cancel()
-        openMenu(entryId.current, props.treeData, 0, 26)
+        openMenu(entryId.current, props.treeData, 0, 20)
     }
 
     /** 打开后续菜单时调用 */

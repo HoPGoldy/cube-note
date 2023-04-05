@@ -3,7 +3,7 @@
     @apply box-border p-3 h-full w-60 flex flex-col flex-nowrap text-center text-white;
 }
 
-/* .tabBox {
+.tabBox {
     @apply bg-slate-800 text-slate-50;
 }
 
@@ -29,7 +29,7 @@
 
 .unselectedTabBtn {
     @apply bg-slate-300;
-} */
+}
 
 .treeBtn {
     @apply flex-shrink-0 mt-2 hover:!bg-slate-500 bg-slate-800;
