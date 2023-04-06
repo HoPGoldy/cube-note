@@ -1,5 +1,5 @@
 import { ArticleTreeNode } from '@/types/article'
-import React, { FC, useState, useMemo, useRef } from 'react'
+import React, { FC, useState, useMemo, useRef, PropsWithChildren } from 'react'
 import debounce from 'lodash/debounce'
 import { Arrow } from '@react-vant/icons'
 import { nanoid } from 'nanoid'
@@ -56,7 +56,7 @@ const getNewMenuPos = (prevRect: DOMRect, menuItemNumber: number, offset = 10) =
 /**
  * 桌面端左下方的快捷访问嵌套菜单
  */
-export const TreeMenu: FC<Props> = (props) => {
+export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
     /** 唯一的 dom id，用于支持多个 TreeMenu 组件 */
     const entryId = useRef(nanoid())
     /** 弹出的菜单项，一个数组，元素是弹出的菜单项 */

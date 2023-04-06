@@ -1,6 +1,6 @@
 import { STATUS_CODE } from '@/config'
 import { LoginSuccessResp } from '@/types/user'
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, PropsWithChildren } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useQueryUserInfo } from '../services/user'
 import { useAppDispatch, useAppSelector } from '../store'
@@ -8,7 +8,7 @@ import { setCurrentArticle } from '../store/menu'
 import { login } from '../store/user'
 import Loading from './Loading'
 
-export const LoginAuth: FC = ({ children }) => {
+export const LoginAuth: FC<PropsWithChildren> = ({ children }) => {
     const userInfo = useAppSelector(s => s.user.userInfo)
     const token = useAppSelector(s => s.user.token)
     const dispatch = useAppDispatch()

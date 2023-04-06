@@ -1,11 +1,11 @@
-import React, { FC } from 'react'
+import React, { FC, PropsWithChildren } from 'react'
 
 interface Props {
     className?: string
     style?: React.CSSProperties
 }
 
-const Header: FC<Props> = (props) => {
+const Header: FC<PropsWithChildren<Props>> = (props) => {
     return (
         <div
             className={

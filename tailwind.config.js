@@ -12,7 +12,7 @@ module.exports = {
         extend: {
             height: {
                 'bottombar': 'var(--cube-note-bottombar-height)',
-                'page-content': 'calc(100% - var(--cube-note-bottombar-height))'
+                'page-content': 'calc(100% - var(--cube-note-bottombar-height) - 1rem)'
             },
             transitionProperty: {
                 'w': 'width',
