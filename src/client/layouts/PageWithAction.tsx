@@ -5,7 +5,7 @@ import { DebouncedFunc } from 'lodash'
 import debounce from 'lodash/debounce'
 import { Field, FieldInstance } from 'react-vant'
 import { useAppSelector } from '../store'
-import { MobileView } from 'react-device-detect'
+import { MobileArea } from './Responsive'
 
 /**
  * 页面正文，会给下面的操作栏留出空间
@@ -23,11 +23,11 @@ export const PageContent: FC<PropsWithChildren> = (props) => {
  */
 export const PageAction: FC<PropsWithChildren> = (props) => {
     return (
-        <MobileView>
+        <MobileArea>
             <div className="p-2 flex flex-row md:hidden h-bottombar">
                 {props.children}
             </div>
-        </MobileView>
+        </MobileArea>
     )
 }
 

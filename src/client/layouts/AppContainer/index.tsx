@@ -10,7 +10,7 @@ import { Sidebar } from '../Sidebar'
 import { Button, Popover, Space } from 'antd'
 import s from './styles.module.css'
 import { DesktopSetting } from '@/client/pages/userSetting'
-import { isMobile } from 'react-device-detect'
+import { isMobile } from '../Responsive'
 
 const SIDE_WIDTH = '240px'
 
@@ -64,8 +64,8 @@ export const AppContainer: React.FC = () => {
                 </header>
                 {/* 后面减去的 1px 是标题栏底部边框的高度 */}
                 <main
-                    className="flex-1 p-4 overflow-y-auto"
-                    style={{ height: 'calc(100% - 5rem - 1px)' }}
+                    className="flex-1 overflow-y-auto"
+                    style={{ height: 'calc(100% - 3rem - 1px)' }}
                 >
                     <Outlet />
                 </main>

@@ -18,7 +18,7 @@ import { blurOnEnter } from '@/client/utils/input'
 import dayjs from 'dayjs'
 import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined, HeartFilled, EditOutlined, SaveOutlined, RollbackOutlined, LoadingOutlined } from '@ant-design/icons'
 import s from './styles.module.css'
-import { BrowserView } from 'react-device-detect'
+import { DesktopArea } from '@/client/layouts/Responsive'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -105,7 +105,7 @@ const About: FC = () => {
         if (isLoadingArticle) return <Loading tip='信息加载中...' />
 
         return (
-            <div className="box-border w-full h-full flex flex-col flex-nowrap">
+            <div className="box-border p-4 md:w-full h-full flex flex-col flex-nowrap">
                 <div className="flex justify-between items-start">
                     <input
                         ref={titleInputRef}
@@ -120,9 +120,9 @@ const About: FC = () => {
                             isTitleModified.current = false
                         }}
                         placeholder="请输入笔记名"
-                        className="font-bold border-0 text-3xl my-2"
+                        className="font-bold border-0 text-3xl my-2 w-full"
                     />
-                    <BrowserView>
+                    <DesktopArea>
                         <Space className='text-xl text-gray-500'>
                             {isEdit && (
                                 <div className="text-base">{saveBtnText}</div>
@@ -165,7 +165,7 @@ const About: FC = () => {
                                 </Tooltip>
                             )}
                         </Space>
-                    </BrowserView>
+                    </DesktopArea>
                 </div>
 
                 <TagArea
@@ -199,9 +199,9 @@ const About: FC = () => {
 
         <PageAction>
             <ActionIcon icon={<SettingOutlined />} />
-            <ActionIcon icon={<SwitcherOutlined />} />
             <ActionIcon icon={<SearchOutlined />} />
             <ActionIcon icon={<MenuOutlined />} />
+            <ActionIcon icon={<SwitcherOutlined />} />
             <ActionButton onClick={() => navigate(-1)}>新增</ActionButton>
         </PageAction>
     </>)

@@ -1,7 +1,7 @@
 import { ArticleTreeNode } from '@/types/article'
 import React, { FC, useState, useMemo, useRef, PropsWithChildren, createRef } from 'react'
 import debounce from 'lodash/debounce'
-import { Arrow } from '@react-vant/icons'
+import { RightOutlined } from '@ant-design/icons'
 import { nanoid } from 'nanoid'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 
@@ -160,7 +160,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
                     
                 >
                     <div className='truncate'>{item.title}</div>
-                    {item.children && <Arrow />}
+                    {item.children && <RightOutlined />}
                 </div>
             </div>
         )

@@ -1,8 +1,8 @@
 import React, { FC, useState } from 'react'
 import { useChangePasswordContent } from './content'
-import { isMobile } from 'react-device-detect'
 import { useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
+import { isMobile } from '@/client/layouts/Responsive'
 
 export const useChangePassword = () => {
     const navigate = useNavigate()

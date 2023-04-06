@@ -1,5 +1,7 @@
+/* md 文档里的附件图标 */
 .icon {
-    width: 1em; height: 1em;
+    width: 1em;
+    height: 1em;
     vertical-align: -0.15em;
     fill: currentColor;
     overflow: hidden;
@@ -12,6 +14,31 @@ html, body, #root {
 
 body {
     @apply bg-white text-base;
+}
+
+/* 重置标题样式，不然移动端的标题会过大 */
+h1 {
+    @apply text-2xl font-bold;
+}
+
+h2 {
+    @apply text-xl font-bold;
+}
+
+h3 {
+    @apply text-lg font-bold;
+}
+
+h4 {
+    @apply text-base font-bold;
+}
+
+h5 {
+    @apply text-sm font-bold;
+}
+
+h6 {
+    @apply text-xs font-bold;
 }
 
 :root {

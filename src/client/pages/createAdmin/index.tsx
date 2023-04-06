@@ -6,23 +6,19 @@ import { useAppDispatch, useAppSelector } from '@/client/store'
 import { initSuccess } from '@/client/store/global'
 import { Button, Row, Col, Input, InputRef } from 'antd'
 import { messageError, messageSuccess } from '@/client/utils/message'
-import { isMobileOnly, isTablet, isDesktop } from 'react-device-detect'
 import s from './styles.module.css'
+import { isMobile } from '@/client/layouts/Responsive'
 
 const getViewWidth = () => {
     // 获取浏览器宽度
     const width = window.innerWidth
 
-    if (isMobileOnly) {
+    if (isMobile) {
         return width * 0.8 + 'px'
     }
-    if (isTablet) {
-        return width * 0.5 + 'px'
-    }
-    if (isDesktop) {
+    else {
         return width / 3 + 'px'
     }
-    return width * 0.8 + 'px'
 }
 
 const viewWidth = getViewWidth()
