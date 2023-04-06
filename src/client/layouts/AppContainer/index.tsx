@@ -11,7 +11,6 @@ import { Button, Popover, Space } from 'antd'
 import s from './styles.module.css'
 import { DesktopSetting } from '@/client/pages/userSetting'
 import { isMobile } from 'react-device-detect'
-console.log('isMobile', isMobile)
 
 const SIDE_WIDTH = '240px'
 

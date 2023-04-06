@@ -1,5 +1,5 @@
 import { ArticleTreeNode } from '@/types/article'
-import React, { FC, useState, useMemo, useRef, PropsWithChildren } from 'react'
+import React, { FC, useState, useMemo, useRef, PropsWithChildren, createRef } from 'react'
 import debounce from 'lodash/debounce'
 import { Arrow } from '@react-vant/icons'
 import { nanoid } from 'nanoid'
@@ -15,10 +15,12 @@ interface Props {
 
 interface MenuList {
     key: number
-    // div 的样式
+    /** div 的样式 */
     styles?: React.CSSProperties
-    // div 里显示的选项列表
+    /** div 里显示的选项列表 */
     subMenus?: ArticleTreeNode[]
+    /** 用于处理 findDOMNode is deprecated in StrictMode 问题 */
+    nodeRef: React.RefObject<HTMLDivElement>
 }
 
 const MENU_WIDTH = 200
@@ -83,6 +85,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
         const newMenu: MenuList = {
             key: Date.now(),
             subMenus: menuData,
+            nodeRef: createRef(),
             styles: {
                 ...getNewMenuPos(prevRect, menuData.length, offset),
             }
@@ -140,9 +143,13 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
      */
     const renderMenuItem = (item: ArticleTreeNode, level: number) => {
         return (
-            <div style={{ height: MENU_HEIGHT, width: MENU_WIDTH }} className="overflow-hidden">
+            <div
+                key={item.value}
+                style={{ height: MENU_HEIGHT, width: MENU_WIDTH }}
+                className="overflow-hidden"
+            >
                 <div
-                    key={item.value}
+                    /** 展开和收起菜单时会靠这个 id 查找对应的 div */
                     id={item.value.toString()}
                     className={
                         'h-full text-sm box-border py-1 px-2 text-white cursor-pointer flex items-center justify-between transition-all ' +
@@ -164,12 +171,17 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
      */
     const renderMenuLists = (item: MenuList, index: number) => {
         return (
-            <CSSTransition key={item.key} timeout={100} classNames="my-transition">
+            <CSSTransition
+                timeout={100}
+                classNames="my-transition"
+                key={item.key}
+                nodeRef={item.nodeRef}
+            >
                 <div
-                    key={item.key}
                     className='bg-slate-600 absolute z-10 max-h-screen overflow-y-auto rounded'
                     style={item.styles}
                     onMouseLeave={mouseLeave}
+                    ref={item.nodeRef}
                 >
                     {item.subMenus?.map(item => renderMenuItem(item, index))}
                 </div>

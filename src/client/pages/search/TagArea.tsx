@@ -38,6 +38,8 @@ export const useTagArea = (props: Props) => {
     }, [tagGroups])
 
     useEffect(() => {
+        if (selectedTag.join(',') === searchParams.get('tagIds')) return
+
         if (selectedTag.length > 0) searchParams.set('tagIds', selectedTag.join(','))
         else searchParams.delete('tagIds')
         setSearchParams(searchParams)

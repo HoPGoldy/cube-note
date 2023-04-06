@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { ActionButton, PageContent, PageAction } from '../../layouts/PageWithAction'
+import { ActionButton, PageContent, PageAction, ActionIcon } from '../../layouts/PageWithAction'
 import { useQueryArticleContent, useFavoriteArticle, useUpdateArticle } from '../../services/article'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateCurrentTab } from '../../store/tab'
@@ -16,8 +16,9 @@ import { UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import dayjs from 'dayjs'
+import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined, HeartFilled, EditOutlined, SaveOutlined, RollbackOutlined, LoadingOutlined } from '@ant-design/icons'
 import s from './styles.module.css'
-import { HeartFilled, EditOutlined, SaveOutlined, RollbackOutlined, LoadingOutlined } from '@ant-design/icons'
+import { BrowserView } from 'react-device-detect'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -121,48 +122,50 @@ const About: FC = () => {
                         placeholder="请输入笔记名"
                         className="font-bold border-0 text-3xl my-2"
                     />
-                    <Space className='text-xl text-gray-500'>
-                        {isEdit && (
-                            <div className="text-base">{saveBtnText}</div>
-                        )}
+                    <BrowserView>
+                        <Space className='text-xl text-gray-500'>
+                            {isEdit && (
+                                <div className="text-base">{saveBtnText}</div>
+                            )}
 
-                        <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom">
-                            <HeartFilled
-                                className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
-                                onClick={() => {
-                                    updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
-                                    setIsFavorite(!isFavorite)
-                                }}
-                            />
-                        </Tooltip>
-
-                        {currentArticleId !== rootArticleId && <DeleteBtn
-                            title={title}
-                            currentArticleId={currentArticleId}
-                        />}
-
-                        {isEdit ? (<>
-                            <Tooltip title="保存" placement="bottom">
-                                <SaveIcon
-                                    className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
-                                    onClick={onClickSaveBtn}
+                            <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom">
+                                <HeartFilled
+                                    className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
+                                    onClick={() => {
+                                        updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
+                                        setIsFavorite(!isFavorite)
+                                    }}
                                 />
                             </Tooltip>
-                            <Tooltip title="保存并退出" placement="bottomLeft">
-                                <RollbackOutlined
-                                    className="hover:scale-125 transition-all"
-                                    onClick={endEdit}
-                                />
-                            </Tooltip>
-                        </>) : (
-                            <Tooltip title="编辑" placement="bottom">
-                                <EditOutlined
-                                    className="hover:scale-125 transition-all"
-                                    onClick={startEdit}
-                                />
-                            </Tooltip>
-                        )}
-                    </Space>
+
+                            {currentArticleId !== rootArticleId && <DeleteBtn
+                                title={title}
+                                currentArticleId={currentArticleId}
+                            />}
+
+                            {isEdit ? (<>
+                                <Tooltip title="保存" placement="bottom">
+                                    <SaveIcon
+                                        className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
+                                        onClick={onClickSaveBtn}
+                                    />
+                                </Tooltip>
+                                <Tooltip title="保存并退出" placement="bottomLeft">
+                                    <RollbackOutlined
+                                        className="hover:scale-125 transition-all"
+                                        onClick={endEdit}
+                                    />
+                                </Tooltip>
+                            </>) : (
+                                <Tooltip title="编辑" placement="bottom">
+                                    <EditOutlined
+                                        className="hover:scale-125 transition-all"
+                                        onClick={startEdit}
+                                    />
+                                </Tooltip>
+                            )}
+                        </Space>
+                    </BrowserView>
                 </div>
 
                 <TagArea
@@ -195,7 +198,11 @@ const About: FC = () => {
         </PageContent>
 
         <PageAction>
-            <ActionButton onClick={() => navigate(-1)}>返回</ActionButton>
+            <ActionIcon icon={<SettingOutlined />} />
+            <ActionIcon icon={<SwitcherOutlined />} />
+            <ActionIcon icon={<SearchOutlined />} />
+            <ActionIcon icon={<MenuOutlined />} />
+            <ActionButton onClick={() => navigate(-1)}>新增</ActionButton>
         </PageAction>
     </>)
 }

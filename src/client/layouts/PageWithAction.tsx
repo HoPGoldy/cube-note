@@ -1,16 +1,16 @@
+import React, { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { Search } from '@react-vant/icons'
+import { Button, ButtonProps } from 'antd'
 import { DebouncedFunc } from 'lodash'
 import debounce from 'lodash/debounce'
-import React, { FC, MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Card, Field, FieldInstance, Loading } from 'react-vant'
-import { MobileArea } from '../layouts/Responsive'
+import { Field, FieldInstance } from 'react-vant'
 import { useAppSelector } from '../store'
+import { MobileView } from 'react-device-detect'
 
 /**
  * 页面正文，会给下面的操作栏留出空间
  */
-export const PageContent: FC = (props) => {
+export const PageContent: FC<PropsWithChildren> = (props) => {
     return (
         <div className="overflow-y-auto relative md:h-full h-page-content" >
             {props.children}
@@ -20,62 +20,49 @@ export const PageContent: FC = (props) => {
 
 /**
  * 底部操作栏
- * 为何不用 react-vant 的 ActionBar 呢，因为ActionBar 样式改起来比较麻烦
- * 而且 fixed 的布局在一些手机浏览器上滚动时会出现抖动的问题
  */
-export const PageAction: FC = (props) => {
+export const PageAction: FC<PropsWithChildren> = (props) => {
     return (
-        <MobileArea>
+        <MobileView>
             <div className="p-2 flex flex-row md:hidden h-bottombar">
                 {props.children}
             </div>
-        </MobileArea>
+        </MobileView>
     )
-}
-
-interface ActionIconProps {
-    href?: string
-    onClick?: () => unknown
 }
 
 /**
  * 底部操作栏中的图标
  */
-export const ActionIcon: FC<ActionIconProps> = (props) => {
-    const el = (
-        <Card className="m-2 p-2 flex items-center" round onClick={props.onClick}>
-            {props.children}
-        </Card>
-    )
-
-    if (!props.href) return el
-
+export const ActionIcon: FC<ButtonProps> = (props) => {
+    const { className, ...restProps } = props
     return (
-        <Link to={props.href}>{el}</Link>
+        <Button
+            size="large"
+            className={'mr-2 flex-shrink-0 ' + className}
+            {...restProps}
+        />
     )
-}
-
-type ActionButtonProps = {
-    color?: string,
-    loading?: boolean
-    onClick?: MouseEventHandler<HTMLDivElement>
 }
 
 /**
  * 底部操作栏中的按钮
  */
-export const ActionButton: FC<ActionButtonProps> = (props) => {
+export const ActionButton: FC<ButtonProps> = (props) => {
     const buttonColor = useAppSelector(s => s.global.appConfig?.buttonColor)
     const styles = { background: props.color || buttonColor || 'f000' }
 
     return (
-        <div
-            className="m-2 p-2 flex items-center justify-center grow rounded-lg text-white relative"
+        <Button
+            type="primary"
             style={styles}
-            onClick={props.loading ? undefined : props.onClick}
+            loading={props.loading}
+            onClick={props.onClick}
+            block
+            size="large"
         >
-            {props.loading ? <Loading color="#fff" /> : props.children}
-        </div>
+            {props.children}
+        </Button>
     )
 }
 

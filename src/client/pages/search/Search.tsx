@@ -42,6 +42,9 @@ const SearchArticle: FC = () => {
     }, [isSearching])
 
     useEffect(() => {
+        // 默认情况下 keyword 是空字符串，searchParams 里是 null，所以要转成布尔再判断
+        if (!keyword == !searchParams.get('keyword')) return
+
         if (keyword) searchParams.set('keyword', keyword)
         else searchParams.delete('keyword')
         setSearchParams(searchParams)
