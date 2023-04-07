@@ -198,7 +198,9 @@ const About: FC = () => {
         </PageContent>
 
         <PageAction>
-            <ActionIcon icon={<SettingOutlined />} />
+            <Link to="/setting">
+                <ActionIcon icon={<SettingOutlined />} />
+            </Link>
             <Link to="/search">
                 <ActionIcon icon={<SearchOutlined />} />
             </Link>

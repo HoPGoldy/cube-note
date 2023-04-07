@@ -48,7 +48,10 @@ export const ActionIcon: FC<ButtonProps> = (props) => {
  */
 export const ActionButton: FC<ButtonProps> = (props) => {
     const buttonColor = useAppSelector(s => s.global.appConfig?.buttonColor)
-    const styles = { background: props.color || buttonColor || 'f000' }
+    const styles: React.CSSProperties = {
+        background: props.color || buttonColor || 'f000',
+        border: 'none',
+    }
 
     return (
         <Button

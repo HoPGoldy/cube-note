@@ -4,30 +4,22 @@ import { AppTheme } from '@/types/user'
 import { useAppDispatch, useAppSelector } from '@/client/store'
 import { changeTheme, logout } from '@/client/store/user'
 import { useQueryArticleCount } from '@/client/services/user'
-import { Button, Col, Row, Statistic } from 'antd'
+import { Button, Card, Col, Row, Statistic } from 'antd'
 import { SnippetsOutlined, HighlightOutlined, LockOutlined, TagsOutlined, SmileOutlined, CloseCircleOutlined, ContactsOutlined } from '@ant-design/icons'
 import { useChangePassword } from '../changePassword'
+import { ActionButton, PageAction, PageContent } from '@/client/layouts/PageWithAction'
+import { UserOutlined, RightOutlined, LogoutOutlined } from '@ant-design/icons'
 
 interface DesktopProps {
     onClick: () => void
 }
 
-export const DesktopSetting: FC<DesktopProps> = (props) => {
-    return (
-        <div style={{ width: '16rem' }} onClick={props.onClick}>
-            <SettingContent />
-        </div>
-    )
-}
-
-const SettingContent: FC = () => {
+const useSetting = () => {
     const userInfo = useAppSelector(s => s.user.userInfo)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     // 数量统计接口
     const { data: countInfo } = useQueryArticleCount()
-    /** 修改密码功能 */
-    const { renderChangePasswordModal, showChangePassword } = useChangePassword()
 
     const onSwitchDark = () => {
         const newTheme = userInfo?.theme === AppTheme.Light ? AppTheme.Dark : AppTheme.Light
@@ -39,15 +31,29 @@ const SettingContent: FC = () => {
         dispatch(logout())
     }
 
+    const articleCount = countInfo?.data?.articleCount || '---'
+    const articleLength = countInfo?.data?.articleLength || '---'
+
+    return {
+        articleCount, articleLength, onLogout
+    }
+}
+
+export const DesktopSetting: FC<DesktopProps> = (props) => {
+    /** 修改密码功能 */
+    const { renderChangePasswordModal, showChangePassword } = useChangePassword()
+    /** 设置功能 */
+    const setting = useSetting()
+
     return (
-        <>
+        <div style={{ width: '16rem' }} onClick={props.onClick}>
             <div style={{ margin: '1rem 0rem' }}>
                 <Row gutter={[16, 16]} justify="space-around">
                     <Col>
-                        <Statistic title="文章数量" value={countInfo?.data?.articleCount || '---'} prefix={<SnippetsOutlined />} />
+                        <Statistic title="文章数量" value={setting.articleCount} prefix={<SnippetsOutlined />} />
                     </Col>
                     <Col>
-                        <Statistic title="总字数" value={countInfo?.data?.articleLength || '---'} prefix={<HighlightOutlined />} />
+                        <Statistic title="总字数" value={setting.articleLength} prefix={<HighlightOutlined />} />
                     </Col>
                 </Row>
             </div>
@@ -71,51 +77,109 @@ const SettingContent: FC = () => {
                     </Link>
                 </Col>
                 <Col span={24}>
-                    <Button block danger onClick={onLogout} icon={<CloseCircleOutlined />}>登出</Button>
+                    <Button block danger onClick={setting.onLogout} icon={<CloseCircleOutlined />}>登出</Button>
                 </Col>
             </Row>
             {renderChangePasswordModal()}
-        </>
+        </div>
     )
+}
 
-    // return (<>
-    //     <PageContent>
-    //         <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
-    //             <Space direction="vertical" gap={16} className='w-full'>
-    //                 <Card round>
-    //                     <Card.Body>
-    //                         <div className="flex flex-row justify-around">
-    //                             <Statistic label="文章数量" value={countInfo?.data?.articleCount || '---'} />
-    //                             <Statistic label="总字数" value={countInfo?.data?.articleLength || '---'} />
-    //                         </div>
-    //                     </Card.Body>
-    //                 </Card>
+interface FieldLineProps {
+    title: string | React.ReactNode
+    extra?: string | React.ReactNode
+    onClick?: () => void
+}
 
-    //                 <Card round>
-    //                     <Cell title="修改密码" icon={<Contact />} isLink onClick={() => navigate('/ChangePassword')} />
-    //                     <Cell title="标签管理" icon={<SendGiftO />} isLink onClick={() => navigate('/tags')} />
-    //                     <Cell title="黑夜模式" icon={<StarO />} 
-    //                         rightIcon={<Switch
-    //                             size={24}
-    //                             defaultChecked={userInfo?.theme === AppTheme.Dark}
-    //                             onChange={onSwitchDark}
-    //                         />}
-    //                     />
-    //                     <Cell title="关于" icon={<LikeO />} isLink onClick={() => navigate('/about')} />
-    //                 </Card>
+const FieldLine: FC<FieldLineProps> = (props) => {
+    return (
+        <Row
+            justify="space-between"
+            className='text-black'
+            onClick={props.onClick}
+        >
+            <Col className='text-base'>
+                {props.title}
+            </Col>
+            <Col className='text-base'>
+                {props.extra}
+            </Col>
+        </Row>
+    )
+}
 
-    //                 <Card round>
-    //                     <Cell title="登出" icon={<Close />} isLink onClick={onLogout} />
-    //                 </Card>
-    //             </Space>
-    //         </div>
-    //     </PageContent>
+const SplitLine: FC = () => {
+    return (
+        <div className="h-[1px] my-2 w-full bg-gray-200"></div>
+    )
+}
 
-    //     <PageAction>
-    //         <ActionIcon onClick={() => navigate(-1)}>
-    //             <ArrowLeft fontSize={24} />
-    //         </ActionIcon>
-    //         <ActionButton onClick={() => navigate('/securityEntry')}>安全管理</ActionButton>
-    //     </PageAction>
-    // </>)
+export const MobileSetting: FC = () => {
+    const navigate = useNavigate()
+    /** 设置功能 */
+    const setting = useSetting()
+
+    return (<>
+        <PageContent>
+            <div className='p-4 text-base'>
+                <Card size="small">
+                    <Row justify="space-around">
+                        <Col>
+                            <Statistic title="文章数量" value={setting.articleCount} prefix={<SnippetsOutlined />} />
+                        </Col>
+                        <Col>
+                            <Statistic title="总字数" value={setting.articleLength} prefix={<HighlightOutlined />} />
+                        </Col>
+                    </Row>
+                </Card>
+                <Card size="small" className='mt-4'>
+                    <FieldLine
+                        title={(<div><UserOutlined /> &nbsp;登录用户</div>)}
+                        extra="123321"
+                    />
+                </Card>
+                <Card size="small" className='mt-4'>
+                    <FieldLine
+                        title={(<div><LockOutlined /> &nbsp;修改密码</div>)}
+                        extra={<RightOutlined />}
+                    />
+                    <SplitLine />
+
+                    <Link to="/tags">
+                        <FieldLine
+                            title={(<div><TagsOutlined /> &nbsp;标签管理</div>)}
+                            extra={<RightOutlined />}
+                        />
+                    </Link>
+                    <SplitLine />
+
+                    <Link to="/userInvite">
+                        <FieldLine
+                            title={(<div><ContactsOutlined /> &nbsp;用户管理</div>)}
+                            extra={<RightOutlined />}
+                        />
+                    </Link>
+                    <SplitLine />
+
+                    <Link to="/about">
+                        <FieldLine
+                            title={(<div><SmileOutlined /> &nbsp;关于</div>)}
+                            extra={<RightOutlined />}
+                        />
+                    </Link>
+                </Card>
+                <Card size="small" className='mt-4'>
+                    <FieldLine
+                        onClick={setting.onLogout}
+                        title={(<div><UserOutlined /> &nbsp;登出</div>)}
+                        extra={<LogoutOutlined />}
+                    />
+                </Card>
+            </div>
+        </PageContent>
+
+        <PageAction>
+            <ActionButton onClick={() => navigate(-1)}>返回</ActionButton>
+        </PageAction>
+    </>)
 }

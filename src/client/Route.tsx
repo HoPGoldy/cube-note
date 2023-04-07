@@ -4,6 +4,7 @@ import Loading from './layouts/Loading'
 import { LoginAuth } from './layouts/LoginAuth'
 import { AppContainer } from './layouts/AppContainer'
 import Search from './pages/search/Search'
+import { MobileSetting } from './pages/userSetting'
 import Article from './pages/article/Article'
 import Entry from './pages/JumpToDefaultDataEntry'
 import { AppConfigProvider } from './layouts/AppConfigProvider'
@@ -27,8 +28,8 @@ export const routes = createHashRouter([
                     { index: true, element: <Entry /> },
                     { path: '/article/:articleId', element: <Article /> },
                     { path: '/search', element: <Search /> },
+                    { path: '/setting', element: <MobileSetting /> },
                     { path: '/tags', element: lazyLoad(() => import('./pages/tagManager/TagManager')) },
-                    // { path: '/setting', element: lazyLoad(() => import('./pages/userSetting')) },
                     // 修改密码
                     { path: '/changePassword', element: lazyLoad(() => import('./pages/changePassword')) },
                     // 邀请管理
