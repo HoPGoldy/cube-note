@@ -1,37 +1,40 @@
 import React, { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Space, Cell } from 'react-vant'
-import Header from '@/client/layouts/Header'
 import { PageContent, PageAction, ActionButton } from '../layouts/PageWithAction'
+import { Card } from 'antd'
+import { GithubOutlined, SendOutlined } from '@ant-design/icons'
+import { Cell } from '../components/Cell'
 
 const About: FC = () => {
     const navigate = useNavigate()
 
     return (<>
         <PageContent>
-            <Header className='font-bold md:font-normal'>
-                关于
-            </Header>
-
-            <div className='px-4 lg:px-auto lg:mx-auto w-full lg:w-3/4 xl:w-1/2 2xl:w-1/3 mt-4'>
-                <Space direction="vertical" gap={16} className='w-full'>
-                    <Card round>
-                        <Card.Body>
-                            数据自托管的隐私信息管理工具。
-                            <br /><br />
-                            支持分组、分组加密、强密码生成等功能。并内建了一套安全模块，负责监控异常访问并及时提醒。
-                        </Card.Body>
-                    </Card>
-
-                    <Card round>
-                        <a href="mailto:hopgoldy@gmail.com?&subject=cube-diary 相关">
-                            <Cell title="联系我" value="hopgoldy@gmail.com" />
-                        </a>
-                        <a href='https://github.com/HoPGoldy/keep-my-password' target="_blank" rel="noreferrer">
-                            <Cell title="开源地址" value="github" />
-                        </a>
-                    </Card>
-                </Space>
+            <div className='p-4 text-base'>
+                <Card size="small" className='text-center text-base font-bold'>
+                    关 于
+                </Card>
+                <Card size="small" className='mt-4 text-base'>
+                    又快又好用的简单记事本 APP。
+                    <br /><br />
+                    包含支持文件上传的 Markdown 编辑器、双端响应式布局、数据自托管、支持搜索、标签、笔记嵌套等功能。
+                </Card>
+                <Card size="small" className='mt-4'>
+                    <a href="mailto:hopgoldy@gmail.com?&subject=cube-dnote 相关">
+                        <Cell
+                            title={(<div><SendOutlined /> &nbsp;联系我</div>)}
+                            extra={(<div className="text-gray-500">hopgoldy@gmail.com</div>)}
+                        />
+                    </a>
+                </Card>
+                <Card size="small" className='mt-4'>
+                    <a href='https://github.com/HoPGoldy/cube-note' target="_blank" rel="noreferrer">
+                        <Cell
+                            title={(<div><GithubOutlined /> &nbsp;开源地址</div>)}
+                            extra={(<div className="text-gray-500">github</div>)}
+                        />
+                    </a>
+                </Card>
             </div>
 
             <div className="text-center absolute w-full bottom-0 text-mainColor mb-0 md:mb-4 dark:text-gray-200">

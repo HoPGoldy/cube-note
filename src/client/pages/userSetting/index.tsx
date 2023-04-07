@@ -9,6 +9,7 @@ import { SnippetsOutlined, HighlightOutlined, LockOutlined, TagsOutlined, SmileO
 import { useChangePassword } from '../changePassword'
 import { ActionButton, PageAction, PageContent } from '@/client/layouts/PageWithAction'
 import { UserOutlined, RightOutlined, LogoutOutlined } from '@ant-design/icons'
+import { Cell, SplitLine } from '@/client/components/Cell'
 
 interface DesktopProps {
     onClick: () => void
@@ -33,9 +34,10 @@ const useSetting = () => {
 
     const articleCount = countInfo?.data?.articleCount || '---'
     const articleLength = countInfo?.data?.articleLength || '---'
+    const userName = userInfo?.username || '---'
 
     return {
-        articleCount, articleLength, onLogout
+        articleCount, articleLength, userName, onLogout
     }
 }
 
@@ -85,34 +87,6 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
     )
 }
 
-interface FieldLineProps {
-    title: string | React.ReactNode
-    extra?: string | React.ReactNode
-    onClick?: () => void
-}
-
-const FieldLine: FC<FieldLineProps> = (props) => {
-    return (
-        <Row
-            justify="space-between"
-            className='text-black'
-            onClick={props.onClick}
-        >
-            <Col className='text-base'>
-                {props.title}
-            </Col>
-            <Col className='text-base'>
-                {props.extra}
-            </Col>
-        </Row>
-    )
-}
-
-const SplitLine: FC = () => {
-    return (
-        <div className="h-[1px] my-2 w-full bg-gray-200"></div>
-    )
-}
 
 export const MobileSetting: FC = () => {
     const navigate = useNavigate()
@@ -133,20 +107,20 @@ export const MobileSetting: FC = () => {
                     </Row>
                 </Card>
                 <Card size="small" className='mt-4'>
-                    <FieldLine
+                    <Cell
                         title={(<div><UserOutlined /> &nbsp;登录用户</div>)}
-                        extra="123321"
+                        extra={setting.userName}
                     />
                 </Card>
                 <Card size="small" className='mt-4'>
-                    <FieldLine
+                    <Cell
                         title={(<div><LockOutlined /> &nbsp;修改密码</div>)}
                         extra={<RightOutlined />}
                     />
                     <SplitLine />
 
                     <Link to="/tags">
-                        <FieldLine
+                        <Cell
                             title={(<div><TagsOutlined /> &nbsp;标签管理</div>)}
                             extra={<RightOutlined />}
                         />
@@ -154,7 +128,7 @@ export const MobileSetting: FC = () => {
                     <SplitLine />
 
                     <Link to="/userInvite">
-                        <FieldLine
+                        <Cell
                             title={(<div><ContactsOutlined /> &nbsp;用户管理</div>)}
                             extra={<RightOutlined />}
                         />
@@ -162,14 +136,14 @@ export const MobileSetting: FC = () => {
                     <SplitLine />
 
                     <Link to="/about">
-                        <FieldLine
+                        <Cell
                             title={(<div><SmileOutlined /> &nbsp;关于</div>)}
                             extra={<RightOutlined />}
                         />
                     </Link>
                 </Card>
                 <Card size="small" className='mt-4'>
-                    <FieldLine
+                    <Cell
                         onClick={setting.onLogout}
                         title={(<div><UserOutlined /> &nbsp;登出</div>)}
                         extra={<LogoutOutlined />}
