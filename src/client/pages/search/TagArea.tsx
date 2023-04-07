@@ -2,7 +2,7 @@ import { Tag } from '@/client/components/Tag'
 import Loading from '@/client/layouts/Loading'
 import { useQueryTagGroup } from '@/client/services/tag'
 import { TagGroupListItem, TagListItem } from '@/types/tag'
-import { Collapse, Space } from 'antd'
+import { Collapse, List, Space } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
@@ -38,13 +38,12 @@ export const useTagArea = (props: Props) => {
     }, [tagGroups])
 
     useEffect(() => {
-        if (selectedTag.join(',') === searchParams.get('tagIds')) return
+        if (!selectedTag.join(',') === !searchParams.get('tagIds')) return
 
         if (selectedTag.length > 0) searchParams.set('tagIds', selectedTag.join(','))
         else searchParams.delete('tagIds')
         setSearchParams(searchParams)
     }, [selectedTag])
-    
 
     const onSelectTag = (id: number) => {
         // 如果有了就删除，没有就添加
@@ -91,5 +90,33 @@ export const useTagArea = (props: Props) => {
         )
     }
 
-    return { renderTagSelectPanel, selectedTag }
+    const renderMobileTagSelectPanel = () => {
+        if (isTagLoading) return <Loading tip='加载标签中...' />
+        if (isLoadingGroup) return <Loading tip='加载分组中...' />
+
+        return (
+            <List
+                dataSource={tagGroups}
+                renderItem={item => {
+                    const tags = groupedTagDict[item.id] || []
+                    return (
+                        <List.Item>
+                            <div>
+                                <div className="text-lg font-bold mb-2">
+                                    {item.title}
+                                </div>
+                                <div>
+                                    <Space wrap size={[0, 8]}>
+                                        {tags.map(renderTag)}
+                                    </Space>
+                                </div>
+                            </div>
+                        </List.Item>
+                    )
+                }}
+            />
+        )
+    }
+
+    return { renderTagSelectPanel, renderMobileTagSelectPanel, selectedTag }
 }

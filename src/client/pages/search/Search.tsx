@@ -2,13 +2,16 @@ import { useQueryArticleList } from '@/client/services/article'
 import { SearchArticleDetail } from '@/types/article'
 import React, { FC, useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
+import { PageContent, PageAction, ActionIcon, ActionSearch } from '../../layouts/PageWithAction'
 import { useTagArea } from './TagArea'
 import { useQueryTagList } from '@/client/services/tag'
 import { useTagDict } from '../tagManager/tagHooks'
 import { Tag } from '@/client/components/Tag'
 import { Card, Col, Input, List, Row } from 'antd'
 import { PAGE_SIZE } from '@/constants'
+import { DesktopArea } from '@/client/layouts/Responsive'
+import { TagOutlined, LeftOutlined } from '@ant-design/icons'
+import { MobileDrawer } from '@/client/components/MobileDrawer'
 
 /**
  * 搜索页面
@@ -26,7 +29,11 @@ const SearchArticle: FC = () => {
     // 当前分页
     const [currentPage, setCurrentPage] = useState(1)
     // 功能 - 标签选择
-    const { selectedTag, renderTagSelectPanel } = useTagArea({ setCurrentPage, isTagLoading, tagList: tagListResp?.data })
+    const {
+        selectedTag,
+        renderTagSelectPanel,
+        renderMobileTagSelectPanel
+    } = useTagArea({ setCurrentPage, isTagLoading, tagList: tagListResp?.data })
     // 搜索结果列表
     const { data: articleListResp, isLoading: isSearching } = useQueryArticleList({
         keyword,
@@ -35,6 +42,8 @@ const SearchArticle: FC = () => {
     })
     // 搜索列表占位文本
     const [listEmptyText, setListEmptyText] = useState<string>()
+    /** 移动端标签选择是否展开 */
+    const [isTagDrawerOpen, setIsTagDrawerOpen] = useState(false)
 
     useEffect(() => {
         if (!listEmptyText) setListEmptyText('输入关键字或选择标签进行搜索')
@@ -60,6 +69,11 @@ const SearchArticle: FC = () => {
                 color={item.color}
             >{item.title}</Tag>
         )
+    }
+
+    const onKeywordSearch = (value: string) => {
+        setKeyword(value)
+        setCurrentPage(1)
     }
 
     const renderSearchItem = (item: SearchArticleDetail) => {
@@ -92,40 +106,62 @@ const SearchArticle: FC = () => {
         )
     }
 
+    const renderContent = () => {
+        return (
+            <div className='p-4'>
+                <DesktopArea>
+                    <Input.Search
+                        placeholder="请输入标题或者正文，回车搜索"
+                        enterButton="搜索"
+                        size="large"
+                        onSearch={onKeywordSearch}
+                    />
+                </DesktopArea>
+                <div className='xl:my-4'>
+                    <Row gutter={16}>
+                        <Col xs={24} xl={18}>
+                            <List
+                                loading={isSearching}
+                                dataSource={articleListResp?.data?.rows || []}
+                                renderItem={renderSearchItem}
+                                locale={{ emptyText: listEmptyText }}
+                                pagination={{
+                                    total: articleListResp?.data?.total || 0,
+                                    pageSize: PAGE_SIZE,
+                                    current: currentPage,
+                                    onChange: setCurrentPage,
+                                    align: 'center',
+                                }}
+                            />
+                        </Col>
+                        <DesktopArea>
+                            <Col span={6}>
+                                {renderTagSelectPanel()}
+                            </Col>
+                        </DesktopArea>
+                    </Row>
+                </div>
+            </div>
+        )
+    }
+
     return (<>
         <PageContent>
-            <Input.Search
-                placeholder="请输入标题或者正文，回车搜索"
-                enterButton="搜索"
-                size="large"
-                onSearch={value => {
-                    setKeyword(value)
-                    setCurrentPage(1)
-                }}
-            />
-            <Row gutter={[16, 16]} className="py-4">
-                <Col span={18}>
-                    <List
-                        loading={isSearching}
-                        dataSource={articleListResp?.data?.rows || []}
-                        renderItem={renderSearchItem}
-                        locale={{ emptyText: listEmptyText }}
-                        pagination={{
-                            total: articleListResp?.data?.total || 0,
-                            pageSize: PAGE_SIZE,
-                            current: currentPage,
-                            onChange: setCurrentPage,
-                            align: 'center',
-                        }}
-                    />
-                </Col>
-                <Col span={6}>
-                    {renderTagSelectPanel()}
-                </Col>
-            </Row>
+            {renderContent()}
         </PageContent>
+
+        <MobileDrawer
+            title='标签选择'
+            open={isTagDrawerOpen}
+            onClose={() => setIsTagDrawerOpen(false)}
+        >
+            {renderMobileTagSelectPanel()}
+        </MobileDrawer>
+
         <PageAction>
-            <ActionButton onClick={() => navigate(-1)}>返回</ActionButton>
+            <ActionIcon icon={<LeftOutlined />} onClick={() => navigate(-1)} />
+            <ActionIcon icon={<TagOutlined />} onClick={() => setIsTagDrawerOpen(true)} />
+            <ActionSearch onSearch={onKeywordSearch} />
         </PageAction>
     </>)
 }

@@ -9,6 +9,7 @@
 
 html, body, #root {
     height: 100%;
+    margin: 0;
     /* overflow: hidden; */
 }
 
@@ -83,6 +84,10 @@ input {
     opacity: 0;
     transform: scale(0.9);
     transition: opacity 100ms, transform 100ms;
+}
+
+.ant-drawer-body {
+    @apply !px-4 !py-2;
 }
 
 @tailwind base;

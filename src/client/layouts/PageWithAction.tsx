@@ -1,11 +1,9 @@
-import React, { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
-import { Search } from '@react-vant/icons'
-import { Button, ButtonProps } from 'antd'
-import { DebouncedFunc } from 'lodash'
-import debounce from 'lodash/debounce'
-import { Field, FieldInstance } from 'react-vant'
+import React, { FC, PropsWithChildren } from 'react'
+import { Button, ButtonProps, Input } from 'antd'
 import { useAppSelector } from '../store'
 import { MobileArea } from './Responsive'
+import { SearchOutlined } from '@ant-design/icons'
+import { SearchProps } from 'antd/es/input'
 
 /**
  * 页面正文，会给下面的操作栏留出空间
@@ -66,61 +64,17 @@ export const ActionButton: FC<ButtonProps> = (props) => {
     )
 }
 
-type ActionSearchProps = {
-    /**
-     * 搜索的节流事件，单位毫秒
-     */
-    debounceWait?: number
-    /**
-     * 是否自动聚焦输入框
-     */
-    autoFocus?: boolean
-    /**
-     * 触发搜索事件，会受到 debounceWait 的影响
-     */
-    onSearch?: (value: string) => unknown
-}
-
 /**
  * 操作栏中的搜索按钮
  */
-export const ActionSearch: FC<ActionSearchProps> = (props) => {
-    const { onSearch, debounceWait = 500, autoFocus } = props
-
-    // 搜索内容
-    const [searchValue, setSearchValue] = useState('')
-
-    // 搜索防抖实例
-    const searchDebounce = useRef<DebouncedFunc<(newValue: string) => void>>()
-    useEffect(() => {
-        searchDebounce.current = debounce((newValue: string) => {
-            onSearch?.(newValue)
-        }, debounceWait)
-    }, [])
-
-    // 回调 - 搜索内容变化
-    const onSearchValueChange = (value: string) => {
-        setSearchValue(value)
-        searchDebounce.current?.(value)
-    }
-
-    // 自动聚焦实现，组件的 autoFocus 不好用
-    const fieldRef = useRef<FieldInstance>(null)
-    useEffect(() => {
-        autoFocus && fieldRef.current?.focus()
-    }, [])
-
+export const ActionSearch: FC<SearchProps> = (props) => {
     return (
-        <div className="m-2 flex items-center justify-center grow rounded-lg text-white relative">
-            <Field
-                ref={fieldRef}
-                style={{ height: '40px' }}
-                value={searchValue}
-                onChange={onSearchValueChange}
-                rightIcon={<Search />}
-                placeholder="搜索内容"
-                onClickRightIcon={() => onSearch?.(searchValue)}
-            />
-        </div>
+        <Input.Search
+            placeholder="输入关键字搜索"
+            enterButton={<SearchOutlined />}
+            size="large"
+            autoFocus
+            {...props}
+        />
     )
 }

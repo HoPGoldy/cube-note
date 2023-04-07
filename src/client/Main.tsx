@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { routes } from './Route'
 import { QueryClientProvider } from 'react-query'
 import { queryClient } from './services/base'
-import { ReactQueryDevtools } from 'react-query/devtools'
+// import { ReactQueryDevtools } from 'react-query/devtools'
 import { ConfigProvider, theme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { RouterProvider } from 'react-router-dom'
@@ -27,7 +27,7 @@ createRoot(rootContainer).render(
             }}>
                 <QueryClientProvider client={queryClient}>
                     <RouterProvider router={routes} />
-                    <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+                    {/* <ReactQueryDevtools initialIsOpen={false} position="bottom-right" /> */}
                 </QueryClientProvider>
             </ConfigProvider>
         </Provider>

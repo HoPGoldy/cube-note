@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction, ActionIcon } from '../../layouts/PageWithAction'
 import { useQueryArticleContent, useFavoriteArticle, useUpdateArticle } from '../../services/article'
 import { useAppDispatch, useAppSelector } from '../../store'
@@ -199,7 +199,9 @@ const About: FC = () => {
 
         <PageAction>
             <ActionIcon icon={<SettingOutlined />} />
-            <ActionIcon icon={<SearchOutlined />} />
+            <Link to="/search">
+                <ActionIcon icon={<SearchOutlined />} />
+            </Link>
             <ActionIcon icon={<MenuOutlined />} />
             <ActionIcon icon={<SwitcherOutlined />} />
             <ActionButton onClick={() => navigate(-1)}>新增</ActionButton>
