@@ -145,23 +145,23 @@ const TagManager: FC = () => {
         if (isLoading || isLoadingTagList) return <Loading />
 
         return (<>
-            <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <Space>
-                        <Button onClick={onAddGroup} loading={isAddingGroup} icon={<PlusOutlined />}>新增分组</Button>
-                        {renderBatchBtn()}
-                    </Space>
-                </Col>
-                <Col span={24}>
-                    <List
-                        grid={{ gutter: 16, column: 3 }}
-                        dataSource={tagGroups}
-                        renderItem={renderTagGroupItem}
-                    />
-                </Col>
-            </Row>
-
-            
+            <div className="p-4">
+                <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                        <Space>
+                            <Button onClick={onAddGroup} loading={isAddingGroup} icon={<PlusOutlined />}>新增分组</Button>
+                            {renderBatchBtn()}
+                        </Space>
+                    </Col>
+                    <Col span={24}>
+                        <List
+                            grid={{ gutter: 16, column: 3 }}
+                            dataSource={tagGroups}
+                            renderItem={renderTagGroupItem}
+                        />
+                    </Col>
+                </Row>
+            </div>
         </>)
     }
 

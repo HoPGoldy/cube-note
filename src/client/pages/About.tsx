@@ -10,7 +10,7 @@ const About: FC = () => {
 
     return (<>
         <PageContent>
-            <div className='p-4 text-base'>
+            <div className='p-4 text-base md:w-1/2 mx-auto'>
                 <Card size="small" className='text-center text-base font-bold'>
                     关 于
                 </Card>

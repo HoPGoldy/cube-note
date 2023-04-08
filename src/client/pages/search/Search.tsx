@@ -50,15 +50,6 @@ const SearchArticle: FC = () => {
         else setListEmptyText('没有找到相关笔记')
     }, [isSearching])
 
-    useEffect(() => {
-        // 默认情况下 keyword 是空字符串，searchParams 里是 null，所以要转成布尔再判断
-        if (!keyword == !searchParams.get('keyword')) return
-
-        if (keyword) searchParams.set('keyword', keyword)
-        else searchParams.delete('keyword')
-        setSearchParams(searchParams)
-    }, [keyword])
-
     const renderTagItem = (tagId: number) => {
         const item = tagDict.get(tagId)
         if (!item) return null
@@ -74,6 +65,11 @@ const SearchArticle: FC = () => {
     const onKeywordSearch = (value: string) => {
         setKeyword(value)
         setCurrentPage(1)
+
+        // 更新 url 参数
+        if (value) searchParams.set('keyword', value)
+        else searchParams.delete('keyword')
+        setSearchParams(searchParams, { replace: true })
     }
 
     const renderSearchItem = (item: SearchArticleDetail) => {
@@ -117,7 +113,7 @@ const SearchArticle: FC = () => {
                         onSearch={onKeywordSearch}
                     />
                 </DesktopArea>
-                <div className='xl:my-4'>
+                <div className='md:my-4'>
                     <Row gutter={16}>
                         <Col xs={24} xl={18}>
                             <List

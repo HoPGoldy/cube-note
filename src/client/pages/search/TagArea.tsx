@@ -37,20 +37,17 @@ export const useTagArea = (props: Props) => {
         setExpandedTagGroup(tagGroups.map((item) => item.id as unknown as string))
     }, [tagGroups])
 
-    useEffect(() => {
-        if (!selectedTag.join(',') === !searchParams.get('tagIds')) return
-
-        if (selectedTag.length > 0) searchParams.set('tagIds', selectedTag.join(','))
-        else searchParams.delete('tagIds')
-        setSearchParams(searchParams)
-    }, [selectedTag])
-
     const onSelectTag = (id: number) => {
         // 如果有了就删除，没有就添加
         const newTags = isTagSelected(id) ? selectedTag.filter(item => item !== id) : [...selectedTag, id]
 
         setSelectedTag(newTags)
         setCurrentPage(1)
+
+        // 更新 url 参数
+        if (newTags.length > 0) searchParams.set('tagIds', newTags.join(','))
+        else searchParams.delete('tagIds')
+        setSearchParams(searchParams, { replace: true })
     }
 
     const renderTag = (item: TagListItem) => {
