@@ -39,10 +39,17 @@ export const useUpdateArticle = () => {
             queryClient.setQueryData(['articleContent', data.id], newData)
         },
         onSuccess: (resp, data) => {
-            queryClient.invalidateQueries(['articleLink', data.id])
-            queryClient.invalidateQueries('menu')
+            if (data.title || data.favorite || data.parentArticleId) {
+                queryClient.invalidateQueries(['articleLink', data.id])
+                queryClient.invalidateQueries('menu')
+            }
         }
     })
+}
+
+/** 自动保存接口 */
+export const autoSaveContent = async (id: number, content: string) => {
+    return requestPost('article/update', { id, content })
 }
 
 /** 查询本文的下属文章 */

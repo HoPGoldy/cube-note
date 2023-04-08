@@ -7,8 +7,8 @@
 }
 
 .editorArea {
-    flex-grow: 1;
     height: calc(100vh - 186px);
+    @apply flex-grow mt-4;
 }
 
 .editorArea > div {

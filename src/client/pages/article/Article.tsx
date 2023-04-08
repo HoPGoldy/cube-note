@@ -19,6 +19,7 @@ import dayjs from 'dayjs'
 import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined, HeartFilled, EditOutlined, SaveOutlined, RollbackOutlined, LoadingOutlined } from '@ant-design/icons'
 import s from './styles.module.css'
 import { DesktopArea } from '@/client/layouts/Responsive'
+import { useMobileOperation } from './mobileOperation'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -43,16 +44,15 @@ const About: FC = () => {
     const titleInputRef = useRef<HTMLInputElement>(null)
     // 正在编辑的标题内容
     const [title, setTitle] = useState('')
-    // 当前正文内容
-    const [content, setContent] = useState('')
     // 是否收藏
     const [isFavorite, setIsFavorite] = useState(false)
     // 页面是否在编辑中
     const isEdit = (searchParams.get('mode') === 'edit')
+    /** 移动端操作弹窗 */
+    const operation = useMobileOperation()
 
     // 功能 - 编辑器
-    const { renderEditor, setEditorContent, isContentModified } = useEditor({
-        onChange: setContent,
+    const { renderEditor, setEditorContent, content, isContentModified } = useEditor({
         onAutoSave: () => setSaveBtnText(`自动保存于 ${dayjs().format('HH:mm')}`),
         articleId: currentArticleId
     })
@@ -66,7 +66,6 @@ const About: FC = () => {
 
         dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
-        setContent(articleResp.data.content)
         setEditorContent(articleResp.data.content)
         setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
@@ -123,7 +122,7 @@ const About: FC = () => {
                         className="font-bold border-0 text-3xl my-2 w-full"
                     />
                     <DesktopArea>
-                        <Space className='text-xl text-gray-500'>
+                        <Space className='text-xl text-gray-500 flex-shrink-0'>
                             {isEdit && (
                                 <div className="text-base">{saveBtnText}</div>
                             )}
@@ -197,6 +196,8 @@ const About: FC = () => {
             {renderContent()}
         </PageContent>
 
+        {operation.renderOperationDrawer()}
+
         <PageAction>
             <Link to="/setting">
                 <ActionIcon icon={<SettingOutlined />} />
@@ -205,7 +206,7 @@ const About: FC = () => {
                 <ActionIcon icon={<SearchOutlined />} />
             </Link>
             <ActionIcon icon={<MenuOutlined />} />
-            <ActionIcon icon={<SwitcherOutlined />} />
+            <ActionIcon icon={<SwitcherOutlined />} onClick={() => operation.setIsOperationDrawerOpen(true)} />
             <ActionButton onClick={() => navigate(-1)}>新增</ActionButton>
         </PageAction>
     </>)
