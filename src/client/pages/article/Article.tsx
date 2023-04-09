@@ -17,26 +17,31 @@ import dayjs from 'dayjs'
 import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined } from '@ant-design/icons'
 import s from './styles.module.css'
 import { useOperation } from './Operation'
+import { useMenu } from './Menu'
 
 const About: FC = () => {
     const navigate = useNavigate()
     const params = useParams()
     const dispatch = useAppDispatch()
     const [searchParams] = useSearchParams()
-    // 当前文章 id
+    /** 当前文章 id */
     const currentArticleId = +(params.articleId as string)
-    // 获取详情
+    /** 获取详情 */
     const { data: articleResp, isFetching: isLoadingArticle } = useQueryArticleContent(currentArticleId)
-    // 保存详情
+    /** 保存详情 */
     const { mutateAsync: updateArticle, isLoading: updatingArticle } = useUpdateArticle()
-    // 标题是否被修改
+    /** 标题是否被修改 */
     const isTitleModified = useRef(false)
-    // 标题输入框
+    /** 标题输入框 */
     const titleInputRef = useRef<HTMLInputElement>(null)
-    // 正在编辑的标题内容
+    /** 正在编辑的标题内容 */
     const [title, setTitle] = useState('')
-    // 页面是否在编辑中
+    /** 页面是否在编辑中 */
     const isEdit = (searchParams.get('mode') === 'edit')
+    /** 功能 - 导航抽屉 */
+    const menu = useMenu({
+        currentArticleId
+    })
 
     /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
     const onClickSaveBtn = async () => {
@@ -59,7 +64,7 @@ const About: FC = () => {
         onClickExitBtn
     })
 
-    // 功能 - 编辑器
+    /** 功能 - 编辑器 */
     const { renderEditor, setEditorContent, content, isContentModified } = useEditor({
         onAutoSave: () => operation.setSaveBtnText(`自动保存于 ${dayjs().format('HH:mm')}`),
         articleId: currentArticleId
@@ -139,6 +144,7 @@ const About: FC = () => {
         if (isEdit) return operation.renderMobileEditBar()
 
         return (<>
+            {menu.renderMenuDrawer()}
             {operation.renderOperationDrawer()}
 
             <Link to="/setting">
@@ -147,7 +153,7 @@ const About: FC = () => {
             <Link to="/search">
                 <ActionIcon icon={<SearchOutlined />} />
             </Link>
-            <ActionIcon icon={<MenuOutlined />} />
+            <ActionIcon icon={<MenuOutlined />} onClick={() => menu.setIsMenuDrawerOpen(true)} />
             <ActionIcon icon={<SwitcherOutlined />} onClick={() => operation.setIsOperationDrawerOpen(true)} />
             <ActionButton onClick={() => navigate(-1)}>新增</ActionButton>
         </>)

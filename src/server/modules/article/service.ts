@@ -195,7 +195,7 @@ export const createService = (props: Props) => {
         if (parentId) query.orWhere('id', parentId)
 
         const data: ArticleLinkResp = {
-            parentArticleId: undefined,
+            parentArticleIds: undefined,
             parentArticleTitle: undefined,
             childrenArticles: [],
         }
@@ -204,7 +204,8 @@ export const createService = (props: Props) => {
         // 因为父级是跟子级一起查出来的，所以这里要筛一下
         data.childrenArticles = matchedArticles.filter(item => {
             if (item.id !== parentId) return true
-            data.parentArticleId = item.id
+            data.parentArticleIds = [...pathToArray(item.parentPath), item.id]
+            console.log('item', item)
             data.parentArticleTitle = item.title
             return false
         })

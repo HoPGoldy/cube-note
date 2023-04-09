@@ -99,7 +99,7 @@ export interface ArticleLinkResp {
      * 父节点 id
      * 因为下属文章列表有个返回父级文章的按钮，所以需要返回父级文章 id
      */
-    parentArticleId?: number
+    parentArticleIds?: number[]
     parentArticleTitle?: string
     /** 子文章列表 */
     childrenArticles: ArticleMenuItem[]

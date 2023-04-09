@@ -86,8 +86,57 @@ input {
     transition: opacity 100ms, transform 100ms;
 }
 
+/** 移动端导航 - 列表向左滑动效果 **/
+.to-left-enter .menu-container {
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+.to-left-enter-active .menu-container {
+    opacity: 1;
+    transform: translateX(0%);
+}
+
+.to-left-exit .menu-container {
+    opacity: 1;
+    transform: translateX(0%);
+}
+
+.to-left-exit-active .menu-container {
+    opacity: 0;
+    transform: translateX(50%);
+}
+
+/** 移动端导航 - 列表向右滑动效果 **/
+.to-right-enter .menu-container {
+    opacity: 0;
+    transform: translateX(50%);
+}
+
+.to-right-enter-active .menu-container {
+    opacity: 1;
+    transform: translateX(0%);
+}
+
+.to-right-exit .menu-container {
+    opacity: 1;
+    transform: translateX(0%);
+}
+
+.to-right-exit-active .menu-container {
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+.to-left-enter-active .menu-container,
+.to-left-exit-active .menu-container,
+.to-right-enter-active .menu-container,
+.to-right-exit-active .menu-container {
+    transition: opacity 200ms, transform 200ms;
+}
+
 .ant-drawer-body {
-    @apply !p-2;
+    @apply !p-2 !pb-0;
 }
 
 @tailwind base;

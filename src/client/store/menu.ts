@@ -12,9 +12,10 @@ type State = {
      */
     currentArticleId?: number
     /**
-     * 父文章 id
+     * 祖先文章 id 列表
+     * 父文章 id 在最后一个
      */
-    parentArticleId?: number
+    parentArticleIds?: number[]
     /**
      * 父文章标题
      */
@@ -26,7 +27,7 @@ type State = {
 }
 
 const initialState: State = {
-    parentArticleId: undefined,
+    parentArticleIds: undefined,
     parentArticleTitle: '',
     currentTab: TabTypes.Sub,
     currentArticleId: undefined,
@@ -38,7 +39,7 @@ export const menuSlice = createSlice({
     initialState,
     reducers: {
         setParentArticle: (state, action: PayloadAction<ArticleLinkResp>) => {
-            state.parentArticleId = action.payload.parentArticleId
+            state.parentArticleIds = action.payload.parentArticleIds
             state.parentArticleTitle = action.payload.parentArticleTitle || ''
         },
         setCurrentMenu: (state, action: PayloadAction<TabTypes>) => {

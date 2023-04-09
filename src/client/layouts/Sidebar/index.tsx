@@ -12,7 +12,7 @@ import { PlusOutlined, RollbackOutlined, LinkOutlined } from '@ant-design/icons'
 import { Button, Segmented, Space } from 'antd'
 import s from './styles.module.css'
 
-const tabOptions = [
+export const tabOptions = [
     { label: '子级', value: TabTypes.Sub },
     { label: '相关', value: TabTypes.Related },
     { label: '收藏', value: TabTypes.Favorite },
@@ -30,7 +30,7 @@ export const Sidebar: FC = () => {
     const currentTab = useAppSelector(s => s.menu.currentTab)
     const currentRootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     const currentArticleId = useAppSelector(s => s.menu.currentArticleId)
-    const parentArticleId = useAppSelector(s => s.menu.parentArticleId)
+    const parentArticleIds = useAppSelector(s => s.menu.parentArticleIds)
     const parentArticleTitle = useAppSelector(s => s.menu.parentArticleTitle)
     const selectedRelatedArticleIds = useAppSelector(s => s.menu.selectedRelatedArticleIds)
     // 获取左下角菜单树
@@ -130,8 +130,8 @@ export const Sidebar: FC = () => {
         // console.log('🚀 ~ 下属文章列表', currentMenu)
 
         return (<>
-            {parentArticleId && (
-                <Link to={`/article/${parentArticleId}`}>
+            {parentArticleIds && (
+                <Link to={`/article/${parentArticleIds[parentArticleIds.length - 1]}`}>
                     {/* <Button ghost type="dashed" block>
                         返回{parentArticleTitle}
                     </Button> */}
