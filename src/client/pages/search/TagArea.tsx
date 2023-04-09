@@ -6,6 +6,7 @@ import { Collapse, List, Space } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
+import { MobileDrawer } from '@/client/components/MobileDrawer'
 
 interface Props {
     tagList?: TagListItem[]
@@ -28,6 +29,8 @@ export const useTagArea = (props: Props) => {
     const { groupedTagDict } = useGroupedTag(tagList)
     // 当前展开的标签分组
     const [expandedTagGroup, setExpandedTagGroup] = useState<string[]>()
+    /** 移动端标签选择是否展开 */
+    const [isTagDrawerOpen, setIsTagDrawerOpen] = useState(false)
 
     const isTagSelected = (id: number) => {
         return selectedTag.includes(id)
@@ -92,28 +95,34 @@ export const useTagArea = (props: Props) => {
         if (isLoadingGroup) return <Loading tip='加载分组中...' />
 
         return (
-            <List
-                dataSource={tagGroups}
-                renderItem={item => {
-                    const tags = groupedTagDict[item.id] || []
-                    return (
-                        <List.Item>
-                            <div>
-                                <div className="text-lg font-bold mb-2">
-                                    {item.title}
-                                </div>
+            <MobileDrawer
+                title='标签选择'
+                open={isTagDrawerOpen}
+                onClose={() => setIsTagDrawerOpen(false)}
+            >
+                <List
+                    dataSource={tagGroups}
+                    renderItem={item => {
+                        const tags = groupedTagDict[item.id] || []
+                        return (
+                            <List.Item>
                                 <div>
-                                    <Space wrap size={[0, 8]}>
-                                        {tags.map(renderTag)}
-                                    </Space>
+                                    <div className="text-lg font-bold mb-2">
+                                        {item.title}
+                                    </div>
+                                    <div>
+                                        <Space wrap size={[0, 8]}>
+                                            {tags.map(renderTag)}
+                                        </Space>
+                                    </div>
                                 </div>
-                            </div>
-                        </List.Item>
-                    )
-                }}
-            />
+                            </List.Item>
+                        )
+                    }}
+                />
+            </MobileDrawer>
         )
     }
 
-    return { renderTagSelectPanel, renderMobileTagSelectPanel, selectedTag }
+    return { renderTagSelectPanel, renderMobileTagSelectPanel, setIsTagDrawerOpen, selectedTag }
 }

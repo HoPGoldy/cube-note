@@ -6,6 +6,7 @@ import { autoSaveContent } from '@/client/services/article'
 import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
 import { isMobile } from '@/client/layouts/Responsive'
+import zh_Hans from 'bytemd/locales/zh_Hans.json'
 
 interface Props {
     onAutoSave: () => void
@@ -56,6 +57,7 @@ export const useEditor = (props: Props) => {
                 value={content}
                 mode={isMobile ? 'tab' : 'split'}
                 plugins={plugins}
+                locale={zh_Hans}
                 onChange={onContentChange}
             />
         )

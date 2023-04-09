@@ -87,7 +87,7 @@ input {
 }
 
 .ant-drawer-body {
-    @apply !px-4 !py-2;
+    @apply !p-2;
 }
 
 @tailwind base;

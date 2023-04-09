@@ -11,7 +11,6 @@ import { Card, Col, Input, List, Row } from 'antd'
 import { PAGE_SIZE } from '@/constants'
 import { DesktopArea } from '@/client/layouts/Responsive'
 import { TagOutlined, LeftOutlined } from '@ant-design/icons'
-import { MobileDrawer } from '@/client/components/MobileDrawer'
 
 /**
  * 搜索页面
@@ -32,7 +31,8 @@ const SearchArticle: FC = () => {
     const {
         selectedTag,
         renderTagSelectPanel,
-        renderMobileTagSelectPanel
+        renderMobileTagSelectPanel,
+        setIsTagDrawerOpen,
     } = useTagArea({ setCurrentPage, isTagLoading, tagList: tagListResp?.data })
     // 搜索结果列表
     const { data: articleListResp, isLoading: isSearching } = useQueryArticleList({
@@ -40,10 +40,8 @@ const SearchArticle: FC = () => {
         tagIds: selectedTag,
         page: currentPage,
     })
-    // 搜索列表占位文本
+    /** 搜索列表占位文本 */
     const [listEmptyText, setListEmptyText] = useState<string>()
-    /** 移动端标签选择是否展开 */
-    const [isTagDrawerOpen, setIsTagDrawerOpen] = useState(false)
 
     useEffect(() => {
         if (!listEmptyText) setListEmptyText('输入关键字或选择标签进行搜索')
@@ -146,13 +144,7 @@ const SearchArticle: FC = () => {
             {renderContent()}
         </PageContent>
 
-        <MobileDrawer
-            title='标签选择'
-            open={isTagDrawerOpen}
-            onClose={() => setIsTagDrawerOpen(false)}
-        >
-            {renderMobileTagSelectPanel()}
-        </MobileDrawer>
+        {renderMobileTagSelectPanel()}
 
         <PageAction>
             <ActionIcon icon={<LeftOutlined />} onClick={() => navigate(-1)} />

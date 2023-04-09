@@ -91,7 +91,7 @@ const TagArea: FC<Props> = (props) => {
     }
 
     return (
-        <div className="md:mb-2">
+        <div>
             {renderTagList()}
             {editingTag && (
                 <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />

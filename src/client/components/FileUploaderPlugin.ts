@@ -8,7 +8,7 @@ import mediumZoom from '@bytemd/plugin-medium-zoom'
 import highlight from '@bytemd/plugin-highlight'
 import 'highlight.js/styles/foundation.css'
 
-const getFileUrl = (file: UploadedFile) => {
+export const getFileUrl = (file: UploadedFile) => {
     // 后缀名
     const suffix = file.filename?.split('.')?.pop()
     const isImg = ['png', 'jpg', 'jpeg', 'gif', 'bmp'].includes(suffix?.toLocaleLowerCase() || 'unknown')

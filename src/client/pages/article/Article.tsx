@@ -1,8 +1,8 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction, ActionIcon } from '../../layouts/PageWithAction'
-import { useQueryArticleContent, useFavoriteArticle, useUpdateArticle } from '../../services/article'
-import { useAppDispatch, useAppSelector } from '../../store'
+import { useQueryArticleContent, useUpdateArticle } from '../../services/article'
+import { useAppDispatch } from '../../store'
 import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
@@ -10,50 +10,58 @@ import { useEditor } from './Editor'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
-import DeleteBtn from './DeleteBtn'
-import { Space, Tooltip } from 'antd'
 import { UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import dayjs from 'dayjs'
-import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined, HeartFilled, EditOutlined, SaveOutlined, RollbackOutlined, LoadingOutlined } from '@ant-design/icons'
+import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined } from '@ant-design/icons'
 import s from './styles.module.css'
-import { DesktopArea } from '@/client/layouts/Responsive'
-import { useMobileOperation } from './mobileOperation'
+import { useOperation } from './Operation'
 
 const About: FC = () => {
     const navigate = useNavigate()
     const params = useParams()
     const dispatch = useAppDispatch()
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams] = useSearchParams()
     // 当前文章 id
     const currentArticleId = +(params.articleId as string)
     // 获取详情
     const { data: articleResp, isFetching: isLoadingArticle } = useQueryArticleContent(currentArticleId)
     // 保存详情
     const { mutateAsync: updateArticle, isLoading: updatingArticle } = useUpdateArticle()
-    // 切换收藏状态
-    const { mutateAsync: updateFavoriteState } = useFavoriteArticle()
-    // 根节点文章
-    const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
-    // 保存按钮的文本
-    const [saveBtnText, setSaveBtnText] = useState('')
     // 标题是否被修改
     const isTitleModified = useRef(false)
     // 标题输入框
     const titleInputRef = useRef<HTMLInputElement>(null)
     // 正在编辑的标题内容
     const [title, setTitle] = useState('')
-    // 是否收藏
-    const [isFavorite, setIsFavorite] = useState(false)
     // 页面是否在编辑中
     const isEdit = (searchParams.get('mode') === 'edit')
-    /** 移动端操作弹窗 */
-    const operation = useMobileOperation()
+
+    /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
+    const onClickSaveBtn = async () => {
+        await saveEdit({ title, content })
+    }
+
+    /** 只有在内容变化时，点击退出按钮才会自动保存 */
+    const onClickExitBtn = async () => {
+        if (isContentModified.current) onClickSaveBtn()
+        isContentModified.current = false
+    }
+
+    /** 文章相关的操作 */
+    const operation = useOperation({
+        currentArticleId,
+        isEdit,
+        title,
+        updatingArticle,
+        onClickSaveBtn,
+        onClickExitBtn
+    })
 
     // 功能 - 编辑器
     const { renderEditor, setEditorContent, content, isContentModified } = useEditor({
-        onAutoSave: () => setSaveBtnText(`自动保存于 ${dayjs().format('HH:mm')}`),
+        onAutoSave: () => operation.setSaveBtnText(`自动保存于 ${dayjs().format('HH:mm')}`),
         articleId: currentArticleId
     })
 
@@ -67,7 +75,7 @@ const About: FC = () => {
         dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
         setEditorContent(articleResp.data.content)
-        setIsFavorite(articleResp.data.favorite)
+        operation.setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
 
     const saveEdit = async (data: Partial<UpdateArticleReqData>) => {
@@ -80,25 +88,9 @@ const About: FC = () => {
         if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess('保存成功')
-        setSaveBtnText('')
+        operation.setSaveBtnText('')
         dispatch(updateCurrentTab({ title }))
     }
-
-    const endEdit = async () => {
-        searchParams.delete('mode')
-        setSearchParams(searchParams)
-        setSaveBtnText('')
-        // 只有在内容变化时，点击退出按钮才会自动保存
-        if (isContentModified.current) onClickSaveBtn()
-        isContentModified.current = false
-    }
-
-    /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
-    const onClickSaveBtn = async () => {
-        await saveEdit({ title, content })
-    }
-
-    const SaveIcon = updatingArticle ? LoadingOutlined : SaveOutlined
 
     const renderContent = () => {
         if (isLoadingArticle) return <Loading tip='信息加载中...' />
@@ -121,50 +113,7 @@ const About: FC = () => {
                         placeholder="请输入笔记名"
                         className="font-bold border-0 text-3xl my-2 w-full"
                     />
-                    <DesktopArea>
-                        <Space className='text-xl text-gray-500 flex-shrink-0'>
-                            {isEdit && (
-                                <div className="text-base">{saveBtnText}</div>
-                            )}
-
-                            <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom">
-                                <HeartFilled
-                                    className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
-                                    onClick={() => {
-                                        updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
-                                        setIsFavorite(!isFavorite)
-                                    }}
-                                />
-                            </Tooltip>
-
-                            {currentArticleId !== rootArticleId && <DeleteBtn
-                                title={title}
-                                currentArticleId={currentArticleId}
-                            />}
-
-                            {isEdit ? (<>
-                                <Tooltip title="保存" placement="bottom">
-                                    <SaveIcon
-                                        className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
-                                        onClick={onClickSaveBtn}
-                                    />
-                                </Tooltip>
-                                <Tooltip title="保存并退出" placement="bottomLeft">
-                                    <RollbackOutlined
-                                        className="hover:scale-125 transition-all"
-                                        onClick={endEdit}
-                                    />
-                                </Tooltip>
-                            </>) : (
-                                <Tooltip title="编辑" placement="bottom">
-                                    <EditOutlined
-                                        className="hover:scale-125 transition-all"
-                                        onClick={startEdit}
-                                    />
-                                </Tooltip>
-                            )}
-                        </Space>
-                    </DesktopArea>
+                    {operation.renderDesktopOperation()}
                 </div>
 
                 <TagArea
@@ -174,11 +123,11 @@ const About: FC = () => {
                 />
 
                 {isEdit ? (
-                    <div className={s.editorArea}>
+                    <div className={[s.editorArea, s.mdArea].join(' ')}>
                         {renderEditor()}
                     </div>
                 ) : (
-                    <div className={'md:w-[100%]'}>
+                    <div className={`md:w-[100%] ${s.mdArea}`}>
                         <Preview value={content} />
                     </div>
                 )}
@@ -186,19 +135,12 @@ const About: FC = () => {
         )
     }
 
-    const startEdit = () => {
-        searchParams.set('mode', 'edit')
-        setSearchParams(searchParams)
-    }
+    const renderActionBar = () => {
+        if (isEdit) return operation.renderMobileEditBar()
 
-    return (<>
-        <PageContent>
-            {renderContent()}
-        </PageContent>
+        return (<>
+            {operation.renderOperationDrawer()}
 
-        {operation.renderOperationDrawer()}
-
-        <PageAction>
             <Link to="/setting">
                 <ActionIcon icon={<SettingOutlined />} />
             </Link>
@@ -208,6 +150,16 @@ const About: FC = () => {
             <ActionIcon icon={<MenuOutlined />} />
             <ActionIcon icon={<SwitcherOutlined />} onClick={() => operation.setIsOperationDrawerOpen(true)} />
             <ActionButton onClick={() => navigate(-1)}>新增</ActionButton>
+        </>)
+    }
+
+    return (<>
+        <PageContent>
+            {renderContent()}
+        </PageContent>
+
+        <PageAction>
+            {renderActionBar()}
         </PageAction>
     </>)
 }

@@ -14,3 +14,13 @@
 .editorArea > div {
     height: 100%;
 }
+
+.mdArea :global(img) {
+    max-width: 100%;
+    margin: auto;
+    display: block;
+}
+
+.mdArea :global(table) {
+    width: 100%;
+}
