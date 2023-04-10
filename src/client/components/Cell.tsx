@@ -26,6 +26,9 @@ export const Cell: FC<CellProps> = (props) => {
 
 export const SplitLine: FC = () => {
     return (
-        <div className="h-[1px] my-2 w-full bg-gray-200"></div>
+        <div
+            className="my-2 w-full bg-gray-200"
+            style={{ height: 5, transform: 'scale(1, 0.2)'}}
+        ></div>
     )
 }

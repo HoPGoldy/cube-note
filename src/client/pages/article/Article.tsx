@@ -17,7 +17,7 @@ import dayjs from 'dayjs'
 import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined } from '@ant-design/icons'
 import s from './styles.module.css'
 import { useOperation } from './Operation'
-import { useMenu } from './Menu'
+import { useMobileMenu } from './Menu'
 
 const About: FC = () => {
     const navigate = useNavigate()
@@ -39,7 +39,7 @@ const About: FC = () => {
     /** 页面是否在编辑中 */
     const isEdit = (searchParams.get('mode') === 'edit')
     /** 功能 - 导航抽屉 */
-    const menu = useMenu({
+    const menu = useMobileMenu({
         currentArticleId
     })
 
@@ -155,7 +155,7 @@ const About: FC = () => {
             </Link>
             <ActionIcon icon={<MenuOutlined />} onClick={() => menu.setIsMenuDrawerOpen(true)} />
             <ActionIcon icon={<SwitcherOutlined />} onClick={() => operation.setIsOperationDrawerOpen(true)} />
-            <ActionButton onClick={() => navigate(-1)}>新增</ActionButton>
+            <ActionButton onClick={menu.menu.createArticle}>新增</ActionButton>
         </>)
     }
 

@@ -11,8 +11,8 @@ export const MobileDrawer: FC<DrawerProps> = (props) => {
         <MobileArea>
             <Drawer
                 placement="bottom"
-                footer={(
-                    <Button block size="large" onClick={props.onClose}>返回</Button>
+                footer={props.footer || (
+                    <Button block size="large" onClick={props.onClose}>关闭</Button>
                 )}
                 footerStyle={{ padding: 8, border: 'none' }}
                 closable={false}
