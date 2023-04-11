@@ -1,6 +1,6 @@
 import React, { FC, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PageContent, PageAction, ActionButton } from '../../layouts/PageWithAction'
+import { PageContent, PageAction, ActionButton, ActionIcon } from '../../layouts/PageWithAction'
 import { AddTagReqData, TagGroupListItem, TagListItem } from '@/types/tag'
 import { useAddTag, useAddTagGroup, useQueryTagGroup, useQueryTagList, useUpdateTagGroup } from '../../services/tag'
 import Loading from '../../layouts/Loading'
@@ -15,7 +15,8 @@ import { useTagConfig } from './TagConfig'
 import { useBatchOperation } from './BatchOperation'
 import { useAllTagGroup, useGroupedTag } from './tagHooks'
 import { Col, Row, Button, Space, List, Card } from 'antd'
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
+import { PlusOutlined, DeleteOutlined, LeftOutlined, BuildOutlined, DownSquareOutlined } from '@ant-design/icons'
+import { DesktopArea, MobileArea } from '@/client/layouts/Responsive'
 
 /**
  * 标签管理
@@ -46,7 +47,10 @@ const TagManager: FC = () => {
     // 功能 - 标签详情管理
     const { renderTagDetail, showTagDetail } = useTagConfig({ tagGroups })
     // 功能 - 批量操作
-    const { isBatch, isTagSelected, onSelectTag, renderBatchBtn, renderBatchModal } = useBatchOperation({ tagGroups })
+    const {
+        isBatch, setIsBatch, isTagSelected, onSelectTag,
+        renderBatchBtn, renderBatchModal, renderMobileBatchBtn, renderBatchGroupSelect
+    } = useBatchOperation({ tagGroups })
 
     const onAddGroup = async () => {
         const title = `新分组 ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`
@@ -145,17 +149,19 @@ const TagManager: FC = () => {
         if (isLoading || isLoadingTagList) return <Loading />
 
         return (<>
-            <div className="p-4">
+            <div className="md:p-2">
                 <Row gutter={[16, 16]}>
-                    <Col span={24}>
-                        <Space>
-                            <Button onClick={onAddGroup} loading={isAddingGroup} icon={<PlusOutlined />}>新增分组</Button>
-                            {renderBatchBtn()}
-                        </Space>
-                    </Col>
+                    <DesktopArea>
+                        <Col span={24}>
+                            <Space>
+                                <Button onClick={onAddGroup} loading={isAddingGroup} icon={<PlusOutlined />}>新增分组</Button>
+                                {renderBatchBtn()}
+                            </Space>
+                        </Col>
+                    </DesktopArea>
                     <Col span={24}>
                         <List
-                            grid={{ gutter: 16, column: 3 }}
+                            grid={{ gutter: 16, xs: 1, md: 3 }}
                             dataSource={tagGroups}
                             renderItem={renderTagGroupItem}
                         />
@@ -167,10 +173,30 @@ const TagManager: FC = () => {
 
     return (<>
         <PageContent>
-            {renderContent()}
+            <div className="box-border p-2 flex flex-col flex-nowrap h-full">
+                <div className="flex-grow overflow-y-auto overflow-x-hidden">
+                    <MobileArea>
+                        <Card size="small" className='text-center text-base font-bold mb-2'>
+                            标签管理
+                        </Card>
+                    </MobileArea>
+                    {renderContent()}
+                </div>
+                <MobileArea>
+                    <div className="flex-shrink-0">
+                        {renderMobileBatchBtn()}
+                        {renderBatchGroupSelect()}
+                    </div>
+                </MobileArea>
+            </div>
         </PageContent>
         <PageAction>
-            <ActionButton onClick={() => navigate(-1)}>返回</ActionButton>
+            <ActionIcon icon={<LeftOutlined />} onClick={() => navigate(-1)} />
+            <ActionIcon
+                icon={isBatch ? <DownSquareOutlined /> : <BuildOutlined />}
+                onClick={() => setIsBatch(!isBatch)}
+            />
+            <ActionButton onClick={onAddGroup} loading={isAddingGroup}>新增分组</ActionButton>
         </PageAction>
 
         {renderDeleteModal()}

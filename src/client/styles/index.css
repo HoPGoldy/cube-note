@@ -67,7 +67,7 @@ input {
     width: 0 !important;
 }
 
-/** 用于控制动画的过渡时间 **/
+/** 桌面端侧边栏导航树组件的过渡动画 **/
 .my-transition-enter {
     opacity: 0;
     transform: scale(0.9);
@@ -83,6 +83,25 @@ input {
 .my-transition-exit-active {
     opacity: 0;
     transform: scale(0.9);
+    transition: opacity 100ms, transform 100ms;
+}
+
+/** 移动端标签批量操作的过渡动画 **/
+.batch-modal-enter {
+    opacity: 0;
+    transform: translateY(50%);
+}
+.batch-modal-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 100ms, transform 100ms;
+}
+.batch-modal-exit {
+    opacity: 1;
+}
+.batch-modal-exit-active {
+    opacity: 0;
+    transform: translateY(50%);
     transition: opacity 100ms, transform 100ms;
 }
 

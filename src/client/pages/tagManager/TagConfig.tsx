@@ -69,7 +69,7 @@ export const useTagConfig = (props: Props) => {
                 width="24rem"
             >
                 <Row gutter={[16, 16]}>
-                    <Col flex="auto">
+                    <Col flex="auto" span={20}>
                         <input
                             className='font-bold text-lg'
                             value={currentTag?.title || ''}

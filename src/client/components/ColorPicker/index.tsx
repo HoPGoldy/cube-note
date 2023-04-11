@@ -1,4 +1,4 @@
-import { Modal, Space } from 'antd'
+import { List, Modal } from 'antd'
 import React, { FC } from 'react'
 import s from './styles.module.css'
 
@@ -23,15 +23,16 @@ export const ColorPicker: FC<Props> = (props) => {
         if (color === '') classes.push(s.removeBtn)
 
         return (
-            <div
-                key={color}
-                className={classes.join(' ')}
-                style={{ backgroundColor: color }}
-                onClick={() => {
-                    onChange?.(color || '#000')
-                    onClose()
-                }}
-            />
+            <List.Item key={color}>
+                <div
+                    className={classes.join(' ')}
+                    style={{ backgroundColor: color }}
+                    onClick={() => {
+                        onChange?.(color || '#000')
+                        onClose()
+                    }}
+                />
+            </List.Item>
         )
     }
 
@@ -42,10 +43,15 @@ export const ColorPicker: FC<Props> = (props) => {
             footer={null}
             closable={false}
         >
-            <Space size={[16, 16]} wrap>
-                {MARK_COLORS.map(renderMarkColor)}
-                {renderMarkColor('')}
-            </Space>
+            <List
+                className='mt-6'
+                grid={{
+                    gutter: 16,
+                    column: 6
+                }}
+                dataSource={[...MARK_COLORS, '']}
+                renderItem={renderMarkColor}
+            />
         </Modal>
     )
 }

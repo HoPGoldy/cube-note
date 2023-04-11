@@ -5,10 +5,10 @@ import groupBy from 'lodash/groupBy'
 import { DEFAULT_TAG_GROUP } from '@/constants'
 
 /**
- * 获取包含 “未分组” 选项的标签分组列表
+ * 获取包含 “默认分组” 选项的标签分组列表
  */
 export const useAllTagGroup = (tagGroupList?: TagGroupListItem[]) => {
-    // 当前显示的分组（会多一个未分组，用来存放所有没有设置分组的标签）
+    // 当前显示的分组（会多一个默认分组，用来存放所有没有设置分组的标签）
     const [tagGroups, setTagGroups] = useState<TagGroupListItem[]>([])
 
     useEffect(() => {
@@ -16,7 +16,7 @@ export const useAllTagGroup = (tagGroupList?: TagGroupListItem[]) => {
         const groups = cloneDeep(tagGroupList)
         groups.unshift({
             id: DEFAULT_TAG_GROUP,
-            title: '未分组'
+            title: '默认分组'
         })
         setTagGroups(groups)
     }, [tagGroupList])

@@ -59,7 +59,7 @@ export const useDeleteGroup = () => {
                     onClick={() => setDeleteChildren(!deleteChildren)}
                     icon={deleteChildren ? <CheckOutlined /> : <CloseOutlined />}
                 >
-                    删除子文章
+                    删除子标签
                 </Button>
             </Modal>
         )

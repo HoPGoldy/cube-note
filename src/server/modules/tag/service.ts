@@ -73,7 +73,7 @@ export const createService = (props: Props) => {
                 .delete()
                 .where({ groupId: id, createUserId: userId })
         }
-        // 把该分组下的标签移动到未分组
+        // 把该分组下的标签移动到默认分组
         else {
             await db.tag()
                 .update('groupId', '')
