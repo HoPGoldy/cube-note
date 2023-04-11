@@ -23,4 +23,20 @@
 
 .mdArea :global(table) {
     width: 100%;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+}
+
+.mdArea :global(th) {
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    padding: 8px;
+    min-width: 60px;
+}
+
+.mdArea :global(td) {
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    padding: 8px;
+    min-width: 60px;
 }

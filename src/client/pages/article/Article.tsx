@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction, ActionIcon } from '../../layouts/PageWithAction'
-import { useQueryArticleContent, useUpdateArticle } from '../../services/article'
+import { useQueryArticleContent, useQueryArticleSublink, useUpdateArticle } from '../../services/article'
 import { useAppDispatch } from '../../store'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
@@ -17,6 +17,7 @@ import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined } from 
 import s from './styles.module.css'
 import { useOperation } from './Operation'
 import { useMobileMenu } from './Menu'
+import { Card, List } from 'antd'
 
 const About: FC = () => {
     const params = useParams()
@@ -28,6 +29,11 @@ const About: FC = () => {
     const currentArticleId = +(params.articleId as string)
     /** 获取详情 */
     const { data: articleResp, isFetching: isLoadingArticle } = useQueryArticleContent(currentArticleId)
+    // 获取当前文章的子级、父级文章
+    const { data: articleLink, isLoading: linkLoading } = useQueryArticleSublink(
+        currentArticleId,
+        !!articleResp?.data?.listSubarticle
+    )
     /** 保存详情 */
     const { mutateAsync: updateArticle, isLoading: updatingArticle } = useUpdateArticle()
     /** 标题是否被修改 */
@@ -36,8 +42,6 @@ const About: FC = () => {
     const titleInputRef = useRef<HTMLInputElement>(null)
     /** 正在编辑的标题内容 */
     const [title, setTitle] = useState('')
-    /** 本文的颜色 */
-    const [color, setColor] = useState('')
     /** 功能 - 导航抽屉 */
     const menu = useMobileMenu({
         currentArticleId
@@ -57,11 +61,12 @@ const About: FC = () => {
     /** 文章相关的操作 */
     const operation = useOperation({
         currentArticleId,
+        articleDetail: articleResp?.data,
         isEdit,
         title,
-        color,
         updatingArticle,
         onChangeColor: (color) => saveEdit({ color }),
+        onSetListArticle: v => saveEdit({ listSubarticle: v }),
         onClickSaveBtn,
         onClickExitBtn,
     })
@@ -80,7 +85,6 @@ const About: FC = () => {
         if (!articleResp?.data) return
 
         setTitle(articleResp.data.title)
-        setColor(articleResp.data.color || '')
         setEditorContent(articleResp.data.content)
         operation.setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
@@ -96,6 +100,50 @@ const About: FC = () => {
 
         messageSuccess('保存成功')
         operation.setSaveBtnText('')
+    }
+
+    /** 渲染底部的子笔记列表 */
+    const renderSubArticleList = () => {
+        if (!articleResp?.data?.listSubarticle || isEdit) return null
+        if (linkLoading) return <Loading className="mt-10" tip='信息加载中...' />
+
+        return (
+            <div className="mt-4 w-full xl:w-[60%] m-auto">
+                <List
+                    grid={{
+                        gutter: 16,
+                        xs: 1,
+                        sm: 1,
+                        md: 2,
+                        lg: 2,
+                        xl: 2,
+                        xxl: 2,
+                    }}
+                    dataSource={articleLink?.data || []}
+                    renderItem={(item) => (
+                        <List.Item>
+                            <Link to={`/article/${item.id}`}>
+                                <Card
+                                    size="small"
+                                    title={item.title}
+                                    className="hover:ring-2 transition-all cursor-pointer"
+                                    extra={
+                                        item.color && (
+                                            <div
+                                                className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded"
+                                                style={{ backgroundColor: item.color }}
+                                            />
+                                        )
+                                    }
+                                >
+                                    {item.content}...
+                                </Card>
+                            </Link>
+                        </List.Item>
+                    )}
+                />
+            </div>
+        )
     }
 
     const renderContent = () => {
@@ -137,6 +185,8 @@ const About: FC = () => {
                         <Preview value={content} />
                     </div>
                 )}
+
+                {renderSubArticleList()}
             </div>
         )
     }

@@ -4,7 +4,7 @@
 }
 
 .tabBox {
-    @apply bg-slate-800 text-slate-50;
+    @apply bg-slate-800 text-slate-50 text-sm;
 }
 
 .tabBox :global(.ant-segmented-item-selected) {

@@ -101,6 +101,13 @@ export const createRouter = (props: Props) => {
         response(ctx, resp)
     })
 
+    // 获取详细的子级文章列表
+    router.get('/:id/getChildrenDetailList', async ctx => {
+        const { id } = ctx.params
+        const resp = await service.getChildrenDetailList(+id)
+        response(ctx, resp)
+    })
+
     // 获取相关文章信息
     router.get('/:id/getRelated', async ctx => {
         const { id } = ctx.params

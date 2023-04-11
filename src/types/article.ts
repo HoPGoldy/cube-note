@@ -116,6 +116,15 @@ export interface ArticleLinkResp {
     childrenArticles: ArticleMenuItem[]
 }
 
+/** 详细的下属文章列表元素 */
+export interface ArticleSubLinkDetail {
+    content: string
+    tagIds: number[]
+    title: string
+    id: number
+    color?: string | undefined
+}
+
 export interface ArticleRelatedResp {
     relatedArticles: ArticleMenuItem[]
 }

@@ -1,6 +1,6 @@
 import {
     ArticleContent, ArticleStorage, ArticleDeleteResp, SearchArticleReqData, UpdateArticleReqData,
-    ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp, SetArticleRelatedReqData, SearchArticleDetail, SearchArticleResp
+    ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp, SetArticleRelatedReqData, SearchArticleDetail, SearchArticleResp, ArticleSubLinkDetail
 } from '@/types/article'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
 import { appendIdToPath, arrayToPath, getParentIdByPath, pathToArray, replaceParentId } from '@/utils/parentPath'
@@ -206,11 +206,26 @@ export const createService = (props: Props) => {
         data.childrenArticles = matchedArticles.filter(item => {
             if (item.id !== parentId) return true
             data.parentArticleIds = [...pathToArray(item.parentPath), item.id]
-            console.log('item', item)
             data.parentArticleTitle = item.title
             return false
         })
 
+        return { code: 200, data }
+    }
+
+    // 获取详细的子代文章列表
+    const getChildrenDetailList = async (id: number) => {
+        const article = await db.article().select().where('id', id).first()
+        if (!article) return { code: 400, msg: '文章不存在' }
+
+        const rawData = await db.article().select('id', 'title', 'content', 'color', 'tagIds').whereLike('parentPath', `%#${id}#`)
+        const data: ArticleSubLinkDetail[] = rawData.map(item => {
+            return {
+                ...item,
+                content: item.content.slice(0, 20),
+                tagIds: pathToArray(item.tagIds),
+            }
+        })
         return { code: 200, data }
     }
 
@@ -293,7 +308,7 @@ export const createService = (props: Props) => {
     }
 
     return {
-        addArticle, getArticleContent, updateArticle, getChildren, getRelatives, getArticleTree, removeArticle,
+        addArticle, getArticleContent, updateArticle, getChildren, getChildrenDetailList, getRelatives, getArticleTree, removeArticle,
         getFavoriteArticles, getArticleList, setFavorite, setArticleRelate
     }
 }

@@ -1,8 +1,11 @@
 import { MobileDrawer } from '@/client/components/MobileDrawer'
 import { DesktopArea } from '@/client/layouts/Responsive'
-import { Button, Col, Row, Space, Tooltip } from 'antd'
+import { Button, Col, Popover, Row, Space, Switch, Tooltip } from 'antd'
 import React, { ChangeEventHandler, useRef, useState } from 'react'
-import { HeartFilled, FormOutlined, SaveOutlined, StarFilled, RollbackOutlined, LoadingOutlined, DeleteOutlined, LeftOutlined, CloudUploadOutlined } from '@ant-design/icons'
+import {
+    HeartFilled, FormOutlined, SaveOutlined, StarFilled, RollbackOutlined, LoadingOutlined,
+    DeleteOutlined, LeftOutlined, CloudUploadOutlined, UnorderedListOutlined, QuestionCircleFilled
+} from '@ant-design/icons'
 import { useAppSelector } from '@/client/store'
 import { useFavoriteArticle } from '@/client/services/article'
 import { useSearchParams } from 'react-router-dom'
@@ -13,20 +16,24 @@ import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
 import { getFileUrl } from '@/client/components/FileUploaderPlugin'
 import { ColorPicker } from '@/client/components/ColorPicker'
+import { ArticleContent } from '@/types/article'
+import Loading from '@/client/layouts/Loading'
+import dayjs from 'dayjs'
 
 interface Props {
     currentArticleId: number
     isEdit: boolean
     title: string
-    color: string
+    articleDetail?: ArticleContent
     updatingArticle: boolean
     onClickSaveBtn: () => Promise<void>
     onClickExitBtn: () => Promise<void>
     onChangeColor: (color: string) => void
+    onSetListArticle: (value: boolean) => void
 }
 
 export const useOperation = (props: Props) => {
-    const { isEdit, title, color, updatingArticle, currentArticleId } = props
+    const { isEdit, title, articleDetail, updatingArticle, currentArticleId } = props
     const [searchParams, setSearchParams] = useSearchParams()
     /** 切换收藏状态 */
     const { mutateAsync: updateFavoriteState } = useFavoriteArticle()
@@ -70,60 +77,67 @@ export const useOperation = (props: Props) => {
                 open={isOperationDrawerOpen}
                 onClose={() => setIsOperationDrawerOpen(false)}
             >
-                <Row gutter={[8, 8]}>
-                    {!isRootArticle && (
-                        <Col span={8}>
-                            <Button
-                                size="large"
-                                block
-                                danger
-                                onClick={() => deleteArticle.setShowDeleteDialog(true)}
-                            >删除</Button>
-                        </Col>
-                    )}
-                    <Col span={isRootArticle ? 12 : 8}>
-                        <Button
-                            size="large"
-                            block
-                            onClick={() => setIsColorPickerOpen(true)}
-                            className='flex items-center justify-center'
-                        >
-                            {color && (
-                                <div
-                                    className='inline-block w-4 h-4 mr-2 rounded-full cursor-pointer'
-                                    style={{ backgroundColor: color }}
-                                />
+                <div className="flex flex-nowrap flex-col h-full">
+                    <div className="flex-grow overflow-y-auto mb-2">
+                        {renderConfigContent()}
+                    </div>
+                    <div className="flex-shrink-0">
+                        <Row gutter={[8, 8]}>
+                            {!isRootArticle && (
+                                <Col span={8}>
+                                    <Button
+                                        size="large"
+                                        block
+                                        danger
+                                        onClick={() => deleteArticle.setShowDeleteDialog(true)}
+                                    >删除</Button>
+                                </Col>
                             )}
-                            <span>颜色</span>
-                        </Button>
-                    </Col>
-                    <Col span={isRootArticle ? 12 : 8}>
-                        <Button
-                            size="large"
-                            block
-                            onClick={() => {
-                                updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
-                                setIsFavorite(!isFavorite)
-                            }}
-                        >
-                            {isFavorite
-                                ? (<span className='text-red-500'><HeartFilled  /> 已收藏</span>) 
-                                : '收藏'
-                            }
-                        </Button>
-                    </Col>
-                    <Col span={24}>
-                        <Button
-                            size="large"
-                            block
-                            type="primary"
-                            onClick={() => {
-                                startEdit()
-                                setIsOperationDrawerOpen(false)
-                            }}
-                        >编辑</Button>
-                    </Col>
-                </Row>
+                            <Col span={isRootArticle ? 12 : 8}>
+                                <Button
+                                    size="large"
+                                    block
+                                    onClick={() => setIsColorPickerOpen(true)}
+                                    className='flex items-center justify-center'
+                                >
+                                    {articleDetail?.color && (
+                                        <div
+                                            className='inline-block w-4 h-4 mr-2 rounded-full cursor-pointer'
+                                            style={{ backgroundColor: articleDetail.color }}
+                                        />
+                                    )}
+                                    <span>颜色</span>
+                                </Button>
+                            </Col>
+                            <Col span={isRootArticle ? 12 : 8}>
+                                <Button
+                                    size="large"
+                                    block
+                                    onClick={() => {
+                                        updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
+                                        setIsFavorite(!isFavorite)
+                                    }}
+                                >
+                                    {isFavorite
+                                        ? (<span className='text-red-500'><HeartFilled  /> 已收藏</span>) 
+                                        : '收藏'
+                                    }
+                                </Button>
+                            </Col>
+                            <Col span={24}>
+                                <Button
+                                    size="large"
+                                    block
+                                    type="primary"
+                                    onClick={() => {
+                                        startEdit()
+                                        setIsOperationDrawerOpen(false)
+                                    }}
+                                >编辑</Button>
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
                 {deleteArticle.renderDeleteModal()}
                 {renderColorPicker()}
             </MobileDrawer>
@@ -147,6 +161,56 @@ export const useOperation = (props: Props) => {
         )
     }
 
+    /** 渲染文章配置弹窗内容 */
+    const renderConfigContent = () => {
+        if (!articleDetail) {
+            return (
+                <Loading tip='加载中...' />
+            )
+        }
+
+        return (
+            <Row>
+                <Col span={24}>
+                    <div className="mb-4 flex items-center justify-between">
+                        <div>
+                            <Tooltip title="开启后，将会在正文内容下方以列表形式展示子笔记，适合目录页、索引页使用" placement="bottom">
+                                <QuestionCircleFilled className="text-gray-500 cursor-pointer" />
+                            </Tooltip>
+                            <span className="text-base ml-2">
+                                列出子笔记
+                            </span>
+                        </div>
+                        <span className="float-right">
+                            <Switch
+                                checkedChildren="开启"
+                                unCheckedChildren="关闭"
+                                checked={articleDetail.listSubarticle}
+                                onClick={props.onSetListArticle}
+                            />
+                        </span>
+                    </div>
+                </Col>
+                <Col span={24}>
+                    <span className="text-gray-400">
+                        创建时间
+                    </span>
+                    <span className="float-right">
+                        {dayjs(articleDetail.createTime).format('YYYY:MM:DD HH:mm:ss')}
+                    </span>
+                </Col>
+                <Col span={24}>
+                    <span className="text-gray-400">
+                        最后更新时间
+                    </span>
+                    <span className="float-right">
+                        {dayjs(articleDetail.updateTime).format('YYYY:MM:DD HH:mm:ss')}
+                    </span>
+                </Col>
+            </Row>
+        )
+    }
+
     /** 渲染桌面端右上角的文章功能按钮 */
     const renderDesktopOperation = () => {
         const SaveIcon = updatingArticle ? LoadingOutlined : SaveOutlined
@@ -166,7 +230,7 @@ export const useOperation = (props: Props) => {
                         /> */}
                         <StarFilled
                             className="hover:scale-125 transition-all"
-                            style={{ color }}
+                            style={{ color: articleDetail?.color }}
                             onClick={() => setIsColorPickerOpen(true)}
                         />
                     </Tooltip>
@@ -197,7 +261,7 @@ export const useOperation = (props: Props) => {
                                 onClick={props.onClickSaveBtn}
                             />
                         </Tooltip>
-                        <Tooltip title="保存并退出" placement="bottomLeft">
+                        <Tooltip title="保存并退出" placement="bottom">
                             <RollbackOutlined
                                 className="hover:scale-125 transition-all"
                                 onClick={endEdit}
@@ -211,6 +275,19 @@ export const useOperation = (props: Props) => {
                             />
                         </Tooltip>
                     )}
+
+                    <Popover
+                        placement="bottomRight"
+                        // trigger="click"
+                        content={renderConfigContent()}
+                        arrow
+                        overlayClassName="w-80"
+                    >
+                        <UnorderedListOutlined
+                            className="hover:scale-125 transition-all cursor-pointer"
+                        />
+                    </Popover>
+
                 </Space>
                 {deleteArticle.renderDeleteModal()}
                 {renderColorPicker()}

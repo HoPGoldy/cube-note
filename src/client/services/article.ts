@@ -4,6 +4,7 @@ import {
     AddArticleReqData, ArticleContent, ArticleDeleteResp, ArticleLinkResp,
     ArticleMenuItem,
     ArticleRelatedResp,
+    ArticleSubLinkDetail,
     ArticleTreeNode, DeleteArticleMutation,
     SearchArticleReqData,
     SearchArticleResp,
@@ -41,6 +42,7 @@ export const useUpdateArticle = () => {
         onSuccess: (resp, data) => {
             if (data.title || data.parentArticleId) {
                 queryClient.invalidateQueries(['articleLink', data.id])
+                queryClient.invalidateQueries('articleDetailSubLink')
                 queryClient.invalidateQueries('menu')
             }
             if (!isNil(data.color)) {
@@ -68,6 +70,13 @@ export const useQueryArticleLink = (id: number | undefined, enabled: boolean) =>
     }, { enabled })
 }
 
+/** 查询本文的详细下属文章列表 */
+export const useQueryArticleSublink = (id: number | undefined, enabled: boolean) => {
+    return useQuery(['articleDetailSubLink', id], () => {
+        return requestGet<ArticleSubLinkDetail[]>(`article/${id}/getChildrenDetailList`)
+    }, { enabled })
+}
+
 /** 查询本文的相关文章 */
 export const useQueryArticleRelated = (id: number | undefined, enabled: boolean) => {
     return useQuery(['articleRelated', id], () => {
@@ -82,6 +91,7 @@ export const useAddArticle = () => {
     }, {
         onSuccess: (resp, data) => {
             queryClient.invalidateQueries(['articleLink', data.parentId])
+            queryClient.invalidateQueries('articleDetailSubLink')
             queryClient.invalidateQueries('menu')
         }
     })
@@ -94,6 +104,7 @@ export const useDeleteArticle = () => {
     }, {
         onSuccess: (resp) => {
             queryClient.invalidateQueries(['articleLink', resp?.data?.parentArticleId])
+            queryClient.invalidateQueries('articleDetailSubLink')
             queryClient.invalidateQueries('menu')
             queryClient.invalidateQueries('favorite')
         }

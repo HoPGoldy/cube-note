@@ -22,7 +22,14 @@ createRoot(rootContainer).render(
                 // algorithm: theme.darkAlgorithm,
                 token: {
                     lineWidth: 2,
-                    controlOutlineWidth: 1
+                    controlOutlineWidth: 1,
+                    fontSize: 16,
+                    lineHeight: 1.6
+                },
+                components: {
+                    Card: {
+                        colorBorderSecondary: '#d1d5db',
+                    }
                 }
             }}>
                 <QueryClientProvider client={queryClient}>
