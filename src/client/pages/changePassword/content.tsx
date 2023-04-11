@@ -6,6 +6,7 @@ import { useAppDispatch } from '@/client/store'
 import { logout } from '@/client/store/user'
 import { messageSuccess } from '@/client/utils/message'
 import { isMobile } from '@/client/layouts/Responsive'
+import s from './styles.module.css'
 
 export const useChangePasswordContent = () => {
     const [form] = Form.useForm()
@@ -28,9 +29,11 @@ export const useChangePasswordContent = () => {
     const renderContent = () => {
         return (
             <Form
+                className={s.changePasswordBox}
                 form={form}
                 labelCol={{ span: 6 }}
                 labelAlign="right"
+                size={isMobile ? 'large' : 'middle'}
             >
                 <Row className='md:mt-6'>
                     <Col span={24}>
@@ -39,7 +42,7 @@ export const useChangePasswordContent = () => {
                             name="oldPassword"
                             rules={[{ required: true, message: '请填写旧密码' }]}
                         >
-                            <Input.Password placeholder="请输入" size={isMobile ? 'large' : 'middle'} />
+                            <Input.Password placeholder="请输入" />
                         </Form.Item>
                     </Col>
                     <Col span={24}>
@@ -60,7 +63,7 @@ export const useChangePasswordContent = () => {
                                 }),
                             ]}
                         >
-                            <Input.Password placeholder="请输入" size={isMobile ? 'large' : 'middle'} />
+                            <Input.Password placeholder="请输入" />
                         </Form.Item>
                     </Col>
                     <Col span={24}>
@@ -79,7 +82,7 @@ export const useChangePasswordContent = () => {
                                 }),
                             ]}
                         >
-                            <Input.Password placeholder="请输入" size={isMobile ? 'large' : 'middle'} />
+                            <Input.Password placeholder="请输入" />
                         </Form.Item>
                     </Col>
                 </Row>
