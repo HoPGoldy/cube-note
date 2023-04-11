@@ -54,15 +54,12 @@ const defaultRenderLink = (link: HTMLAnchorElement) => {
     link.target = '_blank'
     link.innerHTML = `
         <div
-            class="rounded-md p-4 my-2 bg-slate-200 flex"
+            class="rounded p-3 my-2 flex bg-gray-200 hover:bg-gray-300 transition-all overflow-hidden items-center"
         >
-            <svg class="icon" aria-hidden="true" style="font-size: 3rem;">
+            <svg class="icon" aria-hidden="true" style="font-size: 1.75rem;">
                 <use xlink:href="#icon-${getFileIcon(suffix)}"></use>
             </svg>
-            <div style="margin-left: 0.5rem">
-                <div class="text-slate-800 font-bold">${link.innerText}</div>
-                <div class="text-slate-600">点击下载附件</div>
-            </div>
+            <div class="text-slate-800 font-bold truncate ml-2">${link.innerText}</div>
         </div>
     `
 }
