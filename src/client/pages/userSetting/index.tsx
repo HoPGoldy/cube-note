@@ -113,10 +113,12 @@ export const MobileSetting: FC = () => {
                     />
                 </Card>
                 <Card size="small" className='mt-4'>
-                    <Cell
-                        title={(<div><LockOutlined /> &nbsp;修改密码</div>)}
-                        extra={<RightOutlined />}
-                    />
+                    <Link to="/changePassword">
+                        <Cell
+                            title={(<div><LockOutlined /> &nbsp;修改密码</div>)}
+                            extra={<RightOutlined />}
+                        />
+                    </Link>
                     <SplitLine />
 
                     <Link to="/tags">

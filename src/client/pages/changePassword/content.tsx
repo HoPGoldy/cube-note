@@ -5,11 +5,12 @@ import { sha } from '@/utils/crypto'
 import { useAppDispatch } from '@/client/store'
 import { logout } from '@/client/store/user'
 import { messageSuccess } from '@/client/utils/message'
+import { isMobile } from '@/client/layouts/Responsive'
 
 export const useChangePasswordContent = () => {
     const [form] = Form.useForm()
     const dispatch = useAppDispatch()
-    const { mutateAsync: postChangePassword } = useChangePassword()
+    const { mutateAsync: postChangePassword, isLoading: isChangingPassword } = useChangePassword()
 
     const onSavePassword = async () => {
         const values = await form.validateFields()
@@ -31,14 +32,14 @@ export const useChangePasswordContent = () => {
                 labelCol={{ span: 6 }}
                 labelAlign="right"
             >
-                <Row className='mt-6'>
+                <Row className='md:mt-6'>
                     <Col span={24}>
                         <Form.Item
                             label="旧密码"
                             name="oldPassword"
                             rules={[{ required: true, message: '请填写旧密码' }]}
                         >
-                            <Input.Password placeholder="请输入" />
+                            <Input.Password placeholder="请输入" size={isMobile ? 'large' : 'middle'} />
                         </Form.Item>
                     </Col>
                     <Col span={24}>
@@ -59,7 +60,7 @@ export const useChangePasswordContent = () => {
                                 }),
                             ]}
                         >
-                            <Input.Password placeholder="请输入" />
+                            <Input.Password placeholder="请输入" size={isMobile ? 'large' : 'middle'} />
                         </Form.Item>
                     </Col>
                     <Col span={24}>
@@ -78,7 +79,7 @@ export const useChangePasswordContent = () => {
                                 }),
                             ]}
                         >
-                            <Input.Password placeholder="请输入" />
+                            <Input.Password placeholder="请输入" size={isMobile ? 'large' : 'middle'} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -86,5 +87,5 @@ export const useChangePasswordContent = () => {
         )
     }
 
-    return { onSavePassword, renderContent }
+    return { onSavePassword, isChangingPassword, renderContent }
 }

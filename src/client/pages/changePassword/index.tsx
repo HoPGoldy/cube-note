@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { useState } from 'react'
 import { useChangePasswordContent } from './content'
 import { useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
@@ -37,14 +37,3 @@ export const useChangePassword = () => {
 
     return { showChangePassword, renderChangePasswordModal }
 }
-
-const ChangePassword: FC = () => {
-    const { renderContent } = useChangePasswordContent()
-    return (
-        <div>
-            {renderContent()}
-        </div>
-    )
-}
-
-export default ChangePassword

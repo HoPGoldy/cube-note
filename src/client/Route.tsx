@@ -29,11 +29,13 @@ export const routes = createHashRouter([
                     { path: '/article/:articleId', element: <Article /> },
                     { path: '/search', element: <Search /> },
                     { path: '/setting', element: <MobileSetting /> },
+                    // 标签管理
                     { path: '/tags', element: lazyLoad(() => import('./pages/tagManager/TagManager')) },
                     // 修改密码
-                    { path: '/changePassword', element: lazyLoad(() => import('./pages/changePassword')) },
+                    { path: '/changePassword', element: lazyLoad(() => import('./pages/changePassword/mobile')) },
                     // 邀请管理
                     { path: 'userInvite', element: lazyLoad(() => import('./pages/userInvite')) },
+                    // 关于应用
                     { path: '/about', element: lazyLoad(() => import('./pages/About')) },
                 ],
                 element: (
