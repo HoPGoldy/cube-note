@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react'
 import { AddTag, EditTagEntry } from '@/client/components/Tag'
-import { Tag } from 'antd'
+import { Space, Tag } from 'antd'
 import { useAddTag, useQueryTagList } from '@/client/services/tag'
 import { TagListItem } from '@/types/tag'
 import Loading from '@/client/layouts/Loading'
@@ -91,7 +91,7 @@ const TagArea: FC<Props> = (props) => {
     }
 
     return (
-        <div>
+        <Space wrap size={[0, 8]}>
             {renderTagList()}
             {editingTag && (
                 <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />
@@ -102,7 +102,7 @@ const TagArea: FC<Props> = (props) => {
                     label={editingTag ? '结束编辑' : (tagList.length > 0 ? '编辑标签' : '新增标签')}
                 />
             )}
-        </div>
+        </Space>
     )
 }
 

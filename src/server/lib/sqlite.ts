@@ -44,6 +44,8 @@ export const createDb = (props: Props) => {
             t.text('parentPath').notNullable()
             t.integer('createUserId').notNullable()
             t.text('tagIds').notNullable()
+            t.boolean('listSubarticle')
+            t.string('color')
         })
     })
 

@@ -69,7 +69,11 @@ export const TreeMenu: FC<Props> = (props) => {
                 }
             >
                 <span
-                    className="flex-grow"
+                    className="flex-shrink-0 w-2 h-[60%] bg-gray-300 mr-2 rounded"
+                    style={{ backgroundColor: item.color }}
+                />
+                <span
+                    className="flex-grow truncate"
                     onClick={() => props.onClickNode?.(item)}
                 >
                     {item.title}

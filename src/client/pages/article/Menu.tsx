@@ -69,13 +69,17 @@ export const useMobileMenu = (props: Props) => {
         return (
             <div key={item.id}>
                 <div
-                    className='mb-2 px-2 flex justify-between items-center h-[32px] text-base text-black'
+                    className='mb-2 px-2 flex items-center h-[32px] text-base text-black'
                     onClick={() => {
                         navigate(`/article/${item.id}`)
                         setIsMenuDrawerOpen(false)
                     }}
                 >
-                    {item.title}
+                    <span
+                        className="flex-shrink-0 w-2 h-[60%] bg-gray-300 mr-2 rounded"
+                        style={{ backgroundColor: item.color }}
+                    />
+                    <span className="truncate">{item.title}</span>
                 </div>
                 {index < list.length - 1 ? <SplitLine /> : null}
             </div>

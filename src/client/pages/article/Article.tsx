@@ -1,9 +1,8 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction, ActionIcon } from '../../layouts/PageWithAction'
 import { useQueryArticleContent, useUpdateArticle } from '../../services/article'
 import { useAppDispatch } from '../../store'
-import { updateCurrentTab } from '../../store/tab'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
 import { useEditor } from './Editor'
@@ -20,10 +19,11 @@ import { useOperation } from './Operation'
 import { useMobileMenu } from './Menu'
 
 const About: FC = () => {
-    const navigate = useNavigate()
     const params = useParams()
     const dispatch = useAppDispatch()
     const [searchParams] = useSearchParams()
+    /** 页面是否在编辑中 */
+    const isEdit = (searchParams.get('mode') === 'edit')
     /** 当前文章 id */
     const currentArticleId = +(params.articleId as string)
     /** 获取详情 */
@@ -36,8 +36,8 @@ const About: FC = () => {
     const titleInputRef = useRef<HTMLInputElement>(null)
     /** 正在编辑的标题内容 */
     const [title, setTitle] = useState('')
-    /** 页面是否在编辑中 */
-    const isEdit = (searchParams.get('mode') === 'edit')
+    /** 本文的颜色 */
+    const [color, setColor] = useState('')
     /** 功能 - 导航抽屉 */
     const menu = useMobileMenu({
         currentArticleId
@@ -59,9 +59,11 @@ const About: FC = () => {
         currentArticleId,
         isEdit,
         title,
+        color,
         updatingArticle,
+        onChangeColor: (color) => saveEdit({ color }),
         onClickSaveBtn,
-        onClickExitBtn
+        onClickExitBtn,
     })
 
     /** 功能 - 编辑器 */
@@ -77,8 +79,8 @@ const About: FC = () => {
     useEffect(() => {
         if (!articleResp?.data) return
 
-        dispatch(updateCurrentTab({ title: articleResp.data.title }))
         setTitle(articleResp.data.title)
+        setColor(articleResp.data.color || '')
         setEditorContent(articleResp.data.content)
         operation.setIsFavorite(articleResp.data.favorite)
     }, [articleResp])
@@ -94,7 +96,6 @@ const About: FC = () => {
 
         messageSuccess('保存成功')
         operation.setSaveBtnText('')
-        dispatch(updateCurrentTab({ title }))
     }
 
     const renderContent = () => {

@@ -15,6 +15,14 @@ export interface ArticleStorage {
      * 以#分隔，如：#1#2#3#
      **/
     tagIds?: string
+    /**
+     * 是否在正文下面列出子笔记
+     */
+    listSubarticle?: boolean
+    /**
+     * 该笔记的颜色
+     */
+    color?: string
 }
 
 /**
@@ -74,6 +82,7 @@ export interface DeleteArticleMutation {
 export interface ArticleMenuItem {
     id: number
     title: string
+    color?: string
 }
 
 export enum TabTypes {
@@ -91,6 +100,8 @@ export interface ArticleContent {
     updateTime: number
     parentArticleId?: number
     tagIds?: number[]
+    listSubarticle?: boolean
+    color?: string
 }
 
 /** 获取文章下属节点的接口响应数据 */
@@ -115,6 +126,8 @@ export interface ArticleTreeNode {
     value: number
     /** 文章名称 */
     title: string
+    /** 颜色 */
+    color?: string
     /** 子节点列表 */
     children?: ArticleTreeNode[]
 }

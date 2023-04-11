@@ -18,7 +18,7 @@ export const ColorPicker: FC<Props> = (props) => {
     const { value, onChange, visible, onClose } = props
 
     const renderMarkColor = (color: string) => {
-        const classes = [s.colorBtn]
+        const classes = [s.colorBtn, 'm-auto']
         if (value === color) classes.push(s.selectedColor)
         if (color === '') classes.push(s.removeBtn)
 

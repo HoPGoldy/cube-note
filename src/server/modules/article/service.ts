@@ -22,6 +22,7 @@ export const createService = (props: Props) => {
         const fontendArticle = {
             ...rest,
             parentArticleId: getParentIdByPath(parentPath),
+            listSubarticle: !!article.listSubarticle,
             favorite: !!favoriteId,
             tagIds: tagIds ? pathToArray(tagIds) : []
         }
@@ -189,7 +190,7 @@ export const createService = (props: Props) => {
         const article = await db.article().select().where('id', id).first()
         if (!article) return { code: 400, msg: '文章不存在' }
 
-        const query = db.article().select('id', 'title', 'parentPath').whereLike('parentPath', `%#${id}#`)
+        const query = db.article().select('id', 'title', 'parentPath', 'color').whereLike('parentPath', `%#${id}#`)
         // 如果有父级文章，就把父级文章也查出来
         const parentId = getParentIdByPath(article.parentPath)
         if (parentId) query.orWhere('id', parentId)
@@ -216,7 +217,7 @@ export const createService = (props: Props) => {
     // 获取相关的文章列表
     const getRelatives = async (id: string, userId: number) => {
         const articles = await db.articleRelation()
-            .select('articles.id', 'articles.title')
+            .select('articles.id', 'articles.title', 'articles.color')
             .leftJoin(db.knex.raw(`${TABLE_NAME.ARTICLE} ON articleRelations.toArticleId = articles.id`))
             .where('articleRelations.fromArticleId', id)
             .andWhere('articleRelations.userId', userId)
@@ -253,7 +254,7 @@ export const createService = (props: Props) => {
         const rootPath = `#${rootId}#`
 
         data.forEach(item => {
-            const newItem: ArticleTreeNode = { title: item.title, value: item.id }
+            const newItem: ArticleTreeNode = { title: item.title, value: item.id, color: item.color }
             if (item.parentPath === rootPath) {
                 roots.push(newItem)
             }
@@ -284,7 +285,7 @@ export const createService = (props: Props) => {
 
     const getFavoriteArticles = async (userId: number) => {
         const data = await db.favoriteArticle()
-            .select('articles.id', 'articles.title')
+            .select('articles.id', 'articles.title', 'articles.color')
             .leftJoin(db.knex.raw(`${TABLE_NAME.ARTICLE} ON favorites.articleId = articles.id`))
             .where('favorites.userId', userId)
 

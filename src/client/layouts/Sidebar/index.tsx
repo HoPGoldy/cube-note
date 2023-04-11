@@ -18,10 +18,16 @@ export const Sidebar: FC = () => {
         return (
             <Link key={item.id} to={`/article/${item.id}`}>
                 <div
-                    className="hover:bg-slate-500 text-white text-left transition-all py-1 px-2 cursor-pointer rounded truncate"
+                    className="hover:bg-slate-500 text-white text-left transition-all py-1 px-2 cursor-pointer rounded flex items-center justify-between"
                     title={item.title}
                 >
-                    {item.title}
+                    <span className="truncate">{item.title}</span>
+                    {item.color && (
+                        <div
+                            className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded"
+                            style={{ backgroundColor: item.color }}
+                        />
+                    )}
                 </div>
             </Link>
         )

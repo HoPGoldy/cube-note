@@ -2,7 +2,7 @@ import { MobileDrawer } from '@/client/components/MobileDrawer'
 import { DesktopArea } from '@/client/layouts/Responsive'
 import { Button, Col, Row, Space, Tooltip } from 'antd'
 import React, { ChangeEventHandler, useRef, useState } from 'react'
-import { HeartFilled, EditOutlined, SaveOutlined, RollbackOutlined, LoadingOutlined, DeleteOutlined, LeftOutlined, CloudUploadOutlined } from '@ant-design/icons'
+import { HeartFilled, FormOutlined, SaveOutlined, StarFilled, RollbackOutlined, LoadingOutlined, DeleteOutlined, LeftOutlined, CloudUploadOutlined } from '@ant-design/icons'
 import { useAppSelector } from '@/client/store'
 import { useFavoriteArticle } from '@/client/services/article'
 import { useSearchParams } from 'react-router-dom'
@@ -12,18 +12,21 @@ import { uploadFiles } from '@/client/services/file'
 import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
 import { getFileUrl } from '@/client/components/FileUploaderPlugin'
+import { ColorPicker } from '@/client/components/ColorPicker'
 
 interface Props {
     currentArticleId: number
     isEdit: boolean
     title: string
+    color: string
     updatingArticle: boolean
     onClickSaveBtn: () => Promise<void>
     onClickExitBtn: () => Promise<void>
+    onChangeColor: (color: string) => void
 }
 
 export const useOperation = (props: Props) => {
-    const { isEdit, title, updatingArticle, currentArticleId } = props
+    const { isEdit, title, color, updatingArticle, currentArticleId } = props
     const [searchParams, setSearchParams] = useSearchParams()
     /** 切换收藏状态 */
     const { mutateAsync: updateFavoriteState } = useFavoriteArticle()
@@ -41,6 +44,8 @@ export const useOperation = (props: Props) => {
     const isRootArticle = currentArticleId === rootArticleId
     /** 移动端的附件选择器 */
     const fileSelectRef = useRef<HTMLInputElement>(null)
+    /** 颜色选择器是否显示 */
+    const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
     /** 进入编辑模式 */
     const startEdit = () => {
@@ -77,7 +82,20 @@ export const useOperation = (props: Props) => {
                         </Col>
                     )}
                     <Col span={isRootArticle ? 12 : 8}>
-                        <Button size="large" block>颜色</Button>
+                        <Button
+                            size="large"
+                            block
+                            onClick={() => setIsColorPickerOpen(true)}
+                            className='flex items-center justify-center'
+                        >
+                            {color && (
+                                <div
+                                    className='inline-block w-4 h-4 mr-2 rounded-full cursor-pointer'
+                                    style={{ backgroundColor: color }}
+                                />
+                            )}
+                            <span>颜色</span>
+                        </Button>
                     </Col>
                     <Col span={isRootArticle ? 12 : 8}>
                         <Button
@@ -107,7 +125,25 @@ export const useOperation = (props: Props) => {
                     </Col>
                 </Row>
                 {deleteArticle.renderDeleteModal()}
+                {renderColorPicker()}
             </MobileDrawer>
+        )
+    }
+
+    /** 选中颜色选择弹窗 */
+    const onSelectedColor = (color: string) => {
+        setIsColorPickerOpen(false)
+        props.onChangeColor(color === '#000' ? '' : color)
+    }
+
+    /** 渲染颜色选择弹窗 */
+    const renderColorPicker = () => {
+        return (
+            <ColorPicker
+                onChange={onSelectedColor}
+                visible={isColorPickerOpen}
+                onClose={() => setIsColorPickerOpen(false)}
+            />
         )
     }
 
@@ -117,10 +153,23 @@ export const useOperation = (props: Props) => {
 
         return (
             <DesktopArea>
-                <Space className='text-xl text-gray-500 flex-shrink-0'>
+                <Space className='text-xl text-gray-500 flex-shrink-0 ml-4'>
                     {isEdit && (
                         <div className="text-base">{saveBtnText}</div>
                     )}
+
+                    <Tooltip title='设置颜色' placement="bottom">
+                        {/* <div
+                            className="hover:scale-125 cursor-pointer rounded-full transition-all w-4 h-4 bg-gray-300"
+                            style={{ backgroundColor: color }}
+                            onClick={() => setIsColorPickerOpen(true)}
+                        /> */}
+                        <StarFilled
+                            className="hover:scale-125 transition-all"
+                            style={{ color }}
+                            onClick={() => setIsColorPickerOpen(true)}
+                        />
+                    </Tooltip>
 
                     <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom">
                         <HeartFilled
@@ -156,7 +205,7 @@ export const useOperation = (props: Props) => {
                         </Tooltip>
                     </>) : (
                         <Tooltip title="编辑" placement="bottom">
-                            <EditOutlined
+                            <FormOutlined
                                 className="hover:scale-125 transition-all"
                                 onClick={startEdit}
                             />
@@ -164,6 +213,7 @@ export const useOperation = (props: Props) => {
                     )}
                 </Space>
                 {deleteArticle.renderDeleteModal()}
+                {renderColorPicker()}
             </DesktopArea>
         )
     }

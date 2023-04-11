@@ -29,7 +29,7 @@ export const LoginAuth: FC<PropsWithChildren> = ({ children }) => {
 
     if (!userInfo && token) {
         return (
-            <Loading tip="正在加载用户信息..." />
+            <Loading tip="正在加载用户信息..." className="mt-24" />
         )
     }
 

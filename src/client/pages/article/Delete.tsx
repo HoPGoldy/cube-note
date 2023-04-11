@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDeleteArticle } from '../../services/article'
-import { useAppDispatch } from '../../store'
-import { removeTab } from '../../store/tab'
 import { messageSuccess } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { Button, Modal } from 'antd'
@@ -17,7 +15,6 @@ interface Props {
 export const useDelete = (props: Props) => {
     const { title, currentArticleId } = props
     const navigate = useNavigate()
-    const dispatch = useAppDispatch()
     // 删除文章
     const { mutateAsync: deleteArticle } = useDeleteArticle()
     // 是否显示删除弹窗
@@ -34,8 +31,6 @@ export const useDelete = (props: Props) => {
 
         messageSuccess('删除成功')
         navigate(`/article/${resp.data?.parentArticleId}`)
-        const needRemoveTab = resp.data?.deletedArticleIds.map(id => `/article/${id}`) || []
-        dispatch(removeTab(needRemoveTab))
     }
 
     /** 渲染删除确认弹窗 */

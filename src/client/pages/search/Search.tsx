@@ -7,7 +7,7 @@ import { useTagArea } from './TagArea'
 import { useQueryTagList } from '@/client/services/tag'
 import { useTagDict } from '../tagManager/tagHooks'
 import { Tag } from '@/client/components/Tag'
-import { Card, Col, Input, List, Row } from 'antd'
+import { Card, Col, Input, List, Row, Space } from 'antd'
 import { PAGE_SIZE } from '@/constants'
 import { DesktopArea } from '@/client/layouts/Responsive'
 import { TagOutlined, LeftOutlined } from '@ant-design/icons'
@@ -77,16 +77,16 @@ const SearchArticle: FC = () => {
             <Link to={`/article/${item.id}`} key={item.id}>
                 <Card className='mb-4 hover:ring-2 ring-gray-300 transition-shadow' size='small'>
                     <Row justify="space-between">
-                        <Col>
+                        <Col xs={24} md={{ flex: 'auto', span: 12 }}>
                             <div
                                 className='font-bold text-lg'
                                 dangerouslySetInnerHTML={{ __html: colorfulTitle }}
                             />
                         </Col>
-                        <Col flex="1">
-                            <div className='flex flex-warp flex-row-reverse mt-2'>
+                        <Col xs={24} md={{ flex: '1', span: 12 }}>
+                            <Space wrap size={[0, 8]} className='flex flex-wrap md:flex-row-reverse mt-2 md:mt-0'>
                                 {item.tagIds?.map(renderTagItem)}
-                            </div>
+                            </Space>
                         </Col>
                         <Col span={24}>
                             <div

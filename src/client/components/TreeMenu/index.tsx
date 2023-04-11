@@ -23,7 +23,7 @@ interface MenuList {
     nodeRef: React.RefObject<HTMLDivElement>
 }
 
-const MENU_WIDTH = 200
+const MENU_WIDTH = 230
 const MENU_HEIGHT = 35
 
 /**
@@ -160,7 +160,15 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
                     
                 >
                     <div className='truncate'>{item.title}</div>
-                    {item.children && <RightOutlined />}
+                    <div className="flex flex-nowrap flex-row items-center">
+                        {item.color && (
+                            <div
+                                className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded mr-2"
+                                style={{ backgroundColor: item.color }}
+                            />
+                        )}
+                        {item.children && <RightOutlined />}
+                    </div>
                 </div>
             </div>
         )

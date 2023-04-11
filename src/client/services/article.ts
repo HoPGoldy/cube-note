@@ -39,10 +39,19 @@ export const useUpdateArticle = () => {
             queryClient.setQueryData(['articleContent', data.id], newData)
         },
         onSuccess: (resp, data) => {
-            if (data.title || data.favorite || data.parentArticleId) {
+            if (data.title || data.parentArticleId) {
                 queryClient.invalidateQueries(['articleLink', data.id])
                 queryClient.invalidateQueries('menu')
             }
+            if (!isNil(data.color)) {
+                queryClient.invalidateQueries('menu')
+                queryClient.invalidateQueries('favorite')
+                queryClient.invalidateQueries('articleRelated')
+            }
+            // 是否收藏不通过这个接口更新，所以不需要更新收藏列表
+            // if (data.favorite) {
+            //     queryClient.invalidateQueries('favorite')
+            // }
         }
     })
 }
