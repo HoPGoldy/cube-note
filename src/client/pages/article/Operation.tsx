@@ -174,12 +174,12 @@ export const useOperation = (props: Props) => {
                 <Col span={24}>
                     <div className="mb-4 flex items-center justify-between">
                         <div>
-                            <Tooltip title="开启后，将会在正文内容下方以列表形式展示子笔记，适合目录页、索引页使用" placement="bottom">
-                                <QuestionCircleFilled className="text-gray-500 cursor-pointer" />
-                            </Tooltip>
-                            <span className="text-base ml-2">
+                            <span className="text-base mr-2">
                                 列出子笔记
                             </span>
+                            <Tooltip title="开启后，将会在正文内容下方以列表形式展示子笔记，目录页、索引页建议开启" placement="bottom">
+                                <QuestionCircleFilled className="text-gray-500 cursor-pointer" />
+                            </Tooltip>
                         </div>
                         <span className="float-right">
                             <Switch
@@ -254,28 +254,6 @@ export const useOperation = (props: Props) => {
                         </Tooltip>
                     )}
 
-                    {isEdit ? (<>
-                        <Tooltip title="保存" placement="bottom">
-                            <SaveIcon
-                                className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
-                                onClick={props.onClickSaveBtn}
-                            />
-                        </Tooltip>
-                        <Tooltip title="保存并退出" placement="bottom">
-                            <RollbackOutlined
-                                className="hover:scale-125 transition-all"
-                                onClick={endEdit}
-                            />
-                        </Tooltip>
-                    </>) : (
-                        <Tooltip title="编辑" placement="bottom">
-                            <FormOutlined
-                                className="hover:scale-125 transition-all"
-                                onClick={startEdit}
-                            />
-                        </Tooltip>
-                    )}
-
                     <Popover
                         placement="bottomRight"
                         // trigger="click"
@@ -288,6 +266,27 @@ export const useOperation = (props: Props) => {
                         />
                     </Popover>
 
+                    {isEdit ? (<>
+                        <Tooltip title="保存" placement="bottom">
+                            <SaveIcon
+                                className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
+                                onClick={props.onClickSaveBtn}
+                            />
+                        </Tooltip>
+                        <Tooltip title="保存并退出" placement="bottomLeft">
+                            <RollbackOutlined
+                                className="hover:scale-125 transition-all"
+                                onClick={endEdit}
+                            />
+                        </Tooltip>
+                    </>) : (
+                        <Tooltip title="编辑" placement="bottomLeft">
+                            <FormOutlined
+                                className="hover:scale-125 transition-all"
+                                onClick={startEdit}
+                            />
+                        </Tooltip>
+                    )}
                 </Space>
                 {deleteArticle.renderDeleteModal()}
                 {renderColorPicker()}

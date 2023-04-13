@@ -126,7 +126,7 @@ const About: FC = () => {
                                 <Card
                                     size="small"
                                     title={item.title}
-                                    className="hover:ring-2 transition-all cursor-pointer"
+                                    className="hover:ring-2 ring-gray-300 transition-all cursor-pointer"
                                     extra={
                                         item.color && (
                                             <div

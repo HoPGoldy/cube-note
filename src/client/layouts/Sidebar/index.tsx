@@ -53,7 +53,7 @@ export const Sidebar: FC = () => {
                 </Link>
             )}
             {currentMenu.length === 0
-                ? (<div className={EMPTY_CLASSNAME}>暂无笔记</div>)
+                ? (<div className={EMPTY_CLASSNAME}>暂无子笔记</div>)
                 : currentMenu.map(renderMenuItem)
             }
 
