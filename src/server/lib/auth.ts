@@ -2,8 +2,9 @@ import { Context, Next, HttpError } from 'koa'
 import jwt from 'jsonwebtoken'
 import jwtKoa from 'koa-jwt'
 import { nanoid } from 'nanoid'
-import { createFileReader, response } from '../utils'
+import { response } from '../utils'
 import { AppKoaContext } from '@/types/global'
+import { createFileReader } from './fileAccessor'
 
 /**
  * 获取 jwt 密钥

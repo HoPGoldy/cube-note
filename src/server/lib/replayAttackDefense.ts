@@ -2,7 +2,8 @@ import { STATUS_CODE } from '@/config'
 import { AppKoaContext } from '@/types/global'
 import { getReplayAttackData, validateReplayAttackData } from '@/utils/crypto'
 import { Next } from 'koa'
-import { createFileReader, response } from '../utils'
+import { response } from '../utils'
+import { createFileReader } from './fileAccessor'
 
 /**
  * 获取防重放密钥

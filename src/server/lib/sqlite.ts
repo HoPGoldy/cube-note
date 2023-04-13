@@ -1,19 +1,19 @@
 import knex from 'knex'
 import { UserStorage } from '@/types/user'
-import { TABLE_NAME } from '@/constants'
+import { TABLE_NAME } from '@/config'
 import { ArticleFavoriteStorage, ArticleRelatedStorage, ArticleStorage } from '@/types/article'
 import { TagGroupStorage, TagStorage } from '@/types/tag'
 import { FileStorage } from '@/types/file'
 import { UserInviteStorage } from '@/types/userInvite'
 
 interface Props {
-    dbPath: string
+    getDbPath: () => string
 }
 
 export const createDb = (props: Props) => {
     const sqliteDb = knex({
         client: 'sqlite3',
-        connection: { filename: props.dbPath },
+        connection: { filename: props.getDbPath() },
         useNullAsDefault: true
     })
 

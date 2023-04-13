@@ -8,7 +8,7 @@ import { useQueryTagList } from '@/client/services/tag'
 import { useTagDict } from '../tagManager/tagHooks'
 import { Tag } from '@/client/components/Tag'
 import { Card, Col, Input, List, Row, Space } from 'antd'
-import { PAGE_SIZE } from '@/constants'
+import { PAGE_SIZE } from '@/config'
 import { DesktopArea } from '@/client/layouts/Responsive'
 import { TagOutlined, LeftOutlined } from '@ant-design/icons'
 

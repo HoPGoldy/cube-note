@@ -33,3 +33,35 @@ export const AUTH_EXCLUDE = [
 export const REPLAY_ATTACK_EXCLUDE = [
     '/api/user/getInfo', '/api/file/get', ...AUTH_EXCLUDE
 ]
+
+/**
+ * 默认（默认分组）的标签分组 ID
+ */
+export const DEFAULT_TAG_GROUP = -1
+
+/**
+ * 固定分页条数
+ */
+export const PAGE_SIZE = 15
+
+/**
+ * 数据库表名
+ */
+export const TABLE_NAME = {
+    /** 用户表 */
+    USER: 'users',
+    /** 文章表 */
+    ARTICLE: 'articles',
+    /** 标签表 */
+    TAG: 'tags',
+    /** 标签分组表 */
+    TAG_GROUP: 'tagGroups',
+    /** 附件表 */
+    FILE: 'files',
+    /** 用户收藏文章表 */
+    FAVORITE: 'favorites',
+    /** 文章相互关联表 */
+    ARTICLE_RELATION: 'articleRelations',
+    /** 用户邀请表 */
+    USER_INVITE: 'userInvites'
+} as const

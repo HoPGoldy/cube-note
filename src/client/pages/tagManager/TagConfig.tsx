@@ -6,7 +6,7 @@ import { ColorPicker } from '@/client/components/ColorPicker'
 import { STATUS_CODE } from '@/config'
 import { blurOnEnter } from '@/client/utils/input'
 import { Modal, Button, Row, Col, Select } from 'antd'
-import { DEFAULT_TAG_GROUP } from '@/constants'
+import { DEFAULT_TAG_GROUP } from '@/config'
 
 interface Props {
     tagGroups: TagGroupListItem[]

@@ -4,7 +4,7 @@ import {
 } from '@/types/article'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
 import { appendIdToPath, arrayToPath, getParentIdByPath, pathToArray, replaceParentId } from '@/utils/parentPath'
-import { PAGE_SIZE, TABLE_NAME } from '@/constants'
+import { PAGE_SIZE, TABLE_NAME } from '@/config'
 
 interface Props {
     db: DatabaseAccessor

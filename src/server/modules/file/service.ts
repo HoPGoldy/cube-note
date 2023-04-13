@@ -6,7 +6,7 @@ import { FileStorage, UploadedFile } from '@/types/file'
 import { ensureDir, move } from 'fs-extra'
 
 interface Props {
-    saveDir: string
+    getSaveDir: () => string
     db: DatabaseAccessor
 }
 
@@ -23,7 +23,8 @@ const getFileMd5 = async (filePath: string, fileName: string) => {
 }
 
 export const createService = (props: Props) => {
-    const { saveDir, db } = props
+    const { getSaveDir, db } = props
+    const saveDir = getSaveDir()
 
     const readFile = async (hash: string, createUserId: number) => {
         const fileInfo = await db.file().select().where({ md5: hash, createUserId }).first()

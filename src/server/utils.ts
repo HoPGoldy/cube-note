@@ -1,10 +1,6 @@
 import { AppKoaContext, AppResponse } from '@/types/global'
-import { ensureFile } from 'fs-extra'
-import { readFile, writeFile } from 'fs/promises'
 import Joi from 'joi'
 import { Context, Next } from 'koa'
-import { nanoid } from 'nanoid'
-import path from 'path'
 
 const initialResponse: AppResponse = {
     code: 200,
@@ -77,39 +73,4 @@ export function getRequestRoute (ctx: AppKoaContext) {
     }, pureUrl)
 
     return route
-}
-
-interface CreateFileReaderProps {
-    fileName: string
-    getInitData?: () => Promise<string>
-}
-
-/**
- * 获取文件存储路径
- */
-export const getStoragePath = (subpath = '') => path.join(process.cwd(), './.storage', subpath)
-
-/**
- * 创建本地文件内容读取器
- */
-export const createFileReader = (props: CreateFileReaderProps) => {
-    const { fileName, getInitData = async () => nanoid() } = props
-    let cache: string
-
-    return async () => {
-        // 使用缓存
-        if (cache) return cache
-
-        // 读取本地文件
-        const filePath = getStoragePath(fileName)
-        await ensureFile(filePath)
-        const content = await readFile(filePath)
-        const contentStr = content.toString()
-        if (contentStr.length > 0) return cache = contentStr
-
-        // 没有内容，填充一下
-        const initData = await getInitData()
-        await writeFile(filePath, initData)
-        return cache = initData
-    }
 }

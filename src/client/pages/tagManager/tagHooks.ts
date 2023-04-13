@@ -2,7 +2,7 @@ import { TagGroupListItem, TagListItem } from '@/types/tag'
 import { useEffect, useMemo, useState } from 'react'
 import cloneDeep from 'lodash/cloneDeep'
 import groupBy from 'lodash/groupBy'
-import { DEFAULT_TAG_GROUP } from '@/constants'
+import { DEFAULT_TAG_GROUP } from '@/config'
 
 /**
  * 获取包含 “默认分组” 选项的标签分组列表

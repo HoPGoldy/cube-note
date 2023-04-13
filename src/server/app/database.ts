@@ -1,6 +1,6 @@
 import { createDb } from '../lib/sqlite'
-import { getStoragePath } from '../utils'
+import { getStoragePath } from '@/server/lib/fileAccessor'
 
 export const db = createDb({
-    dbPath: getStoragePath('cube-note.db')
+    getDbPath: () => getStoragePath('cube-note.db')
 })
