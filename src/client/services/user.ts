@@ -6,7 +6,11 @@ import { useQuery, useMutation } from 'react-query'
 export const useQueryUserInfo = (enabled: boolean) => {
     return useQuery('userInfo', () => {
         return requestGet<LoginResp>('user/getInfo')
-    }, { enabled })
+    }, {
+        enabled,
+        // 不能缓存获取用户信息，不然用户重新登录后会使用缓存的用户信息（即错误的显示了上个用户的信息）
+        cacheTime: 0
+    })
 }
 
 /** 登录 */

@@ -123,9 +123,9 @@ export const createService = (props: Props) => {
         return { code: 200, data }
     }
 
-    const getArticleList = async (reqData: SearchArticleReqData) => {
+    const getArticleList = async (reqData: SearchArticleReqData, userId: number) => {
         const { page = 1, tagIds, keyword } = reqData
-        const query = db.article().select()
+        const query = db.article().select().where('createUserId', userId)
 
         if (keyword) {
             query.whereLike('title', `%${keyword}%`)

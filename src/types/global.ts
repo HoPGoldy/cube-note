@@ -11,6 +11,7 @@ export type AppResponse<T = any> = {
 
 export interface MyJwtPayload {
     userId: number
+    isAdmin: boolean
     lat: number
     exp: number
 }

@@ -4,7 +4,7 @@ import { AppKoaContext } from '@/types/global'
 import { middlewareJwt, middlewareJwtCatcher } from '../lib/auth'
 import { createCheckReplayAttack } from '../lib/replayAttackDefense'
 import { AUTH_EXCLUDE, REPLAY_ATTACK_EXCLUDE } from '@/config'
-import { loginLocker } from './LoginLocker'
+import { banLocker, loginLocker } from './LoginLocker'
 import { userRouter } from './user'
 import { tagRouter } from './tag'
 import { articleRouter } from './article'
@@ -21,6 +21,7 @@ export const createApiRouter = () => {
         .use(createCheckReplayAttack({ excludePath: REPLAY_ATTACK_EXCLUDE }))
         .use(middlewareJwtCatcher)
         .use(middlewareJwt.unless({ path: AUTH_EXCLUDE }))
+        .use(banLocker.checkBanDisable)
 
     routes.forEach(route => apiRouter.use('/api', errorWapper, route.routes(), route.allowedMethods()))
 

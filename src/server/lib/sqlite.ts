@@ -29,6 +29,7 @@ export const createDb = (props: Props) => {
             t.integer('rootArticleId')
             t.string('theme').notNullable()
             t.boolean('isAdmin').notNullable()
+            t.boolean('isBanned')
         })
     })
 

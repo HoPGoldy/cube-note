@@ -42,10 +42,7 @@ const Register = () => {
         }
 
         const resp = await postLogin({ username, password: sha(password) })
-        if (resp.code !== STATUS_CODE.SUCCESS) {
-            messageError(resp.msg || '登录失败')
-            return
-        }
+        if (resp.code !== STATUS_CODE.SUCCESS) return
 
         messageSuccess(`登录成功，欢迎回来，${resp?.data?.username}`)
         const userInfo = resp.data as LoginSuccessResp

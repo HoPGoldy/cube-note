@@ -11,6 +11,7 @@ import { Button, Popover, Space } from 'antd'
 import s from './styles.module.css'
 import { DesktopSetting } from '@/client/pages/userSetting'
 import { isMobile } from '../Responsive'
+import { useAppSelector } from '@/client/store'
 
 const SIDE_WIDTH = '240px'
 
@@ -19,6 +20,9 @@ export const AppContainer: React.FC = () => {
     const [collapsed, setCollapsed] = useState(false)
     /** 是否打开用户管理菜单 */
     const [userMenuVisible, setUserMenuVisible] = useState(false)
+    /** 用户名 */
+    const username = useAppSelector(s => s.user.userInfo?.username)
+    /** 侧边栏展开按钮 */
     const CollasedIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined
 
     if (isMobile) {
@@ -57,7 +61,8 @@ export const AppContainer: React.FC = () => {
                                 onOpenChange={setUserMenuVisible}
                                 arrow
                             >
-                                <UserOutlined className="cursor-pointer text-xl" />
+                                <UserOutlined className="cursor-pointer text-xl mr-2" />
+                                <span className="cursor-pointer">{username}</span>
                             </Popover>
                         </Space>
                     </div>

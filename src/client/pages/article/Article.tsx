@@ -106,6 +106,7 @@ const About: FC = () => {
     const renderSubArticleList = () => {
         if (!articleResp?.data?.listSubarticle || isEdit) return null
         if (linkLoading) return <Loading className="mt-10" tip='信息加载中...' />
+        if (!articleLink?.data?.length) return null
 
         return (
             <div className="mt-4 w-full xl:w-[60%] m-auto">

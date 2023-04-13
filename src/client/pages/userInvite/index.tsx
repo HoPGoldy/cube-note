@@ -1,15 +1,22 @@
 import React, { FC, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton, ActionIcon } from '../../layouts/PageWithAction'
 import Loading from '../../layouts/Loading'
 import { Col, Row, Button, List, Card, Spin } from 'antd'
-import { UserInviteStorage } from '@/types/userInvite'
-import { useAddInvite, useDeleteInvite, useQueryInviteList } from '@/client/services/userInvite'
+import { UserInviteFrontendDetail } from '@/types/userInvite'
+import { useAddInvite, useBanUser, useDeleteInvite, useQueryInviteList } from '@/client/services/userInvite'
 import { PlusOutlined, LeftOutlined } from '@ant-design/icons'
 import copy from 'copy-to-clipboard'
-import { messageSuccess } from '@/client/utils/message'
+import { messageSuccess, messageWarning } from '@/client/utils/message'
 import dayjs from 'dayjs'
 import { isMobile, MobileArea } from '@/client/layouts/Responsive'
+import { useJwtPayload } from '@/client/utils/jwt'
+
+const getStatusColor = (item: UserInviteFrontendDetail) => {
+    if (!item.username) return 'bg-yellow-500'
+    if (item.isBanned) return 'bg-red-500'
+    return 'bg-green-500'
+}
 
 /**
  * 标签管理
@@ -17,12 +24,16 @@ import { isMobile, MobileArea } from '@/client/layouts/Responsive'
  */
 const TagManager: FC = () => {
     const navigate = useNavigate()
-    // 获取用户列表
+    /** 获取用户列表 */
     const { data: inviteListResp, isLoading } = useQueryInviteList()
-    // 新增邀请
+    /** 新增邀请 */
     const { mutateAsync: addInvite, isLoading: isAddingInvite } = useAddInvite()
-    // 删除邀请
+    /** 删除邀请 */
     const { mutateAsync: deleteInvite, isLoading: isDeleteingInvite } = useDeleteInvite()
+    /** 封禁用户 */
+    const { mutateAsync: banUser, isLoading: isBanningUser } = useBanUser()
+    /** 是否为管理员 */
+    const payload = useJwtPayload()
 
     const listItems = useMemo(() => {
         return [...(inviteListResp?.data || []), 'add']
@@ -35,12 +46,64 @@ const TagManager: FC = () => {
         messageSuccess('复制成功')
     }
 
-    const renderInviteItem = (item: UserInviteStorage | string) => {
+    /** 封禁用户 */
+    const onBanClick = async (item: UserInviteFrontendDetail) => {
+        if (!item.userId) {
+            messageWarning('该邀请码还未被使用')
+            return
+        }
+
+        const isBanned = !item.isBanned
+        await banUser({ userId: item.userId, isBanned })
+        messageSuccess(isBanned ? '用户已封禁' : '用户已解禁')
+    }
+
+    /** 渲染每个邀请卡片的操作栏 */
+    const renderActionBar = (item: UserInviteFrontendDetail) => {
+        if (!item.username) return (<>
+            <Col flex="1">
+                <Button
+                    block
+                    onClick={() => copyRegisterLink(item.inviteCode)}
+                >复制注册链接</Button>
+            </Col>
+            <Col flex="1">
+                <Button
+                    block
+                    danger
+                    onClick={() => deleteInvite(item.id)}
+                    loading={isDeleteingInvite}
+                >删除邀请码</Button>
+            </Col>
+        </>)
+
+        if (item.isBanned) return (
+            <Col flex="1">
+                <Button
+                    block
+                    onClick={() => onBanClick(item)}
+                    loading={isBanningUser}
+                >解禁用户</Button>
+            </Col>
+        )
+        else return (
+            <Col flex="1">
+                <Button
+                    block
+                    danger
+                    onClick={() => onBanClick(item)}
+                    loading={isBanningUser}
+                >封禁用户</Button>
+            </Col>
+        )
+    }
+
+    const renderInviteItem = (item: UserInviteFrontendDetail | string) => {
         if (typeof item === 'string') {
             if (isMobile) return null
             else return renderNewInviteBtn()
         }
-        const statusColor = item.username ? 'bg-green-500' : 'bg-red-500'
+        const statusColor = getStatusColor(item)
         return (
             <List.Item>
                 <Card
@@ -88,22 +151,7 @@ const TagManager: FC = () => {
                     </Row>
 
                     <Row gutter={[8, 8]} className="mt-2">
-                        {!item.username && (<>
-                            <Col flex="1">
-                                <Button
-                                    block
-                                    onClick={() => copyRegisterLink(item.inviteCode)}
-                                >复制注册链接</Button>
-                            </Col>
-                            <Col flex="1">
-                                <Button
-                                    block
-                                    danger
-                                    onClick={() => deleteInvite(item.id)}
-                                    loading={isDeleteingInvite}
-                                >删除邀请码</Button>
-                            </Col>
-                        </>)}
+                        {renderActionBar(item)}
                     </Row>
                 </Card>
             </List.Item>
@@ -142,6 +190,10 @@ const TagManager: FC = () => {
                 </Col>
             </Row>
         </>)
+    }
+
+    if (!payload.isAdmin) {
+        return <Navigate to="/" replace />
     }
 
     return (<>

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import jwtKoa from 'koa-jwt'
 import { nanoid } from 'nanoid'
 import { response } from '../utils'
-import { AppKoaContext } from '@/types/global'
+import { AppKoaContext, MyJwtPayload } from '@/types/global'
 import { createFileReader } from './fileAccessor'
 
 /**
@@ -26,14 +26,20 @@ export const middlewareJwtCatcher = async (ctx: Context, next: Next) => {
     }
 }
 
-export const getJwtPayload = (ctx: AppKoaContext) => {
-    const userId = ctx.state?.user?.userId
-    if (!userId) {
+/**
+ * 通过 ctx 获取用户登录的 jwt 载荷
+ * 
+ * @param ctx 要获取信息的上下文
+ * @param block 获取不到时是否添加响应
+ */
+export const getJwtPayload = (ctx: AppKoaContext, block = true) => {
+    const userPayload = ctx.state?.user
+    if (!userPayload?.userId && block) {
         response(ctx, { code: 400, msg: '未知用户，请重新登录' })
         return
     }
 
-    return { userId }
+    return userPayload as MyJwtPayload
 }
 
 export const verifyToken = async (token: string) => {

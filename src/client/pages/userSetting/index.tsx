@@ -10,6 +10,7 @@ import { useChangePassword } from '../changePassword'
 import { ActionButton, PageAction, PageContent } from '@/client/layouts/PageWithAction'
 import { UserOutlined, RightOutlined, LogoutOutlined } from '@ant-design/icons'
 import { Cell, SplitLine } from '@/client/components/Cell'
+import { useJwtPayload } from '@/client/utils/jwt'
 
 interface DesktopProps {
     onClick: () => void
@@ -46,6 +47,8 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
     const { renderChangePasswordModal, showChangePassword } = useChangePassword()
     /** 设置功能 */
     const setting = useSetting()
+    /** 是否是管理员 */
+    const jwtPayload = useJwtPayload()
 
     return (
         <div style={{ width: '16rem' }} onClick={props.onClick}>
@@ -68,11 +71,13 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
                         <Button block icon={<TagsOutlined />}>标签管理</Button>
                     </Link>
                 </Col>
-                <Col span={24}>
-                    <Link to="/userInvite">
-                        <Button block icon={<ContactsOutlined />}>用户管理</Button>
-                    </Link>
-                </Col>
+                {jwtPayload?.isAdmin ? (
+                    <Col span={24}>
+                        <Link to="/userInvite">
+                            <Button block icon={<ContactsOutlined />}>用户管理</Button>
+                        </Link>
+                    </Col>
+                ) : null}
                 <Col span={24}>
                     <Link to="/about">
                         <Button block icon={<SmileOutlined />}>关于</Button>
@@ -92,6 +97,8 @@ export const MobileSetting: FC = () => {
     const navigate = useNavigate()
     /** 设置功能 */
     const setting = useSetting()
+    /** 是否是管理员 */
+    const jwtPayload = useJwtPayload()
 
     return (<>
         <PageContent>
@@ -129,13 +136,15 @@ export const MobileSetting: FC = () => {
                     </Link>
                     <SplitLine />
 
-                    <Link to="/userInvite">
-                        <Cell
-                            title={(<div><ContactsOutlined /> &nbsp;用户管理</div>)}
-                            extra={<RightOutlined />}
-                        />
-                    </Link>
-                    <SplitLine />
+                    {jwtPayload?.isAdmin ? (<>
+                        <Link to="/userInvite">
+                            <Cell
+                                title={(<div><ContactsOutlined /> &nbsp;用户管理</div>)}
+                                extra={<RightOutlined />}
+                            />
+                        </Link>
+                        <SplitLine />
+                    </>) : null}
 
                     <Link to="/about">
                         <Cell

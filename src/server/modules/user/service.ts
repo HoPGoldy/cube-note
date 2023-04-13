@@ -6,7 +6,7 @@ import { LoginLocker } from '@/server/lib/LoginLocker'
 import { nanoid } from 'nanoid'
 import { ArticleService } from '../article/service'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { UserInviteService } from '../userInvite/service'
+import { UserInviteService } from '../userManage/service'
 
 interface Props {
     loginLocker: LoginLocker
@@ -43,7 +43,7 @@ export const createService = (props: Props) => {
         const { username, theme, initTime, isAdmin, rootArticleId } = userStorage
 
         // 用户每次重新进入页面都会刷新 token
-        const token = await createToken({ userId })
+        const token = await createToken({ userId, isAdmin })
         const replayAttackSecret = await getReplayAttackSecret()
 
         const data: LoginSuccessResp = {
@@ -68,8 +68,12 @@ export const createService = (props: Props) => {
         const userStorage = await db.user().select().where({ username }).first()
         if (!userStorage) return loginFail(ip)
 
-        const { passwordHash, passwordSalt } = userStorage
+        const { passwordHash, passwordSalt, isBanned } = userStorage
         if (passwordHash !== sha(passwordSalt + password)) return loginFail(ip)
+
+        if (isBanned) {
+            return { code: STATUS_CODE.BAN, msg: '您已被封禁' }
+        }
 
         return getUserInfo(userStorage.id, ip)
     }

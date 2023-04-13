@@ -19,6 +19,8 @@ export interface UserStorage {
      * 逗号分割
      */
     favoriteArticleIds?: string
+    /** 用户是否被封禁 */
+    isBanned?: boolean
 }
 
 /** 应用主题色 */

@@ -6,6 +6,10 @@ export const STATUS_CODE = {
     NOT_REGISTER: 40101,
     ALREADY_REGISTER: 40102,
     /**
+     * 用户被封禁
+     */
+    BAN: 40103,
+    /**
      * 因为关联了其他资源所以无法删除
      */
     CANT_DELETE: 40601,

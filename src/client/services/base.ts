@@ -6,6 +6,7 @@ import { createReplayAttackHeaders } from '@/utils/crypto'
 import axios from 'axios'
 import type { AxiosRequestConfig } from 'axios'
 import { QueryClient } from 'react-query'
+import { STATUS_CODE } from '@/config'
 
 /**
  * 是否为标准后端数据结构
@@ -37,7 +38,12 @@ axiosInstance.interceptors.response.use(resp => {
 
     if (code === 401) {
         store.dispatch(logout())
-    } else if (code !== 200) {
+    }
+    else if (code === STATUS_CODE.BAN) {
+        store.dispatch(logout())
+        message('error', msg || '您已被封禁')
+    }
+    else if (code !== 200) {
         const type = code === 401 ? 'warning' : 'error'
         message(type, msg || '未知错误')
     }

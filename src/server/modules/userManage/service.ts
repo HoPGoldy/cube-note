@@ -1,9 +1,12 @@
 import { nanoid } from 'nanoid'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { UserInviteStorage } from '@/types/userInvite'
+import { BanUserReqData, UserInviteStorage } from '@/types/userInvite'
+import { TABLE_NAME } from '@/config'
 
 interface Props {
     db: DatabaseAccessor
+    /** 回调 - 用户被封禁 */
+    onUserBanned?: (data: BanUserReqData) => void
 }
 
 export const createService = (props: Props) => {
@@ -42,6 +45,11 @@ export const createService = (props: Props) => {
      */
     const getInviteList = async () => {
         const data = await db.userInvite().select()
+            .select('userInvites.*')
+            .select('users.isBanned as isBanned')
+            .select('users.id as userId')
+            .leftJoin(db.knex.raw(`${TABLE_NAME.USER} ON users.username = userInvites.username`))
+
         return { code: 200, data }
     }
 
@@ -59,7 +67,16 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
-    return { addInvite, deleteInvite, getInviteList, userRegister }
+    /**
+     * 封禁 / 解封用户
+     */
+    const banUser = async (data: BanUserReqData) => {
+        await db.user().update('isBanned', data.isBanned).where('id', data.userId)
+        props.onUserBanned?.(data)
+        return { code: 200 }
+    }
+
+    return { addInvite, deleteInvite, getInviteList, userRegister, banUser }
 }
 
 export type UserInviteService = ReturnType<typeof createService>

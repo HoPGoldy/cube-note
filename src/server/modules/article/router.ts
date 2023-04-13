@@ -90,7 +90,10 @@ export const createRouter = (props: Props) => {
         const body = validate(ctx, queryArticleSchema)
         if (!body) return
 
-        const resp = await service.getArticleList(body)
+        const payload = getJwtPayload(ctx)
+        if (!payload) return
+
+        const resp = await service.getArticleList(body, payload.userId)
         response(ctx, resp)
     })
 
