@@ -1,23 +1,29 @@
-import { message as antdMessage } from 'antd'
-import { NoticeType } from 'antd/es/message/interface'
+import { App, message as antdMessage } from 'antd'
+import { MessageInstance, NoticeType } from 'antd/es/message/interface'
 
+let messageInstance: MessageInstance = antdMessage
+
+export const useInitMessage = () => {
+    const staticFunction = App.useApp()
+    messageInstance = staticFunction.message
+}
 
 export const message = (type: NoticeType, content: string) => {
-    return antdMessage.open({ type, content })
+    return messageInstance.open({ type, content })
 }
 
 export const messageSuccess = (message: string) => {
-    return antdMessage.success(message)
+    return messageInstance.success(message)
 }
 
 export const messageError = (message: string) => {
-    return antdMessage.error(message)
+    return messageInstance.error(message)
 }
 
 export const messageWarning = (message: string) => {
-    return antdMessage.warning(message)
+    return messageInstance.warning(message)
 }
 
 export const messageInfo = (message: string) => {
-    return antdMessage.info(message)
+    return messageInstance.info(message)
 }

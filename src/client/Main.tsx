@@ -6,11 +6,12 @@ import { routes } from './Route'
 import { QueryClientProvider } from 'react-query'
 import { queryClient } from './services/base'
 // import { ReactQueryDevtools } from 'react-query/devtools'
-import { ConfigProvider, theme, ThemeConfig } from 'antd'
+import { ConfigProvider, App as AntdApp, theme, ThemeConfig } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { RouterProvider } from 'react-router-dom'
 import './styles/index.css'
 import 'bytemd/dist/index.css'
+import { useInitMessage } from './utils/message'
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const rootContainer = document.getElementById('root')!
@@ -30,8 +31,9 @@ const themeConfig: ThemeConfig = {
     }
 }
 
-createRoot(rootContainer).render(
-    <React.StrictMode>
+const App = () => {
+    useInitMessage()
+    return (
         <Provider store={store}>
             <ConfigProvider locale={zhCN} theme={themeConfig}>
                 <QueryClientProvider client={queryClient}>
@@ -40,5 +42,13 @@ createRoot(rootContainer).render(
                 </QueryClientProvider>
             </ConfigProvider>
         </Provider>
+    )
+}
+
+createRoot(rootContainer).render(
+    <React.StrictMode>
+        <AntdApp>
+            <App />
+        </AntdApp>
     </React.StrictMode>
 )
