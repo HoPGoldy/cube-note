@@ -3,6 +3,7 @@ import { ConfigProvider, ThemeConfig } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { useAppSelector } from '../store'
 import cloneDeep from 'lodash/cloneDeep'
+import { isMobile } from '../layouts/Responsive'
 
 const globalThemeConfig: ThemeConfig = {
     // algorithm: theme.darkAlgorithm,
@@ -13,7 +14,6 @@ const globalThemeConfig: ThemeConfig = {
     components: {
         Card: {
             colorBorderSecondary: '#d1d5db',
-            fontSize: 16,
             lineHeight: 1.6
         }
     }
@@ -33,8 +33,10 @@ export const AntdConfigProvider: FC<PropsWithChildren> = (props) => {
                 appConfig.buttonColor
             )
         }
+
         if (theme.token) {
-            theme.token.colorPrimary = appConfig?.primaryColor
+            if (appConfig?.primaryColor) theme.token.colorPrimary = appConfig.primaryColor
+            if (isMobile) theme.token.fontSize = 16
         }
 
         return theme

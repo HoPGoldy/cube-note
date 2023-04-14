@@ -19,21 +19,21 @@ const rootContainer = document.getElementById('root')!
 const App = () => {
     useInitMessage()
     return (
-        <Provider store={store}>
-            <AntdConfigProvider>
-                <QueryClientProvider client={queryClient}>
-                    <RouterProvider router={routes} />
-                    {/* <ReactQueryDevtools initialIsOpen={false} position="bottom-right" /> */}
-                </QueryClientProvider>
-            </AntdConfigProvider>
-        </Provider>
+        <QueryClientProvider client={queryClient}>
+            <RouterProvider router={routes} />
+            {/* <ReactQueryDevtools initialIsOpen={false} position="bottom-right" /> */}
+        </QueryClientProvider>
     )
 }
 
 createRoot(rootContainer).render(
     <React.StrictMode>
-        <AntdApp className='h-full'>
-            <App />
-        </AntdApp>
+        <Provider store={store}>
+            <AntdConfigProvider>
+                <AntdApp className='h-full'>
+                    <App />
+                </AntdApp>
+            </AntdConfigProvider>
+        </Provider>
     </React.StrictMode>
 )
