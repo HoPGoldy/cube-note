@@ -113,7 +113,7 @@ const SearchArticle: FC = () => {
                 </DesktopArea>
                 <div className='md:my-4'>
                     <Row gutter={16}>
-                        <Col xs={24} xl={18}>
+                        <Col xs={24} md={18}>
                             <List
                                 loading={isSearching}
                                 dataSource={articleListResp?.data?.rows || []}

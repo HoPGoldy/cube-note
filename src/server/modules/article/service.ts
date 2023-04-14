@@ -222,7 +222,7 @@ export const createService = (props: Props) => {
         const data: ArticleSubLinkDetail[] = rawData.map(item => {
             return {
                 ...item,
-                content: item.content.slice(0, 20),
+                content: item.content.slice(0, 40),
                 tagIds: pathToArray(item.tagIds),
             }
         })

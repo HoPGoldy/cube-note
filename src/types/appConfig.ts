@@ -7,6 +7,10 @@ export interface AppConfigResp {
      */
     buttonColor: string
     /**
+     * 项目主题色
+     */
+    primaryColor: string
+    /**
      * 应用名
      */
     appName: string
@@ -20,8 +24,15 @@ export interface AppConfigResp {
     needInit?: boolean
 }
 
+export interface ColorConfig {
+    /** 主题色 */
+    primaryColor: string
+    /** 主按钮背景色 */
+    buttonColor: string
+}
+
 export interface AppConfig {
-    DEFAULT_COLOR: string[]
+    DEFAULT_COLOR: Array<string | ColorConfig>
     APP_NAME: string
     LOGIN_SUBTITLE: string
 }

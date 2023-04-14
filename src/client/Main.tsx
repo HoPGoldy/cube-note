@@ -6,48 +6,33 @@ import { routes } from './Route'
 import { QueryClientProvider } from 'react-query'
 import { queryClient } from './services/base'
 // import { ReactQueryDevtools } from 'react-query/devtools'
-import { ConfigProvider, App as AntdApp, theme, ThemeConfig } from 'antd'
-import zhCN from 'antd/locale/zh_CN'
+import { App as AntdApp } from 'antd'
 import { RouterProvider } from 'react-router-dom'
 import './styles/index.css'
 import 'bytemd/dist/index.css'
 import { useInitMessage } from './utils/message'
+import { AntdConfigProvider } from './components/AntdConfigProvider'
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const rootContainer = document.getElementById('root')!
-
-const themeConfig: ThemeConfig = {
-    // algorithm: theme.darkAlgorithm,
-    token: {
-        lineWidth: 2,
-        controlOutlineWidth: 1,
-    },
-    components: {
-        Card: {
-            colorBorderSecondary: '#d1d5db',
-            fontSize: 16,
-            lineHeight: 1.6
-        }
-    }
-}
 
 const App = () => {
     useInitMessage()
     return (
         <Provider store={store}>
-            <ConfigProvider locale={zhCN} theme={themeConfig}>
+            <AntdConfigProvider>
                 <QueryClientProvider client={queryClient}>
                     <RouterProvider router={routes} />
                     {/* <ReactQueryDevtools initialIsOpen={false} position="bottom-right" /> */}
                 </QueryClientProvider>
-            </ConfigProvider>
+            </AntdConfigProvider>
         </Provider>
     )
 }
 
 createRoot(rootContainer).render(
     <React.StrictMode>
-        <AntdApp>
+        <AntdApp className='h-full'>
             <App />
         </AntdApp>
     </React.StrictMode>

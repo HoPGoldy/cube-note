@@ -137,7 +137,9 @@ const About: FC = () => {
                                         )
                                     }
                                 >
-                                    {item.content}...
+                                    <div className='overflow-hidden truncate'>
+                                        {item.content}...
+                                    </div>
                                 </Card>
                             </Link>
                         </List.Item>
