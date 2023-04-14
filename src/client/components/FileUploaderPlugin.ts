@@ -4,7 +4,7 @@ import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
 import { UploadedFile } from '@/types/file'
 import gfm from '@bytemd/plugin-gfm'
-import mediumZoom from '@bytemd/plugin-medium-zoom'
+// import mediumZoom from '@bytemd/plugin-medium-zoom'
 import highlight from '@bytemd/plugin-highlight'
 import 'highlight.js/styles/foundation.css'
 
@@ -109,6 +109,7 @@ export const fileUploader = (): BytemdPlugin => {
 export const plugins = [
     gfm(),
     highlight(),
-    mediumZoom(),
+    // 官方的 mediumZoom 插件有时候会有图被遮罩盖住的问题，所以用的 antd 的图片预览
+    // mediumZoom(),
     fileUploader()
 ]

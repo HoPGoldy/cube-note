@@ -9,7 +9,7 @@ import { PlusOutlined, LeftOutlined } from '@ant-design/icons'
 import copy from 'copy-to-clipboard'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import dayjs from 'dayjs'
-import { isMobile, MobileArea } from '@/client/layouts/Responsive'
+import { DesktopArea, isMobile, MobileArea } from '@/client/layouts/Responsive'
 import { useJwtPayload } from '@/client/utils/jwt'
 
 const getStatusColor = (item: UserInviteFrontendDetail) => {
@@ -34,10 +34,6 @@ const TagManager: FC = () => {
     const { mutateAsync: banUser, isLoading: isBanningUser } = useBanUser()
     /** 是否为管理员 */
     const payload = useJwtPayload()
-
-    const listItems = useMemo(() => {
-        return [...(inviteListResp?.data || []), 'add']
-    }, [inviteListResp])
 
     /** 复制注册链接 */
     const copyRegisterLink = (inviteCode: string) => {
@@ -98,12 +94,9 @@ const TagManager: FC = () => {
         )
     }
 
-    const renderInviteItem = (item: UserInviteFrontendDetail | string) => {
-        if (typeof item === 'string') {
-            if (isMobile) return null
-            else return renderNewInviteBtn()
-        }
+    const renderInviteItem = (item: UserInviteFrontendDetail) => {
         const statusColor = getStatusColor(item)
+
         return (
             <List.Item>
                 <Card
@@ -113,42 +106,44 @@ const TagManager: FC = () => {
                         <div className={`w-4 h-4 rounded-full ${statusColor}`}></div>
                     }
                 >
-                    <Row>
-                        <Col xs={24} md={12}>
-                            <div>
-                                邀请码：
-                                <span className="float-right md:float-none">
-                                    {item.inviteCode}
-                                </span>
-                            </div>
-                        </Col>
-                        <Col xs={24} md={12}>
-                            <div>
-                                创建时间：
-                                <span className="float-right md:float-none">
-                                    {dayjs(item.createTime).format('YYYY-MM-DD HH:mm:ss')}
-                                </span>
-                            </div>
-                        </Col>
-                        {item.username && (<>
-                            <Col xs={24} md={12}>
+                    <div className="">
+                        <Row>
+                            <Col span={24}>
                                 <div>
-                                    用户名：
-                                    <span className="float-right md:float-none">
-                                        {item.username}
+                                    邀请码：
+                                    <span className="float-right">
+                                        {item.inviteCode}
                                     </span>
                                 </div>
                             </Col>
-                            <Col xs={24} md={12}>
+                            <Col span={24}>
                                 <div>
-                                    使用时间：
-                                    <span className="float-right md:float-none">
-                                        {dayjs(item.useTime).format('YYYY-MM-DD HH:mm:ss')}
+                                    创建时间：
+                                    <span className="float-right">
+                                        {dayjs(item.createTime).format('YYYY-MM-DD HH:mm:ss')}
                                     </span>
                                 </div>
                             </Col>
-                        </>)}
-                    </Row>
+                            {item.username && (<>
+                                <Col span={24}>
+                                    <div>
+                                        用户名：
+                                        <span className="float-right">
+                                            {item.username}
+                                        </span>
+                                    </div>
+                                </Col>
+                                <Col span={24}>
+                                    <div>
+                                        使用时间：
+                                        <span className="float-right">
+                                            {dayjs(item.useTime).format('YYYY-MM-DD HH:mm:ss')}
+                                        </span>
+                                    </div>
+                                </Col>
+                            </>)}
+                        </Row>
+                    </div>
 
                     <Row gutter={[8, 8]} className="mt-2">
                         {renderActionBar(item)}
@@ -158,38 +153,28 @@ const TagManager: FC = () => {
         )
     }
 
-    const renderNewInviteBtn = () => {
-        return (
-            <List.Item>
-                <Spin spinning={isAddingInvite}>
-                    <Card
-                        onClick={() => addInvite()}
-                        className="cursor-pointer hover:ring-2 ring-gray-300 active:opacity-80 transition-shadow"
-                    >
-                        <div className="flex justify-center items-center text-gray-400 text-lg">
-                            <PlusOutlined />
-                            <div className='ml-2'>新增邀请码</div>
-                        </div>
-                    </Card>
-                </Spin>
-            </List.Item>
-        )
-    }
-
     const renderContent = () => {
         if (isLoading) return <Loading />
 
-        return (<>
+        return (
             <Row gutter={[16, 16]}>
+                <DesktopArea>
+                    <Col span={24}>
+                        <Button
+                            onClick={() => addInvite()}
+                            loading={isAddingInvite}
+                        >新增邀请码</Button>
+                    </Col>
+                </DesktopArea>
                 <Col span={24}>
                     <List
-                        grid={{ gutter: 16, xs: 1, md: 2 }}
-                        dataSource={listItems}
+                        grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 4 }}
+                        dataSource={inviteListResp?.data || []}
                         renderItem={renderInviteItem}
                     />
                 </Col>
             </Row>
-        </>)
+        )
     }
 
     if (!payload.isAdmin) {
@@ -198,7 +183,7 @@ const TagManager: FC = () => {
 
     return (<>
         <PageContent>
-            <div className="m-2">
+            <div className="m-4">
                 <MobileArea>
                     <Card size="small" className='text-center text-base font-bold mb-2'>
                         用户管理
