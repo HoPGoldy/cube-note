@@ -4,7 +4,8 @@ import { Button, Col, Popover, Row, Space, Switch, Tooltip } from 'antd'
 import React, { ChangeEventHandler, useRef, useState } from 'react'
 import {
     HeartFilled, FormOutlined, SaveOutlined, StarFilled, RollbackOutlined, LoadingOutlined,
-    DeleteOutlined, LeftOutlined, CloudUploadOutlined, UnorderedListOutlined, QuestionCircleFilled
+    DeleteOutlined, LeftOutlined, CloudUploadOutlined, UnorderedListOutlined, QuestionCircleFilled,
+    DownOutlined
 } from '@ant-design/icons'
 import { useAppSelector } from '@/client/store'
 import { useFavoriteArticle } from '@/client/services/article'
@@ -30,6 +31,7 @@ interface Props {
     onClickExitBtn: () => Promise<void>
     onChangeColor: (color: string) => void
     onSetListArticle: (value: boolean) => void
+    createArticle: () => Promise<void>
 }
 
 export const useOperation = (props: Props) => {
@@ -69,6 +71,12 @@ export const useOperation = (props: Props) => {
         props.onClickExitBtn()
     }
 
+    /** 创建子笔记 */
+    const createChildArticle = async () => {
+        await props.createArticle()
+        setIsOperationDrawerOpen(false)
+    }
+
     /** 渲染移动端非编辑时的操作弹窗 */
     const renderOperationDrawer = () => {
         return (
@@ -76,6 +84,25 @@ export const useOperation = (props: Props) => {
                 title='文章操作'
                 open={isOperationDrawerOpen}
                 onClose={() => setIsOperationDrawerOpen(false)}
+                footer={(
+                    <Row gutter={8}>
+                        <Col flex="0">
+                            <Button
+                                size="large"
+                                icon={<DownOutlined />}
+                                onClick={() => setIsOperationDrawerOpen(false)}
+                            />
+                        </Col>
+                        <Col flex="1">
+                            <Button
+                                block
+                                size="large"
+                                type="primary"
+                                onClick={createChildArticle}
+                            >创建子笔记</Button>
+                        </Col>
+                    </Row>
+                )}
             >
                 <div className="flex flex-nowrap flex-col h-full">
                     <div className="flex-grow overflow-y-auto mb-2">
@@ -123,17 +150,6 @@ export const useOperation = (props: Props) => {
                                         : '收藏'
                                     }
                                 </Button>
-                            </Col>
-                            <Col span={24}>
-                                <Button
-                                    size="large"
-                                    block
-                                    type="primary"
-                                    onClick={() => {
-                                        startEdit()
-                                        setIsOperationDrawerOpen(false)
-                                    }}
-                                >编辑</Button>
                             </Col>
                         </Row>
                     </div>
@@ -337,6 +353,6 @@ export const useOperation = (props: Props) => {
 
     return {
         renderOperationDrawer, renderDesktopOperation, renderMobileEditBar,
-        setIsOperationDrawerOpen, setIsFavorite, setSaveBtnText
+        setIsOperationDrawerOpen, setIsFavorite, setSaveBtnText, startEdit
     }
 }

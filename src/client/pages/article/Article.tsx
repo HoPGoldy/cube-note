@@ -69,6 +69,7 @@ const About: FC = () => {
         onSetListArticle: v => saveEdit({ listSubarticle: v }),
         onClickSaveBtn,
         onClickExitBtn,
+        createArticle: menu.menu.createArticle,
     })
 
     /** 功能 - 编辑器 */
@@ -209,7 +210,7 @@ const About: FC = () => {
             </Link>
             <ActionIcon icon={<MenuOutlined />} onClick={() => menu.setIsMenuDrawerOpen(true)} />
             <ActionIcon icon={<SwitcherOutlined />} onClick={() => operation.setIsOperationDrawerOpen(true)} />
-            <ActionButton onClick={menu.menu.createArticle}>新增</ActionButton>
+            <ActionButton onClick={operation.startEdit}>编辑</ActionButton>
         </>)
     }
 
