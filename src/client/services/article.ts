@@ -124,7 +124,7 @@ export const useQueryArticleList = (data: SearchArticleReqData) => {
 /** 查询文章树 */
 export const useQueryArticleTree = (id?: number) => {
     return useQuery('menu', () => {
-        return requestGet<ArticleTreeNode[]>(`article/${id}/tree`)
+        return requestGet<ArticleTreeNode>(`article/${id}/tree`)
     }, {
         refetchOnWindowFocus: false,
         enabled: !isNil(id)

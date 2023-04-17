@@ -8,6 +8,7 @@ import { PlusOutlined, RollbackOutlined, LinkOutlined } from '@ant-design/icons'
 import { Button, Segmented, Space } from 'antd'
 import s from './styles.module.css'
 import { EMPTY_CLASSNAME, tabOptions, TOOL_BTN_CLASSNAME, useMenu } from './useMenu'
+import Loading from '../Loading'
 
 export const Sidebar: FC = () => {
     const dispatch = useAppDispatch()
@@ -35,7 +36,9 @@ export const Sidebar: FC = () => {
 
     /** 渲染下属文章列表 */
     const renderSubMenu = () => {
-        if (menu.linkLoading) return <div className="my-8">加载中...</div>
+        if (menu.linkLoading) {
+            return <Loading tip='加载中...' className='my-8' />
+        }
         const currentMenu = menu.articleLink?.data?.childrenArticles || []
         // console.log('🚀 ~ 下属文章列表', currentMenu)
 
@@ -66,25 +69,23 @@ export const Sidebar: FC = () => {
         </>)
     }
 
-    const renderRelatedMenuList = () => {
-        if (menu.relatedLinkLoading) return <div className="my-8">加载中...</div>
+    /** 渲染相关文章列表 */
+    const renderRelatedMenu = () => {
+        if (menu.relatedLinkLoading) {
+            return <Loading tip='加载中...' className='my-8' />
+        }
         const currentMenu = menu.articleRelatedLink?.data?.relatedArticles || []
         // console.log('🚀 ~ 相关文章列表', currentMenu)
 
         if (currentMenu.length === 0) return <div className={EMPTY_CLASSNAME}>暂无相关笔记</div>
-        return currentMenu.map(renderMenuItem)
-    }
-
-    /** 渲染相关文章列表 */
-    const renderRelatedMenu = () => {
         return (<>
-            {renderRelatedMenuList()}
+            {currentMenu.map(renderMenuItem)}
             <TreeMenu
                 key="related-tree"
                 value={menu.selectedRelatedArticleIds}
                 onChange={menu.onUpdateRelatedArticleIds}
                 onClickNode={menu.onUpdateRelatedList}
-                treeData={menu.articleTree?.data || []}
+                treeData={menu.articleTree?.data?.children || []}
             >
                 <div className={TOOL_BTN_CLASSNAME}>
                     <LinkOutlined /> 关联其他笔记
@@ -95,7 +96,9 @@ export const Sidebar: FC = () => {
 
     /** 渲染收藏文章列表 */
     const renderFavoriteMenu = () => {
-        if (menu.favoriteLoading) return <div className="my-8">加载中...</div>
+        if (menu.favoriteLoading) {
+            return <Loading tip='加载中...' className='my-8' />
+        }
         const currentMenu = menu.articleFavorite?.data || []
         // console.log('🚀 ~ 收藏文章列表', currentMenu)
 
@@ -150,7 +153,7 @@ export const Sidebar: FC = () => {
                 </Space>
             </div>
             <TreeMenu
-                treeData={menu.articleTree?.data || []}
+                treeData={menu.articleTree?.data?.children || []}
                 onClickNode={node => navigate(`/article/${node.value}`)}
             >
                 <Button className={s.treeBtn} type="primary" block>笔记树</Button>

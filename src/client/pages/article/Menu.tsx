@@ -1,17 +1,70 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../store'
-import { Button, Col, Row } from 'antd'
+import { useAppDispatch, useAppSelector } from '../../store'
+import { Breadcrumb, Button, Col, Row } from 'antd'
 import { HomeOutlined, LinkOutlined } from '@ant-design/icons'
 import { MobileDrawer } from '@/client/components/MobileDrawer'
 import { TreeMenu } from '@/client/components/TreeMenu/mobile'
 import { EMPTY_CLASSNAME, tabOptions, useMenu } from '@/client/layouts/Sidebar/useMenu'
-import { ArticleMenuItem, TabTypes } from '@/types/article'
+import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
 import { setCurrentMenu } from '@/client/store/menu'
 import { SplitLine } from '@/client/components/Cell'
+import { useQueryArticleTree } from '@/client/services/article'
+import { BreadcrumbItemType } from 'antd/es/breadcrumb/Breadcrumb'
 
 interface Props {
     currentArticleId: number
+}
+
+/**
+ * 面包屑导航
+ */
+export const useBreadcrumb = () => {
+    const navigate = useNavigate()
+    /** 根节点 id */
+    const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
+    /** 当前查看的文章祖先节点 */
+    const parentArticleIds = useAppSelector(s => s.menu.parentArticleIds)
+    /** 当前文章 id */
+    const currentArticleId = useAppSelector(s => s.menu.currentArticleId)
+    // 获取左下角菜单树
+    const { data: articleTree } = useQueryArticleTree(rootArticleId)
+
+    /** 当前面包屑配置项 */
+    const breadcrumbConfig = useMemo(() => {
+        if (!articleTree || !parentArticleIds || !currentArticleId) return []
+
+        const pathNodes: ArticleTreeNode[] = []
+        const idPath = [...parentArticleIds, currentArticleId]
+
+        idPath.reduce((prev, cur) => {
+            const item = prev.find(i => i.value === cur)
+            if (!item) return []
+            pathNodes.push(item)
+            return item.children || []
+        }, articleTree?.data ? [articleTree.data] : [])
+
+        const config: BreadcrumbItemType[] = pathNodes.map(i => ({
+            title: i.title,
+            className: 'max-w-[256px] truncate overflow-hidden cursor-pointer',
+            onClick: () => navigate(`/article/${i.value}`)
+        }))
+
+        return config
+    }, [parentArticleIds, articleTree, currentArticleId])
+
+    /** 渲染桌面端面包屑 */
+    const renderBreadcrumb = () => {
+        return (
+            <Breadcrumb
+                items={breadcrumbConfig}
+                className="w-full overflow-y-hidden overflow-x-auto noscrollbar"
+                separator=">"
+            />
+        )
+    }
+
+    return { renderBreadcrumb }
 }
 
 /**
@@ -31,6 +84,8 @@ export const useMobileMenu = (props: Props) => {
     const [isLinkDrawerOpen, setIsLinkDrawerOpen] = useState(false)
     /** 笔记管理选择 treeMenu 所处的层级 */
     const [linkTreeMenuPath, setLinkTreeMenuPath] = useState<number[]>([])
+    /** 面包屑功能 */
+    const { renderBreadcrumb } = useBreadcrumb()
 
     useEffect(() => {
         const totalPath = [...(menu.parentArticleIds || []), currentArticleId]
@@ -52,7 +107,10 @@ export const useMobileMenu = (props: Props) => {
         if (!isMenuDrawerOpen) return null
         if (menu.linkLoading) return <div className="my-8">加载中...</div>
 
-        return (
+        return (<>
+            <div className='mb-2'>
+                {renderBreadcrumb()}
+            </div>
             <TreeMenu
                 value={treeMenuPath}
                 onChange={setTreeMenuPath}
@@ -60,9 +118,9 @@ export const useMobileMenu = (props: Props) => {
                     navigate(`/article/${node.value}`)
                     setIsMenuDrawerOpen(false)
                 }}
-                treeData={menu?.articleTree?.data || []}
+                treeData={menu?.articleTree?.data?.children || []}
             />
-        )
+        </>)
     }
 
     const renderMenuItem = (item: ArticleMenuItem, index: number, list: ArticleMenuItem[]) => {
@@ -145,7 +203,7 @@ export const useMobileMenu = (props: Props) => {
                 height="80%"
             >
                 <TreeMenu
-                    treeData={menu?.articleTree?.data || []}
+                    treeData={menu?.articleTree?.data?.children || []}
                     value={linkTreeMenuPath}
                     onChange={setLinkTreeMenuPath}
                     selectedIds={menu.selectedRelatedArticleIds}

@@ -69,6 +69,7 @@ input {
 
 .noscrollbar::-webkit-scrollbar {
     width: 0 !important;
+    height: 0 !important;
 }
 
 /** 桌面端侧边栏导航树组件的过渡动画 **/
@@ -164,6 +165,10 @@ input {
 
 .ant-btn-primary {
     background: var(--cube-note-primary-button-color) !important;
+}
+
+.ant-breadcrumb ol {
+    flex-wrap: nowrap !important;
 }
 
 @tailwind base;

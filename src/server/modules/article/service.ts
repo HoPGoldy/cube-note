@@ -264,14 +264,22 @@ export const createService = (props: Props) => {
     const arrayToTree = (rootId: number, data: ArticleStorage[]) => {
         if (!data || data.length <= 0) return []
         const cache = new Map<string, ArticleTreeNode>()
-        const roots: ArticleTreeNode[] = []
+        const rootNode: Partial<ArticleTreeNode> =  { children: [] }
 
         const rootPath = `#${rootId}#`
 
         data.forEach(item => {
             const newItem: ArticleTreeNode = { title: item.title, value: item.id, color: item.color }
+
+            // 如果是根节点，就把信息注入到树的根节点上
+            if (item.id === rootId) {
+                Object.assign(rootNode, newItem)
+                return
+            }
+
+            // 如果是根节点的子节点，就把信息存到树的根节点的 children 上
             if (item.parentPath === rootPath) {
-                roots.push(newItem)
+                rootNode.children?.push(newItem)
             }
 
             cache.set(appendIdToPath(item.parentPath, item.id), newItem)
@@ -283,7 +291,7 @@ export const createService = (props: Props) => {
             }
         })
 
-        return roots
+        return rootNode
     }
 
     /**
@@ -293,7 +301,8 @@ export const createService = (props: Props) => {
     const getArticleTree = async (rootId: number) => {
         const subArticle = await db.article()
             .select()
-            .whereLike('parentPath', `%#${rootId}#%`)
+            .where('id', rootId)
+            .orWhereLike('parentPath', `%#${rootId}#%`)
 
         return { code: 200, data: arrayToTree(rootId, subArticle) }
     }

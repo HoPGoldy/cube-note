@@ -1,9 +1,10 @@
 .headerBox {
     padding: 0.5rem 1rem;
-    height: 2rem;
+    height: 3rem;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #d1d5db;
-    @apply bg-white;
+    @apply bg-white overflow-hidden box-border;
 }
