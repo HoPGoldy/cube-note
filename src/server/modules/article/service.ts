@@ -3,7 +3,7 @@ import {
     ArticleTreeNode, ArticleLinkResp, ArticleRelatedResp, SetArticleRelatedReqData, SearchArticleDetail, SearchArticleResp, ArticleSubLinkDetail
 } from '@/types/article'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
-import { appendIdToPath, arrayToPath, getParentIdByPath, pathToArray, replaceParentId } from '@/utils/parentPath'
+import { appendIdToPath, arrayToPath, getParentIdByPath, pathToArray } from '@/utils/parentPath'
 import { PAGE_SIZE, TABLE_NAME } from '@/config'
 
 interface Props {
@@ -110,7 +110,18 @@ export const createService = (props: Props) => {
         }
 
         if (parentArticleId) {
-            newArticle.parentPath = replaceParentId(oldArticle.parentPath, parentArticleId)
+            // 找到新父节点的祖先路径
+            const newParentArticle = await db.article().select().where('id', parentArticleId).first()
+            if (!newParentArticle) {
+                return { code: 400, msg: '新父节点不存在' }
+            }
+
+            newArticle.parentPath = appendIdToPath(newParentArticle.parentPath, parentArticleId)
+
+            // 把自己子笔记的路径也换掉
+            await db.article()
+                .update('parentPath', db.knex.raw('REPLACE(parentPath, ?, ?)', [oldArticle.parentPath, newArticle.parentPath]))
+                .whereLike('parentPath', `%#${id}#%`)
         }
 
         if (tagIds) {
@@ -261,37 +272,38 @@ export const createService = (props: Props) => {
         return { code: 200 }
     }
 
-    const arrayToTree = (rootId: number, data: ArticleStorage[]) => {
+    const arrayToTree = (rootId: number, data: Pick<ArticleStorage, 'id' | 'title' | 'color' | 'parentPath'>[]) => {
         if (!data || data.length <= 0) return []
         const cache = new Map<string, ArticleTreeNode>()
-        const rootNode: Partial<ArticleTreeNode> =  { children: [] }
-
-        const rootPath = `#${rootId}#`
 
         data.forEach(item => {
-            const newItem: ArticleTreeNode = { title: item.title, value: item.id, color: item.color }
+            const selfPath = appendIdToPath(item.parentPath, item.id)
+            const existSelf = cache.get(appendIdToPath(item.parentPath, item.id))
 
-            // 如果是根节点，就把信息注入到树的根节点上
-            if (item.id === rootId) {
-                Object.assign(rootNode, newItem)
-                return
+            const newItem: ArticleTreeNode = {
+                title: item.title,
+                value: item.id,
+                color: item.color,
+                // 如果已经存在自己节点了，就说明自己子节点比自己先出现
+                // 所以要把自己的子节点合并进来
+                children: existSelf?.children
             }
 
-            // 如果是根节点的子节点，就把信息存到树的根节点的 children 上
-            if (item.parentPath === rootPath) {
-                rootNode.children?.push(newItem)
-            }
-
-            cache.set(appendIdToPath(item.parentPath, item.id), newItem)
+            cache.set(selfPath, newItem)
 
             const parent = cache.get(item.parentPath)
+
             if (parent) {
                 if (!parent.children) parent.children = []
                 parent.children.push(newItem)
             }
+            // 没找到父节点，先添加个占位的父节点，后面等真正的父节点出现后再合并
+            else if (item.parentPath) {
+                cache.set(item.parentPath, { title: '待定', value: -1, children: [newItem] })
+            }
         })
 
-        return rootNode
+        return cache.get(`#${rootId}#`)
     }
 
     /**
@@ -300,7 +312,7 @@ export const createService = (props: Props) => {
      */
     const getArticleTree = async (rootId: number) => {
         const subArticle = await db.article()
-            .select()
+            .select('title', 'id', 'parentPath', 'color')
             .where('id', rootId)
             .orWhereLike('parentPath', `%#${rootId}#%`)
 

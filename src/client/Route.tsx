@@ -26,9 +26,14 @@ export const routes = createHashRouter([
                 path: '/',
                 children: [
                     { index: true, element: <Entry /> },
+                    // 笔记详情
                     { path: '/article/:articleId', element: <Article /> },
+                    // 笔记搜索
                     { path: '/search', element: <Search /> },
+                    // 设置页面，只在移动端使用
                     { path: '/setting', element: <MobileSetting /> },
+                    // 笔记管理
+                    { path: '/articleManage', element: lazyLoad(() => import('./pages/articleManager')) },
                     // 标签管理
                     { path: '/tags', element: lazyLoad(() => import('./pages/tagManager/TagManager')) },
                     // 修改密码

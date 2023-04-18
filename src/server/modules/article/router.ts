@@ -52,7 +52,7 @@ export const createRouter = (props: Props) => {
         id: Joi.number(),
         title: Joi.string().allow(null),
         content: Joi.string().allow('', null),
-        parentArticleId: Joi.string().allow(null),
+        parentArticleId: Joi.number().allow(null),
         tagIds: Joi.array().items(Joi.number()).allow(null),
         listSubarticle: Joi.boolean().allow(null),
         color: Joi.string().allow('', null),

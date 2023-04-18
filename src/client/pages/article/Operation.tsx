@@ -48,7 +48,7 @@ export const useOperation = (props: Props) => {
     /** 保存按钮的文本 */
     const [saveBtnText, setSaveBtnText] = useState('')
     /** 删除功能 */
-    const deleteArticle = useDelete({ title, currentArticleId })
+    const deleteArticle = useDelete()
     /** 是否为根节点文章 */
     const isRootArticle = currentArticleId === rootArticleId
     /** 移动端的附件选择器 */
@@ -116,7 +116,7 @@ export const useOperation = (props: Props) => {
                                         size="large"
                                         block
                                         danger
-                                        onClick={() => deleteArticle.setShowDeleteDialog(true)}
+                                        onClick={() => deleteArticle.showDeleteDialog({ title, id: currentArticleId })}
                                     >删除</Button>
                                 </Col>
                             )}
@@ -265,7 +265,7 @@ export const useOperation = (props: Props) => {
                         <Tooltip title='删除' placement="bottom">
                             <DeleteOutlined
                                 className="text-xl hover:scale-125 hover:text-red-500 transition-all"
-                                onClick={() => deleteArticle.setShowDeleteDialog(true)}
+                                onClick={() => deleteArticle.showDeleteDialog({ title, id: currentArticleId })}
                             />
                         </Tooltip>
                     )}

@@ -7,24 +7,28 @@ import { Button, Modal } from 'antd'
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import { isMobile } from '@/client/layouts/Responsive'
 
-interface Props {
+interface TargetArticleInfo {
     title: string
-    currentArticleId: number
+    id: number
 }
 
-export const useDelete = (props: Props) => {
-    const { title, currentArticleId } = props
+export const useDelete = () => {
     const navigate = useNavigate()
     // 删除文章
     const { mutateAsync: deleteArticle } = useDeleteArticle()
-    // 是否显示删除弹窗
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     // 是否删除子文章
     const [deleteChildren, setDeleteChildren] = useState(false)
+    /** 要删除的文章信息 */
+    const [articleInfo, setArticleInfo] = useState<TargetArticleInfo>()
 
     const onDelete = async () => {
+        if (!articleInfo) {
+            messageSuccess('请选择要删除的文章')
+            return
+        }
+
         const resp = await deleteArticle({
-            id: currentArticleId,
+            id: articleInfo.id,
             force: deleteChildren
         })
         if (resp.code !== STATUS_CODE.SUCCESS) return
@@ -37,14 +41,14 @@ export const useDelete = (props: Props) => {
     const renderDeleteModal = () => {
         return (
             <Modal
-                title={`删除${title}`}
-                open={showDeleteDialog}
+                title={`删除 “${articleInfo?.title || ''}”`}
+                open={!!articleInfo}
                 onOk={async () => {
                     await onDelete()
-                    setShowDeleteDialog(false)
+                    setArticleInfo(undefined)
                 }}
                 onCancel={() => {
-                    setShowDeleteDialog(false)
+                    setArticleInfo(undefined)
                     setDeleteChildren(false)
                 }}
                 okText='删除'
@@ -70,5 +74,5 @@ export const useDelete = (props: Props) => {
         )
     }
 
-    return { renderDeleteModal, setShowDeleteDialog }
+    return { renderDeleteModal, showDeleteDialog: setArticleInfo }
 }
