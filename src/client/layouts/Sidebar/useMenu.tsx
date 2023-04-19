@@ -7,17 +7,13 @@ import { useNavigate } from 'react-router-dom'
 import { UnorderedListOutlined, ShareAltOutlined, HeartOutlined } from '@ant-design/icons'
 
 export const tabOptions = [
-    { label: '子级', value: TabTypes.Sub, icon: <UnorderedListOutlined /> },
-    { label: '相关', value: TabTypes.Related, icon: <ShareAltOutlined /> },
-    { label: '收藏', value: TabTypes.Favorite, icon: <HeartOutlined /> },
+    { label: '下属', sidebarLabel: '下属笔记', value: TabTypes.Sub, icon: <UnorderedListOutlined /> },
+    { label: '相关', sidebarLabel: '相关笔记',value: TabTypes.Related, icon: <ShareAltOutlined /> },
+    { label: '收藏', sidebarLabel: '我的收藏',value: TabTypes.Favorite, icon: <HeartOutlined /> },
 ]
 
-
-/** 列表中工具按钮的样式 */
-export const TOOL_BTN_CLASSNAME = 'hover:bg-slate-500 bg-slate-600 transition-all p-1 cursor-pointer rounded truncate text-gray-200'
-
 /** 空列表占位符样式 */
-export const EMPTY_CLASSNAME = 'text-gray-300 py-4 cursor-default text-center'
+export const EMPTY_CLASSNAME = 'text-gray-500 py-4 cursor-default text-center'
 
 export const useMenu = () => {
     const navigate = useNavigate()

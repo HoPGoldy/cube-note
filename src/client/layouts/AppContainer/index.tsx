@@ -21,12 +21,12 @@ export const AppContainer: React.FC = () => {
     return (
         <div style={{ height: '100%', display: 'flex' }}>
             <aside
-                className="overflow-hidden transition-w"
+                className="overflow-hidden transition-w flex-shrink-0"
                 style={{ width: collapsed ? 0 : SIDE_WIDTH }}
             >
                 <Sidebar />
             </aside>
-            <div style={{ width: collapsed ? '100%' : `calc(100% - ${SIDE_WIDTH})`, transition: 'width 0.3s' }}>
+            <div style={{ flexGrow: 1, transition: 'width 0.3s' }}>
                 <Header
                     onClickCollasedIcon={() => setCollapsed(!collapsed)}
                     collapsed={collapsed}

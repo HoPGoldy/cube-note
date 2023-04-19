@@ -97,7 +97,7 @@ const Register: FC = () => {
     })
 
     return (
-        <div className="h-screen w-screen bg-background flex flex-col flex-nowrap items-center">
+        <div className="h-screen w-screen bg-gray-100 flex flex-col flex-nowrap items-center">
             <header className="text-5xl font-bold text-mainColor mt-36 w-full text-center">应用初始化</header>
             <div className="overflow-hidden mt-4" style={{ width: viewWidth }} ref={viewCarouselRef}>
                 <div

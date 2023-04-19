@@ -152,8 +152,8 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
                     /** 展开和收起菜单时会靠这个 id 查找对应的 div */
                     id={item.value.toString()}
                     className={
-                        'h-full text-sm box-border py-1 px-2 text-white cursor-pointer flex items-center justify-between transition-all ' +
-                        (props.value?.includes(item.value) ? 'bg-green-700 hover:bg-green-600' : 'hover:bg-slate-400 ')
+                        'h-full text-sm box-border py-1 px-2 text-black cursor-pointer flex items-center justify-between transition-all ' +
+                        (props.value?.includes(item.value) ? 'bg-green-500 hover:bg-green-400 text-white' : 'hover:bg-gray-300 ')
                     }
                     onClick={() => onClickNode(item)}
                     onMouseEnter={() => onOpenInnerMenu(item.value.toString(), level, item.children)}
@@ -186,7 +186,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
                 nodeRef={item.nodeRef}
             >
                 <div
-                    className='bg-slate-600 absolute z-10 max-h-screen overflow-y-auto rounded'
+                    className='bg-gray-200 absolute z-10 max-h-screen overflow-y-auto rounded'
                     style={item.styles}
                     onMouseLeave={mouseLeave}
                     ref={item.nodeRef}

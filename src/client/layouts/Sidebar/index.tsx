@@ -4,10 +4,10 @@ import { useAppDispatch } from '@/client/store'
 import { setCurrentMenu } from '@/client/store/menu'
 import { Link, useNavigate } from 'react-router-dom'
 import { TreeMenu } from '@/client//components/TreeMenu'
-import { PlusOutlined, RollbackOutlined, LinkOutlined } from '@ant-design/icons'
-import { Button, Segmented, Space } from 'antd'
+import { PlusOutlined, RollbackOutlined, LinkOutlined, InsertRowLeftOutlined } from '@ant-design/icons'
+import { Button, Col, Row, Space, Tooltip } from 'antd'
 import s from './styles.module.css'
-import { EMPTY_CLASSNAME, tabOptions, TOOL_BTN_CLASSNAME, useMenu } from './useMenu'
+import { EMPTY_CLASSNAME, tabOptions, useMenu } from './useMenu'
 import Loading from '../Loading'
 
 export const Sidebar: FC = () => {
@@ -19,7 +19,7 @@ export const Sidebar: FC = () => {
         return (
             <Link key={item.id} to={`/article/${item.id}`}>
                 <div
-                    className="hover:bg-slate-500 text-white text-left transition-all py-1 px-2 cursor-pointer rounded flex items-center justify-between"
+                    className="hover:bg-gray-300 text-black text-left transition-all py-1 px-2 cursor-pointer rounded flex items-center justify-between"
                     title={item.title}
                 >
                     <span className="truncate">{item.title}</span>
@@ -45,14 +45,11 @@ export const Sidebar: FC = () => {
         return (<>
             {menu.parentArticleIds && (
                 <Link to={`/article/${menu.parentArticleIds[menu.parentArticleIds.length - 1]}`}>
-                    {/* <Button ghost type="dashed" block>
-                        返回{parentArticleTitle}
-                    </Button> */}
-                    <div
-                        className={TOOL_BTN_CLASSNAME}
-                    >
-                        <RollbackOutlined /> 返回{menu.parentArticleTitle}
-                    </div>
+                    <Button
+                        className={`${s.toolBtn} keep-antd-style`}
+                        icon={<RollbackOutlined />}
+                        block
+                    >返回{menu.parentArticleTitle}</Button>
                 </Link>
             )}
             {currentMenu.length === 0
@@ -60,12 +57,12 @@ export const Sidebar: FC = () => {
                 : currentMenu.map(renderMenuItem)
             }
 
-            <div
-                className={TOOL_BTN_CLASSNAME}
+            <Button
+                className={`${s.toolBtn} keep-antd-style`}
+                icon={<PlusOutlined />}
                 onClick={menu.createArticle}
-            >
-                <PlusOutlined /> 创建子笔记
-            </div>
+                block
+            >创建子笔记</Button>
         </>)
     }
 
@@ -87,9 +84,11 @@ export const Sidebar: FC = () => {
                 onClickNode={menu.onUpdateRelatedList}
                 treeData={menu.articleTree?.data?.children || []}
             >
-                <div className={TOOL_BTN_CLASSNAME}>
-                    <LinkOutlined /> 关联其他笔记
-                </div>
+                <Button
+                    className={`${s.toolBtn} keep-antd-style`}
+                    icon={<LinkOutlined />}
+                    block
+                >关联其他笔记</Button>
             </TreeMenu>
         </>)
     }
@@ -123,31 +122,31 @@ export const Sidebar: FC = () => {
         }
     }
 
-    // const renderTabBtns = () => {
-    //     return (
-    //         <div className={s.tabArea}>
-    //             {tabOptions.map(item => (
-    //                 <div
-    //                     className={[s.tabBtn, menu.currentTab === item.value ? s.selectedTabBtn : s.unselectedTabBtn].join(' ')}
-    //                     onClick={() => dispatch(setCurrentMenu(item.value))}
-    //                     key={item.value}
-    //                 >{item.label}</div>
-    //             ))}
-    //         </div>
-    //     )
-    // }
+    const renderTabBtns = () => {
+        return (
+            <Row gutter={8}>
+                {tabOptions.map(item => (
+                    <Col span={8} key={item.value}>
+                        <Tooltip title={item.sidebarLabel} placement="bottom" color="#4b5563">
+                            <Button
+                                className={`${s.toolBtn} keep-antd-style`}
+                                onClick={() => dispatch(setCurrentMenu(item.value))}
+                                style={{ backgroundColor: item.value === menu.currentTab ? '#f0f0f0' : '' }}
+                                icon={item.icon}
+                                block
+                            ></Button>
+                        </Tooltip>
+                    </Col>
+                ))}
+            </Row>
+        )
+    }
 
     return (
         <section className={s.sideberBox}>
-            <Segmented
-                className={s.tabBox}
-                options={tabOptions}
-                block
-                onChange={value => dispatch(setCurrentMenu(value as TabTypes))}
-            />
-            {/* {renderTabBtns()} */}
+            {renderTabBtns()}
 
-            <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden" style={{ marginTop: '0.5rem', flexGrow: 1 }}>
+            <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden my-3">
                 <Space direction="vertical" style={{ width: '100%' }}>
                     {renderCurrentMenu()}
                 </Space>
@@ -156,7 +155,11 @@ export const Sidebar: FC = () => {
                 treeData={menu.articleTree?.data?.children || []}
                 onClickNode={node => navigate(`/article/${node.value}`)}
             >
-                <Button className={s.treeBtn} type="primary" block>笔记树</Button>
+                <Button
+                    className={`${s.toolBtn} keep-antd-style`}
+                    icon={<InsertRowLeftOutlined />}
+                    block
+                >笔记树</Button>
             </TreeMenu>
         </section>
     )

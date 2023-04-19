@@ -238,7 +238,7 @@ export const useOperation = (props: Props) => {
                         <div className="text-base">{saveBtnText}</div>
                     )}
 
-                    <Tooltip title='设置颜色' placement="bottom">
+                    <Tooltip title='设置颜色' placement="bottom" key="color">
                         {/* <div
                             className="hover:scale-125 cursor-pointer rounded-full transition-all w-4 h-4 bg-gray-300"
                             style={{ backgroundColor: color }}
@@ -251,7 +251,7 @@ export const useOperation = (props: Props) => {
                         />
                     </Tooltip>
 
-                    <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom">
+                    <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom" key="favorite">
                         <HeartFilled
                             className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
                             onClick={() => {
@@ -262,7 +262,7 @@ export const useOperation = (props: Props) => {
                     </Tooltip>
 
                     {!isRootArticle && (
-                        <Tooltip title='删除' placement="bottom">
+                        <Tooltip title='删除' placement="bottom" key="delete">
                             <DeleteOutlined
                                 className="text-xl hover:scale-125 hover:text-red-500 transition-all"
                                 onClick={() => deleteArticle.showDeleteDialog({ title, id: currentArticleId })}
@@ -276,6 +276,7 @@ export const useOperation = (props: Props) => {
                         content={renderConfigContent()}
                         arrow
                         overlayClassName="w-80"
+                        key="setting"
                     >
                         <UnorderedListOutlined
                             className="hover:scale-125 transition-all cursor-pointer"
@@ -283,20 +284,20 @@ export const useOperation = (props: Props) => {
                     </Popover>
 
                     {isEdit ? (<>
-                        <Tooltip title="保存" placement="bottom">
+                        <Tooltip title="保存" placement="bottom" key="save">
                             <SaveIcon
                                 className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
                                 onClick={props.onClickSaveBtn}
                             />
                         </Tooltip>
-                        <Tooltip title="保存并退出" placement="bottomLeft">
+                        <Tooltip title="保存并退出" placement="bottomLeft" key="exit">
                             <RollbackOutlined
                                 className="hover:scale-125 transition-all"
                                 onClick={endEdit}
                             />
                         </Tooltip>
                     </>) : (
-                        <Tooltip title="编辑" placement="bottomLeft">
+                        <Tooltip title="编辑" placement="bottomLeft" key="edit">
                             <FormOutlined
                                 className="hover:scale-125 transition-all"
                                 onClick={startEdit}
