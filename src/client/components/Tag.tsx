@@ -8,16 +8,18 @@ interface Props {
     selected?: boolean
     /** 标签被点击 */
     onClick?: () => void
+    className?: string
     children?: React.ReactNode
 }
 
 export const Tag: FC<Props> = (props) => {
-    const { onClick, color = 'blue', selected = true, children } = props
+    const { onClick, color = 'blue', selected = true, children, className } = props
 
     return (
         <AntdTag
             color={color}
             style={{ cursor: 'pointer', opacity: selected ? 1 : 0.5 }}
+            className={className}
             onClick={onClick}
         >{children}</AntdTag>
     )

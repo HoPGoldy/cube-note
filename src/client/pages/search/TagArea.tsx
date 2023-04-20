@@ -2,11 +2,11 @@ import { Tag } from '@/client/components/Tag'
 import Loading from '@/client/layouts/Loading'
 import { useQueryTagGroup } from '@/client/services/tag'
 import { TagGroupListItem, TagListItem } from '@/types/tag'
-import { Collapse, List, Space } from 'antd'
+import { Collapse, Space } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
-import { MobileDrawer } from '@/client/components/MobileDrawer'
+import { TagPicker } from '@/client/components/TagPicker'
 
 interface Props {
     tagList?: TagListItem[]
@@ -91,36 +91,13 @@ export const useTagArea = (props: Props) => {
     }
 
     const renderMobileTagSelectPanel = () => {
-        if (isTagLoading) return <Loading tip='加载标签中...' />
-        if (isLoadingGroup) return <Loading tip='加载分组中...' />
-
         return (
-            <MobileDrawer
-                title='标签选择'
+            <TagPicker
+                selectedTags={selectedTag}
                 open={isTagDrawerOpen}
                 onClose={() => setIsTagDrawerOpen(false)}
-            >
-                <List
-                    dataSource={tagGroups}
-                    renderItem={item => {
-                        const tags = groupedTagDict[item.id] || []
-                        return (
-                            <List.Item>
-                                <div>
-                                    <div className="text-lg font-bold mb-2">
-                                        {item.title}
-                                    </div>
-                                    <div>
-                                        <Space wrap size={[0, 8]}>
-                                            {tags.map(renderTag)}
-                                        </Space>
-                                    </div>
-                                </div>
-                            </List.Item>
-                        )
-                    }}
-                />
-            </MobileDrawer>
+                onSelected={item => onSelectTag(item.id)}
+            />
         )
     }
 

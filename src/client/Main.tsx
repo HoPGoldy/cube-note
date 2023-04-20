@@ -26,14 +26,17 @@ const App = () => {
     )
 }
 
+/**
+ * React.StrictMode会导致 SortableJS 在移动端无法正常放下元素（可以拖动，不能放下）
+ * 所以这里并没有使用 StrictMode
+ * @see https://github.com/SortableJS/react-sortablejs/issues/241
+ */
 createRoot(rootContainer).render(
-    <React.StrictMode>
-        <Provider store={store}>
-            <AntdConfigProvider>
-                <AntdApp className='h-full'>
-                    <App />
-                </AntdApp>
-            </AntdConfigProvider>
-        </Provider>
-    </React.StrictMode>
+    <Provider store={store}>
+        <AntdConfigProvider>
+            <AntdApp className='h-full'>
+                <App />
+            </AntdApp>
+        </AntdConfigProvider>
+    </Provider>
 )

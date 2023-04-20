@@ -6,13 +6,14 @@ import isNil from 'lodash/isNil'
 interface DraggableProps<T> {
     value: T[]
     onChange: (value: T[]) => void
-    renderItem: (item: T, index: number) => ReactElement
+    renderItem: (item: T, index: number) => ReactElement | null
+    extra?: ReactElement
     className?: string
 }
 
 export const Draggable: <T>(props: DraggableProps<T>) => ReactElement = (props) => {
-    const { value, onChange, className, renderItem } = props
-    const sortableDomRef = useRef<HTMLDivElement>(null)
+    const { value, onChange, className, renderItem, extra } = props
+    const sortableDomRef = useRef<HTMLDivElement | null>(null)
     const onChangeRef = useRef(onChange)
     onChangeRef.current = onChange
     const valueRef = useRef(value)
@@ -23,6 +24,7 @@ export const Draggable: <T>(props: DraggableProps<T>) => ReactElement = (props) 
 
         Sortable.create(sortableDomRef.current, {
             animation: 150,
+            // filter: '.ignore-elements',
             onEnd: e => {
                 const { oldIndex, newIndex } = e
                 if (isNil(oldIndex) && isNil(newIndex)) {
@@ -43,6 +45,7 @@ export const Draggable: <T>(props: DraggableProps<T>) => ReactElement = (props) 
     return (
         <div ref={sortableDomRef} className={className}>
             {value.map(renderItem)}
+            {extra}
         </div>
     )
 }

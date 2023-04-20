@@ -1,11 +1,12 @@
-import React, { FC, useEffect, useMemo, useState } from 'react'
-import { AddTag, EditTagEntry } from '@/client/components/Tag'
-import { Space, Tag } from 'antd'
+import React, { FC, useState } from 'react'
+import { AddTag, EditTagEntry, Tag } from '@/client/components/Tag'
 import { useAddTag, useQueryTagList } from '@/client/services/tag'
-import { TagListItem } from '@/types/tag'
 import Loading from '@/client/layouts/Loading'
 import { useUpdateArticle } from '@/client/services/article'
 import { useNavigate } from 'react-router-dom'
+import { TagPicker } from '@/client/components/TagPicker'
+import { Draggable } from '@/client/components/Draggable'
+import { useTagDict } from '../tagManager/tagHooks'
 
 interface Props {
     /**
@@ -29,24 +30,12 @@ const TagArea: FC<Props> = (props) => {
     const { mutateAsync: addTag, isLoading: isAddingTag } = useAddTag()
     // 整个标签列表
     const { data: tagListResp, isLoading: isLoadingTagList } = useQueryTagList()
+    // 标签映射
+    const tagDict = useTagDict(tagListResp?.data)
     // 更新文章选中的标签列表
     const { mutateAsync: updateArticle } = useUpdateArticle()
     // 是否处于编辑状态
     const [editingTag, setEditingTag] = useState(false)
-
-    // 当前要显示的标签列表
-    const tagList = useMemo(() => {
-        if (!tagListResp?.data) return []
-        if (editingTag) return tagListResp.data
-
-        // 非编辑状态下，只显示当前文章选中的标签
-        return tagListResp.data.filter(tag => value.includes(tag.id))
-    }, [tagListResp, editingTag, value])
-    
-    // 禁用时，不显示编辑按钮
-    useEffect(() => {
-        if (disabled) setEditingTag(false)
-    }, [disabled])
 
     const onClickAddBtn = async (newLabel: string) => {
         if (!newLabel) return
@@ -59,11 +48,14 @@ const TagArea: FC<Props> = (props) => {
     }
 
     const onClickTag = (id: number) => {
-        if (!editingTag) {
+        if (disabled) {
             navigate(`/search?tagIds=${id}`)
             return
         }
+    }
 
+    /** 选择 / 取消选择标签 */
+    const onPickTag = (id: number) => {
         // 更新文章的标签列表
         const newSelected = value.includes(id)
             ? value.filter(v => v !== id)
@@ -72,37 +64,70 @@ const TagArea: FC<Props> = (props) => {
         updateArticle({ id: articleId, tagIds: newSelected })
     }
 
-    const renderTagItem = (item: TagListItem) => {
-        const selected = editingTag ? value.includes(item.id) : true
+    /** 更新排序 */
+    const onChangeOrder = (newOrder: number[]) => {
+        console.log('🚀 ~ file: TagArea.tsx:69 ~ onChangeOrder ~ newOrder:', newOrder)
+        updateArticle({
+            id: articleId,
+            tagIds: newOrder.filter(Boolean)
+        })
+    }
+
+    const renderTagItem = (itemId: number) => {
+        const tagInfo = tagDict.get(itemId)
+        if (!tagInfo) return null
+
         return (
-            <Tag
-                key={item.id}
-                color={item.color}
-                style={{ cursor: 'pointer', opacity: selected ? 1 : 0.3 }}
-                onClick={() => onClickTag(item.id)}
-            >{item.title}</Tag>
+            <div className="inline-block" key={itemId}>
+                {tagInfo && (
+                    <Tag
+                        color={tagInfo.color}
+                        onClick={() => onClickTag(itemId)}
+                        className='mb-2'
+                    >{tagInfo.title}</Tag>
+                )}
+            </div>
         )
     }
 
     const renderTagList = () => {
         if (isLoadingTagList) return <Loading tip='标签加载中...' />
-        if (!tagList) return <div>暂无标签</div>
-        return tagList.map(renderTagItem)
+        if (!value) return <div>暂无标签</div>
+
+        return (
+            <Draggable
+                value={value}
+                renderItem={renderTagItem}
+                onChange={onChangeOrder}
+                extra={(<>
+                    {!disabled && (
+                        <div className="inline-block" key="add">
+                            <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />
+                        </div>
+                    )}
+                    {!disabled && (
+                        <div className="inline-block" key="pick">
+                            <EditTagEntry
+                                onClick={() => setEditingTag(!editingTag)}
+                                label="选择标签"
+                            />
+                        </div>
+                    )}
+                </>)}
+            />
+        )
     }
 
     return (
-        <Space wrap size={[0, 8]}>
+        <>
             {renderTagList()}
-            {editingTag && (
-                <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />
-            )}
-            {!disabled && (
-                <EditTagEntry
-                    onClick={() => setEditingTag(!editingTag)}
-                    label={editingTag ? '结束编辑' : (tagList.length > 0 ? '编辑标签' : '新增标签')}
-                />
-            )}
-        </Space>
+            <TagPicker
+                selectedTags={value}
+                open={editingTag}
+                onClose={() => setEditingTag(false)}
+                onSelected={item => onPickTag(item.id)}
+            />
+        </>
     )
 }
 
