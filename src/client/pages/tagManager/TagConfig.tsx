@@ -71,7 +71,7 @@ export const useTagConfig = (props: Props) => {
                 <Row gutter={[16, 16]}>
                     <Col flex="auto" span={20}>
                         <input
-                            className='font-bold text-lg'
+                            className='font-bold text-lg dark:text-neutral-200'
                             value={currentTag?.title || ''}
                             onChange={e => onChangeDetail({ title: e.target.value })}
                             onKeyUp={blurOnEnter}

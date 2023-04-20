@@ -188,7 +188,7 @@ export const useOperation = (props: Props) => {
         return (
             <Row>
                 <Col span={24}>
-                    <div className="mb-4 flex items-center justify-between">
+                    <div className="mb-4 flex items-center justify-between dark:text-neutral-200">
                         <div>
                             <span className="text-base mr-2">
                                 列出子笔记
@@ -211,7 +211,7 @@ export const useOperation = (props: Props) => {
                     <span className="text-gray-400">
                         创建时间
                     </span>
-                    <span className="float-right">
+                    <span className="float-right dark:text-neutral-200">
                         {dayjs(articleDetail.createTime).format('YYYY:MM:DD HH:mm:ss')}
                     </span>
                 </Col>
@@ -219,7 +219,7 @@ export const useOperation = (props: Props) => {
                     <span className="text-gray-400">
                         最后更新时间
                     </span>
-                    <span className="float-right">
+                    <span className="float-right dark:text-neutral-200">
                         {dayjs(articleDetail.updateTime).format('YYYY:MM:DD HH:mm:ss')}
                     </span>
                 </Col>

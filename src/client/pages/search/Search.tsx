@@ -75,7 +75,7 @@ const SearchArticle: FC = () => {
         const colorfulContent = item.content.replace(keyword, `<span class='text-red-500'>${keyword}</span>`)
         return (
             <Link to={`/article/${item.id}`} key={item.id}>
-                <Card className='mb-4 hover:ring-2 ring-gray-300 transition-shadow' size='small'>
+                <Card className='mb-4 hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-shadow' size='small'>
                     <Row justify="space-between">
                         <Col xs={24} md={{ flex: 'auto', span: 12 }}>
                             <div
@@ -90,7 +90,7 @@ const SearchArticle: FC = () => {
                         </Col>
                         <Col span={24}>
                             <div
-                                className='text-sm text-gray-600 mt-2'
+                                className='text-sm text-gray-600 dark:text-neutral-300 mt-2'
                                 dangerouslySetInnerHTML={{ __html: colorfulContent }}
                             />
                         </Col>

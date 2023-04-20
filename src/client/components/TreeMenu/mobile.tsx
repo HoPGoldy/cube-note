@@ -53,7 +53,7 @@ export const TreeMenu: FC<Props> = (props) => {
 
     const renderBackButton = () => {
         return (
-            <div onClick={goBack} className='mb-2 text-left font-bold text-lg'>
+            <div onClick={goBack} className='mb-2 text-left font-bold text-lg dark:text-neutral-200'>
                 <LeftOutlined /> 返回
             </div>
         )
@@ -69,11 +69,11 @@ export const TreeMenu: FC<Props> = (props) => {
                 }
             >
                 <span
-                    className="flex-shrink-0 w-2 h-[60%] bg-gray-300 mr-2 rounded"
+                    className="flex-shrink-0 w-2 h-[60%] bg-gray-300 dark:bg-neutral-700 mr-2 rounded"
                     style={{ backgroundColor: item.color }}
                 />
                 <span
-                    className="flex-grow truncate"
+                    className="flex-grow truncate dark:text-neutral-200"
                     onClick={() => props.onClickNode?.(item)}
                 >
                     {item.title}

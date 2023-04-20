@@ -50,6 +50,7 @@ export const AddTag: FC<AddTagProps> = (props) => {
                 onKeyUp={blurOnEnter}
                 onBlur={onInputed}
                 style={{ width: '4rem' }}
+                className="dark:text-neutral-200"
                 disabled={loading}
             />
         )

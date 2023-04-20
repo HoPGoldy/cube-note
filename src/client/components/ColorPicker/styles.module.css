@@ -1,5 +1,5 @@
 .colorBtn {
-    @apply w-6 h-6 rounded-full cursor-pointer hover:ring-2 hover:ring-gray-300 active:ring-slate-700 dark:active:ring-slate-300 transition
+    @apply w-6 h-6 rounded-full cursor-pointer hover:ring-2 hover:ring-gray-300 dark:ring-neutral-500 active:ring-slate-700 dark:active:ring-slate-300 transition
 }
 
 .selectedColor {

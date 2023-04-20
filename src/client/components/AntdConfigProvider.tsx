@@ -1,9 +1,11 @@
-import React, { FC, PropsWithChildren, useMemo } from 'react'
-import { ConfigProvider, ThemeConfig } from 'antd'
+import React, { FC, PropsWithChildren, useEffect, useMemo } from 'react'
+import { ConfigProvider, ThemeConfig, theme as antdTheme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { useAppSelector } from '../store'
 import cloneDeep from 'lodash/cloneDeep'
 import { isMobile } from '../layouts/Responsive'
+import { getUserTheme } from '../store/user'
+import { AppTheme } from '@/types/user'
 
 const globalThemeConfig: ThemeConfig = {
     // algorithm: theme.darkAlgorithm,
@@ -13,7 +15,7 @@ const globalThemeConfig: ThemeConfig = {
     },
     components: {
         Card: {
-            colorBorderSecondary: '#d1d5db',
+            colorBorderSecondary: 'var(--color-border-secondary)',
             lineHeight: 1.6
         }
     }
@@ -24,6 +26,7 @@ const globalThemeConfig: ThemeConfig = {
  */
 export const AntdConfigProvider: FC<PropsWithChildren> = (props) => {
     const appConfig = useAppSelector(s => s.global.appConfig)
+    const userInfo = useAppSelector(s => s.user.userInfo)
 
     const themeConfig: ThemeConfig = useMemo(() => {
         const theme = cloneDeep(globalThemeConfig)
@@ -39,8 +42,17 @@ export const AntdConfigProvider: FC<PropsWithChildren> = (props) => {
             if (isMobile) theme.token.fontSize = 16
         }
 
+        const userTheme = getUserTheme(userInfo)
+        if (userTheme === AppTheme.Dark) {
+            theme.algorithm = antdTheme.darkAlgorithm
+        }
+
         return theme
-    }, [appConfig])
+    }, [appConfig, userInfo?.theme])
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', getUserTheme(userInfo))
+    }, [userInfo?.theme])
 
     return (
         <ConfigProvider locale={zhCN} theme={themeConfig}>

@@ -1,68 +1,16 @@
-import React, { FC, useMemo } from 'react'
+import React, { FC } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AppTheme } from '@/types/user'
-import { useAppDispatch, useAppSelector } from '@/client/store'
-import { changeTheme, logout } from '@/client/store/user'
-import { useQueryArticleCount } from '@/client/services/user'
-import { Button, Card, Col, Row, Statistic } from 'antd'
-import { SnippetsOutlined, HighlightOutlined, LockOutlined, DatabaseOutlined, TagsOutlined, SmileOutlined, CloseCircleOutlined, ContactsOutlined } from '@ant-design/icons'
+import { Button, Card, Col, Row, Statistic, Switch } from 'antd'
+import { SnippetsOutlined, HighlightOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { useChangePassword } from '../changePassword'
 import { ActionButton, PageAction, PageContent } from '@/client/layouts/PageWithAction'
 import { UserOutlined, RightOutlined, LogoutOutlined } from '@ant-design/icons'
 import { Cell, SplitLine } from '@/client/components/Cell'
-import { useJwtPayload } from '@/client/utils/jwt'
+import { SettingLinkItem, useSetting } from './useSetting'
+import { AppTheme } from '@/types/user'
 
 interface DesktopProps {
     onClick: () => void
-}
-
-interface SettingLinkItem {
-    label: string
-    icon: React.ReactNode
-    link: string
-    onClick?: () => void
-}
-
-const useSetting = () => {
-    const userInfo = useAppSelector(s => s.user.userInfo)
-    const dispatch = useAppDispatch()
-    const navigate = useNavigate()
-    // 数量统计接口
-    const { data: countInfo } = useQueryArticleCount()
-    /** 是否是管理员 */
-    const jwtPayload = useJwtPayload()
-
-    const settingConfig = useMemo(() => {
-        const list = [
-            { label: '修改密码', icon: <LockOutlined />, link: '/changePassword' },
-            { label: '文章管理', icon: <DatabaseOutlined />, link: '/articleManage' },
-            { label: '标签管理', icon: <TagsOutlined />, link: '/tags' },
-            jwtPayload?.isAdmin
-                ? { label: '用户管理', icon: <ContactsOutlined />, link: '/userInvite' }
-                : null,
-            { label: '关于', icon: <SmileOutlined />, link: '/about' },
-        ].filter(Boolean) as SettingLinkItem[]
-        
-        return list
-    }, [jwtPayload?.isAdmin])
-
-    const onSwitchDark = () => {
-        const newTheme = userInfo?.theme === AppTheme.Light ? AppTheme.Dark : AppTheme.Light
-        // setAppTheme(newTheme)
-        dispatch(changeTheme(newTheme))
-    }
-
-    const onLogout = () => {
-        dispatch(logout())
-    }
-
-    const articleCount = countInfo?.data?.articleCount || '---'
-    const articleLength = countInfo?.data?.articleLength || '---'
-    const userName = userInfo?.username || '---'
-
-    return {
-        articleCount, articleLength, userName, onLogout, settingConfig
-    }
 }
 
 export const DesktopSetting: FC<DesktopProps> = (props) => {
@@ -94,7 +42,7 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
     }
 
     return (
-        <div style={{ width: '16rem' }} onClick={props.onClick}>
+        <div style={{ width: '16rem' }}>
             <div style={{ margin: '1rem 0rem' }}>
                 <Row gutter={[16, 16]} justify="space-around">
                     <Col>
@@ -105,7 +53,20 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
                     </Col>
                 </Row>
             </div>
-            <Row gutter={[0, 8]} >
+            <Row>
+                <Col span={24}>
+                    <div className="flex justify-between items-center mb-4">
+                        黑夜模式
+                        <Switch
+                            checkedChildren="开启"
+                            unCheckedChildren="关闭"
+                            onChange={setting.onSwitchTheme}
+                            checked={setting.userTheme === AppTheme.Light ? false : true}
+                        />
+                    </div>
+                </Col>
+            </Row>
+            <Row gutter={[0, 8]} onClick={props.onClick}>
                 {setting.settingConfig.map(renderConfigItem)}
 
                 <Col span={24}>
@@ -157,6 +118,19 @@ export const MobileSetting: FC = () => {
                 </Card>
 
                 <Card size="small" className='mt-4'>
+                    <Cell
+                        title={(<div><UserOutlined /> &nbsp;黑夜模式</div>)}
+                        extra={(
+                            <Switch
+                                checkedChildren="开启"
+                                unCheckedChildren="关闭"
+                                onChange={setting.onSwitchTheme}
+                                checked={setting.userTheme === AppTheme.Light ? false : true}
+                            />
+                        )}
+                    />
+                    <SplitLine />
+
                     {setting.settingConfig.map(renderConfigItem)}
                 </Card>
 

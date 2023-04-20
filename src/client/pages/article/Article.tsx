@@ -128,7 +128,7 @@ const About: FC = () => {
                                 <Card
                                     size="small"
                                     title={item.title}
-                                    className="hover:ring-2 ring-gray-300 transition-all cursor-pointer"
+                                    className="hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer"
                                     extra={
                                         item.color && (
                                             <div
@@ -169,7 +169,7 @@ const About: FC = () => {
                             isTitleModified.current = false
                         }}
                         placeholder="请输入笔记名"
-                        className="font-bold border-0 text-3xl my-2 w-full"
+                        className="font-bold border-0 text-3xl my-2 w-full dark:text-white"
                     />
                     {operation.renderDesktopOperation()}
                 </div>

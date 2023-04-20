@@ -81,7 +81,7 @@ export const createRouter = (props: Props) => {
         theme: Joi.any().valid('light', 'dark').required()
     })
 
-    router.put('/setTheme', async ctx => {
+    router.post('/setTheme', async ctx => {
         const body = validate(ctx, setThemeSchema)
         if (!body) return
         const { theme } = body

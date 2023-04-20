@@ -19,13 +19,13 @@ export const Sidebar: FC = () => {
         return (
             <Link key={item.id} to={`/article/${item.id}`}>
                 <div
-                    className="hover:bg-gray-300 text-black text-left transition-all py-1 px-2 cursor-pointer rounded flex items-center justify-between"
+                    className={s.menuItem}
                     title={item.title}
                 >
                     <span className="truncate">{item.title}</span>
                     {item.color && (
                         <div
-                            className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded"
+                            className="flex-shrink-0 w-3 h-3 rounded"
                             style={{ backgroundColor: item.color }}
                         />
                     )}
@@ -125,19 +125,23 @@ export const Sidebar: FC = () => {
     const renderTabBtns = () => {
         return (
             <Row gutter={8}>
-                {tabOptions.map(item => (
-                    <Col span={8} key={item.value}>
-                        <Tooltip title={item.sidebarLabel} placement="bottom" color="#4b5563">
-                            <Button
-                                className={`${s.toolBtn} keep-antd-style`}
-                                onClick={() => dispatch(setCurrentMenu(item.value))}
-                                style={{ backgroundColor: item.value === menu.currentTab ? '#f0f0f0' : '' }}
-                                icon={item.icon}
-                                block
-                            ></Button>
-                        </Tooltip>
-                    </Col>
-                ))}
+                {tabOptions.map(item => {
+                    const className = [s.toolBtn, 'keep-antd-style']
+                    if (item.value === menu.currentTab) className.push(s.selectedToolBtn)
+                    return (
+                        <Col span={8} key={item.value}>
+                            <Tooltip title={item.sidebarLabel} placement="bottom" color="#4b5563">
+                                <Button
+                                    className={className.join(' ')}
+                                    onClick={() => dispatch(setCurrentMenu(item.value))}
+                                    // style={{ backgroundColor: item.value === menu.currentTab ? '#f0f0f0' : '' }}
+                                    icon={item.icon}
+                                    block
+                                ></Button>
+                            </Tooltip>
+                        </Col>
+                    )
+                })}
             </Row>
         )
     }

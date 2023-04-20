@@ -1,5 +1,5 @@
 import { requestGet, requestPost } from './base'
-import { ChangePasswordReqData, LoginReqData, LoginResp, RegisterReqData } from '@/types/user'
+import { AppTheme, ChangePasswordReqData, LoginReqData, LoginResp, RegisterReqData } from '@/types/user'
 import { useQuery, useMutation } from 'react-query'
 
 /** 查询用户信息 */
@@ -46,5 +46,12 @@ export const useQueryArticleCount = () => {
 export const useChangePassword = () => {
     return useMutation((data: ChangePasswordReqData) => {
         return requestPost('user/changePwd', data)
+    })
+}
+
+/** 设置主题色 */
+export const useSetTheme = () => {
+    return useMutation((theme: AppTheme) => {
+        return requestPost('user/setTheme', { theme })
     })
 }

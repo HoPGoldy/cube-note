@@ -142,7 +142,7 @@ export const createService = (props: Props) => {
         oldPasswordHash: string,
         newPasswordHash: string
     ): Promise<AppResponse> => {
-        const userStorage = await db.user().select().where({ id: userId }).first()
+        const userStorage = await db.user().select().where('id', userId).first()
         if (!userStorage) {
             return { code: 400, msg: '用户不存在' }
         }
@@ -158,7 +158,7 @@ export const createService = (props: Props) => {
             passwordSalt: newPasswordSalt
         }
 
-        await db.user().update(newStorage).where({ id: userId })
+        await db.user().update(newStorage).where('id', userId)
         return { code: 200 }
     }
 
@@ -166,12 +166,12 @@ export const createService = (props: Props) => {
      * 设置应用主题色
      */
     const setTheme = async (userId: number, theme: AppTheme) => {
-        const userStorage = await db.user().select().where({ id: userId }).first()
+        const userStorage = await db.user().select().where('id', userId).first()
         if (!userStorage) {
             return { code: 400, msg: '用户不存在' }
         }
 
-        await db.user().update({ theme }).where({ id: userId })
+        await db.user().update('theme', theme).where('id', userId)
         return { code: 200 }
     }
 

@@ -11,7 +11,7 @@ export const Cell: FC<CellProps> = (props) => {
     return (
         <Row
             justify="space-between"
-            className='text-black'
+            className='text-black dark:text-neutral-200'
             onClick={props.onClick}
         >
             <Col className='text-base'>
@@ -27,7 +27,7 @@ export const Cell: FC<CellProps> = (props) => {
 export const SplitLine: FC = () => {
     return (
         <div
-            className="my-2 w-full bg-gray-200"
+            className="my-2 w-full bg-gray-200 dark:bg-neutral-500"
             style={{ height: 5, transform: 'scale(1, 0.2)'}}
         ></div>
     )

@@ -1,3 +1,6 @@
+@import './reset.css';
+@import './transition.css';
+
 /* md 文档里的附件图标 */
 .icon {
     width: 1em;
@@ -14,52 +17,25 @@ html, body, #root {
 }
 
 body {
-    @apply bg-white text-base;
-}
-
-/* 重置标题样式，不然移动端的标题会过大 */
-h1 {
-    @apply text-2xl font-bold;
-}
-
-h2 {
-    @apply text-xl font-bold;
-}
-
-h3 {
-    @apply text-lg font-bold;
-}
-
-h4 {
-    @apply text-base font-bold;
-}
-
-h5 {
-    @apply text-sm font-bold;
-}
-
-h6 {
-    @apply text-xs font-bold;
-}
-
-a {
-    text-decoration: none;
+    @apply bg-white dark:bg-antd-dark text-base transition-colors;
 }
 
 :root {
     /* 移动端的底部操作栏高度 */
     --cube-note-bottombar-height: 40px;
+    --color-border-secondary: #d1d5db;
 }
 
-/* 关闭 password 自带的显示隐藏功能 */
-input[type="password"]::-ms-reveal{
-    display: none;
+:root[data-theme="dark"] {
+    --color-border-secondary: #525252;
 }
 
-/** 隐藏默认的输入框样式 **/
-input {
-    border: none;
-    background-color: transparent;
+/** 处理一些不支持暗色模式的第三方样式 **/
+[data-theme="dark"] .bytemd,
+[data-theme="dark"] .bytemd img,
+[data-theme="dark"] code,
+[data-theme="dark"] .bytemd .bytemd-link-box {
+    filter: invert(0.9) hue-rotate(180deg);
 }
 
 /** 让 bytemd 的编辑器高度自适应 **/
@@ -67,96 +43,10 @@ input {
     height: 100% !important;
 }
 
+/** 加上这个类，就可以隐藏滚动条 **/
 .noscrollbar::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
-}
-
-/** 桌面端侧边栏导航树组件的过渡动画 **/
-.my-transition-enter {
-    opacity: 0;
-    transform: scale(0.9);
-}
-.my-transition-enter-active {
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 100ms, transform 100ms;
-}
-.my-transition-exit {
-    opacity: 1;
-}
-.my-transition-exit-active {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 100ms, transform 100ms;
-}
-
-/** 移动端标签批量操作的过渡动画 **/
-.batch-modal-enter {
-    opacity: 0;
-    transform: translateY(50%);
-}
-.batch-modal-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 100ms, transform 100ms;
-}
-.batch-modal-exit {
-    opacity: 1;
-}
-.batch-modal-exit-active {
-    opacity: 0;
-    transform: translateY(50%);
-    transition: opacity 100ms, transform 100ms;
-}
-
-/** 移动端导航 - 列表向左滑动效果 **/
-.to-left-enter .menu-container {
-    opacity: 0;
-    /* transform: translateX(-50%); */
-}
-
-.to-left-enter-active .menu-container {
-    opacity: 1;
-    transform: translateX(0%);
-}
-
-.to-left-exit .menu-container {
-    opacity: 1;
-    transform: translateX(0%);
-}
-
-.to-left-exit-active .menu-container {
-    opacity: 0;
-    transform: translateX(50%);
-}
-
-/** 移动端导航 - 列表向右滑动效果 **/
-.to-right-enter .menu-container {
-    opacity: 0;
-    /* transform: translateX(50%); */
-}
-
-.to-right-enter-active .menu-container {
-    opacity: 1;
-    transform: translateX(0%);
-}
-
-.to-right-exit .menu-container {
-    opacity: 1;
-    transform: translateX(0%);
-}
-
-.to-right-exit-active .menu-container {
-    opacity: 0;
-    transform: translateX(-50%);
-}
-
-.to-left-enter-active .menu-container,
-.to-left-exit-active .menu-container,
-.to-right-enter-active .menu-container,
-.to-right-exit-active .menu-container {
-    transition: opacity 200ms, transform 200ms;
 }
 
 .ant-drawer-body {

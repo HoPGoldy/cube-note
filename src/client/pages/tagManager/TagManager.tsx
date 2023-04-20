@@ -110,7 +110,7 @@ const TagManager: FC = () => {
                     title={(
                         <input
                             ref={ins => ins && (titleInputRefs.current[item.id] = ins)}
-                            className="w-full text-base"
+                            className="w-full text-base dark:text-neutral-200"
                             value={item.title}
                             onChange={e => onTitleChange(e.target.value, item)}
                             onKeyUp={blurOnEnter}

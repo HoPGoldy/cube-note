@@ -35,10 +35,21 @@ export const userSlice = createSlice({
         changeTheme: (state, action: PayloadAction<AppTheme>) => {
             if (!state.userInfo) return
             state.userInfo.theme = action.payload
+            localStorage.setItem('cube-note-theme', action.payload)
         }
     },
 })
 
 export const { login, logout, changeTheme } = userSlice.actions
+
+/**
+ * 从用户信息中获取主题色
+ * 在用户信息没有获取到时，从 localStorage 和默认值获取
+ */
+export const getUserTheme = (userInfo?: FrontendUserInfo): AppTheme => {
+    return userInfo?.theme
+        || localStorage.getItem('cube-note-theme') as AppTheme
+        || AppTheme.Light
+}
 
 export default userSlice.reducer
