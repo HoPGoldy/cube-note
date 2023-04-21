@@ -59,10 +59,10 @@ const defaultRenderLink = (link: HTMLAnchorElement) => {
                 bg-gray-200 hover:bg-gray-300 dark:bg-neutral-800 hover:dark:bg-neutral-700
                 transition-all overflow-hidden items-center bytemd-link-box"
         >
-            <svg class="icon" aria-hidden="true" style="font-size: 1.75rem;">
+            <svg class="icon flex-shrink-0" aria-hidden="true" style="font-size: 1.75rem;">
                 <use xlink:href="#icon-${getFileIcon(suffix)}"></use>
             </svg>
-            <div class="text-slate-800 dark:text-neutral-200 font-bold truncate ml-2">${link.innerText}</div>
+            <div class="text-slate-800 dark:text-neutral-200 font-bold truncate ml-2">${link.innerText || link.href}</div>
         </div>
     `
 }

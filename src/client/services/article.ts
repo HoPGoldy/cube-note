@@ -23,6 +23,17 @@ export const useQueryArticleContent = (id: number) => {
     })
 }
 
+const updateArticleCache = (id: number, updateData: Partial<ArticleContent>) => {
+    const oldData = queryClient.getQueryData<AppResponse<ArticleContent>>(['articleContent', id])
+    if (!oldData) return
+
+    const newData = {
+        ...oldData,
+        data: { ...oldData.data, ...updateData }
+    }
+    queryClient.setQueryData(['articleContent', id], newData)
+}
+
 /** 更新文章详情 hook */
 export const useUpdateArticle = () => {
     return useMutation((data: UpdateArticleReqData) => {
@@ -30,14 +41,7 @@ export const useUpdateArticle = () => {
     }, {
         onMutate: async (data) => {
             // 把修改乐观更新到缓存
-            const oldData = queryClient.getQueryData<AppResponse<ArticleContent>>(['articleContent', data.id])
-            if (!oldData) return
-
-            const newData = {
-                ...oldData,
-                data: { ...oldData.data, ...data }
-            }
-            queryClient.setQueryData(['articleContent', data.id], newData)
+            updateArticleCache(data.id, data)
         },
         onSuccess: (resp, data) => {
             if (data.title || data.parentArticleId) {
@@ -60,6 +64,7 @@ export const useUpdateArticle = () => {
 
 /** 自动保存接口 */
 export const autoSaveContent = async (id: number, content: string) => {
+    updateArticleCache(id, { content })
     return requestPost('article/update', { id, content })
 }
 
@@ -146,6 +151,10 @@ export const useFavoriteArticle = () => {
     return useMutation((data: { id: number, favorite: boolean }) => {
         return requestPost('article/setFavorite', data)
     }, {
+        onMutate: async (data) => {
+        // 把修改乐观更新到缓存
+            updateArticleCache(data.id, { favorite: data.favorite })
+        },
         onSuccess: () => {
             queryClient.invalidateQueries('favorite')
         }

@@ -110,7 +110,7 @@ const About: FC = () => {
         if (!articleLink?.data?.length) return null
 
         return (
-            <div className="mt-4 w-full xl:w-[60%] m-auto">
+            <div className="w-full xl:w-[60%] m-auto">
                 <List
                     grid={{
                         gutter: 16,
