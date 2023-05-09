@@ -8,6 +8,7 @@ import { Button, Row, Col, Input, InputRef } from 'antd'
 import { messageError, messageSuccess } from '@/client/utils/message'
 import s from './styles.module.css'
 import { useIsMobile } from '@/client/layouts/Responsive'
+import { PageTitle } from '@/client/components/PageTitle'
 
 const getViewWidth = () => {
     // 获取浏览器宽度
@@ -99,6 +100,7 @@ const Register: FC = () => {
 
     return (
         <div className="h-screen w-screen bg-gray-100 flex flex-col flex-nowrap items-center">
+            <PageTitle title='应用初始化' />
             <header className="text-5xl font-bold text-mainColor mt-36 w-full text-center">应用初始化</header>
             <div className="overflow-hidden mt-4" style={{ width: viewWidth }} ref={viewCarouselRef}>
                 <div

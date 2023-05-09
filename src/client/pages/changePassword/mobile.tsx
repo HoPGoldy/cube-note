@@ -4,12 +4,14 @@ import React, { FC } from 'react'
 import { useChangePasswordContent } from './content'
 import { LeftOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
+import { PageTitle } from '@/client/components/PageTitle'
 
 const ChangePassword: FC = () => {
     const navigate = useNavigate()
     const { renderContent, onSavePassword, isChangingPassword } = useChangePasswordContent()
 
     return (<>
+        <PageTitle title='修改密码' />
         <PageContent>
             <div className="m-2">
                 <Card size="small" className='text-center text-base font-bold mb-2'>

@@ -10,6 +10,7 @@ import { setCurrentArticle } from '../store/menu'
 import { login } from '../store/user'
 import { messageError, messageSuccess } from '../utils/message'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
+import { PageTitle } from '../components/PageTitle'
 
 const Register = () => {
     const dispatch = useAppDispatch()
@@ -56,6 +57,7 @@ const Register = () => {
 
     return (
         <div className="h-screen w-screen bg-gray-100 flex flex-col justify-center items-center dark:text-gray-100">
+            <PageTitle title='登录' />
             <header className="w-screen text-center min-h-[236px]">
                 <div className="text-5xl font-bold text-mainColor">{config?.appName}</div>
                 <div className="mt-4 text-xl text-mainColor">{config?.loginSubtitle}</div>

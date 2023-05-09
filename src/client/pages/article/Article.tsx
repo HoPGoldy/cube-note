@@ -18,6 +18,7 @@ import s from './styles.module.css'
 import { useOperation } from './Operation'
 import { useMobileMenu } from './Menu'
 import { Card, List } from 'antd'
+import { PageTitle } from '@/client/components/PageTitle'
 
 const About: FC = () => {
     const params = useParams()
@@ -215,6 +216,7 @@ const About: FC = () => {
     }
 
     return (<>
+        <PageTitle title={title || '笔记'} />
         <PageContent>
             {renderContent()}
         </PageContent>

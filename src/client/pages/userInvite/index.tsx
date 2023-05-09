@@ -1,16 +1,17 @@
-import React, { FC, useMemo } from 'react'
+import React, { FC } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { PageContent, PageAction, ActionButton, ActionIcon } from '../../layouts/PageWithAction'
 import Loading from '../../layouts/Loading'
-import { Col, Row, Button, List, Card, Spin } from 'antd'
+import { Col, Row, Button, List, Card } from 'antd'
 import { UserInviteFrontendDetail } from '@/types/userInvite'
 import { useAddInvite, useBanUser, useDeleteInvite, useQueryInviteList } from '@/client/services/userInvite'
-import { PlusOutlined, LeftOutlined } from '@ant-design/icons'
+import { LeftOutlined } from '@ant-design/icons'
 import copy from 'copy-to-clipboard'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import dayjs from 'dayjs'
 import { DesktopArea, MobileArea } from '@/client/layouts/Responsive'
 import { useJwtPayload } from '@/client/utils/jwt'
+import { PageTitle } from '@/client/components/PageTitle'
 
 const getStatusColor = (item: UserInviteFrontendDetail) => {
     if (!item.username) return 'bg-yellow-500'
@@ -182,6 +183,8 @@ const TagManager: FC = () => {
     }
 
     return (<>
+        <PageTitle title='用户管理' />
+
         <PageContent>
             <div className="m-4">
                 <MobileArea>

@@ -12,11 +12,12 @@ import { ArticleTreeNode } from '@/types/article'
 import { useDelete } from '../article/Delete'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
+import { PageTitle } from '@/client/components/PageTitle'
 
 const EDIT_MODE = {
     /**
      * 默认状态
-     * 点击树节点将打开文章管理弹窗
+     * 点击树节点将打开笔记管理弹窗
      **/
     DETAIL: 1,
     /**
@@ -220,12 +221,13 @@ const ArticleManager: FC = () => {
     }
 
     return (<>
+        <PageTitle title="笔记管理" />
         <PageContent>
             <div className="box-border p-2 flex flex-col flex-nowrap h-full">
                 <div className="flex-grow overflow-y-auto overflow-x-hidden">
                     <MobileArea>
                         <Card size="small" className='text-center text-base font-bold mb-2'>
-                            文章管理
+                            笔记管理
                         </Card>
                     </MobileArea>
                     <Spin spinning={updatingArticle}>

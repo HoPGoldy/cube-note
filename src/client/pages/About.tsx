@@ -4,11 +4,13 @@ import { PageContent, PageAction, ActionButton } from '../layouts/PageWithAction
 import { Card } from 'antd'
 import { GithubOutlined, SendOutlined } from '@ant-design/icons'
 import { Cell } from '../components/Cell'
+import { PageTitle } from '../components/PageTitle'
 
 const About: FC = () => {
     const navigate = useNavigate()
 
     return (<>
+        <PageTitle title='关于应用' />
         <PageContent>
             <div className='p-4 text-base md:w-1/2 mx-auto'>
                 <Card size="small" className='text-center text-base font-bold'>

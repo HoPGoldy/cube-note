@@ -8,6 +8,7 @@ import { UserOutlined, RightOutlined, LogoutOutlined } from '@ant-design/icons'
 import { Cell, SplitLine } from '@/client/components/Cell'
 import { SettingLinkItem, useSetting } from './useSetting'
 import { AppTheme } from '@/types/user'
+import { PageTitle } from '@/client/components/PageTitle'
 
 interface DesktopProps {
     onClick: () => void
@@ -46,7 +47,7 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
             <div style={{ margin: '1rem 0rem' }}>
                 <Row gutter={[16, 16]} justify="space-around">
                     <Col>
-                        <Statistic title="文章数量" value={setting.articleCount} prefix={<SnippetsOutlined />} />
+                        <Statistic title="笔记数量" value={setting.articleCount} prefix={<SnippetsOutlined />} />
                     </Col>
                     <Col>
                         <Statistic title="总字数" value={setting.articleLength} prefix={<HighlightOutlined />} />
@@ -97,12 +98,14 @@ export const MobileSetting: FC = () => {
     }
 
     return (<>
+        <PageTitle title='设置' />
+
         <PageContent>
             <div className='p-4 text-base'>
                 <Card size="small">
                     <Row justify="space-around">
                         <Col>
-                            <Statistic title="文章数量" value={setting.articleCount} prefix={<SnippetsOutlined />} />
+                            <Statistic title="笔记数量" value={setting.articleCount} prefix={<SnippetsOutlined />} />
                         </Col>
                         <Col>
                             <Statistic title="总字数" value={setting.articleLength} prefix={<HighlightOutlined />} />

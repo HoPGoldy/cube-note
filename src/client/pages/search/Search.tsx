@@ -11,6 +11,7 @@ import { Card, Col, Input, List, Row, Space } from 'antd'
 import { PAGE_SIZE } from '@/config'
 import { DesktopArea } from '@/client/layouts/Responsive'
 import { TagOutlined, LeftOutlined } from '@ant-design/icons'
+import { PageTitle } from '@/client/components/PageTitle'
 
 /**
  * 搜索页面
@@ -140,6 +141,8 @@ const SearchArticle: FC = () => {
     }
 
     return (<>
+        <PageTitle title='搜索笔记' />
+
         <PageContent>
             {renderContent()}
         </PageContent>

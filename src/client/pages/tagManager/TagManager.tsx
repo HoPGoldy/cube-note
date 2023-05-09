@@ -17,6 +17,7 @@ import { useAllTagGroup, useGroupedTag } from './tagHooks'
 import { Col, Row, Button, Space, List, Card } from 'antd'
 import { PlusOutlined, DeleteOutlined, LeftOutlined, BuildOutlined, DownSquareOutlined } from '@ant-design/icons'
 import { DesktopArea, MobileArea } from '@/client/layouts/Responsive'
+import { PageTitle } from '@/client/components/PageTitle'
 
 /**
  * 标签管理
@@ -170,6 +171,8 @@ const TagManager: FC = () => {
     }
 
     return (<>
+        <PageTitle title='标签管理' />
+
         <PageContent>
             <div className="box-border p-2 flex flex-col flex-nowrap h-full">
                 <div className="flex-grow overflow-y-auto overflow-x-hidden">
