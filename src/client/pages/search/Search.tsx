@@ -113,7 +113,7 @@ const SearchArticle: FC = () => {
                 </DesktopArea>
                 <div className='md:my-4'>
                     <Row gutter={16}>
-                        <Col xs={24} md={18}>
+                        <Col xs={24} md={14} lg={16} xl={18}>
                             <List
                                 loading={isSearching}
                                 dataSource={articleListResp?.data?.rows || []}
@@ -129,7 +129,7 @@ const SearchArticle: FC = () => {
                             />
                         </Col>
                         <DesktopArea>
-                            <Col span={6}>
+                            <Col md={10} lg={8} xl={6}>
                                 {renderTagSelectPanel()}
                             </Col>
                         </DesktopArea>

@@ -133,13 +133,11 @@ const TagManager: FC = () => {
                         </Space>
                     )}
                 >
-                    <Space size={[0, 8]} wrap>
-                        {tags.map(renderTagItem)}
-                        {!isBatch && <AddTag
-                            onFinish={title => onClickAddBtn(title, item.id)}
-                            loading={isAddingTag}
-                        />}
-                    </Space>
+                    {tags.map(renderTagItem)}
+                    {!isBatch && <AddTag
+                        onFinish={title => onClickAddBtn(title, item.id)}
+                        loading={isAddingTag}
+                    />}
                 </Card>
             </List.Item>
         )
@@ -161,7 +159,7 @@ const TagManager: FC = () => {
                     </DesktopArea>
                     <Col span={24}>
                         <List
-                            grid={{ gutter: 16, xs: 1, md: 3 }}
+                            grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 3 }}
                             dataSource={tagGroups}
                             renderItem={renderTagGroupItem}
                         />

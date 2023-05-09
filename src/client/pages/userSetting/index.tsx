@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, Fragment } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Col, Row, Statistic, Switch } from 'antd'
 import { SnippetsOutlined, HighlightOutlined, CloseCircleOutlined } from '@ant-design/icons'
@@ -85,7 +85,7 @@ export const MobileSetting: FC = () => {
     const setting = useSetting()
 
     const renderConfigItem = (item: SettingLinkItem, index: number) => {
-        return (<>
+        return (<Fragment key={item.link}>
             <Link to={item.link}>
                 <Cell
                     title={(<div>{item.icon} &nbsp;{item.label}</div>)}
@@ -93,7 +93,7 @@ export const MobileSetting: FC = () => {
                 />
             </Link>
             {index !== setting.settingConfig.length - 1 && <SplitLine />}
-        </>)
+        </Fragment>)
     }
 
     return (<>

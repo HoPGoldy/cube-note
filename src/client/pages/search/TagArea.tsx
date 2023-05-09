@@ -2,7 +2,7 @@ import { Tag } from '@/client/components/Tag'
 import Loading from '@/client/layouts/Loading'
 import { useQueryTagGroup } from '@/client/services/tag'
 import { TagGroupListItem, TagListItem } from '@/types/tag'
-import { Collapse, Space } from 'antd'
+import { Collapse } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAllTagGroup, useGroupedTag } from '../tagManager/tagHooks'
@@ -68,9 +68,7 @@ export const useTagArea = (props: Props) => {
         const tags = groupedTagDict[item.id] || []
         return (
             <Collapse.Panel header={item.title} key={item.id}>
-                <Space wrap size={[0, 8]}>
-                    {tags.map(renderTag)}
-                </Space>
+                {tags.map(renderTag)}
             </Collapse.Panel>
         )
     }
