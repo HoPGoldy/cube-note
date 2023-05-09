@@ -8,7 +8,6 @@ export const ResponsiveProvider: FC<PropsWithChildren> = ({ children }) => {
 
     useEffect(() => {
         const listener = debounce(() => {
-            console.log('🚀 ~ file: Responsive.tsx:13 ~ listener ~ getIsMobile():',getIsMobile())
             dispatch(setIsMobile(getIsMobile()))
         }, 300)
 

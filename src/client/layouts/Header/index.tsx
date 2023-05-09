@@ -6,7 +6,7 @@ import {
     UserOutlined
 } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
-import { Button, Popover, Space } from 'antd'
+import { Button, Popover } from 'antd'
 import s from './styles.module.css'
 import { DesktopSetting } from '@/client/pages/userSetting'
 import { useAppSelector } from '@/client/store'
@@ -30,29 +30,29 @@ const Header: FC<Props> = (props) => {
 
     return (
         <header className={s.headerBox}>
-            <div className='flex flex-nowrap md:max-w-[40%] xl:max-w-[60%]'>
+            <div className='flex flex-nowrap flex-grow basis-0 overflow-hidden'>
                 <CollasedIcon onClick={onClickCollasedIcon} className="text-xl mr-4" />
                 {renderBreadcrumb()}
             </div>
-            <div>
-                <Space size="middle">
-                    <Link to="/search">
-                        <Button icon={<SearchOutlined />} className="w-60">
-                            搜索
-                        </Button>
-                    </Link>
-                    <Popover
-                        placement="bottomRight"
-                        // trigger="click"
-                        content={<DesktopSetting onClick={() => setUserMenuVisible(false)} />}
-                        open={userMenuVisible}
-                        onOpenChange={setUserMenuVisible}
-                        arrow
-                    >
+            <div className='flex flex-nowrap flex-shrink-0 basis-1 ml-2'>
+                <Link to="/search">
+                    <Button icon={<SearchOutlined />} className="w-60">
+                        搜索
+                    </Button>
+                </Link>
+                <Popover
+                    placement="bottomRight"
+                    // trigger="click"
+                    content={<DesktopSetting onClick={() => setUserMenuVisible(false)} />}
+                    open={userMenuVisible}
+                    onOpenChange={setUserMenuVisible}
+                    arrow
+                >
+                    <div className="flex flex-nowrap justify-center items-center ml-2">
                         <UserOutlined className="cursor-pointer text-xl mr-2" />
                         <span className="cursor-pointer">{username}</span>
-                    </Popover>
-                </Space>
+                    </div>
+                </Popover>
             </div>
         </header>
     )

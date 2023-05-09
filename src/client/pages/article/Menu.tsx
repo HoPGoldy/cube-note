@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { Breadcrumb, Button, Col, Row } from 'antd'
 import { HomeOutlined, LinkOutlined } from '@ant-design/icons'
@@ -20,7 +20,6 @@ interface Props {
  * 面包屑导航
  */
 export const useBreadcrumb = () => {
-    const navigate = useNavigate()
     /** 根节点 id */
     const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
     /** 当前查看的文章祖先节点 */
@@ -32,10 +31,10 @@ export const useBreadcrumb = () => {
 
     /** 当前面包屑配置项 */
     const breadcrumbConfig = useMemo(() => {
-        if (!articleTree || !parentArticleIds || !currentArticleId) return []
+        if (!articleTree  || !currentArticleId) return []
 
         const pathNodes: ArticleTreeNode[] = []
-        const idPath = [...parentArticleIds, currentArticleId]
+        const idPath = [...(parentArticleIds || []), currentArticleId]
 
         idPath.reduce((prev, cur) => {
             const item = prev.find(i => i.value === cur)
@@ -45,9 +44,13 @@ export const useBreadcrumb = () => {
         }, articleTree?.data ? [articleTree.data] : [])
 
         const config: BreadcrumbItemType[] = pathNodes.map(i => ({
-            title: i.title,
-            className: 'max-w-[256px] truncate overflow-hidden cursor-pointer',
-            onClick: () => navigate(`/article/${i.value}`)
+            title: (
+                <Link to={`/article/${i.value}`}>
+                    <div className="truncate w-fit max-w-[8rem]">
+                        {i.title}
+                    </div>
+                </Link>
+            ),
         }))
 
         return config

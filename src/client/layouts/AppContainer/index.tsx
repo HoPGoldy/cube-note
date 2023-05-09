@@ -20,14 +20,18 @@ export const AppContainer: React.FC = () => {
     }
 
     return (
-        <div style={{ height: '100%', display: 'flex' }}>
+        <div className="h-full flex">
             <aside
                 className="overflow-hidden transition-w flex-shrink-0"
                 style={{ width: collapsed ? 0 : SIDE_WIDTH }}
             >
                 <Sidebar />
             </aside>
-            <div style={{ flexGrow: 1, transition: 'width 0.3s' }}>
+            <div
+                className="flex-grow overflow-hidden transition-w"
+                // 要给定确切的宽度，不然里边的面包屑没法正常进行宽度适应
+                style={{ width: collapsed ? '100vw' : `calc(100vw - ${SIDE_WIDTH})` }}
+            >
                 <Header
                     onClickCollasedIcon={() => setCollapsed(!collapsed)}
                     collapsed={collapsed}
