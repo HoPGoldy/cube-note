@@ -1,5 +1,4 @@
 import Koa from 'koa'
-import path from 'path'
 import { createApiRouter } from './apiRouter'
 import historyApiFallback from 'koa2-connect-history-api-fallback'
 import logger from 'koa-logger'
@@ -23,9 +22,6 @@ export const runApp = async (props: Props) => {
 
     const app = new Koa()
     const apiRouter = createApiRouter()
-
-    console.log(path.resolve('../../dist/client'))
-    console.log(path.resolve(__dirname, '../../dist/client'))
 
     app.use(logger())
         .use(bodyParser({ multipart: true }))

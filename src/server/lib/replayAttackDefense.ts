@@ -3,12 +3,12 @@ import { AppKoaContext } from '@/types/global'
 import { getReplayAttackData, validateReplayAttackData } from '@/utils/crypto'
 import { Next } from 'koa'
 import { response } from '../utils'
-import { createFileReader } from './fileAccessor'
+import { createAccessor } from './fileAccessor'
 
 /**
  * 获取防重放密钥
  */
-export const getReplayAttackSecret = createFileReader({ fileName: 'replayAttackSecret' })
+export const secretFile = createAccessor({ fileName: 'replayAttackSecret' })
 
 interface Props {
     excludePath: string[]
@@ -47,7 +47,7 @@ export const createCheckReplayAttack = (props: Props) => {
                 throw new Error(`伪造请求攻击，请求路径：${ctx.path}。已被拦截，原因为未提供防重放攻击 header。`)
             }
 
-            const replayAttackSecret = await getReplayAttackSecret()
+            const replayAttackSecret = await secretFile.read()
             const existNonceDate = nonceCache.get(replayAttackData.nonce)
             // 如果有重复的随机码
             if (existNonceDate && !isNonceTimeout(existNonceDate, Date.now())) {

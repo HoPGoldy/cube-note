@@ -1,6 +1,8 @@
 import { AppKoaContext, AppResponse } from '@/types/global'
 import Joi from 'joi'
 import { Context, Next } from 'koa'
+import fs from 'fs'
+import path from 'path'
 
 const initialResponse: AppResponse = {
     code: 200,
@@ -73,4 +75,8 @@ export function getRequestRoute (ctx: AppKoaContext) {
     }, pureUrl)
 
     return route
+}
+
+export const getPackageVersion = (): string => {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, '', '../../package.json'), 'utf8')).version
 }

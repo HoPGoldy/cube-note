@@ -4,12 +4,12 @@ import jwtKoa from 'koa-jwt'
 import { nanoid } from 'nanoid'
 import { response } from '../utils'
 import { AppKoaContext, MyJwtPayload } from '@/types/global'
-import { createFileReader } from './fileAccessor'
+import { createAccessor } from './fileAccessor'
 
 /**
  * 获取 jwt 密钥
  */
-export const getJwtSecretKey = createFileReader({ fileName: 'jwtSecret' })
+export const jwtSecretFile = createAccessor({ fileName: 'jwtSecret' })
 
 /**
  * 鉴权失败时完善响应提示信息
@@ -45,7 +45,7 @@ export const getJwtPayload = (ctx: AppKoaContext, block = true) => {
 export const verifyToken = async (token: string) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, async (_, callback) => {
-            const secret = await getJwtSecretKey()
+            const secret = await jwtSecretFile.read()
             callback(null, secret)
         }, (err, decoded) => {
             if (err) return reject(err)
@@ -58,7 +58,7 @@ export const verifyToken = async (token: string) => {
  * JWT 鉴权中间件
  */
 export const middlewareJwt = jwtKoa({
-    secret: getJwtSecretKey,
+    secret: jwtSecretFile.read,
     getToken: ctx => {
         if (ctx.header.authorization) return ctx.header.authorization.replace('Bearer ', '')
         return ctx.cookies.get('cube-note-token') || null
@@ -69,7 +69,7 @@ export const middlewareJwt = jwtKoa({
  * 生成新的 jwt token
  */
 export const createToken = async (payload: Record<string, any> = {}) => {
-    const secret = await getJwtSecretKey()
+    const secret = await jwtSecretFile.read()
     return jwt.sign(payload, secret, { expiresIn: '30d' })
 }
 

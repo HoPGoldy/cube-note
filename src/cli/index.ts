@@ -1,13 +1,10 @@
 #!/usr/bin/env node  
 import { Command } from 'commander'
-import fs from 'fs'
-import path from 'path'
 import { actionRun } from './run'
+import { getPackageVersion } from '@/server/utils'
 
-const packageVersion = JSON.parse(fs.readFileSync(path.join(__dirname, '', '../../package.json'), 'utf8')).version
 const program = new Command()
-
-program.version(packageVersion)
+program.version(getPackageVersion())
 
 program
     .command('run')
