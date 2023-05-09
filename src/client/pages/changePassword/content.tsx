@@ -5,12 +5,13 @@ import { sha } from '@/utils/crypto'
 import { useAppDispatch } from '@/client/store'
 import { logout } from '@/client/store/user'
 import { messageSuccess } from '@/client/utils/message'
-import { isMobile } from '@/client/layouts/Responsive'
+import { useIsMobile } from '@/client/layouts/Responsive'
 import s from './styles.module.css'
 
 export const useChangePasswordContent = () => {
     const [form] = Form.useForm()
     const dispatch = useAppDispatch()
+    const isMobile = useIsMobile()
     const { mutateAsync: postChangePassword, isLoading: isChangingPassword } = useChangePassword()
 
     const onSavePassword = async () => {

@@ -9,7 +9,7 @@ import { PlusOutlined, LeftOutlined } from '@ant-design/icons'
 import copy from 'copy-to-clipboard'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import dayjs from 'dayjs'
-import { DesktopArea, isMobile, MobileArea } from '@/client/layouts/Responsive'
+import { DesktopArea, MobileArea } from '@/client/layouts/Responsive'
 import { useJwtPayload } from '@/client/utils/jwt'
 
 const getStatusColor = (item: UserInviteFrontendDetail) => {

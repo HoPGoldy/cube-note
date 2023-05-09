@@ -7,11 +7,12 @@ import { initSuccess } from '@/client/store/global'
 import { Button, Row, Col, Input, InputRef } from 'antd'
 import { messageError, messageSuccess } from '@/client/utils/message'
 import s from './styles.module.css'
-import { isMobile } from '@/client/layouts/Responsive'
+import { useIsMobile } from '@/client/layouts/Responsive'
 
 const getViewWidth = () => {
     // 获取浏览器宽度
     const width = window.innerWidth
+    const isMobile = useIsMobile()
 
     if (isMobile) {
         return width * 0.8 + 'px'

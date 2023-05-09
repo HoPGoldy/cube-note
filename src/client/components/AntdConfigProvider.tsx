@@ -3,7 +3,7 @@ import { ConfigProvider, ThemeConfig, theme as antdTheme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { useAppSelector } from '../store'
 import cloneDeep from 'lodash/cloneDeep'
-import { isMobile } from '../layouts/Responsive'
+import { useIsMobile } from '../layouts/Responsive'
 import { getUserTheme } from '../store/user'
 import { AppTheme } from '@/types/user'
 
@@ -27,6 +27,7 @@ const globalThemeConfig: ThemeConfig = {
 export const AntdConfigProvider: FC<PropsWithChildren> = (props) => {
     const appConfig = useAppSelector(s => s.global.appConfig)
     const userInfo = useAppSelector(s => s.user.userInfo)
+    const isMobile = useIsMobile()
 
     const themeConfig: ThemeConfig = useMemo(() => {
         const theme = cloneDeep(globalThemeConfig)

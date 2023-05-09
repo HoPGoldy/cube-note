@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import { useChangePasswordContent } from './content'
 import { useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
-import { isMobile } from '@/client/layouts/Responsive'
+import { useIsMobile } from '@/client/layouts/Responsive'
 
 export const useChangePassword = () => {
     const navigate = useNavigate()
+    const isMobile = useIsMobile()
     /** 是否显示修改密码弹窗 */
     const [visible, setVisible] = useState(false)
     const { onSavePassword, renderContent } = useChangePasswordContent()

@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from '../Sidebar'
-import { isMobile } from '../Responsive'
+import { useIsMobile } from '../Responsive'
 import Header from '../Header'
 
 const SIDE_WIDTH = '240px'
 
 export const AppContainer: React.FC = () => {
+    const isMobile = useIsMobile()
     /** 是否展开侧边栏 */
     const [collapsed, setCollapsed] = useState(false)
 

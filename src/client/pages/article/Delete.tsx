@@ -5,7 +5,7 @@ import { messageSuccess } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { Button, Modal } from 'antd'
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
-import { isMobile } from '@/client/layouts/Responsive'
+import { useIsMobile } from '@/client/layouts/Responsive'
 
 interface TargetArticleInfo {
     title: string
@@ -14,6 +14,7 @@ interface TargetArticleInfo {
 
 export const useDelete = () => {
     const navigate = useNavigate()
+    const isMobile = useIsMobile()
     // 删除文章
     const { mutateAsync: deleteArticle } = useDeleteArticle()
     // 是否删除子文章

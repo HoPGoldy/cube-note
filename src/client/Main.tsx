@@ -12,6 +12,7 @@ import './styles/index.css'
 import 'bytemd/dist/index.css'
 import { useInitMessage } from './utils/message'
 import { AntdConfigProvider } from './components/AntdConfigProvider'
+import { ResponsiveProvider } from './layouts/Responsive'
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const rootContainer = document.getElementById('root')!
@@ -33,10 +34,12 @@ const App = () => {
  */
 createRoot(rootContainer).render(
     <Provider store={store}>
-        <AntdConfigProvider>
-            <AntdApp className='h-full'>
-                <App />
-            </AntdApp>
-        </AntdConfigProvider>
+        <ResponsiveProvider>
+            <AntdConfigProvider>
+                <AntdApp className='h-full'>
+                    <App />
+                </AntdApp>
+            </AntdConfigProvider>
+        </ResponsiveProvider>
     </Provider>
 )

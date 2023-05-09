@@ -7,7 +7,7 @@ import { useAllTagGroup, useGroupedTag } from '../pages/tagManager/tagHooks'
 import { ControlOutlined } from '@ant-design/icons'
 import { Tag } from './Tag'
 import Loading from '../layouts/Loading'
-import { isMobile } from '../layouts/Responsive'
+import { useIsMobile } from '../layouts/Responsive'
 import { useNavigate } from 'react-router-dom'
 
 interface Props {
@@ -22,6 +22,7 @@ interface Props {
  */
 export const TagPicker: FC<Props> = (props) => {
     const { open, onClose, selectedTags, onSelected } = props
+    const isMobile = useIsMobile()
     const navigate = useNavigate()
     // 获取标签分组
     const { data: tagGroupResp, isLoading: isLoadingGroup } = useQueryTagGroup()

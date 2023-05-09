@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce'
 import { autoSaveContent } from '@/client/services/article'
 import { STATUS_CODE } from '@/config'
 import { messageError } from '@/client/utils/message'
-import { isMobile } from '@/client/layouts/Responsive'
+import { useIsMobile } from '@/client/layouts/Responsive'
 import zh_Hans from 'bytemd/locales/zh_Hans.json'
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 }
 
 export const useEditor = (props: Props) => {
+    const isMobile = useIsMobile()
     // 正在编辑的文本内容
     const [content, setContent] = useState('')
     // 内容是否被编辑了
