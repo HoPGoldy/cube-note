@@ -20,6 +20,10 @@ body {
     @apply bg-white dark:bg-antd-dark text-base transition-colors;
 }
 
+.bytemd-fullscreen.bytemd {
+    z-index: 1;
+}
+
 :root {
     /* 移动端的底部操作栏高度 */
     --cube-note-bottombar-height: 40px;

@@ -66,7 +66,6 @@ const TagArea: FC<Props> = (props) => {
 
     /** 更新排序 */
     const onChangeOrder = (newOrder: number[]) => {
-        console.log('🚀 ~ file: TagArea.tsx:69 ~ onChangeOrder ~ newOrder:', newOrder)
         updateArticle({
             id: articleId,
             tagIds: newOrder.filter(Boolean)
@@ -78,12 +77,11 @@ const TagArea: FC<Props> = (props) => {
         if (!tagInfo) return null
 
         return (
-            <div className="inline-block" key={itemId}>
+            <div className="inline-block max-w-full overflow-hidden" key={itemId}>
                 {tagInfo && (
                     <Tag
                         color={tagInfo.color}
                         onClick={() => onClickTag(itemId)}
-                        className='mb-2'
                     >{tagInfo.title}</Tag>
                 )}
             </div>
@@ -93,20 +91,22 @@ const TagArea: FC<Props> = (props) => {
     const renderTagList = () => {
         if (isLoadingTagList) return <Loading tip='标签加载中...' />
         if (!value) return <div>暂无标签</div>
+        const existTagIds = value.filter(id => tagDict.has(id))
 
         return (
             <Draggable
-                value={value}
+                className='w-full'
+                value={existTagIds}
                 renderItem={renderTagItem}
                 onChange={onChangeOrder}
                 extra={(<>
                     {!disabled && (
-                        <div className="inline-block" key="add">
+                        <div className="inline-block truncate" key="add">
                             <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />
                         </div>
                     )}
                     {!disabled && (
-                        <div className="inline-block" key="pick">
+                        <div className="inline-block truncate" key="pick">
                             <EditTagEntry
                                 onClick={() => setEditingTag(!editingTag)}
                                 label="选择标签"

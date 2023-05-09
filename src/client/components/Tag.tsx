@@ -18,8 +18,8 @@ export const Tag: FC<Props> = (props) => {
     return (
         <AntdTag
             color={color}
-            style={{ cursor: 'pointer', opacity: selected ? 1 : 0.5 }}
-            className={className}
+            style={{ opacity: selected ? 1 : 0.5 }}
+            className={'cursor-pointer max-w-full truncate ' + className}
             onClick={onClick}
         >{children}</AntdTag>
     )
@@ -59,7 +59,7 @@ export const AddTag: FC<AddTagProps> = (props) => {
     }
 
     return (
-        <AntdTag style={{ cursor: 'pointer' }}>
+        <AntdTag className="cursor-pointer truncate">
             {renderContent()}
         </AntdTag>
     )
@@ -73,7 +73,7 @@ interface EditTagEntryProps {
 export const EditTagEntry: FC<EditTagEntryProps> = (props) => {
     return (
         <AntdTag
-            style={{ cursor: 'pointer' }}
+            className="cursor-pointer truncate"
             onClick={props.onClick}
         >{props.label}</AntdTag>
     )
