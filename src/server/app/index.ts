@@ -6,6 +6,7 @@ import bodyParser from 'koa-body'
 import serve from 'koa-static'
 import { getStoragePath, setBaseStoragePath, setConfigPath } from '../lib/fileAccessor'
 import { ensureDir } from 'fs-extra'
+import { upgradeDatabase } from '../lib/databaseUpgrader'
 
 interface Props {
   servePort: number
@@ -18,7 +19,9 @@ export const runApp = async (props: Props) => {
     const { servePort } = props
     setConfigPath(props.configPath)
     setBaseStoragePath(props.storagePath)
+
     await ensureDir(getStoragePath())
+    await upgradeDatabase()
 
     const app = new Koa()
     const apiRouter = createApiRouter()
