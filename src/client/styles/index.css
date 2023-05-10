@@ -59,6 +59,7 @@ body {
 
 .ant-btn-primary:not(.keep-antd-style) {
     background: var(--cube-note-primary-button-color) !important;
+    border: none;
 }
 
 .ant-breadcrumb ol {

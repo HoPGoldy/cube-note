@@ -3,17 +3,16 @@ import React, { FC, useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useCreateAdmin } from '@/client/services/user'
 import { useAppDispatch, useAppSelector } from '@/client/store'
-import { initSuccess } from '@/client/store/global'
+import { getIsMobile, initSuccess } from '@/client/store/global'
 import { Button, Row, Col, Input, InputRef } from 'antd'
 import { messageError, messageSuccess } from '@/client/utils/message'
 import s from './styles.module.css'
-import { useIsMobile } from '@/client/layouts/Responsive'
 import { PageTitle } from '@/client/components/PageTitle'
 
 const getViewWidth = () => {
     // 获取浏览器宽度
     const width = window.innerWidth
-    const isMobile = useIsMobile()
+    const isMobile = getIsMobile()
 
     if (isMobile) {
         return width * 0.8 + 'px'
@@ -239,10 +238,9 @@ const Register: FC = () => {
                         </Row>
                     </div>
                     <div style={getViewStyle(3)}>
-                        <div className={s.subTitle}>
-                            告知
+                        <div>
                             <div className={s.description}>
-                                管理员账号可以邀请、管理、删除其他用户账号。
+                                管理员账号可以邀请、管理、封禁其他用户账号。
                                 <br />
                                 除此之外管理员和其他账号功能并无区别，推荐直接当作自己的常用账号使用。
                                 <br />

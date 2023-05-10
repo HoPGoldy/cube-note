@@ -1,6 +1,5 @@
 import React, { FC, PropsWithChildren } from 'react'
 import { Button, ButtonProps, Input } from 'antd'
-import { useAppSelector } from '../store'
 import { MobileArea } from './Responsive'
 import { SearchOutlined } from '@ant-design/icons'
 import { SearchProps } from 'antd/es/input'
@@ -47,20 +46,12 @@ export const ActionIcon: FC<ButtonProps> = (props) => {
  * 底部操作栏中的按钮
  */
 export const ActionButton: FC<ButtonProps> = (props) => {
-    const buttonColor = useAppSelector(s => s.global.appConfig?.buttonColor)
-    const styles: React.CSSProperties = {
-        background: props.color || buttonColor || 'f000',
-        border: 'none',
-    }
-
     return (
         <Button
             type="primary"
-            style={styles}
-            loading={props.loading}
-            onClick={props.onClick}
             block
             size="large"
+            {...props}
         >
             {props.children}
         </Button>

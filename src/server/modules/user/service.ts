@@ -109,7 +109,7 @@ export const createService = (props: Props) => {
         const [id] = await db.user().insert(initStorage)
 
         // 给这个用户创建一个根节点文章
-        const createResp = await addArticle('首页', '第一个笔记', id)
+        const createResp = await addArticle('首页', 'cube-note 可以使用 Markdown 来书写笔记，并且支持复制粘贴图片、附件。', id)
         if (!createResp.data) return createResp
 
         // 把根节点文章 id 存到用户表
