@@ -24,7 +24,7 @@ export const AppConfigProvider: FC<PropsWithChildren> = (props) => {
     return (
         <>{
             !appConfig 
-                ? <Loading tip={isError ? '加载失败，请刷新重试' : '正在加载应用配置...'} className="mt-24" />
+                ? <Loading tip={isError ? '加载失败，请刷新重试' : '正在加载应用配置...'} className="pt-24" />
                 : props.children
         }</>
     )

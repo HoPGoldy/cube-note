@@ -136,7 +136,7 @@ const Register: FC = () => {
                                     }}
                                 />
                             </Col>
-                            <Col span={7}>
+                            <Col span={7} xl={5} xxl={4}>
                                 <Button
                                     disabled={!username || isCreating}
                                     type='primary'
@@ -174,7 +174,7 @@ const Register: FC = () => {
                                     }}
                                 />
                             </Col>
-                            <Col span={7}>
+                            <Col span={7} xl={5} xxl={4}>
                                 <Button
                                     disabled={!password || isCreating}
                                     type='primary'
@@ -217,7 +217,7 @@ const Register: FC = () => {
                                     }}
                                 />
                             </Col>
-                            <Col span={7}>
+                            <Col span={7} xl={5} xxl={4}>
                                 <Button
                                     disabled={!repeatPassword || isCreating}
                                     type='primary'
@@ -238,11 +238,12 @@ const Register: FC = () => {
                         </Row>
                     </div>
                     <div style={getViewStyle(3)}>
-                        <div>
+                        <div className={s.subTitle}>
                             <div className={s.description}>
                                 管理员账号可以邀请、管理、封禁其他用户账号。
                                 <br />
-                                除此之外管理员和其他账号功能并无区别，推荐直接当作自己的常用账号使用。
+                                除此之外管理员和其他账号功能并无区别，可以当作自己的常用账号。
+                                <br />
                                 <br />
                                 该页面不会再次出现，请确保 <b>账号密码已可靠保存</b> 后点击下方按钮。
                             </div>

@@ -7,6 +7,7 @@ import { nanoid } from 'nanoid'
 import { ArticleService } from '../article/service'
 import { DatabaseAccessor } from '@/server/lib/sqlite'
 import { UserInviteService } from '../userManage/service'
+import { FIRST_NOTE_CONTENT, FIRST_NOTE_TITLE } from './firstNote'
 
 interface Props {
     loginLocker: LoginLocker
@@ -109,7 +110,7 @@ export const createService = (props: Props) => {
         const [id] = await db.user().insert(initStorage)
 
         // 给这个用户创建一个根节点文章
-        const createResp = await addArticle('首页', 'cube-note 可以使用 Markdown 来书写笔记，并且支持复制粘贴图片、附件。', id)
+        const createResp = await addArticle(FIRST_NOTE_TITLE, FIRST_NOTE_CONTENT, id)
         if (!createResp.data) return createResp
 
         // 把根节点文章 id 存到用户表
