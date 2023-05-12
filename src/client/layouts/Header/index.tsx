@@ -30,11 +30,11 @@ const Header: FC<Props> = (props) => {
 
     return (
         <header className={s.headerBox}>
-            <div className='flex flex-nowrap flex-grow basis-0 overflow-hidden'>
+            <div className='flex flex-nowrap flex-grow overflow-hidden'>
                 <CollasedIcon onClick={onClickCollasedIcon} className="text-xl mr-4" />
                 {renderBreadcrumb()}
             </div>
-            <div className='flex flex-nowrap flex-shrink-0 basis-1 ml-2'>
+            <div className='flex flex-nowrap flex-shrink-0 ml-2'>
                 <Link to="/search">
                     <Button icon={<SearchOutlined />} className="w-60">
                         搜索
@@ -48,9 +48,9 @@ const Header: FC<Props> = (props) => {
                     onOpenChange={setUserMenuVisible}
                     arrow
                 >
-                    <div className="flex flex-nowrap justify-center items-center ml-2">
+                    <div className="flex flex-nowrap justify-center items-center ml-2 flex-shrink-0">
                         <UserOutlined className="cursor-pointer text-xl mr-2" />
-                        <span className="cursor-pointer">{username}</span>
+                        <span className="cursor-pointer flex-shrink-0 max-w-[300px] truncate">{username}</span>
                     </div>
                 </Popover>
             </div>

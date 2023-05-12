@@ -61,7 +61,7 @@ export const useBreadcrumb = () => {
         return (
             <Breadcrumb
                 items={breadcrumbConfig}
-                className="w-full overflow-y-hidden overflow-x-auto noscrollbar"
+                className="overflow-y-hidden overflow-x-auto noscrollbar"
                 separator=">"
             />
         )
