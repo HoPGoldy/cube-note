@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import viteCompression from 'vite-plugin-compression'
 import { resolve } from 'path'
 
 // https://vitejs.dev/config/
@@ -22,9 +23,10 @@ export default defineConfig({
             '@': resolve(__dirname, 'src')
         },
     },
-    plugins: [react()],
+    plugins: [react(), viteCompression()],
     build: {
         outDir: 'dist/client',
+        reportCompressedSize: false,
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'index.html')

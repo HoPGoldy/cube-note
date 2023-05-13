@@ -1,6 +1,6 @@
 {
   "name": "cube-note",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "index.js",
   "repository": "git@github.com:HoPGoldy/cube-note.git",
   "author": "HoPGoldy <hpgless@outlook.com>",
@@ -96,7 +96,8 @@
     "tsc-alias": "^1.7.0",
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.5.2",
-    "vite": "^2.8.0"
+    "vite": "^2.8.0",
+    "vite-plugin-compression": "^0.5.1"
   },
   "postcss": {
     "plugins": {
@@ -105,6 +106,14 @@
       "postcss-import": {}
     }
   },
-  "keywords": ["cube-note", "note", "markdown", "webapp", "react", "koa", "typescript"],
+  "keywords": [
+    "cube-note",
+    "note",
+    "markdown",
+    "webapp",
+    "react",
+    "koa",
+    "typescript"
+  ],
   "license": "MIT"
 }
