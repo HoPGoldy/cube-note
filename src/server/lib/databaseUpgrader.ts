@@ -64,7 +64,8 @@ export const upgradeDatabase = async (dbFilePath: string) => {
     const currentVersion = await dbVersionFile.read()
 
     if (currentVersion === packageVersion) return
-    console.log('版本更新，正在升级数据库...')
+    let hasUpdate = false
+    console.log('版本更新，正在检查数据库版本...')
 
     const sqliteDb = knex({
         client: 'sqlite3',
@@ -83,6 +84,7 @@ export const upgradeDatabase = async (dbFilePath: string) => {
         try {
             await patch.patcher(sqliteDb)
             await dbVersionFile.write(patch.version)
+            hasUpdate = true
         }
         catch (err) {
             console.error('数据库升级失败！', err)
@@ -91,5 +93,5 @@ export const upgradeDatabase = async (dbFilePath: string) => {
         }
     }
 
-    console.log('数据库升级成功！')
+    console.log(hasUpdate ? '数据库升级成功！' : '数据库无需升级！')
 }

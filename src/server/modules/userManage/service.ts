@@ -9,7 +9,7 @@ interface Props {
     onUserBanned?: (data: BanUserReqData) => void
 }
 
-export const createService = (props: Props) => {
+export const createUserManageService = (props: Props) => {
     const {
         db,
     } = props
@@ -79,4 +79,4 @@ export const createService = (props: Props) => {
     return { addInvite, deleteInvite, getInviteList, userRegister, banUser }
 }
 
-export type UserInviteService = ReturnType<typeof createService>
+export type UserInviteService = ReturnType<typeof createUserManageService>

@@ -5,7 +5,7 @@ interface Props {
     db: DatabaseAccessor
 }
 
-export const createService = (props: Props) => {
+export const createTagService = (props: Props) => {
     const { db } = props
 
     const addTag = async (newTag: Omit<TagStorage, 'id'>) => {
@@ -120,4 +120,4 @@ export const createService = (props: Props) => {
     }
 }
 
-export type TagService = ReturnType<typeof createService>
+export type TagService = ReturnType<typeof createTagService>

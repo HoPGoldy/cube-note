@@ -7,13 +7,13 @@ import { FileStorage } from '@/types/file'
 import { UserInviteStorage } from '@/types/userInvite'
 
 interface Props {
-    getDbPath: () => string
+    dbPath: string
 }
 
 export const createDb = (props: Props) => {
     const sqliteDb = knex({
         client: 'sqlite3',
-        connection: { filename: props.getDbPath() },
+        connection: { filename: props.dbPath },
         useNullAsDefault: true
     })
 

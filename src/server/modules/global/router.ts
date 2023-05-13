@@ -8,7 +8,7 @@ interface Props {
     service: GlobalService
 }
 
-export const createRouter = (props: Props) => {
+export const createGlobalRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>()
 

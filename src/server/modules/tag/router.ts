@@ -11,7 +11,7 @@ interface Props {
     service: TagService
 }
 
-export const createRouter = (props: Props) => {
+export const createTagRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/tag' })
 

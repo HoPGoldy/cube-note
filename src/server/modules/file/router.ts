@@ -11,7 +11,7 @@ interface Props {
     service: FileService
 }
 
-export const createRouter = (props: Props) => {
+export const createFileRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/file' })
 

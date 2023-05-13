@@ -11,7 +11,7 @@ interface Props {
     service: ArticleService
 }
 
-export const createRouter = (props: Props) => {
+export const createArticleRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/article' })
 

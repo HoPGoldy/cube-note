@@ -18,7 +18,7 @@ interface Props {
     finishUserInvite: UserInviteService['userRegister']
 }
 
-export const createService = (props: Props) => {
+export const createUserService = (props: Props) => {
     const {
         loginLocker, createToken,
         finishUserInvite,
@@ -193,4 +193,4 @@ export const createService = (props: Props) => {
     return { getUserInfo, login, register, createAdmin, changePassword, setTheme, getArticleCount }
 }
 
-export type UserService = ReturnType<typeof createService>
+export type UserService = ReturnType<typeof createUserService>

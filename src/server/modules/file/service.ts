@@ -22,7 +22,7 @@ const getFileMd5 = async (filePath: string, fileName: string) => {
     })
 }
 
-export const createService = (props: Props) => {
+export const createFileService = (props: Props) => {
     const { getSaveDir, db } = props
     const saveDir = getSaveDir()
 
@@ -89,4 +89,4 @@ export const createService = (props: Props) => {
     return { readFile, uploadFile }
 }
 
-export type FileService = ReturnType<typeof createService>
+export type FileService = ReturnType<typeof createFileService>

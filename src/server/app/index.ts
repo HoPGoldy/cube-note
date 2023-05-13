@@ -1,5 +1,5 @@
 import Koa from 'koa'
-import { createApiRouter } from './apiRouter'
+import { buildRouter } from './buildRouter'
 import historyApiFallback from 'koa2-connect-history-api-fallback'
 import logger from 'koa-logger'
 import bodyParser from 'koa-body'
@@ -24,7 +24,7 @@ export const runApp = async (props: Props) => {
     await upgradeDatabase(getStoragePath('cube-note.db'))
 
     const app = new Koa()
-    const apiRouter = createApiRouter()
+    const apiRouter = await buildRouter()
 
     app.use(logger())
         .use(bodyParser({ multipart: true }))

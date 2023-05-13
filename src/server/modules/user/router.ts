@@ -11,7 +11,7 @@ interface Props {
     service: UserService
 }
 
-export const createRouter = (props: Props) => {
+export const createUserRouter = (props: Props) => {
     const { service } = props
     const router = new Router<any, AppKoaContext>({ prefix: '/user' })
 

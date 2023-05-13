@@ -11,7 +11,7 @@ const getColors = (color: string | ColorConfig): ColorConfig => {
     return color
 }
 
-export const createService = (props: Props) => {
+export const createGlobalService = (props: Props) => {
     const { getConfig, db } = props
 
     /**
@@ -43,4 +43,4 @@ export const createService = (props: Props) => {
     return { getAppConfig, getUserDataInfo }
 }
 
-export type GlobalService = ReturnType<typeof createService>
+export type GlobalService = ReturnType<typeof createGlobalService>

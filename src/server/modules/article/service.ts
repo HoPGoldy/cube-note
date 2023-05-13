@@ -10,7 +10,7 @@ interface Props {
     db: DatabaseAccessor
 }
 
-export const createService = (props: Props) => {
+export const createArticleService = (props: Props) => {
     const { db } = props
 
     /**
@@ -334,4 +334,4 @@ export const createService = (props: Props) => {
     }
 }
 
-export type ArticleService = ReturnType<typeof createService>
+export type ArticleService = ReturnType<typeof createArticleService>
