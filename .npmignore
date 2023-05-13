@@ -8,4 +8,4 @@ vite.config.ts
 .vscode
 .eslintrc.js
 iconfont.js
-index.html
+/index.html

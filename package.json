@@ -1,6 +1,6 @@
 {
   "name": "cube-note",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "index.js",
   "repository": "git@github.com:HoPGoldy/cube-note.git",
   "author": "HoPGoldy <hpgless@outlook.com>",
@@ -105,5 +105,6 @@
       "postcss-import": {}
     }
   },
+  "keywords": ["cube-note", "note", "markdown", "webapp", "react", "koa", "typescript"],
   "license": "MIT"
 }
