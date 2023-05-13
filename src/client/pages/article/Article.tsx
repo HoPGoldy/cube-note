@@ -23,7 +23,7 @@ import { PageTitle } from '@/client/components/PageTitle'
 const About: FC = () => {
     const params = useParams()
     const dispatch = useAppDispatch()
-    const [searchParams] = useSearchParams()
+    const [searchParams, setSearchParams] = useSearchParams()
     /** 页面是否在编辑中 */
     const isEdit = (searchParams.get('mode') === 'edit')
     /** 当前文章 id */
@@ -83,6 +83,16 @@ const About: FC = () => {
         dispatch(setCurrentArticle(currentArticleId))
     }, [currentArticleId])
 
+    // 新增笔记时，自动聚焦标题输入框
+    useEffect(() => {
+        if (searchParams.get('focus') !== 'title') return
+        setTimeout(() => {
+            titleInputRef.current?.select()
+            searchParams.delete('focus')
+            setSearchParams(searchParams, { replace: true })
+        }, 100)
+    }, [searchParams.get('focus')])
+
     useEffect(() => {
         if (!articleResp?.data) return
 
@@ -111,7 +121,7 @@ const About: FC = () => {
         if (!articleLink?.data?.length) return null
 
         return (
-            <div className="w-full xl:w-[60%] m-auto">
+            <div className="w-full xl:w-[60%] mx-auto">
                 <List
                     grid={{
                         gutter: 16,

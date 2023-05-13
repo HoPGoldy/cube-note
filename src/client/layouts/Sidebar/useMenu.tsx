@@ -59,7 +59,7 @@ export const useMenu = () => {
         })
         if (!resp.data) return
 
-        navigate(`/article/${resp.data}?mode=edit`)
+        navigate(`/article/${resp.data}?mode=edit&focus=title`)
     }
 
     // 选择了新的文章，把该文章的父级信息更新到 store

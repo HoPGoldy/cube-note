@@ -49,7 +49,9 @@ export const Sidebar: FC = () => {
                         className={`${s.toolBtn} keep-antd-style`}
                         icon={<RollbackOutlined />}
                         block
-                    >返回{menu.parentArticleTitle}</Button>
+                    >
+                        返回{menu.parentArticleTitle}
+                    </Button>
                 </Link>
             )}
             {currentMenu.length === 0
@@ -74,9 +76,7 @@ export const Sidebar: FC = () => {
         const currentMenu = menu.articleRelatedLink?.data?.relatedArticles || []
         // console.log('🚀 ~ 相关文章列表', currentMenu)
 
-        if (currentMenu.length === 0) return <div className={EMPTY_CLASSNAME}>暂无相关笔记</div>
-        return (<>
-            {currentMenu.map(renderMenuItem)}
+        const addRelateBtn = (
             <TreeMenu
                 key="related-tree"
                 value={menu.selectedRelatedArticleIds}
@@ -90,6 +90,18 @@ export const Sidebar: FC = () => {
                     block
                 >关联其他笔记</Button>
             </TreeMenu>
+        )
+
+        if (currentMenu.length === 0) {
+            return (<>
+                {<div className={EMPTY_CLASSNAME}>暂无相关笔记</div>}
+                {addRelateBtn}
+            </>)
+        }
+
+        return (<>
+            {currentMenu.map(renderMenuItem)}
+            {addRelateBtn}
         </>)
     }
 

@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce'
 import { RightOutlined } from '@ant-design/icons'
 import { nanoid } from 'nanoid'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
+import s from './styles.module.css'
 
 interface Props {
     treeData: ArticleTreeNode[]
@@ -152,8 +153,8 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
                     /** 展开和收起菜单时会靠这个 id 查找对应的 div */
                     id={item.value.toString()}
                     className={
-                        'h-full text-sm box-border py-1 px-2 text-black cursor-pointer flex items-center justify-between transition-all ' +
-                        (props.value?.includes(item.value) ? 'bg-green-500 hover:bg-green-400 text-white' : 'hover:bg-gray-300 ')
+                        s.menuItem + ' ' +
+                        (props.value?.includes(item.value) ? s.itemSelected : s.itemUnselected)
                     }
                     onClick={() => onClickNode(item)}
                     onMouseEnter={() => onOpenInnerMenu(item.value.toString(), level, item.children)}
@@ -186,7 +187,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
                 nodeRef={item.nodeRef}
             >
                 <div
-                    className='bg-gray-200 absolute z-10 max-h-screen overflow-y-auto rounded'
+                    className='bg-gray-200 dark:bg-neutral-800 absolute z-10 max-h-screen overflow-y-auto rounded'
                     style={item.styles}
                     onMouseLeave={mouseLeave}
                     ref={item.nodeRef}
