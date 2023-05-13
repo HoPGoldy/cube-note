@@ -3,10 +3,10 @@ import { createApiRouter } from './apiRouter'
 import historyApiFallback from 'koa2-connect-history-api-fallback'
 import logger from 'koa-logger'
 import bodyParser from 'koa-body'
-import serve from 'koa-static'
 import { getStoragePath, setBaseStoragePath, setConfigPath } from '../lib/fileAccessor'
 import { ensureDir } from 'fs-extra'
 import { upgradeDatabase } from '../lib/databaseUpgrader'
+import { fontentServe } from '../lib/fontentServe'
 
 interface Props {
   servePort: number
@@ -29,7 +29,7 @@ export const runApp = async (props: Props) => {
     app.use(logger())
         .use(bodyParser({ multipart: true }))
         .use(historyApiFallback({ whiteList: ['/api'] }))
-        .use(serve(props.fontentPath))
+        .use(fontentServe(props.fontentPath))
         .use(apiRouter.routes())
         .use(apiRouter.allowedMethods())
         .listen(servePort, () => {
