@@ -58,7 +58,7 @@ const compareVersion = (v1: string, v2: string) => {
     }
 }
 
-export const upgradeDatabase = async () => {
+export const upgradeDatabase = async (dbFilePath: string) => {
     const packageVersion = getPackageVersion()
     const dbVersionFile = createAccessor({ fileName: 'dbVersion', getInitData: async () => packageVersion })
     const currentVersion = await dbVersionFile.read()
@@ -68,7 +68,7 @@ export const upgradeDatabase = async () => {
 
     const sqliteDb = knex({
         client: 'sqlite3',
-        connection: { filename: './.storage/cube-note.db' },
+        connection: { filename: dbFilePath },
         useNullAsDefault: true
     })
 

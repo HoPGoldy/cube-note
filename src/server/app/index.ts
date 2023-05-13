@@ -21,7 +21,7 @@ export const runApp = async (props: Props) => {
     setBaseStoragePath(props.storagePath)
 
     await ensureDir(getStoragePath())
-    await upgradeDatabase()
+    await upgradeDatabase(getStoragePath('cube-note.db'))
 
     const app = new Koa()
     const apiRouter = createApiRouter()
