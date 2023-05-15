@@ -6,7 +6,6 @@ import { UploadedFile } from '@/types/file'
 import gfm from '@bytemd/plugin-gfm'
 // import mediumZoom from '@bytemd/plugin-medium-zoom'
 import highlight from '@bytemd/plugin-highlight'
-import 'highlight.js/styles/foundation.css'
 
 export const getFileUrl = (file: UploadedFile) => {
     // 后缀名
@@ -102,7 +101,7 @@ export const fileUploader = (): BytemdPlugin => {
             links.forEach(link => {
                 const parent = link.parentElement
                 // 单独一行的链接才渲染
-                if (parent?.childNodes.length !== 1) return
+                if (parent?.childNodes.length !== 1 || parent?.tagName === 'LI') return
                 defaultRenderLink(link)
             })
         }

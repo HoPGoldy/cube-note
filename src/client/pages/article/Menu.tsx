@@ -46,7 +46,7 @@ export const useBreadcrumb = () => {
         const config: BreadcrumbItemType[] = pathNodes.map(i => ({
             title: (
                 <Link to={`/article/${i.value}`}>
-                    <div className="truncate w-fit max-w-[8rem]">
+                    <div className="truncate w-fit max-w-[8rem]" title={i.title}>
                         {i.title}
                     </div>
                 </Link>
@@ -100,10 +100,10 @@ export const useMobileMenu = (props: Props) => {
         setTreeMenuPath(menu.parentArticleIds || [])
     }
 
-    const onBackHomePage = () => {
-        navigate(`/article/${menu.currentRootArticleId}`)
-        setIsMenuDrawerOpen(false)
-    }
+    // const onBackHomePage = () => {
+    //     navigate(`/article/${menu.currentRootArticleId}`)
+    //     setIsMenuDrawerOpen(false)
+    // }
 
     /** 渲染下属文章列表 */
     const renderSubMenu = () => {
@@ -224,13 +224,13 @@ export const useMobileMenu = (props: Props) => {
                 onClose={onCloseDrawer}
                 footer={(
                     <Row gutter={8}>
-                        <Col flex="0">
+                        {/* <Col flex="0">
                             <Button
                                 size="large"
                                 icon={<HomeOutlined />}
                                 onClick={onBackHomePage}
                             />
-                        </Col>
+                        </Col> */}
                         <Col flex="1">
                             <Button
                                 block

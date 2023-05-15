@@ -85,23 +85,12 @@ export const useOperation = (props: Props) => {
                 open={isOperationDrawerOpen}
                 onClose={() => setIsOperationDrawerOpen(false)}
                 footer={(
-                    <Row gutter={8}>
-                        <Col flex="0">
-                            <Button
-                                size="large"
-                                icon={<DownOutlined />}
-                                onClick={() => setIsOperationDrawerOpen(false)}
-                            />
-                        </Col>
-                        <Col flex="1">
-                            <Button
-                                block
-                                size="large"
-                                type="primary"
-                                onClick={createChildArticle}
-                            >创建子笔记</Button>
-                        </Col>
-                    </Row>
+                    <Button
+                        block
+                        size="large"
+                        type="primary"
+                        onClick={createChildArticle}
+                    >创建子笔记</Button>
                 )}
             >
                 <div className="flex flex-nowrap flex-col h-full">

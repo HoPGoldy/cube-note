@@ -9,7 +9,7 @@ import { useEditor } from './Editor'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { setCurrentArticle } from '@/client/store/menu'
-import { UpdateArticleReqData } from '@/types/article'
+import { ArticleSubLinkDetail, UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
 import dayjs from 'dayjs'
@@ -114,6 +114,33 @@ const About: FC = () => {
         operation.setSaveBtnText('')
     }
 
+    /** 渲染底部的子笔记项目 */
+    const renderSubArticleItem = (item: ArticleSubLinkDetail) => {
+        return (
+            <List.Item>
+                <Link to={`/article/${item.id}`}>
+                    <Card
+                        size="small"
+                        title={<span className="font-black">{item.title}</span>}
+                        className="hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer"
+                        extra={
+                            item.color && (
+                                <div
+                                    className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded"
+                                    style={{ backgroundColor: item.color }}
+                                />
+                            )
+                        }
+                    >
+                        <div className='overflow-hidden truncate'>
+                            {item.content ? item.content + '...' : <span className="text-gray-500 dark:text-neutral-400">暂无内容</span>}
+                        </div>
+                    </Card>
+                </Link>
+            </List.Item>
+        )
+    }
+
     /** 渲染底部的子笔记列表 */
     const renderSubArticleList = () => {
         if (!articleResp?.data?.listSubarticle || isEdit) return null
@@ -133,29 +160,7 @@ const About: FC = () => {
                         xxl: 2,
                     }}
                     dataSource={articleLink?.data || []}
-                    renderItem={(item) => (
-                        <List.Item>
-                            <Link to={`/article/${item.id}`}>
-                                <Card
-                                    size="small"
-                                    title={item.title}
-                                    className="hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer"
-                                    extra={
-                                        item.color && (
-                                            <div
-                                                className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded"
-                                                style={{ backgroundColor: item.color }}
-                                            />
-                                        )
-                                    }
-                                >
-                                    <div className='overflow-hidden truncate'>
-                                        {item.content}...
-                                    </div>
-                                </Card>
-                            </Link>
-                        </List.Item>
-                    )}
+                    renderItem={renderSubArticleItem}
                 />
             </div>
         )
