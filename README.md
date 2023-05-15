@@ -1,6 +1,24 @@
 ## cube-note
 
+![](https://img.shields.io/npm/v/cube-note)
+
 一个简单扁平的桌面 / 移动端记事本。基于 react / koa2 / sqlite / typescript / antd。
+
+<details>
+    <summary style="cursor:pointer">查看桌面端截图</summary>
+    <a href="https://imgse.com/i/p9gfefJ"><img src="https://s1.ax1x.com/2023/05/15/p9gfefJ.png" alt="p9gfefJ.png"></a>
+    <a href="https://imgse.com/i/p9gfTNF"><img src="https://s1.ax1x.com/2023/05/15/p9gfTNF.png" alt="p9gfTNF.png"></a>
+    <a href="https://imgse.com/i/p9gfoAU"><img src="https://s1.ax1x.com/2023/05/15/p9gfoAU.png" alt="p9gfoAU.png"></a>
+</details>
+
+<details>
+    <summary style="cursor:pointer">查看移动端截图</summary>
+    <div style="display: flex; align-items: center;">
+        <a href="https://imgse.com/i/p9ghgUO"><img src="https://s1.ax1x.com/2023/05/15/p9ghgUO.png" alt="p9ghgUO.png"></a>
+        <a href="https://imgse.com/i/p9ghcVK"><img src="https://s1.ax1x.com/2023/05/15/p9ghcVK.png" alt="p9ghcVK.png"></a>
+        <a href="https://imgse.com/i/p9ghyb6"><img src="https://s1.ax1x.com/2023/05/15/p9ghyb6.png" alt="p9ghyb6.png"></a>
+    </div>
+</details>
 
 ## 特性
 
