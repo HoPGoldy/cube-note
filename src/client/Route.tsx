@@ -4,7 +4,6 @@ import Loading from './layouts/Loading'
 import { LoginAuth } from './layouts/LoginAuth'
 import { AppContainer } from './layouts/AppContainer'
 import Search from './pages/search/Search'
-import { MobileSetting } from './pages/userSetting'
 import Article from './pages/article/Article'
 import Entry from './pages/JumpToDefaultDataEntry'
 import { AppConfigProvider } from './layouts/AppConfigProvider'
@@ -30,8 +29,6 @@ export const routes = createHashRouter([
                     { path: '/article/:articleId', element: <Article /> },
                     // 笔记搜索
                     { path: '/search', element: <Search /> },
-                    // 设置页面，只在移动端使用
-                    { path: '/setting', element: <MobileSetting /> },
                     // 笔记管理
                     { path: '/articleManage', element: lazyLoad(() => import('./pages/articleManager')) },
                     // 标签管理

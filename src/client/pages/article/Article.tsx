@@ -17,8 +17,9 @@ import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined } from 
 import s from './styles.module.css'
 import { useOperation } from './Operation'
 import { useMobileMenu } from './Menu'
-import { Card, List } from 'antd'
+import { Card, Drawer, List } from 'antd'
 import { PageTitle } from '@/client/components/PageTitle'
+import { MobileSetting } from '../userSetting'
 
 const About: FC = () => {
     const params = useParams()
@@ -26,6 +27,8 @@ const About: FC = () => {
     const [searchParams, setSearchParams] = useSearchParams()
     /** 页面是否在编辑中 */
     const isEdit = (searchParams.get('mode') === 'edit')
+    /** 是否展示设置 */
+    const [showSetting, setShowSetting] = useState(false)
     /** 当前文章 id */
     const currentArticleId = +(params.articleId as string)
     /** 获取详情 */
@@ -218,9 +221,19 @@ const About: FC = () => {
             {menu.renderMenuDrawer()}
             {operation.renderOperationDrawer()}
 
-            <Link to="/setting">
-                <ActionIcon icon={<SettingOutlined />} />
-            </Link>
+            <ActionIcon icon={<SettingOutlined />} onClick={() => setShowSetting(true)} />
+            <Drawer
+                open={showSetting}
+                onClose={() => setShowSetting(false)}
+                closable={false}
+                placement="left"
+                className={s.settingDrawer}
+                width="100%"
+            >
+                <MobileSetting
+                    onBack={() => setShowSetting(false)}
+                />
+            </Drawer>
             <Link to="/search">
                 <ActionIcon icon={<SearchOutlined />} />
             </Link>

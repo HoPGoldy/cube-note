@@ -94,4 +94,5 @@ export const upgradeDatabase = async (dbFilePath: string) => {
     }
 
     console.log(hasUpdate ? '数据库升级成功！' : '数据库无需升级！')
+    await dbVersionFile.write(packageVersion)
 }
