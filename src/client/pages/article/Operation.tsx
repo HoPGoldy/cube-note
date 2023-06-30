@@ -1,6 +1,6 @@
 import { MobileDrawer } from '@/client/components/MobileDrawer'
 import { DesktopArea } from '@/client/layouts/Responsive'
-import { Button, Col, Popover, Row, Space, Switch, Tooltip } from 'antd'
+import { Button, Col, Popover, Row, Select, Space, Switch, Tooltip } from 'antd'
 import React, { ChangeEventHandler, useRef, useState } from 'react'
 import {
     HeartFilled, FormOutlined, SaveOutlined, StarFilled, RollbackOutlined, LoadingOutlined,
@@ -308,6 +308,8 @@ export const useOperation = (props: Props) => {
         if (!files) return
 
         const resp = await uploadFiles(files)
+        // 解决同一个文件不能重复上传的问题
+        event.target.value = ''
         if (resp.code !== STATUS_CODE.SUCCESS || !resp.data) {
             messageError(resp.msg || '上传失败')
             return
