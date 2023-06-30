@@ -1,11 +1,10 @@
 import { MobileDrawer } from '@/client/components/MobileDrawer'
 import { DesktopArea } from '@/client/layouts/Responsive'
-import { Button, Col, Popover, Row, Select, Space, Switch, Tooltip } from 'antd'
+import { Button, Col, Popover, Row, Space, Switch, Tooltip } from 'antd'
 import React, { ChangeEventHandler, useRef, useState } from 'react'
 import {
-    HeartFilled, FormOutlined, SaveOutlined, StarFilled, RollbackOutlined, LoadingOutlined,
+    HeartFilled, FormOutlined, SaveOutlined, StarFilled, LoadingOutlined,
     DeleteOutlined, LeftOutlined, CloudUploadOutlined, UnorderedListOutlined, QuestionCircleFilled,
-    DownOutlined
 } from '@ant-design/icons'
 import { useAppSelector } from '@/client/store'
 import { useFavoriteArticle } from '@/client/services/article'
@@ -224,39 +223,35 @@ export const useOperation = (props: Props) => {
             <DesktopArea>
                 <Space className='text-xl text-gray-500 flex-shrink-0 ml-4'>
                     {isEdit && (
-                        <div className="text-base">{saveBtnText}</div>
+                        <div className="text-base cursor-default">{saveBtnText}</div>
                     )}
 
-                    <Tooltip title='设置颜色' placement="bottom" key="color">
-                        {/* <div
-                            className="hover:scale-125 cursor-pointer rounded-full transition-all w-4 h-4 bg-gray-300"
-                            style={{ backgroundColor: color }}
-                            onClick={() => setIsColorPickerOpen(true)}
-                        /> */}
-                        <StarFilled
-                            className="hover:scale-125 transition-all"
-                            style={{ color: articleDetail?.color }}
-                            onClick={() => setIsColorPickerOpen(true)}
-                        />
-                    </Tooltip>
+                    <Button
+                        icon={
+                            <StarFilled
+                                style={{ color: articleDetail?.color }}
+                            />
+                        }
+                        onClick={() => setIsColorPickerOpen(true)}
+                    >颜色</Button>
 
-                    <Tooltip title={isFavorite ? '取消收藏' : '收藏'} placement="bottom" key="favorite">
-                        <HeartFilled
-                            className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
-                            onClick={() => {
-                                updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
-                                setIsFavorite(!isFavorite)
-                            }}
-                        />
-                    </Tooltip>
+                    <Button
+                        icon={
+                            <HeartFilled
+                                className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
+                            />
+                        }
+                        onClick={() => {
+                            updateFavoriteState({ id: currentArticleId, favorite: !isFavorite })
+                            setIsFavorite(!isFavorite)
+                        }}
+                    >{isFavorite ? '取消收藏' : '收藏'}</Button>
 
                     {!isRootArticle && (
-                        <Tooltip title='删除' placement="bottom" key="delete">
-                            <DeleteOutlined
-                                className="text-xl hover:scale-125 hover:text-red-500 transition-all"
-                                onClick={() => deleteArticle.showDeleteDialog({ title, id: currentArticleId })}
-                            />
-                        </Tooltip>
+                        <Button
+                            icon={<DeleteOutlined />}
+                            onClick={() => deleteArticle.showDeleteDialog({ title, id: currentArticleId })}
+                        >删除</Button>
                     )}
 
                     <Popover
@@ -267,31 +262,23 @@ export const useOperation = (props: Props) => {
                         overlayClassName="w-80"
                         key="setting"
                     >
-                        <UnorderedListOutlined
-                            className="hover:scale-125 transition-all cursor-pointer"
-                        />
+                        <Button
+                            icon={<UnorderedListOutlined />}
+                        >设置</Button>
                     </Popover>
 
-                    {isEdit ? (<>
-                        <Tooltip title="保存" placement="bottom" key="save">
-                            <SaveIcon
-                                className={updatingArticle ? 'cursor-default' : 'hover:scale-125 transition-all'}
-                                onClick={props.onClickSaveBtn}
-                            />
-                        </Tooltip>
-                        <Tooltip title="保存并退出" placement="bottomLeft" key="exit">
-                            <RollbackOutlined
-                                className="hover:scale-125 transition-all"
-                                onClick={endEdit}
-                            />
-                        </Tooltip>
-                    </>) : (
-                        <Tooltip title="编辑" placement="bottomLeft" key="edit">
-                            <FormOutlined
-                                className="hover:scale-125 transition-all"
-                                onClick={startEdit}
-                            />
-                        </Tooltip>
+                    {isEdit ? (
+                        <Button
+                            type="primary"
+                            onClick={endEdit}
+                            icon={<SaveIcon />}
+                        >保存</Button>
+                    ) : (
+                        <Button
+                            type="primary"
+                            onClick={startEdit}
+                            icon={<FormOutlined />}
+                        >编辑</Button>
                     )}
                 </Space>
                 {deleteArticle.renderDeleteModal()}
