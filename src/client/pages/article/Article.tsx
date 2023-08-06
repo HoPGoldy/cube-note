@@ -2,13 +2,12 @@ import React, { FC, useState, useEffect, useRef } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ActionButton, PageContent, PageAction, ActionIcon } from '../../layouts/PageWithAction'
 import { useQueryArticleContent, useQueryArticleSublink, useUpdateArticle } from '../../services/article'
-import { useAppDispatch } from '../../store'
 import Loading from '../../layouts/Loading'
 import Preview from './Preview'
 import { useEditor } from './Editor'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
-import { setCurrentArticle } from '@/client/store/menu'
+import { stateCurrentArticleId } from '@/client/store/menu'
 import { ArticleSubLinkDetail, UpdateArticleReqData } from '@/types/article'
 import TagArea from './TagArea'
 import { blurOnEnter } from '@/client/utils/input'
@@ -20,10 +19,11 @@ import { useMobileMenu } from './Menu'
 import { Card, Drawer, List } from 'antd'
 import { PageTitle } from '@/client/components/PageTitle'
 import { MobileSetting } from '../userSetting'
+import { useSetAtom } from 'jotai'
 
 const About: FC = () => {
     const params = useParams()
-    const dispatch = useAppDispatch()
+    const setCurrentArticleId = useSetAtom(stateCurrentArticleId)
     const [searchParams, setSearchParams] = useSearchParams()
     /** 页面是否在编辑中 */
     const isEdit = (searchParams.get('mode') === 'edit')
@@ -83,7 +83,7 @@ const About: FC = () => {
     })
 
     useEffect(() => {
-        dispatch(setCurrentArticle(currentArticleId))
+        setCurrentArticleId(currentArticleId)
     }, [currentArticleId])
 
     // 新增笔记时，自动聚焦标题输入框

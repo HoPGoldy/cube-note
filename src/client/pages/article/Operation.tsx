@@ -6,7 +6,6 @@ import {
     HeartFilled, FormOutlined, SaveOutlined, StarFilled, LoadingOutlined,
     DeleteOutlined, LeftOutlined, CloudUploadOutlined, UnorderedListOutlined, QuestionCircleFilled,
 } from '@ant-design/icons'
-import { useAppSelector } from '@/client/store'
 import { useFavoriteArticle } from '@/client/services/article'
 import { useSearchParams } from 'react-router-dom'
 import { useDelete } from './Delete'
@@ -19,6 +18,8 @@ import { ColorPicker } from '@/client/components/ColorPicker'
 import { ArticleContent } from '@/types/article'
 import Loading from '@/client/layouts/Loading'
 import dayjs from 'dayjs'
+import { useAtomValue } from 'jotai'
+import { stateUser } from '@/client/store/user'
 
 interface Props {
     currentArticleId: number
@@ -39,7 +40,7 @@ export const useOperation = (props: Props) => {
     /** 切换收藏状态 */
     const { mutateAsync: updateFavoriteState } = useFavoriteArticle()
     /** 根节点文章 */
-    const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
+    const rootArticleId = useAtomValue(stateUser)?.rootArticleId
     /** 是否展开文章操作 */
     const [isOperationDrawerOpen, setIsOperationDrawerOpen] = useState(false)
     /** 是否收藏 */

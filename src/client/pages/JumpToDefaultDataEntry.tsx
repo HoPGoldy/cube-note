@@ -1,9 +1,10 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { useAppSelector } from '../store'
+import { useAtomValue } from 'jotai'
+import { stateUser } from '../store/user'
 
 const JumpToDefaultDataEntry = () => {
-    const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
+    const rootArticleId = useAtomValue(stateUser)?.rootArticleId
 
     return (
         <Navigate to={`/article/${rootArticleId}`} replace />

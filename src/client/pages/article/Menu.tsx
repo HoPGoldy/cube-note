@@ -1,16 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../store'
 import { Breadcrumb, Button, Col, Row } from 'antd'
-import { HomeOutlined, LinkOutlined } from '@ant-design/icons'
+import { LinkOutlined } from '@ant-design/icons'
 import { MobileDrawer } from '@/client/components/MobileDrawer'
 import { TreeMenu } from '@/client/components/TreeMenu/mobile'
 import { EMPTY_CLASSNAME, tabOptions, useMenu } from '@/client/layouts/Sidebar/useMenu'
 import { ArticleMenuItem, ArticleTreeNode, TabTypes } from '@/types/article'
-import { setCurrentMenu } from '@/client/store/menu'
+import { stateCurrentArticleId, stateCurrentTab, stateParentArticleIds } from '@/client/store/menu'
 import { SplitLine } from '@/client/components/Cell'
 import { useQueryArticleTree } from '@/client/services/article'
 import { BreadcrumbItemType } from 'antd/es/breadcrumb/Breadcrumb'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { stateUser } from '@/client/store/user'
 
 interface Props {
     currentArticleId: number
@@ -21,11 +22,11 @@ interface Props {
  */
 export const useBreadcrumb = () => {
     /** 根节点 id */
-    const rootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
+    const rootArticleId = useAtomValue(stateUser)?.rootArticleId
     /** 当前查看的文章祖先节点 */
-    const parentArticleIds = useAppSelector(s => s.menu.parentArticleIds)
+    const parentArticleIds = useAtomValue(stateParentArticleIds)
     /** 当前文章 id */
-    const currentArticleId = useAppSelector(s => s.menu.currentArticleId)
+    const currentArticleId = useAtomValue(stateCurrentArticleId)
     // 获取左下角菜单树
     const { data: articleTree } = useQueryArticleTree(rootArticleId)
 
@@ -77,8 +78,8 @@ export const useBreadcrumb = () => {
 export const useMobileMenu = (props: Props) => {
     const { currentArticleId } = props
     const navigate = useNavigate()
-    const dispatch = useAppDispatch()
     const menu = useMenu()
+    const setCurrentMenu = useSetAtom(stateCurrentTab)
     /** 是否展开导航抽屉 */
     const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false)
     /** 当前 treeMenu 所处的层级 */
@@ -255,7 +256,7 @@ export const useMobileMenu = (props: Props) => {
                                             size="large"
                                             block
                                             type={menu.currentTab === tab.value ? 'primary' : 'default'}
-                                            onClick={() =>  dispatch(setCurrentMenu(tab.value))}
+                                            onClick={() =>  setCurrentMenu(tab.value)}
                                             icon={tab.icon}
                                         >
                                             {tab.label}

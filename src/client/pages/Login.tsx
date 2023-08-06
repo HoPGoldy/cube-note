@@ -5,29 +5,31 @@ import { Button, Input, InputRef } from 'antd'
 import React, { useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useLogin } from '../services/user'
-import { useAppDispatch, useAppSelector } from '../store'
-import { setCurrentArticle } from '../store/menu'
-import { login } from '../store/user'
+import { stateCurrentArticleId } from '../store/menu'
+import { login, stateUser } from '../store/user'
 import { messageError, messageSuccess } from '../utils/message'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
 import { PageTitle } from '../components/PageTitle'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { stateAppConfig } from '../store/global'
 
 const Register = () => {
-    const dispatch = useAppDispatch()
-    // 用户名
+    /** 用户名 */
     const [username, setUsername] = useState('')
-    // 密码
+    /** 密码 */
     const [password, setPassword] = useState('')
-    // 用户名输入框
+    /** 用户名输入框 */
     const usernameInputRef = useRef<InputRef>(null)
-    // 密码输入框
+    /** 密码输入框 */
     const passwordInputRef = useRef<InputRef>(null)
-    // 应用配置
-    const config = useAppSelector(s => s.global.appConfig)
-    // 提交登录
+    /** 应用配置 */
+    const config = useAtomValue(stateAppConfig)
+    /** 提交登录 */
     const { mutateAsync: postLogin, isLoading: isLogin } = useLogin()
-    // store 里的用户信息
-    const userInfo = useAppSelector(s => s.user.userInfo)
+    /** store 里的用户信息 */
+    const userInfo = useAtomValue(stateUser)
+    /** 设置当前文章 */
+    const setCurrentArticleId = useSetAtom(stateCurrentArticleId)
 
     const onSubmit = async () => {
         if (!username) {
@@ -47,8 +49,8 @@ const Register = () => {
 
         messageSuccess(`登录成功，欢迎回来，${resp?.data?.username}`)
         const userInfo = resp.data as LoginSuccessResp
-        dispatch(login(userInfo))
-        dispatch(setCurrentArticle(userInfo.rootArticleId))
+        login(userInfo)
+        setCurrentArticleId(userInfo.rootArticleId)
     }
 
     if (userInfo) {

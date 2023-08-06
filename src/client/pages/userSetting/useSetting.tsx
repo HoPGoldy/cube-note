@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react'
 import { AppTheme } from '@/types/user'
-import { useAppDispatch, useAppSelector } from '@/client/store'
-import { changeTheme, getUserTheme, logout } from '@/client/store/user'
+import { changeTheme, getUserTheme, logout, stateUser } from '@/client/store/user'
 import { useQueryArticleCount, useSetTheme } from '@/client/services/user'
 import { LockOutlined, DatabaseOutlined, TagsOutlined, SmileOutlined, ContactsOutlined } from '@ant-design/icons'
 import { useJwtPayload } from '@/client/utils/jwt'
+import { useAtomValue } from 'jotai'
 
 export interface SettingLinkItem {
     label: string
@@ -14,14 +14,13 @@ export interface SettingLinkItem {
 }
 
 export const useSetting = () => {
-    const userInfo = useAppSelector(s => s.user.userInfo)
-    const dispatch = useAppDispatch()
+    const userInfo = useAtomValue(stateUser)
     // 数量统计接口
     const { data: countInfo } = useQueryArticleCount()
     /** 是否是管理员 */
     const jwtPayload = useJwtPayload()
     /** 主题设置 */
-    const { mutateAsync: setAppTheme } = useSetTheme()
+    const { mutateAsync: updateAppTheme } = useSetTheme()
 
     const settingConfig = useMemo(() => {
         const list = [
@@ -39,12 +38,12 @@ export const useSetting = () => {
 
     const onSwitchTheme = () => {
         const newTheme = userInfo?.theme === AppTheme.Light ? AppTheme.Dark : AppTheme.Light
-        setAppTheme(newTheme)
-        dispatch(changeTheme(newTheme))
+        updateAppTheme(newTheme)
+        changeTheme(newTheme)
     }
 
     const onLogout = () => {
-        dispatch(logout())
+        logout()
     }
 
     const articleCount = countInfo?.data?.articleCount || '---'

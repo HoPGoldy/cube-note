@@ -4,28 +4,30 @@ import { Button, Input, InputRef } from 'antd'
 import React, { useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useRegister } from '../services/user'
-import { useAppSelector } from '../store'
 import { messageError, messageSuccess } from '../utils/message'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
 import { PageTitle } from '../components/PageTitle'
+import { useAtomValue } from 'jotai'
+import { stateAppConfig } from '../store/global'
+import { stateUser } from '../store/user'
 
 const Register = () => {
     const navigate = useNavigate()
     const { inviteCode } = useParams()
-    // 用户名
+    /** 用户名 */
     const [username, setUsername] = useState('')
-    // 密码
+    /** 密码 */
     const [password, setPassword] = useState('')
-    // 密码确认
+    /** 密码确认 */
     const [passwordConfirm, setPasswordConfirm] = useState('')
-    // 输入框引用（用户名，密码输入框，密码确认框）
+    /** 输入框引用（用户名，密码输入框，密码确认框） */
     const inputRef = useRef<(InputRef | null)[]>([])
-    // 应用配置
-    const config = useAppSelector(s => s.global.appConfig)
-    // 提交登录
+    /** 应用配置 */
+    const config = useAtomValue(stateAppConfig)
+    /** 提交登录 */
     const { mutateAsync: postRegistration, isLoading: isRegistering } = useRegister()
-    // store 里的用户信息
-    const userInfo = useAppSelector(s => s.user.userInfo)
+    /** store 里的用户信息 */
+    const userInfo = useAtomValue(stateUser)
 
     const onSubmit = async () => {
         if (!username) {

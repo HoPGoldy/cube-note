@@ -1,59 +1,28 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
-import { ArticleLinkResp, TabTypes } from '@/types/article'
+import { TabTypes } from '@/types/article'
+import { atom } from 'jotai'
 
-type State = {
-    /**
-     * 当前选中的哪个标签
-     */
-    currentTab: TabTypes
-    /**
-     * 当前显示的哪个文章
-     */
-    currentArticleId?: number
-    /**
-     * 祖先文章 id 列表
-     * 父文章 id 在最后一个
-     */
-    parentArticleIds?: number[]
-    /**
-     * 父文章标题
-     */
-    parentArticleTitle: string
-    /**
-     * 当前选中的相关文章 id
-     */
-    selectedRelatedArticleIds: number[]
-}
+/**
+ * 当前选中的哪个标签
+ */
+export const stateCurrentTab = atom<TabTypes>(TabTypes.Sub)
 
-const initialState: State = {
-    parentArticleIds: undefined,
-    parentArticleTitle: '',
-    currentTab: TabTypes.Sub,
-    currentArticleId: undefined,
-    selectedRelatedArticleIds: [],
-}
+/**
+ * 当前显示的哪个文章
+ */
+export const stateCurrentArticleId = atom<number | undefined>(undefined)
 
-export const menuSlice = createSlice({
-    name: 'menu',
-    initialState,
-    reducers: {
-        setParentArticle: (state, action: PayloadAction<ArticleLinkResp>) => {
-            state.parentArticleIds = action.payload.parentArticleIds
-            state.parentArticleTitle = action.payload.parentArticleTitle || ''
-        },
-        setCurrentMenu: (state, action: PayloadAction<TabTypes>) => {
-            state.currentTab = action.payload
-        },
-        setCurrentArticle: (state, action: PayloadAction<number>) => {
-            state.currentArticleId = action.payload
-        },
-        setRelatedArticleIds: (state, action: PayloadAction<number[]>) => {
-            state.selectedRelatedArticleIds = action.payload
-        }
-    },
-})
+/**
+ * 从根文章到当前文章的祖先文章 id 路径
+ * 父文章 id 在最后一个
+ */
+export const stateParentArticleIds = atom<number[] | undefined>(undefined)
 
-export const { setParentArticle, setCurrentMenu, setCurrentArticle, setRelatedArticleIds } = menuSlice.actions
+/**
+ * 父文章标题
+ */
+export const stateParentArticleTitle = atom<string>('')
 
-export default menuSlice.reducer
+/**
+ * 当前选中的相关文章 id
+ */
+export const stateSelectedRelatedArticleIds = atom<number[]>([])

@@ -1,46 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
 import { AppTheme, FrontendUserInfo, LoginSuccessResp } from '@/types/user'
 import Cookies from 'js-cookie'
-
-interface UserState {
-    userInfo?: FrontendUserInfo
-    replayAttackSecret?: string
-    token?: string
-}
-
-const initialState: UserState = {
-    token: localStorage.getItem('cube-note-token') || undefined
-}
-
-export const userSlice = createSlice({
-    name: 'user',
-    initialState,
-    reducers: {
-        login: (state, action: PayloadAction<LoginSuccessResp>) => {
-            const { token, replayAttackSecret, ...userInfo } = action.payload
-            state.token = token
-            state.replayAttackSecret = replayAttackSecret
-            state.userInfo = userInfo
-            localStorage.setItem('cube-note-token', token)
-            Cookies.set('cube-note-token', token)
-        },
-        logout: (state) => {
-            state.token = undefined
-            state.replayAttackSecret = undefined
-            state.userInfo = undefined
-            localStorage.removeItem('cube-note-token')
-            Cookies.remove('cube-note-token')
-        },
-        changeTheme: (state, action: PayloadAction<AppTheme>) => {
-            if (!state.userInfo) return
-            state.userInfo.theme = action.payload
-            localStorage.setItem('cube-note-theme', action.payload)
-        }
-    },
-})
-
-export const { login, logout, changeTheme } = userSlice.actions
+import { atom, getDefaultStore } from 'jotai'
 
 /**
  * 从用户信息中获取主题色
@@ -52,4 +12,48 @@ export const getUserTheme = (userInfo?: FrontendUserInfo): AppTheme => {
         || AppTheme.Light
 }
 
-export default userSlice.reducer
+/**
+ * 当前登录用户状态
+ */
+export const stateUser = atom<FrontendUserInfo | undefined>(undefined)
+
+/**
+ * 当前用户的防重放攻击密钥
+ * 登录后设置
+ */
+export const stateReplayAttackSecret = atom<string | undefined>(undefined)
+
+/**
+ * 当前用户的登录 token
+ */
+export const stateUserToken = atom<string | null>(localStorage.getItem('cube-note-token'))
+
+export const logout = () => {
+    const store = getDefaultStore()
+
+    store.set(stateUser, undefined)
+    store.set(stateReplayAttackSecret, undefined)
+    store.set(stateUserToken, null)
+    localStorage.removeItem('cube-note-token')
+    Cookies.remove('cube-note-token')
+}
+
+export const login = (payload: LoginSuccessResp) => {
+    const { token, replayAttackSecret, ...userInfo } = payload
+    const store = getDefaultStore()
+
+    store.set(stateUser, userInfo)
+    store.set(stateReplayAttackSecret, replayAttackSecret)
+    store.set(stateUserToken, token)
+    localStorage.setItem('cube-note-token', token)
+    Cookies.set('cube-note-token', token)
+}
+
+export const changeTheme = (theme: AppTheme) => {
+    const store = getDefaultStore()
+    const userInfo = store.get(stateUser)
+
+    if (!userInfo) return
+    store.set(stateUser, { ...userInfo, theme })
+    localStorage.setItem('cube-note-theme', theme)
+}

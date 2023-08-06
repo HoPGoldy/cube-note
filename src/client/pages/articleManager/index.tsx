@@ -5,7 +5,6 @@ import Loading from '../../layouts/Loading'
 import { Col, Row, Button, Card, Tree, TreeProps, Alert, Spin, Modal } from 'antd'
 import { DragOutlined, EditOutlined, SwapOutlined, DeleteOutlined } from '@ant-design/icons'
 import { MobileArea } from '@/client/layouts/Responsive'
-import { useAppSelector } from '@/client/store'
 import { useQueryArticleTree, useUpdateArticle } from '@/client/services/article'
 import { DataNode } from 'antd/es/tree'
 import { ArticleTreeNode } from '@/types/article'
@@ -13,6 +12,8 @@ import { useDelete } from '../article/Delete'
 import { messageSuccess, messageWarning } from '@/client/utils/message'
 import { STATUS_CODE } from '@/config'
 import { PageTitle } from '@/client/components/PageTitle'
+import { useAtomValue } from 'jotai'
+import { stateUser } from '@/client/store/user'
 
 const EDIT_MODE = {
     /**
@@ -58,7 +59,7 @@ const findPath = (tree: ArticleTreeNode[], nodeId: number): number[] => {
  */
 const ArticleManager: FC = () => {
     const navigate = useNavigate()
-    const currentRootArticleId = useAppSelector(s => s.user.userInfo?.rootArticleId)
+    const currentRootArticleId = useAtomValue(stateUser)?.rootArticleId
     // 获取左下角菜单树
     const { data: articleTree, isLoading: isLoadingTree } = useQueryArticleTree(currentRootArticleId)
     const [checkedKeys, setCheckedKeys] = useState<React.Key[]>([])

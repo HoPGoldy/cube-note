@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
 import { ArticleMenuItem, TabTypes } from '@/types/article'
-import { useAppDispatch } from '@/client/store'
-import { setCurrentMenu } from '@/client/store/menu'
+import { stateCurrentTab } from '@/client/store/menu'
 import { Link, useNavigate } from 'react-router-dom'
 import { TreeMenu } from '@/client//components/TreeMenu'
 import { PlusOutlined, RollbackOutlined, LinkOutlined, InsertRowLeftOutlined } from '@ant-design/icons'
@@ -9,9 +8,10 @@ import { Button, Col, Row, Space, Tooltip } from 'antd'
 import s from './styles.module.css'
 import { EMPTY_CLASSNAME, tabOptions, useMenu } from './useMenu'
 import Loading from '../Loading'
+import { useSetAtom } from 'jotai'
 
 export const Sidebar: FC = () => {
-    const dispatch = useAppDispatch()
+    const setCurrentTab = useSetAtom(stateCurrentTab)
     const menu = useMenu()
     const navigate = useNavigate()
 
@@ -145,7 +145,7 @@ export const Sidebar: FC = () => {
                             <Tooltip title={item.sidebarLabel} placement="bottom" color="#4b5563">
                                 <Button
                                     className={className.join(' ')}
-                                    onClick={() => dispatch(setCurrentMenu(item.value))}
+                                    onClick={() => setCurrentTab(item.value)}
                                     // style={{ backgroundColor: item.value === menu.currentTab ? '#f0f0f0' : '' }}
                                     icon={item.icon}
                                     block
