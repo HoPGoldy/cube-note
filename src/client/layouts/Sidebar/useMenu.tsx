@@ -65,7 +65,7 @@ export const useMenu = () => {
       return;
     }
 
-    const title = `新笔记-${new Date().toLocaleString()}`;
+    const title = '新笔记';
     const resp = await addArticle({
       title,
       content: '',

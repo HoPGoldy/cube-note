@@ -1,5 +1,5 @@
 import { MobileDrawer } from '@/client/components/MobileDrawer';
-import { DesktopArea } from '@/client/layouts/Responsive';
+import { DesktopArea, useIsMobile } from '@/client/layouts/Responsive';
 import { Button, Col, Popover, Row, Space, Switch, Tooltip } from 'antd';
 import React, { ChangeEventHandler, useRef, useState } from 'react';
 import {
@@ -44,6 +44,7 @@ interface Props {
 
 export const useOperation = (props: Props) => {
   const { isEdit, title, articleDetail, updatingArticle, currentArticleId } = props;
+  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   /** 切换收藏状态 */
   const { mutateAsync: updateFavoriteState } = useFavoriteArticle();
@@ -80,10 +81,10 @@ export const useOperation = (props: Props) => {
   };
 
   /** 创建子笔记 */
-  const createChildArticle = async () => {
-    await props.createArticle();
-    setIsOperationDrawerOpen(false);
-  };
+  // const createChildArticle = async () => {
+  //   await props.createArticle();
+  //   setIsOperationDrawerOpen(false);
+  // };
 
   /** 渲染移动端非编辑时的操作弹窗 */
   const renderOperationDrawer = () => {
@@ -92,14 +93,16 @@ export const useOperation = (props: Props) => {
         title='文章操作'
         open={isOperationDrawerOpen}
         onClose={() => setIsOperationDrawerOpen(false)}
+        height={240}
         footer={
-          <Button block size='large' type='primary' onClick={createChildArticle}>
-            创建子笔记
-          </Button>
+          // <Button block size='large' type='primary' onClick={createChildArticle}>
+          //   创建子笔记
+          // </Button>
+          null
         }>
         <div className='flex flex-nowrap flex-col h-full'>
           <div className='flex-grow overflow-y-auto mb-2'>{renderConfigContent()}</div>
-          <div className='flex-shrink-0'>
+          <div className='flex-shrink-0 mb-2'>
             <Row gutter={[8, 8]}>
               {!isRootArticle && (
                 <Col span={8}>
@@ -163,6 +166,7 @@ export const useOperation = (props: Props) => {
   const renderColorPicker = () => {
     return (
       <ColorPicker
+        style={{ top: isMobile ? '70vh' : '10vh' }}
         onChange={onSelectedColor}
         visible={isColorPickerOpen}
         onClose={() => setIsColorPickerOpen(false)}

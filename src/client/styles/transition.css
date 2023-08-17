@@ -91,5 +91,5 @@
 .to-left-exit-active .menu-container,
 .to-right-enter-active .menu-container,
 .to-right-exit-active .menu-container {
-  transition: opacity 200ms, transform 200ms;
+  transition: opacity 150ms ease, transform 150ms ease;
 }

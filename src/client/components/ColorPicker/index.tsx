@@ -1,8 +1,8 @@
-import { List, Modal } from 'antd';
+import { List, Modal, ModalProps } from 'antd';
 import React, { FC } from 'react';
 import s from './styles.module.css';
 
-interface Props {
+interface Props extends ModalProps {
   value?: string;
   onChange?: (value: string) => void;
   visible: boolean;
@@ -29,7 +29,7 @@ const MARK_COLORS: string[] = [
 ];
 
 export const ColorPicker: FC<Props> = (props) => {
-  const { value, onChange, visible, onClose } = props;
+  const { value, onChange, visible, onClose, ...extraProps } = props;
 
   const renderMarkColor = (color: string) => {
     const classes = [s.colorBtn, 'm-auto'];
@@ -51,7 +51,7 @@ export const ColorPicker: FC<Props> = (props) => {
   };
 
   return (
-    <Modal open={visible} onCancel={onClose} footer={null} closable={false}>
+    <Modal open={visible} onCancel={onClose} footer={null} closable={false} {...extraProps}>
       <List
         className='mt-6'
         grid={{

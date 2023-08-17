@@ -49,11 +49,9 @@ export const useBreadcrumb = () => {
 
     const config: BreadcrumbItemType[] = pathNodes.map((i) => ({
       title: (
-        <Link to={`/article/${i.value}`}>
-          <div className='truncate w-fit max-w-[8rem]' title={i.title}>
-            {i.title}
-          </div>
-        </Link>
+        <div className='truncate w-fit max-w-[8rem]' title={i.title}>
+          <Link to={`/article/${i.value}`}>{i.title}</Link>
+        </div>
       ),
     }));
 
@@ -116,7 +114,6 @@ export const useMobileMenu = (props: Props) => {
 
     return (
       <>
-        <div className='mb-2'>{renderBreadcrumb()}</div>
         <TreeMenu
           value={treeMenuPath}
           onChange={setTreeMenuPath}
@@ -228,18 +225,18 @@ export const useMobileMenu = (props: Props) => {
   const renderMenuDrawer = () => {
     return (
       <MobileDrawer
-        title='笔记导航'
+        title={<div className='w-[95vw] overflow-x-auto'>{renderBreadcrumb()}</div>}
         open={isMenuDrawerOpen}
         onClose={onCloseDrawer}
         footer={
           <Row gutter={8}>
             {/* <Col flex="0">
-                            <Button
-                                size="large"
-                                icon={<HomeOutlined />}
-                                onClick={onBackHomePage}
-                            />
-                        </Col> */}
+              <Button
+                size="large"
+                icon={<HomeOutlined />}
+                onClick={onBackHomePage}
+              />
+            </Col> */}
             <Col flex='1'>
               <Button block size='large' onClick={onCloseDrawer}>
                 关闭

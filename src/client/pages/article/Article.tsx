@@ -16,14 +16,15 @@ import { ArticleSubLinkDetail, UpdateArticleReqData } from '@/types/article';
 import TagArea from './TagArea';
 import { blurOnEnter } from '@/client/utils/input';
 import dayjs from 'dayjs';
-import { SwitcherOutlined, SettingOutlined, SearchOutlined, MenuOutlined } from '@ant-design/icons';
+import { SettingOutlined, SearchOutlined, MenuOutlined } from '@ant-design/icons';
 import s from './styles.module.css';
 import { useOperation } from './Operation';
 import { useMobileMenu } from './Menu';
-import { Card, Drawer, List } from 'antd';
+import { Button, Card, Drawer, List } from 'antd';
 import { PageTitle } from '@/client/components/PageTitle';
 import { MobileSetting } from '../userSetting';
 import { useSetAtom } from 'jotai';
+import { MobileArea } from '@/client/layouts/Responsive';
 
 const About: FC = () => {
   const params = useParams();
@@ -55,6 +56,8 @@ const About: FC = () => {
   const menu = useMobileMenu({
     currentArticleId,
   });
+  /** 新增子笔记按钮长按计时器 */
+  const addSubArticleTimer = useRef<NodeJS.Timeout>();
 
   /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
   const onClickSaveBtn = async () => {
@@ -182,7 +185,7 @@ const About: FC = () => {
 
     return (
       <div className='box-border p-4 md:w-full h-full flex flex-col flex-nowrap'>
-        <div className='flex justify-between items-start'>
+        <div className='flex justify-between items-center md:items-start'>
           <input
             ref={titleInputRef}
             value={title}
@@ -199,6 +202,13 @@ const About: FC = () => {
             className='font-bold border-0 text-3xl my-2 w-full dark:text-white'
           />
           {operation.renderDesktopOperation()}
+          <MobileArea>
+            <Button
+              size='large'
+              className='flex-shrink-0'
+              icon={<SettingOutlined />}
+              onClick={() => operation.setIsOperationDrawerOpen(true)}></Button>
+          </MobileArea>
         </div>
 
         <TagArea
@@ -218,6 +228,19 @@ const About: FC = () => {
         {renderSubArticleList()}
       </div>
     );
+  };
+
+  const onLongClick = () => {
+    console.log(1);
+    addSubArticleTimer.current = setTimeout(() => {
+      // messageSuccess('新增子笔记');
+      navigator.vibrate?.(30);
+      menu.menu.createArticle();
+    }, 1000);
+  };
+
+  const onLongClickEnd = () => {
+    clearTimeout(addSubArticleTimer.current);
   };
 
   const renderActionBar = () => {
@@ -242,11 +265,13 @@ const About: FC = () => {
           <ActionIcon icon={<SearchOutlined />} />
         </Link>
         <ActionIcon icon={<MenuOutlined />} onClick={() => menu.setIsMenuDrawerOpen(true)} />
-        <ActionIcon
-          icon={<SwitcherOutlined />}
-          onClick={() => operation.setIsOperationDrawerOpen(true)}
-        />
-        <ActionButton onClick={operation.startEdit}>编辑</ActionButton>
+        <ActionButton
+          onClick={operation.startEdit}
+          onTouchStart={onLongClick}
+          onTouchEnd={onLongClickEnd}>
+          编辑
+          <span className='ml-2 text-xs'>长按添加子笔记</span>
+        </ActionButton>
       </>
     );
   };
