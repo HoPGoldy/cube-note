@@ -34,6 +34,18 @@
 
 ## 部署
 
+### 1. docker 安装（推荐）
+
+cube-note 不需要 docker compose，单容器即可运行：
+
+```bash
+docker run -d -p 3701:3700 -v ~/cube-note-storage:/app hopgoldy/cube-note:1.0.0
+```
+
+执行后数据将会存放在 `~/cube-note-storage` 目录。
+
+### 2. npm 安装
+
 cube-note 在开发时就以简单部署为目标，不需要配置数据库，不需要安装任何软件。仅需 node（*16+*）环境即可运行。
 
 ```bash
@@ -54,10 +66,6 @@ cube-note run
 ## 数据迁移
 
 所有数据均默认保存在应用目录下的 `.storage` 文件夹里，所以直接将其打包然后复制到其他地方即可。
-
-## 贡献
-
-本项目系本人自用开发，如果你觉得有些功能不够完善，欢迎 PR / issue。
 
 ## 许可
 
