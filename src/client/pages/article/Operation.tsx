@@ -68,13 +68,13 @@ export const useOperation = (props: Props) => {
   /** 进入编辑模式 */
   const startEdit = () => {
     searchParams.set('mode', 'edit');
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   };
 
   /** 退出编辑模式 */
   const endEdit = async () => {
     searchParams.delete('mode');
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
     setSaveBtnText('');
 
     props.onClickExitBtn();
