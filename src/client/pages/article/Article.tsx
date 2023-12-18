@@ -9,7 +9,7 @@ import {
 import Loading from '../../layouts/Loading';
 import Preview from './Preview';
 import { useEditor } from './Editor';
-import { messageSuccess, messageWarning } from '@/client/utils/message';
+import { messageWarning } from '@/client/utils/message';
 import { STATUS_CODE } from '@/config';
 import { stateCurrentArticleId } from '@/client/store/menu';
 import { ArticleSubLinkDetail, UpdateArticleReqData } from '@/types/article';
@@ -121,7 +121,6 @@ const About: FC = () => {
     const resp = await updateArticle({ ...data, id: currentArticleId });
     if (resp.code !== STATUS_CODE.SUCCESS) return;
 
-    messageSuccess('保存成功');
     operation.setSaveBtnText('');
   };
 
@@ -132,21 +131,14 @@ const About: FC = () => {
         <Link to={`/article/${item.id}`}>
           <Card
             size='small'
-            title={<span className='font-black'>{item.title}</span>}
-            className='hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer'
-            extra={
-              item.color && (
+            className='hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer'>
+            <div className='flex justify-between items-center'>
+              <span className='font-black'>{item.title}</span>
+              {item.color && (
                 <div
                   className='flex-shrink-0 w-3 h-3 bg-gray-300 rounded'
                   style={{ backgroundColor: item.color }}
                 />
-              )
-            }>
-            <div className='overflow-hidden truncate'>
-              {item.content ? (
-                item.content + '...'
-              ) : (
-                <span className='text-gray-500 dark:text-neutral-400'>暂无内容</span>
               )}
             </div>
           </Card>

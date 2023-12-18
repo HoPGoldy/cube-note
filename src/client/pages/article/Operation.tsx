@@ -234,11 +234,7 @@ export const useOperation = (props: Props) => {
           </Button>
 
           <Button
-            icon={
-              <HeartFilled
-                className={'hover:scale-125 transition-all ' + (isFavorite ? 'text-red-500 ' : '')}
-              />
-            }
+            icon={<HeartFilled className={isFavorite ? 'text-red-500 ' : ''} />}
             onClick={() => {
               updateFavoriteState({ id: currentArticleId, favorite: !isFavorite });
               setIsFavorite(!isFavorite);
