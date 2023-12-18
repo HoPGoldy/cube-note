@@ -41,6 +41,15 @@
   min-width: 60px;
 }
 
+.mdArea :global(code) {
+  border: 1px solid #ddd;
+  background: #f6f6f6;
+  color: #181818;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
 .settingDrawer :global(.ant-drawer-body) {
   padding: 0 !important;
 }
