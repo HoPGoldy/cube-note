@@ -44,18 +44,13 @@ export const createLoginLock = (props: LoginLockOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const records = loginFailRecords.get(ip)!;
     records.push(new Date().valueOf());
-
-    // 把一天前的记录清除掉
-    const todayFail = records.filter((date) => {
-      return dayjs(date).isSame(dayjs(), 'day');
-    });
-    loginFailRecords.set(ip, todayFail);
+    loginFailRecords.set(ip, records);
 
     return getLockDetail(ip);
   };
 
   /**
-   * 请求登录失败记录
+   * 清空登录失败记录
    */
   const clearRecord = (ip: string) => {
     loginFailRecords.delete(ip);
@@ -79,7 +74,12 @@ export const createLoginLock = (props: LoginLockOptions) => {
 
     const ip = getIp(ctx) || 'anonymous';
     try {
-      if (getLockDetail(ip).length >= 3) throw new Error('登录失败次数过多');
+      const records = getLockDetail(ip);
+      // 筛选今天失败了多少次
+      const todayFail = records.filter((date) => {
+        return dayjs(date).isSame(dayjs(), 'day');
+      });
+      if (todayFail.length >= 3) throw new Error('登录失败次数过多');
       await next();
     } catch (e) {
       console.error(e);

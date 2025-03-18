@@ -7,7 +7,7 @@ import { Navigate } from 'react-router-dom';
 import { useLogin } from '../services/user';
 import { stateCurrentArticleId } from '../store/menu';
 import { login, stateUser } from '../store/user';
-import { messageError, messageSuccess } from '../utils/message';
+import { message, messageError, messageSuccess } from '../utils/message';
 import { UserOutlined, KeyOutlined } from '@ant-design/icons';
 import { PageTitle } from '../components/PageTitle';
 import { useAtomValue, useSetAtom } from 'jotai';
@@ -45,7 +45,12 @@ const Login = () => {
     }
 
     const resp = await postLogin({ username, password: sha(password) });
-    if (resp.code !== STATUS_CODE.SUCCESS) return;
+    if (resp.code !== STATUS_CODE.SUCCESS) {
+      if (resp.code === 401) {
+        message('warning', resp.msg);
+      }
+      return;
+    }
 
     messageSuccess(`登录成功，欢迎回来，${resp?.data?.username}`);
     const userInfo = resp.data as LoginSuccessResp;
@@ -101,7 +106,7 @@ const Login = () => {
         <Button
           size='large'
           block
-          disabled={isLogin}
+          loading={isLogin}
           type='primary'
           style={{ background: config?.buttonColor }}
           onClick={onSubmit}>
