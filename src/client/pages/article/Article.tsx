@@ -20,7 +20,7 @@ import { SettingOutlined, SearchOutlined, MenuOutlined } from '@ant-design/icons
 import s from './styles.module.css';
 import { useOperation } from './Operation';
 import { useMobileMenu } from './Menu';
-import { Button, Card, Drawer, List } from 'antd';
+import { Button, Card, Drawer } from 'antd';
 import { PageTitle } from '@/client/components/PageTitle';
 import { MobileSetting } from '../userSetting';
 import { useSetAtom } from 'jotai';
@@ -127,23 +127,21 @@ const About: FC = () => {
   /** 渲染底部的子笔记项目 */
   const renderSubArticleItem = (item: ArticleSubLinkDetail) => {
     return (
-      <List.Item>
-        <Link to={`/article/${item.id}`}>
-          <Card
-            size='small'
-            className='hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer'>
-            <div className='flex justify-between items-center'>
-              <span className='font-black'>{item.title}</span>
-              {item.color && (
-                <div
-                  className='flex-shrink-0 w-3 h-3 bg-gray-300 rounded'
-                  style={{ backgroundColor: item.color }}
-                />
-              )}
-            </div>
-          </Card>
-        </Link>
-      </List.Item>
+      <Link to={`/article/${item.id}`}>
+        <Card
+          size='small'
+          className='hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer'>
+          <div className='flex justify-between items-center'>
+            <span className='font-bold'>{item.title}</span>
+            {item.color && (
+              <div
+                className='flex-shrink-0 w-3 h-3 bg-gray-300 rounded'
+                style={{ backgroundColor: item.color }}
+              />
+            )}
+          </div>
+        </Card>
+      </Link>
     );
   };
 
@@ -154,20 +152,11 @@ const About: FC = () => {
     if (!articleLink?.data?.length) return null;
 
     return (
-      <div className='w-full xl:w-[60%] mx-auto'>
-        <List
-          grid={{
-            gutter: 16,
-            xs: 1,
-            sm: 1,
-            md: 2,
-            lg: 2,
-            xl: 2,
-            xxl: 2,
-          }}
-          dataSource={articleLink?.data || []}
-          renderItem={renderSubArticleItem}
-        />
+      <div className='w-full xl:w-[60%] mx-auto bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg box-border'>
+        <div className='mb-2'>子笔记列表：</div>
+        <div className='grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
+          {articleLink?.data.map(renderSubArticleItem)}
+        </div>
       </div>
     );
   };
