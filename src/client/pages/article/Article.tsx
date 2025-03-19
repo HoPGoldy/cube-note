@@ -127,7 +127,7 @@ const About: FC = () => {
   /** 渲染底部的子笔记项目 */
   const renderSubArticleItem = (item: ArticleSubLinkDetail) => {
     return (
-      <Link to={`/article/${item.id}`}>
+      <Link to={`/article/${item.id}`} key={item.id}>
         <Card
           size='small'
           className='hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer'>
@@ -152,12 +152,16 @@ const About: FC = () => {
     if (!articleLink?.data?.length) return null;
 
     return (
-      <div className='w-full xl:w-[60%] mx-auto bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg box-border'>
-        <div className='mb-2'>子笔记列表：</div>
-        <div className='grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
-          {articleLink?.data.map(renderSubArticleItem)}
+      <>
+        <div className='w-full xl:w-[60%] mx-auto bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg box-border mb-2'>
+          <div className='mb-2'>子笔记列表：</div>
+          <div className='grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
+            {articleLink?.data.map(renderSubArticleItem)}
+          </div>
         </div>
-      </div>
+        {/* 留出一些底部空间 */}
+        <div className='w-full flex-shrink-0 h-10'></div>
+      </>
     );
   };
 
