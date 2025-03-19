@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { FileStorage, UploadedFile } from '@/types/file';
 import { ensureDir, move } from 'fs-extra';
+import { nanoid } from 'nanoid';
 
 interface Props {
   getSaveDir: () => string;
@@ -53,10 +54,14 @@ export const createFileService = (props: Props) => {
 
   const uploadFile = async (files: Omit<UploadedFile, 'md5'>[], userId: number) => {
     const filesWithMd5 = await Promise.all(
-      files.map(async (f) => ({
-        ...f,
-        md5: await getFileMd5(f.tempPath, f.filename),
-      })),
+      files.map(async (f) => {
+        const filename = `${nanoid()}-${f.filename}`;
+        return {
+          ...f,
+          filename,
+          md5: await getFileMd5(f.tempPath, filename),
+        };
+      }),
     );
 
     const fileSavePath = path.resolve(saveDir, 'file', userId.toString());
