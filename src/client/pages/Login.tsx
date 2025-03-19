@@ -47,7 +47,7 @@ const Login = () => {
     const resp = await postLogin({ username, password: sha(password) });
     if (resp.code !== STATUS_CODE.SUCCESS) {
       if (resp.code === 401) {
-        message('warning', resp.msg);
+        message('warning', resp.msg || '');
       }
       return;
     }
