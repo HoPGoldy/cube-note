@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "./client/"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model AppConfig {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EndPointType {
+  CONFIG // 配置模式：填写 URL、请求方法、请求头、请求体等
+  CODE // 编码模式：填写代码内容
+}
+
+model MonitoredHost {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String
+  desc      String? // 描述
+  url       String?
+  headers   Json?
+  enabled   Boolean    @default(true)
+  endpoints EndPoint[]
+
+  // 通知配置
+  notifyEnabled      Boolean @default(false) // 是否启用通知
+  notifyFailureCount Int     @default(3) // 连续失败N次触发
+  notifyCooldownMin  Int     @default(30) // 冷却时间(分钟)
+  notifyChannelIds   Json    @default("[]") // 通知渠道ID数组 ["id1", "id2"]
+}
+
+model EndPoint {
+  id              String            @id @default(uuid())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  hostId          String
+  name            String
+  desc            String? // 描述
+  type            EndPointType      @default(CONFIG) // 端点类型：CONFIG 或 CODE
+  // CONFIG 模式字段
+  url             String?
+  method          String?           @default("GET") // HTTP method: GET, POST, PUT, DELETE, etc.
+  headers         Json?
+  timeout         Int? // in seconds
+  bodyContentType String?           @default("json") // Request body encoding: json, x-www-form-urlencoded, xml
+  bodyContent     String? // Request body content
+  // CODE 模式字段
+  codeContent     String? // 代码内容
+  // 通用字段
+  intervalTime    Int? // in seconds
+  enabled         Boolean           @default(true)
+  results         ProbeResult[]
+  hourlyStats     ProbeHourlyStat[]
+  dailyStats      ProbeDailyStat[]
+
+  monitoredHost MonitoredHost @relation(fields: [hostId], references: [id], onDelete: Cascade)
+}
+
+model ProbeResult {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  endPointId   String
+  status       Int?
+  responseTime Int? // in milliseconds
+  success      Boolean
+  message      String?
+
+  endPoint EndPoint @relation(fields: [endPointId], references: [id], onDelete: Cascade)
+
+  @@index([endPointId, createdAt(sort: Desc)])
+  @@index([createdAt])
+}
+
+// 小时级聚合统计表
+model ProbeHourlyStat {
+  endPointId      String
+  hourTimestamp   DateTime // 精确到小时，例如 '2025-11-27 16:00:00'
+  totalChecks     Int // 这一小时内执行的总次数
+  successCount    Int // 成功次数
+  avgResponseTime Int? // 平均响应时间 (毫秒)
+  minResponseTime Int? // 最小响应时间
+  maxResponseTime Int? // 最大响应时间
+
+  endPoint EndPoint @relation(fields: [endPointId], references: [id], onDelete: Cascade)
+
+  @@id([endPointId, hourTimestamp])
+  @@index([hourTimestamp])
+}
+
+// 日级聚合统计表
+model ProbeDailyStat {
+  endPointId       String
+  date             DateTime // 只精确到天，例如 '2025-11-27 00:00:00'
+  totalChecks      Int // 全天执行的总次数
+  successCount     Int // 成功次数
+  uptimePercentage Float? // 在线率百分比，例如 99.95
+  avgResponseTime  Int? // 平均响应时间 (毫秒)
+  minResponseTime  Int? // 全天最小响应时间
+  maxResponseTime  Int? // 全天最大响应时间
+
+  endPoint EndPoint @relation(fields: [endPointId], references: [id], onDelete: Cascade)
+
+  @@id([endPointId, date])
+  @@index([date])
+}
+
+// ==================== 通知模块 ====================
+
+// 通知渠道 - 存储 Webhook 配置
+model NotificationChannel {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String // 渠道名称，如 "运维钉钉群"
+  webhookUrl   String // Webhook 地址
+  headers      Json? // 自定义请求头（如 Authorization）
+  bodyTemplate String // 请求体模板（支持变量替换）
+  enabled      Boolean  @default(true)
+}
+
+// 通知记录 - 记录通知发送历史
+model NotificationLog {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  hostId     String // Host ID
+  endpointId String // 触发通知的端点
+  channelId  String // 发送到的渠道
+  eventType  String // FAILURE / RECOVERY
+  title      String
+  content    String
+  success    Boolean
+  errorMsg   String?
+
+  @@index([hostId])
+  @@index([endpointId])
+  @@index([channelId])
+  @@index([createdAt])
+}
+
+// ==================== 探针环境变量 ====================
+
+// 探针环境变量 - 存储注入到 CODE 模式探针的全局变量
+model ProbeEnv {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  key       String   @unique // 变量名
+  value     String // 变量值
+  isSecret  Boolean  @default(false) // 是否为敏感信息
+  desc      String? // 变量描述
+}
