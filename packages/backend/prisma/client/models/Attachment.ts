@@ -36,38 +36,32 @@ export type AttachmentSumAggregateOutputType = {
 
 export type AttachmentMinAggregateOutputType = {
   id: string | null
-  userId: string | null
-  filename: string | null
-  size: number | null
-  hash: string | null
-  path: string | null
-  type: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  filename: string | null
+  md5: string | null
+  size: number | null
+  type: string | null
 }
 
 export type AttachmentMaxAggregateOutputType = {
   id: string | null
-  userId: string | null
-  filename: string | null
-  size: number | null
-  hash: string | null
-  path: string | null
-  type: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  filename: string | null
+  md5: string | null
+  size: number | null
+  type: string | null
 }
 
 export type AttachmentCountAggregateOutputType = {
   id: number
-  userId: number
-  filename: number
-  size: number
-  hash: number
-  path: number
-  type: number
   createdAt: number
   updatedAt: number
+  filename: number
+  md5: number
+  size: number
+  type: number
   _all: number
 }
 
@@ -82,38 +76,32 @@ export type AttachmentSumAggregateInputType = {
 
 export type AttachmentMinAggregateInputType = {
   id?: true
-  userId?: true
-  filename?: true
-  size?: true
-  hash?: true
-  path?: true
-  type?: true
   createdAt?: true
   updatedAt?: true
+  filename?: true
+  md5?: true
+  size?: true
+  type?: true
 }
 
 export type AttachmentMaxAggregateInputType = {
   id?: true
-  userId?: true
-  filename?: true
-  size?: true
-  hash?: true
-  path?: true
-  type?: true
   createdAt?: true
   updatedAt?: true
+  filename?: true
+  md5?: true
+  size?: true
+  type?: true
 }
 
 export type AttachmentCountAggregateInputType = {
   id?: true
-  userId?: true
-  filename?: true
-  size?: true
-  hash?: true
-  path?: true
-  type?: true
   createdAt?: true
   updatedAt?: true
+  filename?: true
+  md5?: true
+  size?: true
+  type?: true
   _all?: true
 }
 
@@ -205,14 +193,12 @@ export type AttachmentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type AttachmentGroupByOutputType = {
   id: string
-  userId: string
-  filename: string
-  size: number
-  hash: string
-  path: string
-  type: string
   createdAt: Date
   updatedAt: Date
+  filename: string
+  md5: string
+  size: number
+  type: string
   _count: AttachmentCountAggregateOutputType | null
   _avg: AttachmentAvgAggregateOutputType | null
   _sum: AttachmentSumAggregateOutputType | null
@@ -240,53 +226,45 @@ export type AttachmentWhereInput = {
   OR?: Prisma.AttachmentWhereInput[]
   NOT?: Prisma.AttachmentWhereInput | Prisma.AttachmentWhereInput[]
   id?: Prisma.StringFilter<"Attachment"> | string
-  userId?: Prisma.StringFilter<"Attachment"> | string
-  filename?: Prisma.StringFilter<"Attachment"> | string
-  size?: Prisma.IntFilter<"Attachment"> | number
-  hash?: Prisma.StringFilter<"Attachment"> | string
-  path?: Prisma.StringFilter<"Attachment"> | string
-  type?: Prisma.StringFilter<"Attachment"> | string
   createdAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
+  filename?: Prisma.StringFilter<"Attachment"> | string
+  md5?: Prisma.StringFilter<"Attachment"> | string
+  size?: Prisma.IntFilter<"Attachment"> | number
+  type?: Prisma.StringFilter<"Attachment"> | string
 }
 
 export type AttachmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  filename?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  hash?: Prisma.SortOrder
-  path?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  filename?: Prisma.SortOrder
+  md5?: Prisma.SortOrder
+  size?: Prisma.SortOrder
+  type?: Prisma.SortOrder
 }
 
 export type AttachmentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  md5?: string
   AND?: Prisma.AttachmentWhereInput | Prisma.AttachmentWhereInput[]
   OR?: Prisma.AttachmentWhereInput[]
   NOT?: Prisma.AttachmentWhereInput | Prisma.AttachmentWhereInput[]
-  userId?: Prisma.StringFilter<"Attachment"> | string
-  filename?: Prisma.StringFilter<"Attachment"> | string
-  size?: Prisma.IntFilter<"Attachment"> | number
-  hash?: Prisma.StringFilter<"Attachment"> | string
-  path?: Prisma.StringFilter<"Attachment"> | string
-  type?: Prisma.StringFilter<"Attachment"> | string
   createdAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
-}, "id">
+  filename?: Prisma.StringFilter<"Attachment"> | string
+  size?: Prisma.IntFilter<"Attachment"> | number
+  type?: Prisma.StringFilter<"Attachment"> | string
+}, "id" | "md5">
 
 export type AttachmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  filename?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  hash?: Prisma.SortOrder
-  path?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  filename?: Prisma.SortOrder
+  md5?: Prisma.SortOrder
+  size?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   _count?: Prisma.AttachmentCountOrderByAggregateInput
   _avg?: Prisma.AttachmentAvgOrderByAggregateInput
   _max?: Prisma.AttachmentMaxOrderByAggregateInput
@@ -299,110 +277,92 @@ export type AttachmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.AttachmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AttachmentScalarWhereWithAggregatesInput | Prisma.AttachmentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
-  userId?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
-  filename?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
-  size?: Prisma.IntWithAggregatesFilter<"Attachment"> | number
-  hash?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
-  path?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
-  type?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Attachment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Attachment"> | Date | string
+  filename?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
+  md5?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
+  size?: Prisma.IntWithAggregatesFilter<"Attachment"> | number
+  type?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
 }
 
 export type AttachmentCreateInput = {
   id?: string
-  userId: string
-  filename: string
-  size: number
-  hash: string
-  path: string
-  type: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  filename: string
+  md5: string
+  size: number
+  type: string
 }
 
 export type AttachmentUncheckedCreateInput = {
   id?: string
-  userId: string
-  filename: string
-  size: number
-  hash: string
-  path: string
-  type: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  filename: string
+  md5: string
+  size: number
+  type: string
 }
 
 export type AttachmentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  filename?: Prisma.StringFieldUpdateOperationsInput | string
-  size?: Prisma.IntFieldUpdateOperationsInput | number
-  hash?: Prisma.StringFieldUpdateOperationsInput | string
-  path?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  md5?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type AttachmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  filename?: Prisma.StringFieldUpdateOperationsInput | string
-  size?: Prisma.IntFieldUpdateOperationsInput | number
-  hash?: Prisma.StringFieldUpdateOperationsInput | string
-  path?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  md5?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type AttachmentCreateManyInput = {
   id?: string
-  userId: string
-  filename: string
-  size: number
-  hash: string
-  path: string
-  type: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  filename: string
+  md5: string
+  size: number
+  type: string
 }
 
 export type AttachmentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  filename?: Prisma.StringFieldUpdateOperationsInput | string
-  size?: Prisma.IntFieldUpdateOperationsInput | number
-  hash?: Prisma.StringFieldUpdateOperationsInput | string
-  path?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  md5?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type AttachmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  filename?: Prisma.StringFieldUpdateOperationsInput | string
-  size?: Prisma.IntFieldUpdateOperationsInput | number
-  hash?: Prisma.StringFieldUpdateOperationsInput | string
-  path?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  md5?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type AttachmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  filename?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  hash?: Prisma.SortOrder
-  path?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  filename?: Prisma.SortOrder
+  md5?: Prisma.SortOrder
+  size?: Prisma.SortOrder
+  type?: Prisma.SortOrder
 }
 
 export type AttachmentAvgOrderByAggregateInput = {
@@ -411,105 +371,83 @@ export type AttachmentAvgOrderByAggregateInput = {
 
 export type AttachmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  filename?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  hash?: Prisma.SortOrder
-  path?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  filename?: Prisma.SortOrder
+  md5?: Prisma.SortOrder
+  size?: Prisma.SortOrder
+  type?: Prisma.SortOrder
 }
 
 export type AttachmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  filename?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  hash?: Prisma.SortOrder
-  path?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  filename?: Prisma.SortOrder
+  md5?: Prisma.SortOrder
+  size?: Prisma.SortOrder
+  type?: Prisma.SortOrder
 }
 
 export type AttachmentSumOrderByAggregateInput = {
   size?: Prisma.SortOrder
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 
 
 export type AttachmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  filename?: boolean
-  size?: boolean
-  hash?: boolean
-  path?: boolean
-  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  filename?: boolean
+  md5?: boolean
+  size?: boolean
+  type?: boolean
 }, ExtArgs["result"]["attachment"]>
 
 export type AttachmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  filename?: boolean
-  size?: boolean
-  hash?: boolean
-  path?: boolean
-  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  filename?: boolean
+  md5?: boolean
+  size?: boolean
+  type?: boolean
 }, ExtArgs["result"]["attachment"]>
 
 export type AttachmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  filename?: boolean
-  size?: boolean
-  hash?: boolean
-  path?: boolean
-  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  filename?: boolean
+  md5?: boolean
+  size?: boolean
+  type?: boolean
 }, ExtArgs["result"]["attachment"]>
 
 export type AttachmentSelectScalar = {
   id?: boolean
-  userId?: boolean
-  filename?: boolean
-  size?: boolean
-  hash?: boolean
-  path?: boolean
-  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  filename?: boolean
+  md5?: boolean
+  size?: boolean
+  type?: boolean
 }
 
-export type AttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "filename" | "size" | "hash" | "path" | "type" | "createdAt" | "updatedAt", ExtArgs["result"]["attachment"]>
+export type AttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "filename" | "md5" | "size" | "type", ExtArgs["result"]["attachment"]>
 
 export type $AttachmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Attachment"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    userId: string
-    filename: string
-    size: number
-    hash: string
-    path: string
-    type: string
     createdAt: Date
     updatedAt: Date
+    filename: string
+    md5: string
+    size: number
+    type: string
   }, ExtArgs["result"]["attachment"]>
   composites: {}
 }
@@ -934,14 +872,12 @@ export interface Prisma__AttachmentClient<T, Null = never, ExtArgs extends runti
  */
 export interface AttachmentFieldRefs {
   readonly id: Prisma.FieldRef<"Attachment", 'String'>
-  readonly userId: Prisma.FieldRef<"Attachment", 'String'>
-  readonly filename: Prisma.FieldRef<"Attachment", 'String'>
-  readonly size: Prisma.FieldRef<"Attachment", 'Int'>
-  readonly hash: Prisma.FieldRef<"Attachment", 'String'>
-  readonly path: Prisma.FieldRef<"Attachment", 'String'>
-  readonly type: Prisma.FieldRef<"Attachment", 'String'>
   readonly createdAt: Prisma.FieldRef<"Attachment", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Attachment", 'DateTime'>
+  readonly filename: Prisma.FieldRef<"Attachment", 'String'>
+  readonly md5: Prisma.FieldRef<"Attachment", 'String'>
+  readonly size: Prisma.FieldRef<"Attachment", 'Int'>
+  readonly type: Prisma.FieldRef<"Attachment", 'String'>
 }
     
 

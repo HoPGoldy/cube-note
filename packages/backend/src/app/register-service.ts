@@ -8,6 +8,8 @@ import { registerController as registerCodeExecutorController } from "@/modules/
 import { registerController as registerProbeStatsController } from "@/modules/probe-stats-aggregation/controller";
 import { registerController as registerNotificationController } from "@/modules/notification/controller";
 import { registerController as registerProbeEnvController } from "@/modules/probe-env/controller";
+import { registerArticleController } from "@/modules/article/controller";
+import { registerTagController } from "@/modules/tag/controller";
 import { AppConfigService } from "@/modules/app-config/service";
 import { MonitoredHostService } from "@/modules/monitored-host/service";
 import { EndPointService } from "@/modules/monitored-endpoint/service";
@@ -18,6 +20,8 @@ import { ProbeResultCleanupService } from "@/modules/probe-result-cleanup/servic
 import { ProbeStatsAggregationService } from "@/modules/probe-stats-aggregation/service";
 import { NotificationService } from "@/modules/notification/service";
 import { ProbeEnvService } from "@/modules/probe-env/service";
+import { ArticleService } from "@/modules/article/service";
+import { TagService } from "@/modules/tag/service";
 import { registerUnifyResponse } from "@/lib/unify-response";
 import type { AppInstance } from "@/types";
 
@@ -45,6 +49,14 @@ export const registerService = async (instance: AppInstance) => {
   });
 
   const probeEnvService = new ProbeEnvService({
+    prisma,
+  });
+
+  const articleService = new ArticleService({
+    prisma,
+  });
+
+  const tagService = new TagService({
     prisma,
   });
 
@@ -123,11 +135,14 @@ export const registerService = async (instance: AppInstance) => {
       server,
     });
 
-    // Start the probe scheduler after controllers are registered
-    setImmediate(async () => {
-      await intervalProbeService.startProbeScheduler();
-      await probeResultCleanupService.startCleanupScheduler();
-      await probeStatsAggregationService.startAggregationScheduler();
+    await registerArticleController({
+      server,
+      articleService,
+    });
+
+    await registerTagController({
+      server,
+      tagService,
     });
   };
 

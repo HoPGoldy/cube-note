@@ -168,3 +168,77 @@ model ProbeEnv {
   isSecret  Boolean  @default(false) // 是否为敏感信息
   desc      String? // 变量描述
 }
+
+// ==================== 笔记系统 ====================
+
+// 文章/笔记 - 树形结构存储
+model Article {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title      String
+  content    String  @default("")
+  parentPath String? // 树形路径 "#1#2#3#"
+  tagIds     String? // 标签 ID 列表 "#1#2#3#"
+  favorite   Boolean @default(false)
+
+  relationsFrom ArticleRelation[] @relation("from")
+  relationsTo   ArticleRelation[] @relation("to")
+
+  @@index([parentPath])
+}
+
+// 文章之间的关系
+model ArticleRelation {
+  fromId String
+  toId   String
+
+  from Article @relation("from", fields: [fromId], references: [id], onDelete: Cascade)
+  to   Article @relation("to", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@id([fromId, toId])
+  @@index([fromId])
+  @@index([toId])
+}
+
+// 标签
+model Tag {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title   String  @unique
+  color   String?
+  groupId String?
+
+  group TagGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  @@index([groupId])
+}
+
+// 标签分组
+model TagGroup {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String @unique
+  tags  Tag[]
+}
+
+// ==================== 文件系统 ====================
+
+// 附件/文件
+model Attachment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  filename String
+  md5      String @unique
+  size     Int
+  type     String // MIME type
+
+  @@index([md5])
+}

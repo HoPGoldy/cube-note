@@ -51,10 +51,6 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User',
-  Attachment: 'Attachment',
-  Application: 'Application',
-  WebAuthnCredential: 'WebAuthnCredential',
   AppConfig: 'AppConfig',
   MonitoredHost: 'MonitoredHost',
   EndPoint: 'EndPoint',
@@ -63,7 +59,12 @@ export const ModelName = {
   ProbeDailyStat: 'ProbeDailyStat',
   NotificationChannel: 'NotificationChannel',
   NotificationLog: 'NotificationLog',
-  ProbeEnv: 'ProbeEnv'
+  ProbeEnv: 'ProbeEnv',
+  Article: 'Article',
+  ArticleRelation: 'ArticleRelation',
+  Tag: 'Tag',
+  TagGroup: 'TagGroup',
+  Attachment: 'Attachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -77,64 +78,6 @@ export const TransactionIsolationLevel = {
 } as const
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
-
-
-export const UserScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  username: 'username',
-  email: 'email',
-  phone: 'phone',
-  role: 'role',
-  isBanned: 'isBanned',
-  isDeleted: 'isDeleted',
-  passwordHash: 'passwordHash'
-} as const
-
-export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const AttachmentScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  filename: 'filename',
-  size: 'size',
-  hash: 'hash',
-  path: 'path',
-  type: 'type',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
-
-
-export const ApplicationScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  subTitle: 'subTitle',
-  tokenKey: 'tokenKey'
-} as const
-
-export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum]
-
-
-export const WebAuthnCredentialScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  userId: 'userId',
-  credentialID: 'credentialID',
-  credentialPublicKey: 'credentialPublicKey',
-  counter: 'counter',
-  transports: 'transports',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type WebAuthnCredentialScalarFieldEnum = (typeof WebAuthnCredentialScalarFieldEnum)[keyof typeof WebAuthnCredentialScalarFieldEnum]
 
 
 export const AppConfigScalarFieldEnum = {
@@ -270,6 +213,63 @@ export const ProbeEnvScalarFieldEnum = {
 export type ProbeEnvScalarFieldEnum = (typeof ProbeEnvScalarFieldEnum)[keyof typeof ProbeEnvScalarFieldEnum]
 
 
+export const ArticleScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  title: 'title',
+  content: 'content',
+  parentPath: 'parentPath',
+  tagIds: 'tagIds',
+  favorite: 'favorite'
+} as const
+
+export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
+
+
+export const ArticleRelationScalarFieldEnum = {
+  fromId: 'fromId',
+  toId: 'toId'
+} as const
+
+export type ArticleRelationScalarFieldEnum = (typeof ArticleRelationScalarFieldEnum)[keyof typeof ArticleRelationScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  title: 'title',
+  color: 'color',
+  groupId: 'groupId'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const TagGroupScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  title: 'title'
+} as const
+
+export type TagGroupScalarFieldEnum = (typeof TagGroupScalarFieldEnum)[keyof typeof TagGroupScalarFieldEnum]
+
+
+export const AttachmentScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  filename: 'filename',
+  md5: 'md5',
+  size: 'size',
+  type: 'type'
+} as const
+
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -293,14 +293,6 @@ export const JsonNullValueInput = {
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
 export const JsonNullValueFilter = {
   DbNull: 'DbNull',
   JsonNull: 'JsonNull',
@@ -316,4 +308,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

@@ -8,10 +8,6 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User'
-export type * from './models/Attachment'
-export type * from './models/Application'
-export type * from './models/WebAuthnCredential'
 export type * from './models/AppConfig'
 export type * from './models/MonitoredHost'
 export type * from './models/EndPoint'
@@ -21,4 +17,9 @@ export type * from './models/ProbeDailyStat'
 export type * from './models/NotificationChannel'
 export type * from './models/NotificationLog'
 export type * from './models/ProbeEnv'
+export type * from './models/Article'
+export type * from './models/ArticleRelation'
+export type * from './models/Tag'
+export type * from './models/TagGroup'
+export type * from './models/Attachment'
 export type * from './commonInputTypes'

@@ -18,26 +18,6 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
- * Model Attachment
- * 
- */
-export type Attachment = Prisma.AttachmentModel
-/**
- * Model Application
- * 
- */
-export type Application = Prisma.ApplicationModel
-/**
- * Model WebAuthnCredential
- * 
- */
-export type WebAuthnCredential = Prisma.WebAuthnCredentialModel
-/**
  * Model AppConfig
  * 
  */
@@ -82,3 +62,28 @@ export type NotificationLog = Prisma.NotificationLogModel
  * 
  */
 export type ProbeEnv = Prisma.ProbeEnvModel
+/**
+ * Model Article
+ * 
+ */
+export type Article = Prisma.ArticleModel
+/**
+ * Model ArticleRelation
+ * 
+ */
+export type ArticleRelation = Prisma.ArticleRelationModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model TagGroup
+ * 
+ */
+export type TagGroup = Prisma.TagGroupModel
+/**
+ * Model Attachment
+ * 
+ */
+export type Attachment = Prisma.AttachmentModel

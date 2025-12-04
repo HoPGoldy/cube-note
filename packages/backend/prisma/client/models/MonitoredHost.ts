@@ -509,6 +509,22 @@ export type MonitoredHostScalarRelationFilter = {
   isNot?: Prisma.MonitoredHostWhereInput
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type MonitoredHostCreateNestedOneWithoutEndpointsInput = {
   create?: Prisma.XOR<Prisma.MonitoredHostCreateWithoutEndpointsInput, Prisma.MonitoredHostUncheckedCreateWithoutEndpointsInput>
   connectOrCreate?: Prisma.MonitoredHostCreateOrConnectWithoutEndpointsInput

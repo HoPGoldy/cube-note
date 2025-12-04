@@ -29,8 +29,8 @@ export * from "./enums"
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more AppConfigs
+ * const appConfigs = await prisma.appConfig.findMany()
  * ```
  * 
  * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
@@ -39,26 +39,6 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-/**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
- * Model Attachment
- * 
- */
-export type Attachment = Prisma.AttachmentModel
-/**
- * Model Application
- * 
- */
-export type Application = Prisma.ApplicationModel
-/**
- * Model WebAuthnCredential
- * 
- */
-export type WebAuthnCredential = Prisma.WebAuthnCredentialModel
 /**
  * Model AppConfig
  * 
@@ -104,3 +84,28 @@ export type NotificationLog = Prisma.NotificationLogModel
  * 
  */
 export type ProbeEnv = Prisma.ProbeEnvModel
+/**
+ * Model Article
+ * 
+ */
+export type Article = Prisma.ArticleModel
+/**
+ * Model ArticleRelation
+ * 
+ */
+export type ArticleRelation = Prisma.ArticleRelationModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model TagGroup
+ * 
+ */
+export type TagGroup = Prisma.TagGroupModel
+/**
+ * Model Attachment
+ * 
+ */
+export type Attachment = Prisma.AttachmentModel
