@@ -12,16 +12,56 @@ export class PrismaService extends PrismaClient {
   }
 
   async seed() {
-    try {
-      await this.$queryRaw`PRAGMA journal_mode = WAL;`;
-      console.log("[sqlite] WAL mode enabled");
+    // 初始化根文章
+    await this.$transaction(async (tx) => {
+      // 查询 ROOT_ARTICLE_ID 配置
+      const rootArticleConfig = await tx.appConfig.findUnique({
+        where: { key: "ROOT_ARTICLE_ID" },
+      });
 
-      const result = (await this.$queryRaw`PRAGMA auto_vacuum;`) as any[];
-      const status = result[0]?.auto_vacuum;
+      // 如果配置不存在或文章不存在，则创建新文章
+      if (!rootArticleConfig) {
+        const article = await tx.article.create({
+          data: {
+            title: "根文章",
+            content: "",
+          },
+        });
 
-      console.log(`[sqlite] auto_vacuum status: ${status}`);
-    } catch (error) {
-      console.error("Error setting WAL mode:", error);
-    }
+        // 创建配置记录
+        await tx.appConfig.create({
+          data: {
+            key: "ROOT_ARTICLE_ID",
+            value: article.id,
+          },
+        });
+
+        console.log("Created root article:", article.id);
+      } else {
+        // 检查文章是否存在
+        const article = await tx.article.findUnique({
+          where: { id: rootArticleConfig.value },
+        });
+
+        if (!article) {
+          // 文章不存在，创建新文章并更新配置
+          const newArticle = await tx.article.create({
+            data: {
+              title: "根文章",
+              content: "",
+            },
+          });
+
+          await tx.appConfig.update({
+            where: { key: "ROOT_ARTICLE_ID" },
+            data: { value: newArticle.id },
+          });
+
+          console.log("Recreated root article:", newArticle.id);
+        } else {
+          console.log("Root article already exists:", article.id);
+        }
+      }
+    });
   }
 }

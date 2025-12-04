@@ -8,6 +8,8 @@ import Login from "./pages/login";
 import { HostDetailModal } from "./pages/host-detail";
 import { EndpointDetailModal } from "./pages/endpoint-detail";
 import { NotificationChannelDetailModal } from "./pages/notification-channel-detail";
+import Entry from "./pages/entry";
+import Article from "./pages/article/article";
 
 const lazyLoad = (
   compLoader: () => Promise<{ default: ComponentType<any> }>,
@@ -25,7 +27,9 @@ export const routes = createBrowserRouter(
     {
       path: "/",
       children: [
-        { index: true, element: <Navigate to="/home" /> },
+        { index: true, element: <Entry /> },
+        // 笔记详情
+        { path: "/article/:articleId", element: <Article /> },
         // 首页 - 监控服务列表
         {
           path: "/home",

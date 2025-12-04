@@ -6,6 +6,7 @@ export interface AppConfig {
   WEB_AUTHN_RP_ID?: string;
   WEB_AUTHN_ORIGIN?: string;
   REGISTRATION_MODE_ENABLED?: "true" | "false";
+  ROOT_ARTICLE_ID: string;
 }
 
 export const useGetAppConfig = () => {
@@ -14,7 +15,7 @@ export const useGetAppConfig = () => {
     queryFn: () => requestPost<AppConfig>("config"),
   });
 
-  return { ...result, appConfig: result.data?.data || {} };
+  return { ...result, appConfig: (result.data?.data || {}) as AppConfig };
 };
 
 export const useUpdateAppConfig = () => {

@@ -162,13 +162,13 @@ importers:
         specifier: ^2.6.6
         version: 2.6.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@bytemd/plugin-gfm':
-        specifier: ^1.20.2
+        specifier: ^1.22.0
         version: 1.22.0(bytemd@1.22.0)
       '@bytemd/plugin-highlight':
-        specifier: ^1.21.0
+        specifier: ^1.22.0
         version: 1.22.0(bytemd@1.22.0)
       '@bytemd/react':
-        specifier: ^1.20.2
+        specifier: ^1.22.0
         version: 1.22.0(react@18.3.1)
       '@monaco-editor/react':
         specifier: ^4.7.0
@@ -191,6 +191,9 @@ importers:
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
+      bytemd:
+        specifier: ^1.22.0
+        version: 1.22.0
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
@@ -7483,7 +7486,7 @@ snapshots:
 
   '@types/tern@0.23.9':
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
 
   '@types/trusted-types@2.0.7':
     optional: true
