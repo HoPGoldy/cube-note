@@ -10,11 +10,6 @@ import {
   TagUpdateReqData,
 } from "@/types/tag";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  addItemToList,
-  deleteItemFromList,
-  updateItemToList,
-} from "@/utils/query-cache-update";
 
 /** 查询完整标签列表 */
 export const useQueryTagList = () => {
@@ -32,8 +27,8 @@ export const useAddTag = () => {
     mutationFn: (data: AddTagReqData) => {
       return requestPost<number>("tag/add", data);
     },
-    onSuccess: (resp, data) => {
-      addItemToList("tagList", { ...data, id: resp.data });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tagList"] });
     },
   });
 };
@@ -44,8 +39,8 @@ export const useUpdateTag = () => {
     mutationFn: (data: TagUpdateReqData) => {
       return requestPost("tag/update", data);
     },
-    onSuccess: (resp, data) => {
-      updateItemToList("tagList", data, (item) => item.id === data.id);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tagList"] });
     },
   });
 };
@@ -56,8 +51,8 @@ export const useDeleteTag = () => {
     mutationFn: (id: number) => {
       return requestPost(`tag/${id}/remove`);
     },
-    onSuccess: (resp, id) => {
-      deleteItemFromList<TagListItem>("tagList", (item) => item.id === id);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tagList"] });
     },
   });
 };
@@ -78,8 +73,8 @@ export const useAddTagGroup = () => {
     mutationFn: (data: Omit<TagGroupStorage, "createUserId" | "id">) => {
       return requestPost<number>("tag/group/add", data);
     },
-    onSuccess: (resp, data) => {
-      addItemToList("tagGroupList", { ...data, id: resp.data });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tagGroupList"] });
     },
   });
 };
@@ -90,8 +85,8 @@ export const useUpdateTagGroup = () => {
     mutationFn: (data: Omit<TagGroupStorage, "createUserId">) => {
       return requestPost("tag/group/update", data);
     },
-    onSuccess: (resp, data) => {
-      updateItemToList("tagGroupList", data, (item) => item.id === data.id);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tagGroupList"] });
     },
   });
 };
@@ -126,10 +121,8 @@ export const useBatchDeleteTag = () => {
     mutationFn: (data: DeleteTagReqData) => {
       return requestPost("tag/batch/remove", data);
     },
-    onSuccess: (resp, data) => {
-      deleteItemFromList<TagListItem>("tagList", (item) =>
-        data.ids.includes(item.id),
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tagList"] });
     },
   });
 };
@@ -140,11 +133,8 @@ export const useDeleteTagGroup = () => {
     mutationFn: (data: { id: number; method: string }) => {
       return requestPost(`tag/group/${data.id}/${data.method}/removeGroup`);
     },
-    onSuccess: (resp, { id }) => {
-      deleteItemFromList<TagGroupListItem>(
-        "tagGroupList",
-        (item) => item.id === id,
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tagGroupList"] });
       queryClient.invalidateQueries({ queryKey: ["tagList"] });
     },
   });
