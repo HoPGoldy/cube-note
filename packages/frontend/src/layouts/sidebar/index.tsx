@@ -1,45 +1,34 @@
-import { FC } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { FC } from "react";
+import { ArticleMenuItem, TabTypes } from "@/types/article";
+import { stateCurrentTab } from "@/store/menu";
+import { Link, useNavigate } from "react-router-dom";
+import { TreeMenu } from "@//components/tree-menu";
+import {
+  PlusOutlined,
+  RollbackOutlined,
+  LinkOutlined,
+  InsertRowLeftOutlined,
+} from "@ant-design/icons";
+import { Button, Col, Row, Space, Tooltip } from "antd";
 import s from "./styles.module.css";
-import { Button, Flex } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import { useHostDetailAction } from "@/pages/host-detail/use-detail-action";
-import { useHostStatus } from "@/utils/use-host-status";
-
-interface MenuItem {
-  path: string;
-  name: string;
-  hostId?: string;
-}
+import { EMPTY_CLASSNAME, tabOptions, useMenu } from "./use-menu";
+import Loading from "../loading";
+import { useSetAtom } from "jotai";
 
 export const Sidebar: FC = () => {
-  const location = useLocation();
-  const { hosts, getHostDisplayStatus, statusColorMap } = useHostStatus();
+  const setCurrentTab = useSetAtom(stateCurrentTab);
+  const menu = useMenu();
+  const navigate = useNavigate();
 
-  const hostDetailActions = useHostDetailAction();
-
-  // 先添加监控服务列表
-  const menuItems: MenuItem[] = hosts.map((host: any) => ({
-    path: `/host-home/${host.id}`,
-    name: host.name,
-    hostId: host.id,
-  }));
-
-  const renderMenuItem = (item: MenuItem) => {
-    const className = [s.menuItem];
-    if (item.path === location.pathname) className.push(s.menuItemActive);
-
-    const displayStatus = item.hostId
-      ? getHostDisplayStatus(item.hostId)
-      : null;
-
+  const renderMenuItem = (item: ArticleMenuItem) => {
     return (
-      <Link to={item.path} key={item.path}>
-        <div className={className.join(" ")} title={item.name}>
-          <span className="truncate">{item.name}</span>
-          {displayStatus && (
-            <span
-              className={`inline-block w-2 h-2 rounded-full flex-shrink-0 ${statusColorMap[displayStatus]}`}
+      <Link key={item.id} to={`/article/${item.id}`}>
+        <div className={s.menuItem} title={item.title}>
+          <span className="truncate">{item.title}</span>
+          {item.color && (
+            <div
+              className="flex-shrink-0 w-3 h-3 rounded"
+              style={{ backgroundColor: item.color }}
             />
           )}
         </div>
@@ -47,31 +36,171 @@ export const Sidebar: FC = () => {
     );
   };
 
-  return (
-    <section className={s.sideberBox}>
-      <div className="flex flex-row flex-nowrap items-center justify-center">
-        <div className="font-black text-lg">Cube Probe</div>
-      </div>
+  /** 渲染下属文章列表 */
+  const renderSubMenu = () => {
+    if (menu.linkLoading) {
+      return <Loading tip="加载中..." className="my-8" />;
+    }
+    const currentMenu = menu.articleLink?.data?.childrenArticles || [];
+    // console.log('🚀 ~ 下属文章列表', currentMenu)
 
-      <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden my-3">
-        {menuItems.map(renderMenuItem)}
-      </div>
+    return (
+      <>
+        {menu.parentArticleIds && (
+          <Link
+            to={`/article/${menu.parentArticleIds[menu.parentArticleIds.length - 1]}`}
+          >
+            <Button
+              className={`${s.toolBtn} keep-antd-style`}
+              icon={<RollbackOutlined />}
+              block
+            >
+              返回{menu.parentArticleTitle}
+            </Button>
+          </Link>
+        )}
+        {currentMenu.length === 0 ? (
+          <div className={EMPTY_CLASSNAME}>暂无子笔记</div>
+        ) : (
+          currentMenu.map(renderMenuItem)
+        )}
 
-      <Flex vertical gap={8}>
         <Button
           className={`${s.toolBtn} keep-antd-style`}
           icon={<PlusOutlined />}
+          onClick={menu.createArticle}
           block
-          onClick={hostDetailActions.onAdd}
         >
-          创建监控服务
+          创建子笔记
         </Button>
-        <Link to="/home">
-          <Button className={`${s.toolBtn} keep-antd-style`} block>
-            主面板
-          </Button>
-        </Link>
-      </Flex>
+      </>
+    );
+  };
+
+  /** 渲染相关文章列表 */
+  const renderRelatedMenu = () => {
+    if (menu.relatedLinkLoading) {
+      return <Loading tip="加载中..." className="my-8" />;
+    }
+    const currentMenu = menu.articleRelatedLink?.data?.relatedArticles || [];
+    // console.log('🚀 ~ 相关文章列表', currentMenu)
+
+    const addRelateBtn = (
+      <TreeMenu
+        key="related-tree"
+        value={menu.selectedRelatedArticleIds}
+        onChange={menu.onUpdateRelatedArticleIds}
+        onClickNode={menu.onUpdateRelatedList}
+        treeData={menu.articleTree?.data?.children || []}
+      >
+        <Button
+          className={`${s.toolBtn} keep-antd-style`}
+          icon={<LinkOutlined />}
+          block
+        >
+          关联其他笔记
+        </Button>
+      </TreeMenu>
+    );
+
+    if (currentMenu.length === 0) {
+      return (
+        <>
+          {<div className={EMPTY_CLASSNAME}>暂无相关笔记</div>}
+          {addRelateBtn}
+        </>
+      );
+    }
+
+    return (
+      <>
+        {currentMenu.map(renderMenuItem)}
+        {addRelateBtn}
+      </>
+    );
+  };
+
+  /** 渲染收藏文章列表 */
+  const renderFavoriteMenu = () => {
+    if (menu.favoriteLoading) {
+      return <Loading tip="加载中..." className="my-8" />;
+    }
+    const currentMenu = menu.articleFavorite?.data || [];
+    // console.log('🚀 ~ 收藏文章列表', currentMenu)
+
+    return (
+      <>
+        {currentMenu.length === 0 ? (
+          <div className={EMPTY_CLASSNAME}>暂无收藏</div>
+        ) : (
+          currentMenu.map(renderMenuItem)
+        )}
+      </>
+    );
+  };
+
+  const renderCurrentMenu = () => {
+    switch (menu.currentTab) {
+      case TabTypes.Sub:
+        return renderSubMenu();
+      case TabTypes.Related:
+        return renderRelatedMenu();
+      case TabTypes.Favorite:
+        return renderFavoriteMenu();
+      default:
+        return null;
+    }
+  };
+
+  const renderTabBtns = () => {
+    return (
+      <Row gutter={8}>
+        {tabOptions.map((item) => {
+          const className = [s.toolBtn, "keep-antd-style"];
+          if (item.value === menu.currentTab) className.push(s.selectedToolBtn);
+          return (
+            <Col span={8} key={item.value}>
+              <Tooltip
+                title={item.sidebarLabel}
+                placement="bottom"
+                color="#4b5563"
+              >
+                <Button
+                  className={className.join(" ")}
+                  onClick={() => setCurrentTab(item.value)}
+                  // style={{ backgroundColor: item.value === menu.currentTab ? '#f0f0f0' : '' }}
+                  icon={item.icon}
+                  block
+                ></Button>
+              </Tooltip>
+            </Col>
+          );
+        })}
+      </Row>
+    );
+  };
+
+  return (
+    <section className={s.sideberBox}>
+      {renderTabBtns()}
+
+      <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden my-3">
+        <Space direction="vertical" style={{ width: "100%" }}>
+          {renderCurrentMenu()}
+        </Space>
+      </div>
+      <TreeMenu
+        treeData={menu.articleTree?.data?.children || []}
+        onClickNode={(node) => navigate(`/article/${node.value}`)}
+      >
+        <Button
+          className={`${s.toolBtn} keep-antd-style`}
+          icon={<InsertRowLeftOutlined />}
+          block
+        >
+          笔记树
+        </Button>
+      </TreeMenu>
     </section>
   );
 };

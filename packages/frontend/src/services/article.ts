@@ -1,4 +1,4 @@
-import { queryClient, requestGet, requestPost } from "./base";
+import { queryClient, requestPost } from "./base";
 import { AppResponse } from "@/types/global";
 import {
   AddArticleReqData,
@@ -23,7 +23,7 @@ export const useQueryArticleContent = (id: string) => {
   return useQuery({
     queryKey: ["articleContent", id],
     queryFn: () => {
-      return requestGet<ArticleContent>(`article/${id}/getContent`);
+      return requestPost<ArticleContent>("article/getContent", { id });
     },
     refetchOnWindowFocus: false,
   });
@@ -89,7 +89,7 @@ export const useQueryArticleLink = (
   return useQuery({
     queryKey: ["articleLink", id],
     queryFn: () => {
-      return requestGet<ArticleLinkResp>(`article/${id}/getLink`);
+      return requestPost<ArticleLinkResp>("article/getLink", { id });
     },
     enabled,
   });
@@ -103,8 +103,9 @@ export const useQueryArticleSublink = (
   return useQuery({
     queryKey: ["articleDetailSubLink", id],
     queryFn: () => {
-      return requestGet<ArticleSubLinkDetail[]>(
-        `article/${id}/getChildrenDetailList`,
+      return requestPost<ArticleSubLinkDetail[]>(
+        "article/getChildrenDetailList",
+        { id },
       );
     },
     enabled,
@@ -119,7 +120,7 @@ export const useQueryArticleRelated = (
   return useQuery({
     queryKey: ["articleRelated", id],
     queryFn: () => {
-      return requestGet<ArticleRelatedResp>(`article/${id}/getRelated`);
+      return requestPost<ArticleRelatedResp>("article/getRelated", { id });
     },
     enabled,
   });
@@ -175,7 +176,7 @@ export const useQueryArticleTree = (id?: string) => {
   return useQuery({
     queryKey: ["menu", id],
     queryFn: () => {
-      return requestGet<ArticleTreeNode>(`article/${id}/tree`);
+      return requestPost<ArticleTreeNode>("article/getTree", { id });
     },
     refetchOnWindowFocus: false,
     enabled: !isNil(id),
@@ -187,7 +188,7 @@ export const useQueryArticleFavorite = (enabled: boolean) => {
   return useQuery({
     queryKey: ["favorite"],
     queryFn: () => {
-      return requestGet<ArticleMenuItem[]>("article/favorite");
+      return requestPost<ArticleMenuItem[]>("article/getFavorite", {});
     },
     refetchOnWindowFocus: false,
     enabled,

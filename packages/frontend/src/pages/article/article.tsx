@@ -16,7 +16,7 @@ import Preview from "./preview";
 import { useEditor } from "./editor";
 import { messageWarning } from "@/utils/message";
 import { ArticleSubLinkDetail, UpdateArticleReqData } from "@/types/article";
-import TagArea from "./TagArea";
+import TagArea from "./tag-area";
 import { blurOnEnter } from "@/utils/input";
 import dayjs from "dayjs";
 import {

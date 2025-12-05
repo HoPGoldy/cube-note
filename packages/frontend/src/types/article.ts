@@ -98,7 +98,7 @@ export interface ArticleContent {
   content: string;
   createTime: number;
   updateTime: number;
-  parentArticleId?: number;
+  parentArticleId?: string;
   tagIds?: number[];
   listSubarticle?: boolean;
   color?: string;

@@ -3,7 +3,7 @@ import { Button, Col, List, Modal, Row, Space } from "antd";
 import { MobileDrawer } from "@/components/mobile-drawer";
 import { TagListItem } from "@/types/tag";
 import { useQueryTagGroup, useQueryTagList } from "@/services/tag";
-import { useAllTagGroup, useGroupedTag } from "../pages/tagManager/tagHooks";
+import { useAllTagGroup, useGroupedTag } from "@/pages/tag-manager/tag-hooks";
 import { ControlOutlined } from "@ant-design/icons";
 import { Tag } from "@/components/tag";
 import Loading from "@/layouts/loading";

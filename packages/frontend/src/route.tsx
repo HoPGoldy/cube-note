@@ -33,6 +33,16 @@ export const routes = createBrowserRouter(
         { path: "/article/:articleId", element: <Article /> },
         // 笔记搜索
         { path: "/search", element: <Search /> },
+        // 笔记管理
+        {
+          path: "/articleManage",
+          element: lazyLoad(() => import("./pages/article-manager")),
+        },
+        // 标签管理
+        {
+          path: "/tags",
+          element: lazyLoad(() => import("./pages/tag-manager/tag-manager")),
+        },
         // 首页 - 监控服务列表
         {
           path: "/home",

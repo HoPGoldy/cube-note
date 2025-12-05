@@ -1,11 +1,11 @@
 import { FC, useState } from "react";
-import { AddTag, EditTagEntry, Tag } from "@/client/components/Tag";
-import { useAddTag, useQueryTagList } from "@/client/services/tag";
-import { useUpdateArticle } from "@/client/services/article";
+import { AddTag, EditTagEntry, Tag } from "@/components/tag";
+import { useAddTag, useQueryTagList } from "@/services/tag";
+import { useUpdateArticle } from "@/services/article";
 import { useNavigate } from "react-router-dom";
-import { TagPicker } from "@/client/components/TagPicker";
-import { Draggable } from "@/client/components/Draggable";
-import { useTagDict } from "../tagManager/tag-hooks";
+import { TagPicker } from "@/components/tag-picker";
+import { Draggable } from "@/components/draggable";
+import { useTagDict } from "../tag-manager/tag-hooks";
 import { PageLoading } from "@/components/page-loading";
 
 interface Props {
@@ -27,7 +27,7 @@ const TagArea: FC<Props> = (props) => {
   const { articleId, value = [], disabled } = props;
   const navigate = useNavigate();
   // 新增标签
-  const { mutateAsync: addTag, isLoading: isAddingTag } = useAddTag();
+  const { mutateAsync: addTag, isPending: isAddingTag } = useAddTag();
   // 整个标签列表
   const { data: tagListResp, isLoading: isLoadingTagList } = useQueryTagList();
   // 标签映射
