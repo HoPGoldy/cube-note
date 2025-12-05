@@ -1,4 +1,4 @@
-import { queryClient, requestGet, requestPost } from "./base";
+import { queryClient, requestPost } from "./base";
 import {
   AddTagReqData,
   DeleteTagReqData,
@@ -16,7 +16,7 @@ export const useQueryTagList = () => {
   return useQuery({
     queryKey: ["tagList"],
     queryFn: () => {
-      return requestGet<TagListItem[]>("tag/list");
+      return requestPost<TagListItem[]>("tag/list", {});
     },
   });
 };
@@ -49,7 +49,7 @@ export const useUpdateTag = () => {
 export const useDeleteTag = () => {
   return useMutation({
     mutationFn: (id: number) => {
-      return requestPost(`tag/${id}/remove`);
+      return requestPost("tag/remove", { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tagList"] });
@@ -62,7 +62,7 @@ export const useQueryTagGroup = () => {
   return useQuery({
     queryKey: ["tagGroupList"],
     queryFn: () => {
-      return requestGet<TagGroupListItem[]>("tag/group/list");
+      return requestPost<TagGroupListItem[]>("tag/group/list", {});
     },
   });
 };
