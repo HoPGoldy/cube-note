@@ -1,5 +1,5 @@
 import { ComponentType, lazy, Suspense } from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Loading from "./layouts/loading";
 import { LoginAuth } from "./layouts/login-auth";
 import { AppContainer } from "./layouts/app-container";
@@ -10,6 +10,7 @@ import { EndpointDetailModal } from "./pages/endpoint-detail";
 import { NotificationChannelDetailModal } from "./pages/notification-channel-detail";
 import Entry from "./pages/entry";
 import Article from "./pages/article/article";
+import Search from "./pages/search/search";
 
 const lazyLoad = (
   compLoader: () => Promise<{ default: ComponentType<any> }>,
@@ -30,6 +31,8 @@ export const routes = createBrowserRouter(
         { index: true, element: <Entry /> },
         // 笔记详情
         { path: "/article/:articleId", element: <Article /> },
+        // 笔记搜索
+        { path: "/search", element: <Search /> },
         // 首页 - 监控服务列表
         {
           path: "/home",

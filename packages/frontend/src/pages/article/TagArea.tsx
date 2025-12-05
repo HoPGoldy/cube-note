@@ -5,7 +5,7 @@ import { useUpdateArticle } from "@/client/services/article";
 import { useNavigate } from "react-router-dom";
 import { TagPicker } from "@/client/components/TagPicker";
 import { Draggable } from "@/client/components/Draggable";
-import { useTagDict } from "../tagManager/tagHooks";
+import { useTagDict } from "../tagManager/tag-hooks";
 import { PageLoading } from "@/components/page-loading";
 
 interface Props {

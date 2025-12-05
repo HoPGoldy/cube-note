@@ -27,3 +27,8 @@ export const THEME_BUTTON_COLOR = "linear-gradient(45deg, #ec008c, #6739b6)";
  * 没填写 TokenKey 时的默认值
  */
 export const DEFAULT_TOKEN_KEY = "$cube-auth-app-token";
+
+/**
+ * 默认（默认分组）的标签分组 ID
+ */
+export const DEFAULT_TAG_GROUP = -1;
