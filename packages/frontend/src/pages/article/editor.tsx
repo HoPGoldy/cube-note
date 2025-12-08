@@ -6,6 +6,8 @@ import { autoSaveContent } from "@/services/article";
 import { messageError } from "@/utils/message";
 import { useIsMobile } from "@/layouts/responsive";
 import zh_Hans from "bytemd/locales/zh_Hans.json";
+import { Editor } from "@/components/markdown-editor";
+import { PreviewType } from "@uiw/react-md-editor";
 
 interface Props {
   onAutoSave: () => void;
@@ -57,11 +59,10 @@ export const useEditor = (props: Props) => {
 
   const renderEditor = () => {
     return (
-      <MdEditor
+      <Editor
         value={content}
-        mode={isMobile ? "tab" : "split"}
-        plugins={plugins}
-        locale={zh_Hans}
+        preview={(isMobile ? "edit" : "live") as PreviewType}
+        // locale={zh_Hans}
         onChange={onContentChange}
       />
     );

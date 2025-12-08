@@ -12,7 +12,6 @@ import {
   useQueryArticleSublink,
   useUpdateArticle,
 } from "@/services/article";
-import Preview from "./preview";
 import { useEditor } from "./editor";
 import { messageWarning } from "@/utils/message";
 import { ArticleSubLinkDetail, UpdateArticleReqData } from "@/types/article";
@@ -33,6 +32,7 @@ import { MobileArea } from "@/layouts/responsive";
 import { PageLoading } from "@/components/page-loading";
 import { usePageTitle } from "@/store/global";
 import { stateCurrentArticleId } from "@/store/menu";
+import { MarkdownPreview } from "@/components/markdown-editor";
 
 const About: FC = () => {
   const params = useParams();
@@ -223,7 +223,7 @@ const About: FC = () => {
           </div>
         ) : (
           <div className={`md:w-[100%] ${s.mdArea}`}>
-            <Preview value={content} />
+            <MarkdownPreview source={content} />
           </div>
         )}
 

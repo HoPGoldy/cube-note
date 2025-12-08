@@ -15,41 +15,6 @@
   height: 100%;
 }
 
-.mdArea :global(img) {
-  max-width: 100%;
-  margin: auto;
-  display: block;
-}
-
-.mdArea :global(table) {
-  width: 100%;
-  border-top: 1px solid #ddd;
-  border-left: 1px solid #ddd;
-}
-
-.mdArea :global(th) {
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  padding: 8px;
-  min-width: 60px;
-}
-
-.mdArea :global(td) {
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  padding: 8px;
-  min-width: 60px;
-}
-
-.mdArea :global(code) {
-  border: 1px solid #ddd;
-  background: #f6f6f6;
-  color: #181818;
-  padding: 3px 6px;
-  border-radius: 3px;
-  font-size: 14px;
-}
-
 .settingDrawer :global(.ant-drawer-body) {
   padding: 0 !important;
 }
