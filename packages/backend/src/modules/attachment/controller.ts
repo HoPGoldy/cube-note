@@ -52,14 +52,14 @@ export const registerController = (options: RegisterOptions) => {
     },
   );
 
-  server.post(
-    "/attachments/request",
+  server.get(
+    "/attachments/request/:fileId",
     {
       schema: {
         description: "请求文件访问令牌",
         tags: ["attachment"],
-        body: Type.Object({
-          id: Type.String(),
+        params: Type.Object({
+          fileId: Type.String(),
         }),
         response: {
           200: SchemaAccessTokenResponse,
@@ -67,8 +67,8 @@ export const registerController = (options: RegisterOptions) => {
       },
     },
     async (request) => {
-      const { id } = request.body;
-      const info = await attachmentService.createAccessToken(id);
+      const { fileId } = request.params;
+      const info = await attachmentService.createAccessToken(fileId);
       return {
         url: `/api/attachments/download?i=${info.id}&t=${info.date}&s=${info.signature}`,
       };

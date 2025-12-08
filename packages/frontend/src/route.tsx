@@ -12,6 +12,7 @@ import Entry from "./pages/entry";
 import Article from "./pages/article/article";
 import Search from "./pages/search/search";
 import AttachmentDemo from "./pages/attachment-demo";
+import MarkdownEditorDemo from "./pages/markdown-editor-demo";
 
 const lazyLoad = (
   compLoader: () => Promise<{ default: ComponentType<any> }>,
@@ -86,6 +87,7 @@ export const routes = createBrowserRouter(
     },
     { path: "/e403", element: <Error403 /> },
     { path: "/file-demo", element: <AttachmentDemo /> },
+    { path: "/markdown-editor-demo", element: <MarkdownEditorDemo /> },
   ],
   {
     basename: APP_CONFIG.PATH_BASENAME,

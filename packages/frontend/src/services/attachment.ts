@@ -1,4 +1,4 @@
-import { requestPost } from "./base";
+import { requestGet, requestPost } from "./base";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useGetFileInfo = (fileId: string) => {
@@ -26,7 +26,7 @@ export const useUploadFile = () => {
 export const useRequestFileUrl = () => {
   return useMutation({
     mutationFn: (fileId: string) => {
-      return requestPost("attachments/request", { id: fileId });
+      return requestGet(`attachments/request/${fileId}`);
     },
   });
 };
