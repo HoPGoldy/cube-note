@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   AppConfig: 'AppConfig',
+  Attachment: 'Attachment',
   MonitoredHost: 'MonitoredHost',
   EndPoint: 'EndPoint',
   ProbeResult: 'ProbeResult',
@@ -63,8 +64,7 @@ export const ModelName = {
   Article: 'Article',
   ArticleRelation: 'ArticleRelation',
   Tag: 'Tag',
-  TagGroup: 'TagGroup',
-  Attachment: 'Attachment'
+  TagGroup: 'TagGroup'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -88,6 +88,21 @@ export const AppConfigScalarFieldEnum = {
 } as const
 
 export type AppConfigScalarFieldEnum = (typeof AppConfigScalarFieldEnum)[keyof typeof AppConfigScalarFieldEnum]
+
+
+export const AttachmentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  filename: 'filename',
+  size: 'size',
+  hash: 'hash',
+  path: 'path',
+  type: 'type',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
 
 
 export const MonitoredHostScalarFieldEnum = {
@@ -255,19 +270,6 @@ export const TagGroupScalarFieldEnum = {
 } as const
 
 export type TagGroupScalarFieldEnum = (typeof TagGroupScalarFieldEnum)[keyof typeof TagGroupScalarFieldEnum]
-
-
-export const AttachmentScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  filename: 'filename',
-  md5: 'md5',
-  size: 'size',
-  type: 'type'
-} as const
-
-export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
 
 
 export const SortOrder = {

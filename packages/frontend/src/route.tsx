@@ -11,6 +11,7 @@ import { NotificationChannelDetailModal } from "./pages/notification-channel-det
 import Entry from "./pages/entry";
 import Article from "./pages/article/article";
 import Search from "./pages/search/search";
+import AttachmentDemo from "./pages/attachment-demo";
 
 const lazyLoad = (
   compLoader: () => Promise<{ default: ComponentType<any> }>,
@@ -84,6 +85,7 @@ export const routes = createBrowserRouter(
       element: <Login />,
     },
     { path: "/e403", element: <Error403 /> },
+    { path: "/file-demo", element: <AttachmentDemo /> },
   ],
   {
     basename: APP_CONFIG.PATH_BASENAME,

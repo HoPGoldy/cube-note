@@ -45,6 +45,11 @@ export { Prisma }
  */
 export type AppConfig = Prisma.AppConfigModel
 /**
+ * Model Attachment
+ * 
+ */
+export type Attachment = Prisma.AttachmentModel
+/**
  * Model MonitoredHost
  * 
  */
@@ -104,8 +109,3 @@ export type Tag = Prisma.TagModel
  * 
  */
 export type TagGroup = Prisma.TagGroupModel
-/**
- * Model Attachment
- * 
- */
-export type Attachment = Prisma.AttachmentModel

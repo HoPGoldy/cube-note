@@ -25,6 +25,20 @@ model AppConfig {
   updatedAt DateTime @updatedAt
 }
 
+model Attachment {
+  id        String   @id @default(uuid())
+  userId    String
+  filename  String
+  size      Int
+  hash      String
+  path      String
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
 enum EndPointType {
   CONFIG // 配置模式：填写 URL、请求方法、请求头、请求体等
   CODE // 编码模式：填写代码内容
@@ -225,20 +239,4 @@ model TagGroup {
 
   title String @unique
   tags  Tag[]
-}
-
-// ==================== 文件系统 ====================
-
-// 附件/文件
-model Attachment {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  filename String
-  md5      String @unique
-  size     Int
-  type     String // MIME type
-
-  @@index([md5])
 }

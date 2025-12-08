@@ -8,6 +8,7 @@ import { registerController as registerCodeExecutorController } from "@/modules/
 import { registerController as registerProbeStatsController } from "@/modules/probe-stats-aggregation/controller";
 import { registerController as registerNotificationController } from "@/modules/notification/controller";
 import { registerController as registerProbeEnvController } from "@/modules/probe-env/controller";
+import { registerController as registerAttachmentController } from "@/modules/attachment/controller";
 import { registerArticleController } from "@/modules/article/controller";
 import { registerTagController } from "@/modules/tag/controller";
 import { AppConfigService } from "@/modules/app-config/service";
@@ -24,6 +25,7 @@ import { ArticleService } from "@/modules/article/service";
 import { TagService } from "@/modules/tag/service";
 import { registerUnifyResponse } from "@/lib/unify-response";
 import type { AppInstance } from "@/types";
+import { AttachmentService } from "@/modules/attachment/service";
 
 /**
  * 组装后端服务的主要业务功能
@@ -35,6 +37,10 @@ export const registerService = async (instance: AppInstance) => {
   await prisma.seed();
 
   const appConfigService = new AppConfigService({
+    prisma,
+  });
+
+  const attachmentService = new AttachmentService({
     prisma,
   });
 
@@ -89,6 +95,11 @@ export const registerService = async (instance: AppInstance) => {
 
   const appControllerPlugin = async (server: AppInstance) => {
     registerUnifyResponse(server);
+
+    registerAttachmentController({
+      attachmentService,
+      server,
+    });
 
     registerAuthController({
       server,
