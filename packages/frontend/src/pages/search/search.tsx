@@ -10,7 +10,7 @@ import {
 } from "@/layouts/page-with-action";
 import { useTagArea } from "./tag-area";
 import { useQueryTagList } from "@/services/tag";
-import { useTagDict } from "@/pages/tag-manager/tag-hooks";
+import { useTagDict } from "@/pages/tag-manager/use-tag-dict";
 import { Tag } from "@/components/tag";
 import { Card, Col, Input, List, Row, Space } from "antd";
 import { DEFAULT_PAGE_SIZE } from "@/config";
@@ -33,7 +33,7 @@ const SearchArticle: FC = () => {
   // 获取标签列表
   const { data: tagListResp, isLoading: isTagLoading } = useQueryTagList();
   // 标签映射
-  const tagDict = useTagDict(tagListResp?.data || []);
+  const tagDict = useTagDict();
   // 当前分页
   const [currentPage, setCurrentPage] = useState(1);
   // 功能 - 标签选择

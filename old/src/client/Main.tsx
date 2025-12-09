@@ -13,7 +13,6 @@ import { useInitMessage } from './utils/message';
 import { AntdConfigProvider } from './components/AntdConfigProvider';
 import { ResponsiveProvider } from './layouts/Responsive';
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const rootContainer = document.getElementById('root')!;
 
 const App = () => {

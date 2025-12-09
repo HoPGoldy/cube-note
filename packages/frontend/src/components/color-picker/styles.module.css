@@ -3,7 +3,7 @@
 }
 
 .selectedColor {
-  @apply ring-4 ring-gray-700 dark:ring-gray-300 hover:ring-gray-700
+  @apply ring-4 ring-gray-400 dark:ring-gray-600 hover:ring-gray-400
 }
 
 .removeBtn {

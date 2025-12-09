@@ -22,8 +22,18 @@ import isNil from "lodash/isNil";
 export const useQueryArticleContent = (id: string) => {
   return useQuery({
     queryKey: ["articleContent", id],
-    queryFn: () => {
-      return requestPost<ArticleContent>("article/getContent", { id });
+    queryFn: async () => {
+      const resp = await requestPost("article/getContent", {
+        id,
+      });
+      const data = resp.data;
+      return {
+        ...resp,
+        data: {
+          ...data,
+          tagIds: data.tagIds ? data.tagIds.split(",").filter(Boolean) : [],
+        } as ArticleContent,
+      };
     },
     refetchOnWindowFocus: false,
   });
@@ -50,7 +60,15 @@ const updateArticleCache = (
 export const useUpdateArticle = () => {
   return useMutation({
     mutationFn: (data: UpdateArticleReqData) => {
-      return requestPost("article/update", data);
+      // 转换 tagIds 从 number[] 到 string
+      const convertedData = {
+        ...data,
+        tagIds:
+          data.tagIds && data.tagIds.length > 0
+            ? data.tagIds.join(",")
+            : undefined,
+      };
+      return requestPost("article/update", convertedData);
     },
     onMutate: async (data) => {
       // 把修改乐观更新到缓存

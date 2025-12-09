@@ -14,6 +14,7 @@ import s from "./styles.module.css";
 import { EMPTY_CLASSNAME, tabOptions, useMenu } from "./use-menu";
 import Loading from "../loading";
 import { useSetAtom } from "jotai";
+import { ColorDot } from "@/components/color-picker/color-dot";
 
 export const Sidebar: FC = () => {
   const setCurrentTab = useSetAtom(stateCurrentTab);
@@ -25,12 +26,7 @@ export const Sidebar: FC = () => {
       <Link key={item.id} to={`/article/${item.id}`}>
         <div className={s.menuItem} title={item.title}>
           <span className="truncate">{item.title}</span>
-          {item.color && (
-            <div
-              className="flex-shrink-0 w-3 h-3 rounded"
-              style={{ backgroundColor: item.color }}
-            />
-          )}
+          {item.color && <ColorDot color={item.color} />}
         </div>
       </Link>
     );

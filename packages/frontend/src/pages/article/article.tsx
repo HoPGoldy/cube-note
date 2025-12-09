@@ -104,6 +104,7 @@ const About: FC = () => {
   const setCurrentArticleId = useSetAtom(stateCurrentArticleId);
 
   useEffect(() => {
+    if (!currentArticleId) return;
     setCurrentArticleId(currentArticleId);
   }, [currentArticleId, setCurrentArticleId]);
 

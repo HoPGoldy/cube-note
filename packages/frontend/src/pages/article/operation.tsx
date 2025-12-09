@@ -1,5 +1,5 @@
 import { MobileDrawer } from "@/components/mobile-drawer";
-import { DesktopArea, useIsMobile } from "@/layouts/responsive";
+import { DesktopArea } from "@/layouts/responsive";
 import { Button, Col, Popover, Row, Space, Switch, Tooltip } from "antd";
 import { ChangeEventHandler, useRef, useState } from "react";
 import {
@@ -44,7 +44,6 @@ export const useOperation = (props: Props) => {
   const { isEdit, title, articleDetail, updatingArticle, currentArticleId } =
     props;
   const { appConfig } = useGetAppConfig();
-  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   /** 切换收藏状态 */
   const { mutateAsync: updateFavoriteState } = useFavoriteArticle();

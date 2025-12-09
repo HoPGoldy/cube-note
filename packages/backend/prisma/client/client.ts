@@ -104,8 +104,3 @@ export type ArticleRelation = Prisma.ArticleRelationModel
  * 
  */
 export type Tag = Prisma.TagModel
-/**
- * Model TagGroup
- * 
- */
-export type TagGroup = Prisma.TagGroupModel

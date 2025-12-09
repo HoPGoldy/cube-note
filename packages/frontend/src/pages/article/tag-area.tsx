@@ -1,12 +1,11 @@
 import { FC, useState } from "react";
 import { AddTag, EditTagEntry, Tag } from "@/components/tag";
-import { useAddTag, useQueryTagList } from "@/services/tag";
+import { useAddTag } from "@/services/tag";
 import { useUpdateArticle } from "@/services/article";
 import { useNavigate } from "react-router-dom";
 import { TagPicker } from "@/components/tag-picker";
 import { Draggable } from "@/components/draggable";
-import { useTagDict } from "../tag-manager/tag-hooks";
-import { PageLoading } from "@/components/page-loading";
+import { useTagDict } from "../tag-manager/use-tag-dict";
 
 interface Props {
   /**
@@ -14,9 +13,9 @@ interface Props {
    */
   articleId: string;
   /**
-   * 当前文章选中的标签
+   * 当前文章选中的标签 id 列表
    */
-  value: number[];
+  value: string[];
   /**
    * 是否禁用编辑
    */
@@ -28,10 +27,8 @@ const TagArea: FC<Props> = (props) => {
   const navigate = useNavigate();
   // 新增标签
   const { mutateAsync: addTag, isPending: isAddingTag } = useAddTag();
-  // 整个标签列表
-  const { data: tagListResp, isLoading: isLoadingTagList } = useQueryTagList();
   // 标签映射
-  const tagDict = useTagDict(tagListResp?.data);
+  const tagDict = useTagDict();
   // 更新文章选中的标签列表
   const { mutateAsync: updateArticle } = useUpdateArticle();
   // 是否处于编辑状态
@@ -47,7 +44,7 @@ const TagArea: FC<Props> = (props) => {
     updateArticle({ id: articleId, tagIds: [...value, resp.data] });
   };
 
-  const onClickTag = (id: number) => {
+  const onClickTag = (id: string) => {
     if (disabled) {
       navigate(`/search?tagIds=${id}`);
       return;
@@ -55,7 +52,7 @@ const TagArea: FC<Props> = (props) => {
   };
 
   /** 选择 / 取消选择标签 */
-  const onPickTag = (id: number) => {
+  const onPickTag = (id: string) => {
     // 更新文章的标签列表
     const newSelected = value.includes(id)
       ? value.filter((v) => v !== id)
@@ -65,19 +62,22 @@ const TagArea: FC<Props> = (props) => {
   };
 
   /** 更新排序 */
-  const onChangeOrder = (newOrder: number[]) => {
+  const onChangeOrder = (newOrder: string[]) => {
     updateArticle({
       id: articleId,
       tagIds: newOrder.filter(Boolean),
     });
   };
 
-  const renderTagItem = (itemId: number) => {
+  const renderTagItem = (itemId: string) => {
     const tagInfo = tagDict.get(itemId);
     if (!tagInfo) return null;
 
     return (
-      <div className="inline-block max-w-full overflow-hidden" key={itemId}>
+      <div
+        className="inline-block max-w-full overflow-hidden mr-1"
+        key={itemId}
+      >
         {tagInfo && (
           <Tag color={tagInfo.color} onClick={() => onClickTag(itemId)}>
             {tagInfo.title}
@@ -88,7 +88,6 @@ const TagArea: FC<Props> = (props) => {
   };
 
   const renderTagList = () => {
-    if (isLoadingTagList) return <PageLoading tip="标签加载中..." />;
     if (!value) return <div>暂无标签</div>;
     const existTagIds = value.filter((id) => tagDict.has(id));
 
@@ -101,7 +100,7 @@ const TagArea: FC<Props> = (props) => {
         extra={
           <>
             {!disabled && (
-              <div className="inline-block truncate" key="add">
+              <div className="inline-block truncate mr-1" key="add">
                 <AddTag onFinish={onClickAddBtn} loading={isAddingTag} />
               </div>
             )}

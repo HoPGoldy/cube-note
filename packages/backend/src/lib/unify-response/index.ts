@@ -79,12 +79,42 @@ export const registerUnifyResponse = (server: FastifyInstance) => {
   //   };
   // });
 
-  server.setReplySerializer((data, statusCode) => {
-    if (statusCode >= 200 && statusCode < 300) {
-      return JSON.stringify({ success: true, code: 200, data });
-    }
+  server.addHook("onSend", async (request, reply, payload) => {
+    if (
+      reply.statusCode >= 200 &&
+      reply.statusCode < 300 &&
+      typeof payload === "string"
+    ) {
+      let data = payload;
+      try {
+        data = JSON.parse(payload);
+      } catch (e) {
+        // json 解析失败，可能是原始类型，包裹一下直接返回
+      }
 
-    // 如果不是成功状态码，返回原始数据，让错误处理器自己处理
-    return JSON.stringify(data);
+      return JSON.stringify({
+        success: true,
+        code: 200,
+        data: data,
+      });
+    }
   });
+
+  // server.addHook("preSerialization", async (request, reply, payload) => {
+  // console.log("🚀 ~ preSerialization ~ payload:", payload);
+  // });
+
+  // server.setReplySerializer((data, statusCode) => {
+  //   // console.log(
+  //   //   "🚀 ~ registerUnifyResponse ~ data, statusCode:",
+  //   //   data,
+  //   //   statusCode,
+  //   // );
+  //   if (statusCode >= 200 && statusCode < 300) {
+  //     return JSON.stringify({ success: true, code: 200, data });
+  //   }
+
+  //   // 如果不是成功状态码，返回原始数据，让错误处理器自己处理
+  //   return JSON.stringify(data);
+  // });
 };

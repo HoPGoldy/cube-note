@@ -1,9 +1,8 @@
 import { FC } from "react";
-import { Button, Col, List, Modal, Row, Space } from "antd";
+import { Button, Col, Modal, Row, Space } from "antd";
 import { MobileDrawer } from "@/components/mobile-drawer";
 import { TagListItem } from "@/types/tag";
-import { useQueryTagGroup, useQueryTagList } from "@/services/tag";
-import { useAllTagGroup, useGroupedTag } from "@/pages/tag-manager/tag-hooks";
+import { useQueryTagList } from "@/services/tag";
 import { ControlOutlined } from "@ant-design/icons";
 import { Tag } from "@/components/tag";
 import Loading from "@/layouts/loading";
@@ -13,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 interface Props {
   open: boolean;
   onClose: () => void;
-  selectedTags: number[];
+  selectedTags: string[];
   onSelected: (item: TagListItem) => void;
 }
 
@@ -24,14 +23,10 @@ export const TagPicker: FC<Props> = (props) => {
   const { open, onClose, selectedTags, onSelected } = props;
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  // 获取标签分组
-  const { data: tagGroupResp, isLoading: isLoadingGroup } = useQueryTagGroup();
-  // 分组列表
-  const { tagGroups } = useAllTagGroup(tagGroupResp?.data);
+
   // 获取标签列表
   const { data: tagListResp, isLoading: isTagLoading } = useQueryTagList();
-  // 分好组的标签
-  const { groupedTagDict } = useGroupedTag(tagListResp?.data || []);
+  const tagList = tagListResp?.data || [];
 
   const renderTag = (item: TagListItem) => {
     return (
@@ -48,28 +43,13 @@ export const TagPicker: FC<Props> = (props) => {
 
   const renderContent = () => {
     if (isTagLoading) return <Loading tip="加载标签中..." />;
-    if (isLoadingGroup) return <Loading tip="加载分组中..." />;
 
     return (
-      <List
-        className="mx-2"
-        dataSource={tagGroups}
-        renderItem={(item) => {
-          const tags = groupedTagDict[item.id] || [];
-          return (
-            <List.Item>
-              <div>
-                <div className="text-lg font-bold mb-2">{item.title}</div>
-                <div>
-                  <Space wrap size={[0, 8]}>
-                    {tags.map(renderTag)}
-                  </Space>
-                </div>
-              </div>
-            </List.Item>
-          );
-        }}
-      />
+      <div className="mx-2">
+        <Space wrap size={[4, 8]}>
+          {tagList.map(renderTag)}
+        </Space>
+      </div>
     );
   };
 

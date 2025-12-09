@@ -53,7 +53,10 @@ export const useMenu = () => {
   const currentTab = useAtomValue(stateCurrentTab);
   const { appConfig } = useGetAppConfig();
   const currentRootArticleId = appConfig.ROOT_ARTICLE_ID;
-  const currentArticleId = useAtomValue(stateCurrentArticleId);
+  const storeArticleId = useAtomValue(stateCurrentArticleId);
+
+  const currentArticleId = storeArticleId || currentRootArticleId;
+
   const [parentArticleIds, setParentArticleIds] = useAtom(
     stateParentArticleIds,
   );
@@ -97,9 +100,9 @@ export const useMenu = () => {
       content: "",
       parentId: currentArticleId,
     });
-    if (!resp.data) return;
+    if (!resp.success) return;
 
-    navigate(`/article/${resp.data}?mode=edit&focus=title`);
+    navigate(`/article/${resp.data?.id}?mode=edit&focus=title`);
   };
 
   // 选择了新的文章，把该文章的父级信息更新到 store

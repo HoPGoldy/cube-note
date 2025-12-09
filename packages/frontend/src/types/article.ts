@@ -1,30 +1,3 @@
-export interface ArticleStorage {
-  id: number;
-  title: string;
-  content: string;
-  createUserId: number;
-  createTime: number;
-  updateTime: number;
-  /**
-   * 祖先文章路径，用于快速查询
-   * 以#分隔，如：#1#2#3#
-   */
-  parentPath: string;
-  /**
-   * 文章相关的标签 id
-   * 以#分隔，如：#1#2#3#
-   **/
-  tagIds?: string;
-  /**
-   * 是否在正文下面列出子笔记
-   */
-  listSubarticle?: boolean;
-  /**
-   * 该笔记的颜色
-   */
-  color?: string;
-}
-
 /**
  * 用户收藏文章关联表
  */
@@ -52,7 +25,7 @@ export interface AddArticleReqData {
 
 export interface SearchArticleReqData {
   keyword?: string;
-  tagIds?: number[];
+  tagIds?: string[];
   page?: number;
 }
 
@@ -99,7 +72,7 @@ export interface ArticleContent {
   createTime: number;
   updateTime: number;
   parentArticleId?: string;
-  tagIds?: number[];
+  tagIds?: string[];
   listSubarticle?: boolean;
   color?: string;
 }

@@ -194,7 +194,7 @@ model Article {
   title      String
   content    String  @default("")
   parentPath String? // 树形路径 "#1#2#3#"
-  tagIds     String? // 标签 ID 列表 "#1#2#3#"
+  tagIds     String? // 标签 ID 列表 "1,2,3"
   favorite   Boolean @default(false)
 
   relationsFrom ArticleRelation[] @relation("from")
@@ -222,21 +222,6 @@ model Tag {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  title   String  @unique
-  color   String?
-  groupId String?
-
-  group TagGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
-
-  @@index([groupId])
-}
-
-// 标签分组
-model TagGroup {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  title String @unique
-  tags  Tag[]
+  title String  @unique
+  color String?
 }

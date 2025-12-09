@@ -13,6 +13,7 @@ import Article from "./pages/article/article";
 import Search from "./pages/search/search";
 import AttachmentDemo from "./pages/attachment-demo";
 import MarkdownEditorDemo from "./pages/markdown-editor-demo";
+import { TagDetailModal } from "./pages/tag-detail";
 
 const lazyLoad = (
   compLoader: () => Promise<{ default: ComponentType<any> }>,
@@ -77,6 +78,7 @@ export const routes = createBrowserRouter(
           <HostDetailModal />
           <EndpointDetailModal />
           <NotificationChannelDetailModal />
+          <TagDetailModal />
         </LoginAuth>
       ),
     },

@@ -41,7 +41,6 @@ export const createLoginLock = (props: LoginLockOptions) => {
       loginFailRecords.set(ip, []);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const records = loginFailRecords.get(ip)!;
     records.push(new Date().valueOf());
     loginFailRecords.set(ip, records);

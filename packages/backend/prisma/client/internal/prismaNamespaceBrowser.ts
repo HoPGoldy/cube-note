@@ -63,8 +63,7 @@ export const ModelName = {
   ProbeEnv: 'ProbeEnv',
   Article: 'Article',
   ArticleRelation: 'ArticleRelation',
-  Tag: 'Tag',
-  TagGroup: 'TagGroup'
+  Tag: 'Tag'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -255,21 +254,10 @@ export const TagScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   title: 'title',
-  color: 'color',
-  groupId: 'groupId'
+  color: 'color'
 } as const
 
 export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
-
-
-export const TagGroupScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  title: 'title'
-} as const
-
-export type TagGroupScalarFieldEnum = (typeof TagGroupScalarFieldEnum)[keyof typeof TagGroupScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -28,7 +28,7 @@ export const useDelete = () => {
     }
 
     const resp = await deleteArticle({
-      id: articleInfo.id,
+      id: Number(articleInfo.id),
       force: deleteChildren,
     });
     if (!resp.success) return;

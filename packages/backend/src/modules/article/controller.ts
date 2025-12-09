@@ -1,36 +1,14 @@
-import type { FastifyInstance } from "fastify";
 import { Type } from "typebox";
 import { ArticleService } from "./service";
+import { AppInstance } from "@/types";
 
 interface RegisterOptions {
-  server: FastifyInstance;
+  server: AppInstance;
   articleService: ArticleService;
 }
 
 export async function registerArticleController(options: RegisterOptions) {
   const { server, articleService } = options;
-
-  // 创建文章
-  server.post<{ Body: { title: string; content?: string; parentId?: string } }>(
-    "/article/create",
-    {
-      schema: {
-        description: "创建文章",
-        body: Type.Object({
-          title: Type.String({ minLength: 1 }),
-          content: Type.Optional(Type.String()),
-          parentId: Type.Optional(Type.String()),
-        }),
-      },
-    },
-    async (request) => {
-      return await articleService.createArticle(
-        request.body.title,
-        request.body.content || "",
-        request.body.parentId,
-      );
-    },
-  );
 
   // 获取文章详情
   server.get<{ Params: { id: string } }>(
@@ -295,7 +273,7 @@ export async function registerArticleController(options: RegisterOptions) {
   );
 
   // 新增文章
-  server.post<{ Body: { title: string; content?: string; parentId?: string } }>(
+  server.post(
     "/article/add",
     {
       schema: {

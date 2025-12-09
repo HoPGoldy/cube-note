@@ -3,9 +3,6 @@ import {
   AddTagReqData,
   DeleteTagReqData,
   SetTagColorReqData,
-  SetTagGroupReqData,
-  TagGroupListItem,
-  TagGroupStorage,
   TagListItem,
   TagUpdateReqData,
 } from "@/types/tag";
@@ -13,19 +10,21 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 /** 查询完整标签列表 */
 export const useQueryTagList = () => {
-  return useQuery({
+  const result = useQuery({
     queryKey: ["tagList"],
     queryFn: () => {
       return requestPost<TagListItem[]>("tag/list", {});
     },
   });
+
+  return { ...result, tagList: result.data?.data || [] };
 };
 
 /** 新增标签 */
 export const useAddTag = () => {
   return useMutation({
     mutationFn: (data: AddTagReqData) => {
-      return requestPost<number>("tag/add", data);
+      return requestPost<string>("tag/add", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tagList"] });
@@ -48,54 +47,8 @@ export const useUpdateTag = () => {
 /** 删除标签 */
 export const useDeleteTag = () => {
   return useMutation({
-    mutationFn: (id: number) => {
+    mutationFn: (id: string) => {
       return requestPost("tag/remove", { id });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tagList"] });
-    },
-  });
-};
-
-/** 获取标签分组 */
-export const useQueryTagGroup = () => {
-  return useQuery({
-    queryKey: ["tagGroupList"],
-    queryFn: () => {
-      return requestPost<TagGroupListItem[]>("tag/group/list", {});
-    },
-  });
-};
-
-/** 新增标签分组 */
-export const useAddTagGroup = () => {
-  return useMutation({
-    mutationFn: (data: Omit<TagGroupStorage, "createUserId" | "id">) => {
-      return requestPost<number>("tag/group/add", data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tagGroupList"] });
-    },
-  });
-};
-
-/** 更新标签分组 */
-export const useUpdateTagGroup = () => {
-  return useMutation({
-    mutationFn: (data: Omit<TagGroupStorage, "createUserId">) => {
-      return requestPost("tag/group/update", data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tagGroupList"] });
-    },
-  });
-};
-
-/** 批量设置标签的所属分组 */
-export const useBatchSetTagGroup = () => {
-  return useMutation({
-    mutationFn: (data: SetTagGroupReqData) => {
-      return requestPost("tag/batch/setGroup", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tagList"] });
@@ -122,19 +75,6 @@ export const useBatchDeleteTag = () => {
       return requestPost("tag/batch/remove", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tagList"] });
-    },
-  });
-};
-
-/** 删除标签分组 */
-export const useDeleteTagGroup = () => {
-  return useMutation({
-    mutationFn: (data: { id: number; method: string }) => {
-      return requestPost(`tag/group/${data.id}/${data.method}/removeGroup`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tagGroupList"] });
       queryClient.invalidateQueries({ queryKey: ["tagList"] });
     },
   });

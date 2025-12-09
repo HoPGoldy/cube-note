@@ -396,8 +396,7 @@ export const ModelName = {
   ProbeEnv: 'ProbeEnv',
   Article: 'Article',
   ArticleRelation: 'ArticleRelation',
-  Tag: 'Tag',
-  TagGroup: 'TagGroup'
+  Tag: 'Tag'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "appConfig" | "attachment" | "monitoredHost" | "endPoint" | "probeResult" | "probeHourlyStat" | "probeDailyStat" | "notificationChannel" | "notificationLog" | "probeEnv" | "article" | "articleRelation" | "tag" | "tagGroup"
+    modelProps: "appConfig" | "attachment" | "monitoredHost" | "endPoint" | "probeResult" | "probeHourlyStat" | "probeDailyStat" | "notificationChannel" | "notificationLog" | "probeEnv" | "article" | "articleRelation" | "tag"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1379,80 +1378,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    TagGroup: {
-      payload: Prisma.$TagGroupPayload<ExtArgs>
-      fields: Prisma.TagGroupFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.TagGroupFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.TagGroupFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>
-        }
-        findFirst: {
-          args: Prisma.TagGroupFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.TagGroupFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>
-        }
-        findMany: {
-          args: Prisma.TagGroupFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>[]
-        }
-        create: {
-          args: Prisma.TagGroupCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>
-        }
-        createMany: {
-          args: Prisma.TagGroupCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.TagGroupCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>[]
-        }
-        delete: {
-          args: Prisma.TagGroupDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>
-        }
-        update: {
-          args: Prisma.TagGroupUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>
-        }
-        deleteMany: {
-          args: Prisma.TagGroupDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.TagGroupUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.TagGroupUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>[]
-        }
-        upsert: {
-          args: Prisma.TagGroupUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagGroupPayload>
-        }
-        aggregate: {
-          args: Prisma.TagGroupAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateTagGroup>
-        }
-        groupBy: {
-          args: Prisma.TagGroupGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.TagGroupGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.TagGroupCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.TagGroupCountAggregateOutputType> | number
-        }
-      }
-    }
   }
 } & {
   other: {
@@ -1664,21 +1589,10 @@ export const TagScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   title: 'title',
-  color: 'color',
-  groupId: 'groupId'
+  color: 'color'
 } as const
 
 export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
-
-
-export const TagGroupScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  title: 'title'
-} as const
-
-export type TagGroupScalarFieldEnum = (typeof TagGroupScalarFieldEnum)[keyof typeof TagGroupScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1882,7 +1796,6 @@ export type GlobalOmitConfig = {
   article?: Prisma.ArticleOmit
   articleRelation?: Prisma.ArticleRelationOmit
   tag?: Prisma.TagOmit
-  tagGroup?: Prisma.TagGroupOmit
 }
 
 /* Types for Logging */
