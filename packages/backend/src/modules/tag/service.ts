@@ -48,4 +48,17 @@ export class TagService {
     if (!tag) throw new ErrorNotFound("Tag not found");
     return tag;
   }
+
+  async batchSetTagColor(tagIds: string[], color: string) {
+    await this.options.prisma.tag.updateMany({
+      where: { id: { in: tagIds } },
+      data: { color },
+    });
+  }
+
+  async batchDeleteTags(ids: string[]) {
+    await this.options.prisma.tag.deleteMany({
+      where: { id: { in: ids } },
+    });
+  }
 }

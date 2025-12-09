@@ -44,32 +44,7 @@ export const routes = createBrowserRouter(
         // 标签管理
         {
           path: "/tags",
-          element: lazyLoad(() => import("./pages/tag-manager/tag-manager")),
-        },
-        // 首页 - 监控服务列表
-        {
-          path: "/home",
-          element: lazyLoad(() => import("./pages/home")),
-        },
-        // 监控服务详情
-        {
-          path: "/host-home/:hostId",
-          element: lazyLoad(() => import("./pages/host-home")),
-        },
-        // 通知渠道管理
-        {
-          path: "/notification-channel",
-          element: lazyLoad(() => import("./pages/notification-channel")),
-        },
-        // 通知记录
-        {
-          path: "/notification-log",
-          element: lazyLoad(() => import("./pages/notification-log")),
-        },
-        // 探针环境变量
-        {
-          path: "/probe-env",
-          element: lazyLoad(() => import("./pages/probe-env")),
+          element: lazyLoad(() => import("./pages/tag-manager")),
         },
       ],
       element: (

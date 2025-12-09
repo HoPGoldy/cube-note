@@ -20,7 +20,7 @@ export async function registerTagController(options: RegisterOptions) {
   );
 
   // 获取标签列表
-  server.post<{ Body: Record<string, never> }>(
+  server.post(
     "/tag/list",
     {
       schema: {
@@ -75,7 +75,7 @@ export async function registerTagController(options: RegisterOptions) {
   );
 
   // 删除标签
-  server.post<{ Body: { id: number } }>(
+  server.post(
     "/tag/remove",
     {
       schema: {
@@ -92,7 +92,7 @@ export async function registerTagController(options: RegisterOptions) {
   );
 
   // 批量设置标签颜色
-  server.post<{ Body: { tagIds: number[]; color: string } }>(
+  server.post(
     "/tag/batch/setColor",
     {
       schema: {
@@ -104,13 +104,16 @@ export async function registerTagController(options: RegisterOptions) {
       },
     },
     async (request) => {
-      // 实现批量操作
+      await tagService.batchSetTagColor(
+        request.body.tagIds,
+        request.body.color,
+      );
       return { success: true };
     },
   );
 
   // 批量删除标签
-  server.post<{ Body: { ids: number[] } }>(
+  server.post(
     "/tag/batch/remove",
     {
       schema: {
@@ -121,7 +124,7 @@ export async function registerTagController(options: RegisterOptions) {
       },
     },
     async (request) => {
-      // 实现批量操作
+      await tagService.batchDeleteTags(request.body.ids);
       return { success: true };
     },
   );
