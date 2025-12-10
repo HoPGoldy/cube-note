@@ -1,8 +1,10 @@
 import { ENV_IS_DEV } from "@/config/env";
 import { ErrorHttp } from "@/types/error";
-import { PrismaClientKnownRequestError } from "@db/internal/prismaNamespace";
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from "@db/internal/prismaNamespace";
 import type { FastifyInstance } from "fastify";
-// import Value from "typebox/value";
 
 const PrismaErrorFeedback: Record<string, { status: number; msg: string }> = {
   P2001: {
@@ -59,6 +61,15 @@ export const registerUnifyResponse = (server: FastifyInstance) => {
       };
 
       reply.status(httpStatus).send(resp);
+    } else if (error instanceof PrismaClientValidationError) {
+      const resp: ErrorResponse = {
+        success: false,
+        message: "数据验证失败，请检查输入内容是否正确",
+        code: error.code,
+        _stack: ENV_IS_DEV ? error.stack : undefined,
+      };
+
+      reply.status(500).send(resp);
     } else if (error instanceof ErrorHttp) {
       reply.status(error.statusCode);
       reply.send(createErrorResponse(error));
@@ -68,17 +79,11 @@ export const registerUnifyResponse = (server: FastifyInstance) => {
     }
   });
 
-  // 不能用这个，response schema 没设置时这个会被跳过，没法统一处理
-  // server.setSerializerCompiler(() => {
-  //   return (data) => {
-  //     console.log("data", data);
-  //     // const safeData = Value.Clean(schema, data);
-  //     // const errors = Value.Errors(schema, data);
-  //     // console.log("safeData", safeData);
-  //     return JSON.stringify({ success: true, code: 200, data });
-  //   };
-  // });
-
+  /**
+   * 不能使用 setSerializerCompiler，因为没有设置 response schema 时不会被调用
+   * 不能使用 preSerialization 和 setReplySerializer，因为基础类型不会走序列化，也就不会走这两个钩子
+   * 只能用 onSend，在这里重新走一遍序列化，统一包装响应结果
+   */
   server.addHook("onSend", async (request, reply, payload) => {
     if (
       reply.statusCode >= 200 &&
@@ -99,22 +104,4 @@ export const registerUnifyResponse = (server: FastifyInstance) => {
       });
     }
   });
-
-  // server.addHook("preSerialization", async (request, reply, payload) => {
-  // console.log("🚀 ~ preSerialization ~ payload:", payload);
-  // });
-
-  // server.setReplySerializer((data, statusCode) => {
-  //   // console.log(
-  //   //   "🚀 ~ registerUnifyResponse ~ data, statusCode:",
-  //   //   data,
-  //   //   statusCode,
-  //   // );
-  //   if (statusCode >= 200 && statusCode < 300) {
-  //     return JSON.stringify({ success: true, code: 200, data });
-  //   }
-
-  //   // 如果不是成功状态码，返回原始数据，让错误处理器自己处理
-  //   return JSON.stringify(data);
-  // });
 };

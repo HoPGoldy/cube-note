@@ -26,7 +26,6 @@ export const TagPicker: FC<Props> = (props) => {
   const navigate = useNavigate();
 
   const { tagList, isLoading: isTagLoading } = useQueryTagList();
-  console.log("🚀 ~ TagPicker ~ tagList:", tagList);
 
   const renderTag = (item: TagListItem) => {
     return (

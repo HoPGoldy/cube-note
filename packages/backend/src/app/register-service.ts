@@ -26,6 +26,7 @@ import { TagService } from "@/modules/tag/service";
 import { registerUnifyResponse } from "@/lib/unify-response";
 import type { AppInstance } from "@/types";
 import { AttachmentService } from "@/modules/attachment/service";
+import { registerRemoveAdditionalProperties } from "@/lib/security";
 
 /**
  * 组装后端服务的主要业务功能
@@ -94,6 +95,7 @@ export const registerService = async (instance: AppInstance) => {
   });
 
   const appControllerPlugin = async (server: AppInstance) => {
+    registerRemoveAdditionalProperties(server);
     registerUnifyResponse(server);
 
     registerAttachmentController({

@@ -71,6 +71,7 @@ export interface ArticleContent {
   createTime: number;
   updateTime: number;
   parentArticleId?: string;
+  parentPath?: string;
   tagIds?: string[];
   listSubarticle?: boolean;
   color?: string;

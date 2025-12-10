@@ -159,7 +159,7 @@ export const useQueryArticleList = (data: SearchArticleReqData) => {
 
 /** 查询文章树 */
 export const useQueryArticleTree = (id?: string) => {
-  return useQuery({
+  const result = useQuery({
     queryKey: ["menu", id],
     queryFn: () => {
       return requestPost<ArticleTreeNode[]>("article/getTree", { id });
@@ -167,6 +167,8 @@ export const useQueryArticleTree = (id?: string) => {
     refetchOnWindowFocus: false,
     enabled: !isNil(id),
   });
+
+  return { ...result, articleTree: result.data?.data || [] };
 };
 
 /** 查询收藏列表 */

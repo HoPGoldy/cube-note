@@ -51,7 +51,6 @@ export const EndpointDetailModal: FC = () => {
 
   const [form] = Form.useForm();
   const endpointType = Form.useWatch("type", form);
-  console.log("endpointType", endpointType);
 
   // 代码测试相关状态
   const [testLoading, setTestLoading] = useState(false);

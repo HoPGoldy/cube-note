@@ -66,7 +66,6 @@ export const useBreadcrumb = () => {
 
     return config;
   }, [parentArticleIds, articleTree, currentArticleId]);
-  console.log("🚀 ~ useBreadcrumb ~ breadcrumbConfig:", breadcrumbConfig);
 
   /** 渲染桌面端面包屑 */
   const renderBreadcrumb = () => {

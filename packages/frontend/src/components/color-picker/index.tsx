@@ -1,4 +1,4 @@
-import { Flex, FlexProps, List, Modal } from "antd";
+import { Flex, FlexProps, Modal } from "antd";
 import { FC } from "react";
 import s from "./styles.module.css";
 import { MARK_COLORS_WITH_EMPTY, MARK_COLORS_MAP } from "./constants";
@@ -17,13 +17,11 @@ const ColorItem: FC<ColorItemProps> = (props) => {
   if (colorCode === "") classes.push(s.removeBtn);
 
   return (
-    <List.Item key={colorCode}>
-      <div
-        className={classes.join(" ")}
-        style={{ backgroundColor: MARK_COLORS_MAP[colorCode] }}
-        onClick={() => onClick(colorCode)}
-      />
-    </List.Item>
+    <div
+      className={classes.join(" ")}
+      style={{ backgroundColor: MARK_COLORS_MAP[colorCode] }}
+      onClick={() => onClick(colorCode)}
+    />
   );
 };
 
@@ -39,6 +37,7 @@ export const ColorList: FC<ColorListProps> = (props) => {
   const renderMarkColor = (colorCode: string) => {
     return (
       <ColorItem
+        key={colorCode}
         colorCode={colorCode}
         selected={value === colorCode}
         onClick={() => {

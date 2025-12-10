@@ -114,15 +114,14 @@ export async function registerArticleController(options: RegisterOptions) {
           content: Type.Optional(Type.String()),
           tagIds: Type.Optional(Type.String()),
           favorite: Type.Optional(Type.Boolean()),
-          parentArticleId: Type.Optional(Type.String()),
+          parentPath: Type.Optional(Type.String()),
           color: Type.Optional(Type.String()),
           listSubarticle: Type.Optional(Type.Boolean()),
         }),
       },
     },
     async (request) => {
-      const body = request.body;
-      const { id, ...updateData } = body;
+      const { id, ...updateData } = request.body;
       return await articleService.updateArticle(id, updateData);
     },
   );

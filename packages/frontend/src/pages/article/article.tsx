@@ -50,14 +50,13 @@ const About: FC = () => {
   /** 当前文章 id */
   const currentArticleId = params.articleId;
   /** 获取详情 */
-  const { data: articleResp, isFetching: isLoadingArticle } =
+  const { data: articleResp, isLoading: isLoadingArticle } =
     useQueryArticleContent(currentArticleId);
   // 获取当前文章的子级、父级文章
   const { data: articleLink, isLoading: linkLoading } = useQueryArticleLink(
     currentArticleId,
     !!articleResp?.data?.listSubarticle,
   );
-  console.log("🚀 ~ About ~ articleLink:", articleLink);
   const isMobile = useIsMobile();
   /** 保存详情 */
   const { mutateAsync: updateArticle, isPending: updatingArticle } =

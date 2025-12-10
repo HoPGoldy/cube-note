@@ -1,15 +1,36 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Button, Flex, Form, Input, Modal, Radio } from "antd";
+import { Button, Flex, Form, Input, Modal, Radio, TreeSelect } from "antd";
 import { DETAIL_ID_KEY } from "./use-detail-action";
 import { ColorList } from "@/components/color-picker";
 import {
   useDeleteArticle,
   useQueryArticleContent,
+  useQueryArticleTree,
   useUpdateArticle,
 } from "@/services/article";
 import { useGetAppConfig } from "@/services/app-config";
 import dayjs from "dayjs";
+import { ColorDot } from "@/components/color-picker/color-dot";
+import { ArticleTreeNode } from "@/types/article";
+
+/**
+ * 寻找节点在树中的路径
+ */
+const findPath = (tree: ArticleTreeNode[], nodeId: string): string[] => {
+  for (const node of tree) {
+    if (node.id === nodeId) return [node.id];
+
+    if (node.children) {
+      const path = findPath(node.children, nodeId);
+      if (path.length) {
+        return [node.id, ...path];
+      }
+    }
+  }
+
+  return [];
+};
 
 export const ArticleConfigModal: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,6 +42,28 @@ export const ArticleConfigModal: FC = () => {
 
   const { articleDetail, isLoading: articleLoading } =
     useQueryArticleContent(detailId);
+
+  const { articleTree } = useQueryArticleTree(appConfig.ROOT_ARTICLE_ID);
+
+  // 遍历每个节点，设置 disabled 属性，禁止选择自己和自己的子节点作为父节点
+  const fullArticleTreeData = useMemo(() => {
+    const setDisabled = (nodes: any[]): any[] => {
+      return nodes.map((node) => {
+        const isDisabled =
+          node.id === detailId ||
+          (node?.parentPath || "").split("#").includes(detailId);
+
+        return {
+          ...node,
+          disabled: isDisabled,
+          children: node.children ? setDisabled(node.children) : [],
+        };
+      });
+    };
+
+    if (!articleTree || articleTree.length === 0) return [];
+    return setDisabled(articleTree);
+  }, [articleTree, detailId]);
 
   const { mutateAsync: updateArticle, isPending: updatingArticle } =
     useUpdateArticle();
@@ -34,6 +77,9 @@ export const ArticleConfigModal: FC = () => {
 
       const formValues = {
         ...articleDetail,
+        parentId:
+          articleDetail.parentPath.split("#").filter(Boolean).pop() ||
+          undefined,
       };
 
       form.setFieldsValue(formValues);
@@ -53,7 +99,16 @@ export const ArticleConfigModal: FC = () => {
     await form.validateFields();
     const values = form.getFieldsValue();
 
-    const resp = await updateArticle({ id: detailId, ...values });
+    const newPath = findPath(fullArticleTreeData, values.parentId);
+
+    const postData = {
+      ...values,
+      parentPath: newPath.join("#") + "#",
+    };
+
+    delete postData.parentId;
+
+    const resp = await updateArticle({ id: detailId, ...postData });
     if (resp?.code !== 200) return false;
 
     onCancel();
@@ -117,6 +172,33 @@ export const ArticleConfigModal: FC = () => {
             rules={[{ required: true, message: "请输入文章名称" }]}
           >
             <Input placeholder="请输入文章名称" />
+          </Form.Item>
+
+          <Form.Item
+            label="父级文章"
+            name="parentId"
+            tooltip="移动到指定位置。不能选择自己或自己的子文章"
+          >
+            <TreeSelect
+              treeData={fullArticleTreeData}
+              placeholder="请选择父级文章"
+              fieldNames={{
+                label: "title",
+                value: "id",
+                children: "children",
+              }}
+              treeTitleRender={(nodeData) => {
+                return (
+                  <Flex gap={8} align="center">
+                    <div>{nodeData.title}</div>
+                    {nodeData.color && <ColorDot color={nodeData.color} />}
+                  </Flex>
+                );
+              }}
+              allowClear
+              treeLine
+              treeDefaultExpandAll
+            />
           </Form.Item>
 
           <Form.Item label="是否收藏" name="favorite">
