@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { logout, stateUserJwtData } from "@/store/user";
-import {
-  SmileOutlined,
-  SettingOutlined,
-  BellOutlined,
-} from "@ant-design/icons";
+import { SmileOutlined, BellOutlined } from "@ant-design/icons";
 import { useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { useGetNotificationStatusList } from "@/services/notification";
@@ -22,7 +18,6 @@ export const useSettingMenu = () => {
   const [aboutVisible, setAboutVisible] = useState(false);
 
   const { data: statusData } = useGetNotificationStatusList();
-  console.log("statusData", statusData);
   const statusList = (statusData?.data as any[]) ?? [];
   /** 启用的服务数量 */
   const enabledCount = statusList.filter((s) => s.hostEnabled).length;
@@ -33,17 +28,10 @@ export const useSettingMenu = () => {
 
   const settingConfig = [
     {
-      label: "环境变量管理",
-      icon: <SettingOutlined />,
-      onClick: () => {
-        navigate("/probe-env");
-      },
-    },
-    {
-      label: "通知管理",
+      label: "标签管理",
       icon: <BellOutlined />,
       onClick: () => {
-        navigate("/notification-channel");
+        navigate("/tags");
       },
     },
     {

@@ -2,14 +2,17 @@ import { FC, useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Popover } from "antd";
+import { Button, Popover } from "antd";
 import s from "./styles.module.css";
 import { DesktopSetting } from "@/pages/user-setting";
 import { useAtomValue } from "jotai";
 import { stateUserJwtData } from "@/store/user";
 import { statePageTitle } from "@/store/global";
+import { useBreadcrumb } from "@/pages/article/menu";
+import { Link } from "react-router-dom";
 
 interface Props {
   onClickCollasedIcon: () => void;
@@ -25,14 +28,20 @@ const Header: FC<Props> = (props) => {
   /** 侧边栏展开按钮 */
   const CollasedIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined;
   const currentPageTitle = useAtomValue(statePageTitle);
+  const { renderBreadcrumb } = useBreadcrumb();
 
   return (
     <header className={s.headerBox}>
       <div className="flex flex-nowrap flex-grow overflow-hidden">
         <CollasedIcon onClick={onClickCollasedIcon} className="text-xl mr-4" />
-        <div>{currentPageTitle}</div>
+        <div>{currentPageTitle || renderBreadcrumb()}</div>
       </div>
       <div className="flex flex-nowrap flex-shrink-0 ml-2">
+        <Link to="/search">
+          <Button icon={<SearchOutlined />} className="w-60">
+            搜索
+          </Button>
+        </Link>
         <Popover
           placement="bottomRight"
           trigger="click"

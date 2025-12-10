@@ -34,11 +34,11 @@ import { useMobileMenu } from "./menu";
 import { Button, Card, Drawer, Space } from "antd";
 import { MobileSetting } from "@/pages/user-setting";
 import { PageLoading } from "@/components/page-loading";
-import { usePageTitle } from "@/store/global";
 import { stateCurrentArticleId } from "@/store/menu";
 import { MarkdownPreview } from "@/components/markdown-editor";
 import { useArticleConfigAction } from "../article-config/use-detail-action";
 import { DesktopArea, useIsMobile } from "@/layouts/responsive";
+import { ColorDot } from "@/components/color-picker/color-dot";
 
 const About: FC = () => {
   const params = useParams();
@@ -67,7 +67,7 @@ const About: FC = () => {
   const titleInputRef = useRef<HTMLInputElement>(null);
   /** 正在编辑的标题内容 */
   const [title, setTitle] = useState("");
-  usePageTitle(title || "笔记");
+
   /** 功能 - 导航抽屉 */
   const menu = useMobileMenu({
     currentArticleId,
@@ -170,12 +170,7 @@ const About: FC = () => {
         >
           <div className="flex justify-between items-center">
             <span className="font-bold">{item.title}</span>
-            {item.color && (
-              <div
-                className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded"
-                style={{ backgroundColor: item.color }}
-              />
-            )}
+            {item.color && <ColorDot color={item.color} />}
           </div>
         </Card>
       </Link>

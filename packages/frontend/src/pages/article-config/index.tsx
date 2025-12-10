@@ -42,6 +42,10 @@ export const ArticleConfigModal: FC = () => {
 
   const { articleDetail, isLoading: articleLoading } =
     useQueryArticleContent(detailId);
+  console.log("🚀 ~ ArticleConfigModal ~ articleDetail:", articleDetail);
+
+  const isRootArticle =
+    appConfig.ROOT_ARTICLE_ID && appConfig.ROOT_ARTICLE_ID === detailId;
 
   const { articleTree } = useQueryArticleTree(appConfig.ROOT_ARTICLE_ID);
 
@@ -77,9 +81,9 @@ export const ArticleConfigModal: FC = () => {
 
       const formValues = {
         ...articleDetail,
-        parentId:
-          articleDetail.parentPath.split("#").filter(Boolean).pop() ||
-          undefined,
+        parentId: articleDetail.parentPath
+          ? articleDetail.parentPath.split("#").filter(Boolean).pop()
+          : undefined,
       };
 
       form.setFieldsValue(formValues);
@@ -144,8 +148,7 @@ export const ArticleConfigModal: FC = () => {
         footer={(node) => {
           return (
             <>
-              {appConfig.ROOT_ARTICLE_ID &&
-              appConfig.ROOT_ARTICLE_ID === detailId ? null : (
+              {isRootArticle ? null : (
                 <Button danger onClick={onDeleteConfirm}>
                   删除
                 </Button>
@@ -174,32 +177,34 @@ export const ArticleConfigModal: FC = () => {
             <Input placeholder="请输入文章名称" />
           </Form.Item>
 
-          <Form.Item
-            label="父级文章"
-            name="parentId"
-            tooltip="移动到指定位置。不能选择自己或自己的子文章"
-          >
-            <TreeSelect
-              treeData={fullArticleTreeData}
-              placeholder="请选择父级文章"
-              fieldNames={{
-                label: "title",
-                value: "id",
-                children: "children",
-              }}
-              treeTitleRender={(nodeData) => {
-                return (
-                  <Flex gap={8} align="center">
-                    <div>{nodeData.title}</div>
-                    {nodeData.color && <ColorDot color={nodeData.color} />}
-                  </Flex>
-                );
-              }}
-              allowClear
-              treeLine
-              treeDefaultExpandAll
-            />
-          </Form.Item>
+          {isRootArticle ? null : (
+            <Form.Item
+              label="父级文章"
+              name="parentId"
+              tooltip="移动到指定位置。不能选择自己或自己的子文章"
+            >
+              <TreeSelect
+                treeData={fullArticleTreeData}
+                placeholder="请选择父级文章"
+                fieldNames={{
+                  label: "title",
+                  value: "id",
+                  children: "children",
+                }}
+                treeTitleRender={(nodeData) => {
+                  return (
+                    <Flex gap={8} align="center">
+                      <div>{nodeData.title}</div>
+                      {nodeData.color && <ColorDot color={nodeData.color} />}
+                    </Flex>
+                  );
+                }}
+                allowClear
+                treeLine
+                treeDefaultExpandAll
+              />
+            </Form.Item>
+          )}
 
           <Form.Item label="是否收藏" name="favorite">
             <Radio.Group

@@ -26,6 +26,7 @@ export interface AddArticleReqData {
 export interface SearchArticleReqData {
   keyword?: string;
   tagIds?: string[];
+  colors?: string[];
   page?: number;
 }
 
@@ -40,7 +41,7 @@ export interface SearchArticleDetail {
 
 export interface SearchArticleResp {
   total: number;
-  rows: SearchArticleDetail[];
+  items: SearchArticleDetail[];
 }
 
 export type UpdateArticleReqData = Partial<ArticleContent> & {

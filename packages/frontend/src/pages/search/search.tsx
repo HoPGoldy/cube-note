@@ -1,6 +1,6 @@
 import { useQueryArticleList } from "@/services/article";
 import { SearchArticleDetail } from "@/types/article";
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   PageContent,
@@ -8,15 +8,17 @@ import {
   ActionIcon,
   ActionSearch,
 } from "@/layouts/page-with-action";
-import { useTagArea } from "./tag-area";
 import { useQueryTagList } from "@/services/tag";
 import { useTagDict } from "@/pages/tag-manager/use-tag-dict";
 import { Tag } from "@/components/tag";
-import { Card, Col, Input, List, Row, Space } from "antd";
+import { Card, Col, Flex, Input, Pagination, Row, Space } from "antd";
 import { DEFAULT_PAGE_SIZE } from "@/config";
 import { DesktopArea } from "@/layouts/responsive";
-import { TagOutlined, LeftOutlined } from "@ant-design/icons";
+import { LeftOutlined } from "@ant-design/icons";
 import { usePageTitle } from "@/store/global";
+import { getColorValue } from "@/components/color-picker/color-dot";
+import { ColorList } from "@/components/color-picker";
+import { EmptyTip } from "@/components/empty-tip";
 
 /**
  * 搜索页面
@@ -31,33 +33,24 @@ const SearchArticle: FC = () => {
     () => searchParams.get("keyword") || "",
   );
   // 获取标签列表
-  const { data: tagListResp, isLoading: isTagLoading } = useQueryTagList();
+  const { tagList } = useQueryTagList();
   // 标签映射
   const tagDict = useTagDict();
   // 当前分页
   const [currentPage, setCurrentPage] = useState(1);
-  // 功能 - 标签选择
-  const {
-    selectedTag,
-    renderTagSelectPanel,
-    renderMobileTagSelectPanel,
-    setIsTagDrawerOpen,
-  } = useTagArea({ setCurrentPage, isTagLoading, tagList: tagListResp?.data });
-  // 搜索结果列表
-  const { data: articleListResp, isLoading: isSearching } = useQueryArticleList(
-    {
-      keyword,
-      tagIds: selectedTag,
-      page: currentPage,
-    },
-  );
-  /** 搜索列表占位文本 */
-  const [listEmptyText, setListEmptyText] = useState<string>();
 
-  useEffect(() => {
-    if (!listEmptyText) setListEmptyText("输入关键字或选择标签进行搜索");
-    else setListEmptyText("没有找到相关笔记");
-  }, [isSearching]);
+  const [selectedTag, setSelectedTag] = useState<string[]>();
+  // 搜索结果列表
+  const {
+    status: searchStatus,
+    articleList,
+    total,
+    isLoading: isSearching,
+  } = useQueryArticleList({
+    keyword,
+    tagIds: selectedTag,
+    page: currentPage,
+  });
 
   const renderTagItem = (tagId: number) => {
     const item = tagDict.get(tagId);
@@ -90,7 +83,7 @@ const SearchArticle: FC = () => {
       `<span class='text-red-500'>${keyword}</span>`,
     );
     return (
-      <Link to={`/article/${item.id}`} key={item.id}>
+      <Link to={`/article/${item.id}`} key={item.id} className="w-full">
         <Card
           className="mb-4 hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-shadow"
           size="small"
@@ -123,42 +116,85 @@ const SearchArticle: FC = () => {
     );
   };
 
+  const onSelectTag = (id: string) => {
+    // 如果有了就删除，没有就添加
+    const newTags = selectedTag.includes(id)
+      ? selectedTag.filter((item) => item !== id)
+      : [...selectedTag, id];
+
+    setSelectedTag(newTags);
+    setCurrentPage(1);
+
+    // 更新 url 参数
+    if (newTags.length > 0) searchParams.set("tagIds", newTags.join(","));
+    else searchParams.delete("tagIds");
+    setSearchParams(searchParams, { replace: true });
+  };
+
+  const renderTagArea = () => {
+    return (
+      <div>
+        {tagList.map((tag) => {
+          return (
+            <Tag
+              key={tag.id}
+              color={getColorValue(tag.color)}
+              onClick={() => onSelectTag(tag.id)}
+            >
+              {tag.title}
+            </Tag>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderColorList = () => {
+    return <ColorList />;
+  };
+
+  const renderSearchList = () => {
+    if (isSearching) {
+      return <EmptyTip title="正在搜索中..." subTitle="请稍候" />;
+    }
+    if (searchStatus === "pending") {
+      return <EmptyTip subTitle="可使用关键词、标签和颜色进行搜索" />;
+    }
+    if (articleList.length === 0) {
+      return (
+        <EmptyTip title="没有找到相关笔记" subTitle="请尝试其他关键字或标签" />
+      );
+    }
+
+    return (
+      <Flex vertical align="center" gap={8} className="w-full">
+        {articleList.map(renderSearchItem)}
+        <Pagination
+          total={total}
+          pageSize={DEFAULT_PAGE_SIZE}
+          current={currentPage}
+          onChange={setCurrentPage}
+        />
+      </Flex>
+    );
+  };
+
   const renderContent = () => {
     return (
-      <div className="p-4">
+      <Flex vertical gap={16} align="center" className="p-4">
         <DesktopArea>
           <Input.Search
             placeholder="请输入标题或者正文，回车搜索"
             enterButton="搜索"
+            autoFocus
             size="large"
             onSearch={onKeywordSearch}
           />
         </DesktopArea>
-        <div className="md:my-4">
-          <Row gutter={16}>
-            <Col xs={24} md={14} lg={16} xl={18}>
-              <List
-                loading={isSearching}
-                dataSource={articleListResp?.data?.rows || []}
-                renderItem={renderSearchItem}
-                locale={{ emptyText: listEmptyText }}
-                pagination={{
-                  total: articleListResp?.data?.total || 0,
-                  pageSize: DEFAULT_PAGE_SIZE,
-                  current: currentPage,
-                  onChange: setCurrentPage,
-                  align: "center",
-                }}
-              />
-            </Col>
-            <DesktopArea>
-              <Col md={10} lg={8} xl={6}>
-                {renderTagSelectPanel()}
-              </Col>
-            </DesktopArea>
-          </Row>
-        </div>
-      </div>
+        {renderColorList()}
+        {renderTagArea()}
+        {renderSearchList()}
+      </Flex>
     );
   };
 
@@ -166,14 +202,8 @@ const SearchArticle: FC = () => {
     <>
       <PageContent>{renderContent()}</PageContent>
 
-      {renderMobileTagSelectPanel()}
-
       <PageAction>
         <ActionIcon icon={<LeftOutlined />} onClick={() => navigate(-1)} />
-        <ActionIcon
-          icon={<TagOutlined />}
-          onClick={() => setIsTagDrawerOpen(true)}
-        />
         <ActionSearch onSearch={onKeywordSearch} />
       </PageAction>
     </>

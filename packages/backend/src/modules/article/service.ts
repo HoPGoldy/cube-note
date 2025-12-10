@@ -88,6 +88,7 @@ export class ArticleService {
       take: pageSize,
       orderBy: { updatedAt: "desc" },
     });
+    console.log("🚀 ~ ArticleService ~ searchArticles ~ items:", items);
 
     const total = await this.options.prisma.article.count({
       where: {
@@ -166,7 +167,7 @@ export class ArticleService {
   async getFavoriteArticles() {
     return await this.options.prisma.article.findMany({
       where: { favorite: true },
-      select: { id: true, title: true },
+      select: { id: true, title: true, color: true },
       orderBy: { updatedAt: "desc" },
     });
   }

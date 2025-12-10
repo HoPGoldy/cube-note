@@ -61,6 +61,7 @@ export const useMenu = () => {
   // 获取收藏文章
   const { data: articleFavorite, isLoading: favoriteLoading } =
     useQueryArticleFavorite(currentTab === TabTypes.Favorite);
+  console.log("🚀 ~ useMenu ~ articleFavorite:", articleFavorite);
   // 新增文章
   const { mutateAsync: addArticle } = useAddArticle();
 

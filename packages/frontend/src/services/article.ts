@@ -147,14 +147,26 @@ export const useDeleteArticle = () => {
 
 /** 搜索文章列表 */
 export const useQueryArticleList = (data: SearchArticleReqData) => {
-  return useQuery({
+  const enableSearch = () => {
+    if (data.keyword) return true;
+    if (data.tagIds && data.tagIds.length > 0) return true;
+    if (data.colors && data.colors.length > 0) return true;
+    return false;
+  };
+
+  const result = useQuery({
     queryKey: ["articleList", data],
     queryFn: async () => {
-      return requestPost<SearchArticleResp>("article/getList", data);
+      return requestPost<SearchArticleResp>("article/search", data);
     },
-    refetchOnWindowFocus: false,
-    enabled: data.keyword !== "" || (data.tagIds && data.tagIds.length > 0),
+    enabled: enableSearch(),
   });
+
+  return {
+    ...result,
+    articleList: result.data?.data?.items || [],
+    total: result.data?.data?.total || 0,
+  };
 };
 
 /** 查询文章树 */

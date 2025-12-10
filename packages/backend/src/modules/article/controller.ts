@@ -147,7 +147,7 @@ export async function registerArticleController(options: RegisterOptions) {
 
   // 搜索/获取文章列表
   server.post(
-    "/article/getList",
+    "/article/search",
     {
       schema: {
         description: "获取文章列表",
@@ -155,7 +155,8 @@ export async function registerArticleController(options: RegisterOptions) {
           keyword: Type.Optional(Type.String()),
           page: Type.Optional(Type.Number()),
           pageSize: Type.Optional(Type.Number()),
-          tagIds: Type.Optional(Type.Array(Type.Number())),
+          colors: Type.Optional(Type.Array(Type.String())),
+          tagIds: Type.Optional(Type.Array(Type.String())),
         }),
       },
     },
