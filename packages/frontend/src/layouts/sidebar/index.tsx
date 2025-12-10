@@ -6,10 +6,9 @@ import { TreeMenu } from "@//components/tree-menu";
 import {
   PlusOutlined,
   RollbackOutlined,
-  LinkOutlined,
   InsertRowLeftOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Row, Space, Tooltip } from "antd";
+import { Button, Col, Row, Tooltip } from "antd";
 import s from "./styles.module.css";
 import { EMPTY_CLASSNAME, tabOptions, useMenu } from "./use-menu";
 import Loading from "../loading";
@@ -38,7 +37,6 @@ export const Sidebar: FC = () => {
       return <Loading tip="加载中..." className="my-8" />;
     }
     const currentMenu = menu.articleLink?.data?.childrenArticles || [];
-    // console.log('🚀 ~ 下属文章列表', currentMenu)
 
     return (
       <>
@@ -47,7 +45,7 @@ export const Sidebar: FC = () => {
             to={`/article/${menu.parentArticleIds[menu.parentArticleIds.length - 1]}`}
           >
             <Button
-              className={`${s.toolBtn} keep-antd-style`}
+              className={`${s.toolBtn} keep-antd-style mb-2`}
               icon={<RollbackOutlined />}
               block
             >
@@ -62,56 +60,13 @@ export const Sidebar: FC = () => {
         )}
 
         <Button
-          className={`${s.toolBtn} keep-antd-style`}
+          className={`${s.toolBtn} keep-antd-style mt-2`}
           icon={<PlusOutlined />}
           onClick={menu.createArticle}
           block
         >
           创建子笔记
         </Button>
-      </>
-    );
-  };
-
-  /** 渲染相关文章列表 */
-  const renderRelatedMenu = () => {
-    if (menu.relatedLinkLoading) {
-      return <Loading tip="加载中..." className="my-8" />;
-    }
-    const currentMenu = menu.articleRelatedLink?.data?.relatedArticles || [];
-    // console.log('🚀 ~ 相关文章列表', currentMenu)
-
-    const addRelateBtn = (
-      <TreeMenu
-        key="related-tree"
-        value={menu.selectedRelatedArticleIds}
-        onChange={menu.onUpdateRelatedArticleIds}
-        onClickNode={menu.onUpdateRelatedList}
-        treeData={menu.articleTree?.data?.children || []}
-      >
-        <Button
-          className={`${s.toolBtn} keep-antd-style`}
-          icon={<LinkOutlined />}
-          block
-        >
-          关联其他笔记
-        </Button>
-      </TreeMenu>
-    );
-
-    if (currentMenu.length === 0) {
-      return (
-        <>
-          {<div className={EMPTY_CLASSNAME}>暂无相关笔记</div>}
-          {addRelateBtn}
-        </>
-      );
-    }
-
-    return (
-      <>
-        {currentMenu.map(renderMenuItem)}
-        {addRelateBtn}
       </>
     );
   };
@@ -139,8 +94,6 @@ export const Sidebar: FC = () => {
     switch (menu.currentTab) {
       case TabTypes.Sub:
         return renderSubMenu();
-      case TabTypes.Related:
-        return renderRelatedMenu();
       case TabTypes.Favorite:
         return renderFavoriteMenu();
       default:
@@ -155,7 +108,7 @@ export const Sidebar: FC = () => {
           const className = [s.toolBtn, "keep-antd-style"];
           if (item.value === menu.currentTab) className.push(s.selectedToolBtn);
           return (
-            <Col span={8} key={item.value}>
+            <Col span={12} key={item.value}>
               <Tooltip
                 title={item.sidebarLabel}
                 placement="bottom"
@@ -181,13 +134,11 @@ export const Sidebar: FC = () => {
       {renderTabBtns()}
 
       <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden my-3">
-        <Space direction="vertical" style={{ width: "100%" }}>
-          {renderCurrentMenu()}
-        </Space>
+        {renderCurrentMenu()}
       </div>
       <TreeMenu
-        treeData={menu.articleTree?.data?.children || []}
-        onClickNode={(node) => navigate(`/article/${node.value}`)}
+        treeData={menu.articleTree?.data[0]?.children || []}
+        onClickNode={(node) => navigate(`/article/${node.id}`)}
       >
         <Button
           className={`${s.toolBtn} keep-antd-style`}

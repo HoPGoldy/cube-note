@@ -4,10 +4,6 @@
 
 import type { Article } from "@db/client";
 
-export interface ArticleTreeNode extends Article {
-  children?: ArticleTreeNode[];
-}
-
 /**
  * 将路径字符串转换为数组
  * "#1#2#3#" -> ["1", "2", "3"]
@@ -56,10 +52,23 @@ export const getIdsFromPath = (path: string | null | undefined): string[] => {
   return pathToArray(path);
 };
 
+interface ArticleTreeData {
+  id: string;
+  title: string;
+  parentPath: string | null;
+  color: string | null;
+}
+
+export interface ArticleTreeNode extends ArticleTreeData {
+  children?: ArticleTreeNode[];
+}
+
 /**
  * 构建文章树形结构
  */
-export const buildArticleTree = (articles: Article[]): ArticleTreeNode[] => {
+export const buildArticleTree = (
+  articles: ArticleTreeData[],
+): ArticleTreeNode[] => {
   const map = new Map<string, ArticleTreeNode>();
   const roots: ArticleTreeNode[] = [];
 

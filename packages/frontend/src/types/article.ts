@@ -48,7 +48,7 @@ export type UpdateArticleReqData = Partial<ArticleContent> & {
 };
 
 export interface DeleteArticleMutation {
-  id: number;
+  id: string;
   force: boolean;
 }
 
@@ -60,7 +60,6 @@ export interface ArticleMenuItem {
 
 export enum TabTypes {
   Sub = "sub",
-  Related = "related",
   Favorite = "favorite",
 }
 
@@ -89,23 +88,10 @@ export interface ArticleLinkResp {
   childrenArticles: ArticleMenuItem[];
 }
 
-/** 详细的下属文章列表元素 */
-export interface ArticleSubLinkDetail {
-  content: string;
-  tagIds: number[];
-  title: string;
-  id: number;
-  color?: string | undefined;
-}
-
-export interface ArticleRelatedResp {
-  relatedArticles: ArticleMenuItem[];
-}
-
 /** 文章树的节点 */
 export interface ArticleTreeNode {
   /** 节点值（文章 id） */
-  value: string;
+  id: string;
   /** 文章名称 */
   title: string;
   /** 颜色 */
@@ -117,14 +103,4 @@ export interface ArticleTreeNode {
 export interface ArticleDeleteResp {
   deletedArticleIds: string[];
   parentArticleId?: string;
-}
-
-/** 设置文章关联接口数据 */
-export interface SetArticleRelatedReqData {
-  /** 解除关联还是建立关联 */
-  link: boolean;
-  /** 发起关联的文章 id */
-  fromArticleId: string;
-  /** 被关联的文章 id */
-  toArticleId: string;
 }

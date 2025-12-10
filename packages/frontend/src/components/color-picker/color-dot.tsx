@@ -6,19 +6,19 @@ interface ColorDotProps {
   className?: string;
 }
 
+export const getColorValue = (color: string) => {
+  if (color in MARK_COLORS_MAP) {
+    return MARK_COLORS_MAP[color];
+  }
+
+  return color;
+};
+
 export const ColorDot: FC<ColorDotProps> = (props) => {
-  const getColorValue = () => {
-    if (props.color in MARK_COLORS_MAP) {
-      return MARK_COLORS_MAP[props.color];
-    }
-
-    return props.color;
-  };
-
   return (
     <div
       className={`flex-shrink-0 w-3 h-3 rounded ${props.className || ""}`}
-      style={{ backgroundColor: getColorValue() }}
+      style={{ backgroundColor: getColorValue(props.color) }}
     />
   );
 };

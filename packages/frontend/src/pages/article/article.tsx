@@ -9,12 +9,12 @@ import {
 } from "@/layouts/page-with-action";
 import {
   useQueryArticleContent,
-  useQueryArticleSublink,
+  useQueryArticleLink,
   useUpdateArticle,
 } from "@/services/article";
 import { useEditor } from "./editor";
 import { messageWarning } from "@/utils/message";
-import { ArticleSubLinkDetail, UpdateArticleReqData } from "@/types/article";
+import { ArticleMenuItem, UpdateArticleReqData } from "@/types/article";
 import TagArea from "./tag-area";
 import { blurOnEnter } from "@/utils/input";
 import dayjs from "dayjs";
@@ -22,17 +22,23 @@ import {
   SettingOutlined,
   SearchOutlined,
   MenuOutlined,
+  FormOutlined,
+  LoadingOutlined,
+  SaveOutlined,
+  UnorderedListOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import s from "./styles.module.css";
 import { useOperation } from "./operation";
 import { useMobileMenu } from "./menu";
-import { Button, Card, Drawer } from "antd";
+import { Button, Card, Drawer, Space } from "antd";
 import { MobileSetting } from "@/pages/user-setting";
-import { MobileArea } from "@/layouts/responsive";
 import { PageLoading } from "@/components/page-loading";
 import { usePageTitle } from "@/store/global";
 import { stateCurrentArticleId } from "@/store/menu";
 import { MarkdownPreview } from "@/components/markdown-editor";
+import { useArticleConfigAction } from "../article-config/use-detail-action";
+import { DesktopArea, useIsMobile } from "@/layouts/responsive";
 
 const About: FC = () => {
   const params = useParams();
@@ -47,10 +53,12 @@ const About: FC = () => {
   const { data: articleResp, isFetching: isLoadingArticle } =
     useQueryArticleContent(currentArticleId);
   // 获取当前文章的子级、父级文章
-  const { data: articleLink, isLoading: linkLoading } = useQueryArticleSublink(
+  const { data: articleLink, isLoading: linkLoading } = useQueryArticleLink(
     currentArticleId,
     !!articleResp?.data?.listSubarticle,
   );
+  console.log("🚀 ~ About ~ articleLink:", articleLink);
+  const isMobile = useIsMobile();
   /** 保存详情 */
   const { mutateAsync: updateArticle, isPending: updatingArticle } =
     useUpdateArticle();
@@ -65,8 +73,6 @@ const About: FC = () => {
   const menu = useMobileMenu({
     currentArticleId,
   });
-  /** 新增子笔记按钮长按计时器 */
-  const addSubArticleTimer = useRef<NodeJS.Timeout>();
 
   /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
   const onClickSaveBtn = async () => {
@@ -78,6 +84,8 @@ const About: FC = () => {
     if (isContentModified.current) onClickSaveBtn();
     isContentModified.current = false;
   };
+
+  const articleConfigActions = useArticleConfigAction();
 
   /** 文章相关的操作 */
   const operation = useOperation({
@@ -107,6 +115,21 @@ const About: FC = () => {
     if (!currentArticleId) return;
     setCurrentArticleId(currentArticleId);
   }, [currentArticleId, setCurrentArticleId]);
+
+  /** 进入编辑模式 */
+  const startEdit = () => {
+    searchParams.set("mode", "edit");
+    setSearchParams(searchParams, { replace: true });
+  };
+
+  /** 退出编辑模式 */
+  const endEdit = async () => {
+    searchParams.delete("mode");
+    setSearchParams(searchParams, { replace: true });
+    operation.setSaveBtnText("");
+
+    onClickExitBtn();
+  };
 
   // 新增笔记时，自动聚焦标题输入框
   useEffect(() => {
@@ -139,7 +162,7 @@ const About: FC = () => {
   };
 
   /** 渲染底部的子笔记项目 */
-  const renderSubArticleItem = (item: ArticleSubLinkDetail) => {
+  const renderSubArticleItem = (item: ArticleMenuItem) => {
     return (
       <Link to={`/article/${item.id}`} key={item.id}>
         <Card
@@ -164,14 +187,14 @@ const About: FC = () => {
   const renderSubArticleList = () => {
     if (!articleResp?.data?.listSubarticle || isEdit) return null;
     if (linkLoading) return <PageLoading tip="信息加载中..." />;
-    if (!articleLink?.data?.length) return null;
+    if (!articleLink?.data?.childrenArticles?.length) return null;
 
     return (
       <>
         <div className="w-full xl:w-[60%] mx-auto bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg box-border mb-2">
           <div className="mb-2">子笔记列表：</div>
           <div className="grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {articleLink?.data.map(renderSubArticleItem)}
+            {articleLink?.data?.childrenArticles.map(renderSubArticleItem)}
           </div>
         </div>
         {/* 留出一些底部空间 */}
@@ -179,6 +202,8 @@ const About: FC = () => {
       </>
     );
   };
+
+  const SaveIcon = updatingArticle ? LoadingOutlined : SaveOutlined;
 
   const renderContent = () => {
     if (isLoadingArticle) return <PageLoading tip="信息加载中..." />;
@@ -199,17 +224,41 @@ const About: FC = () => {
               isTitleModified.current = false;
             }}
             placeholder="请输入笔记名"
-            className="font-bold border-0 text-3xl my-2 w-full dark:text-white"
+            className="font-bold border-0 text-3xl py-2 mr-2 w-full dark:text-white"
           />
-          {operation.renderDesktopOperation()}
-          <MobileArea>
+          <Space>
             <Button
-              size="large"
-              className="flex-shrink-0"
-              icon={<SettingOutlined />}
-              onClick={() => operation.setIsOperationDrawerOpen(true)}
-            ></Button>
-          </MobileArea>
+              icon={<UnorderedListOutlined />}
+              type={isMobile ? "text" : "default"}
+              onClick={() => articleConfigActions.onOpen(currentArticleId)}
+            >
+              {isMobile ? "" : "配置"}
+            </Button>
+            {!isEdit && (
+              <Button
+                icon={<PlusOutlined />}
+                type={isMobile ? "text" : "default"}
+                onClick={() => menu.menu.createArticle()}
+              >
+                {isMobile ? "" : "新增子笔记"}
+              </Button>
+            )}
+            <DesktopArea>
+              {isEdit ? (
+                <Button type="primary" onClick={endEdit} icon={<SaveIcon />}>
+                  保存
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  onClick={startEdit}
+                  icon={<FormOutlined />}
+                >
+                  编辑
+                </Button>
+              )}
+            </DesktopArea>
+          </Space>
         </div>
 
         <TagArea
@@ -223,7 +272,7 @@ const About: FC = () => {
             {renderEditor()}
           </div>
         ) : (
-          <div className={`md:w-[100%] ${s.mdArea}`}>
+          <div className={`md:w-[100%] mt-3 ${s.mdArea}`}>
             <MarkdownPreview source={content} />
           </div>
         )}
@@ -231,19 +280,6 @@ const About: FC = () => {
         {renderSubArticleList()}
       </div>
     );
-  };
-
-  const onLongClick = () => {
-    console.log(1);
-    addSubArticleTimer.current = setTimeout(() => {
-      // messageSuccess('新增子笔记');
-      navigator.vibrate?.(30);
-      menu.menu.createArticle();
-    }, 1000);
-  };
-
-  const onLongClickEnd = () => {
-    clearTimeout(addSubArticleTimer.current);
   };
 
   const renderActionBar = () => {
@@ -278,14 +314,7 @@ const About: FC = () => {
           icon={<MenuOutlined />}
           onClick={() => menu.setIsMenuDrawerOpen(true)}
         />
-        <ActionButton
-          onClick={operation.startEdit}
-          onTouchStart={onLongClick}
-          onTouchEnd={onLongClickEnd}
-        >
-          编辑
-          <span className="ml-2 text-xs">长按添加子笔记</span>
-        </ActionButton>
+        <ActionButton onClick={operation.startEdit}>编辑</ActionButton>
       </>
     );
   };

@@ -1,6 +1,11 @@
 import { PrismaClient } from "@db/client";
 import { ErrorNotFound } from "@/types/error";
-import { appendIdToPath, buildArticleTree } from "./utils";
+import {
+  appendIdToPath,
+  buildArticleTree,
+  getParentIdByPath,
+  pathToArray,
+} from "./utils";
 
 interface ServiceOptions {
   prisma: PrismaClient;
@@ -99,6 +104,7 @@ export class ArticleService {
   async getArticleTree() {
     const articles = await this.options.prisma.article.findMany({
       orderBy: { createdAt: "asc" },
+      select: { id: true, title: true, parentPath: true, color: true },
     });
     return buildArticleTree(articles);
   }
@@ -123,37 +129,45 @@ export class ArticleService {
     return article;
   }
 
-  async getArticlesByIds(ids: string[]) {
+  async getChildren(id: string) {
+    const article = await this.options.prisma.article.findUnique({
+      where: { id },
+    });
+    if (!article) throw new ErrorNotFound("Article not found");
+
+    const parentId = getParentIdByPath(article.parentPath);
+    const prefix = `${article.parentPath || ""}${id}#`;
+
+    const matchedArticles = await this.options.prisma.article.findMany({
+      where: parentId
+        ? { OR: [{ parentPath: prefix }, { id: parentId }] }
+        : { parentPath: prefix },
+      orderBy: { createdAt: "asc" },
+    });
+
+    const data = {
+      parentArticleIds: undefined as string[] | undefined,
+      parentArticleTitle: undefined as string | undefined,
+      childrenArticles: [] as { id: string; title: string }[],
+    };
+
+    matchedArticles.forEach((item) => {
+      if (parentId && item.id === parentId) {
+        data.parentArticleIds = [...pathToArray(item.parentPath), item.id];
+        data.parentArticleTitle = item.title;
+        return;
+      }
+      data.childrenArticles.push(item);
+    });
+
+    return data;
+  }
+
+  async getFavoriteArticles() {
     return await this.options.prisma.article.findMany({
-      where: { id: { in: ids } },
+      where: { favorite: true },
+      select: { id: true, title: true },
+      orderBy: { updatedAt: "desc" },
     });
-  }
-
-  async setArticleRelation(fromId: string, toId: string) {
-    const from = await this.options.prisma.article.findUnique({
-      where: { id: fromId },
-    });
-    const to = await this.options.prisma.article.findUnique({
-      where: { id: toId },
-    });
-
-    if (!from || !to) throw new ErrorNotFound("Article not found");
-
-    return await this.options.prisma.articleRelation.create({
-      data: { fromId, toId },
-    });
-  }
-
-  async removeArticleRelation(fromId: string, toId: string) {
-    return await this.options.prisma.articleRelation.delete({
-      where: { fromId_toId: { fromId, toId } },
-    });
-  }
-
-  async getArticleRelations(id: string) {
-    const relations = await this.options.prisma.articleRelation.findMany({
-      where: { OR: [{ fromId: id }, { toId: id }] },
-    });
-    return relations;
   }
 }

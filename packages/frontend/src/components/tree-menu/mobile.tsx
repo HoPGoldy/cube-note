@@ -1,10 +1,11 @@
 import { ArticleTreeNode } from "@/types/article";
-import { Button } from "antd";
-import React, { FC, useEffect, useRef, useState } from "react";
+import { Button, Flex } from "antd";
+import { FC, useEffect, useRef, useState } from "react";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
-import { LeftOutlined, FolderOutlined } from "@ant-design/icons";
+import { FolderOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { SplitLine } from "../cell";
 import { EMPTY_CLASSNAME } from "@/layouts/sidebar/use-menu";
+import { ColorDot } from "../color-picker/color-dot";
 
 interface Props {
   value: string[];
@@ -21,7 +22,7 @@ const findNodeList = (value: string[], treeData: ArticleTreeNode[]) => {
   let currentNodeList = treeData;
   for (let i = 0; i < value.length; i++) {
     const id = value[i];
-    const node = currentNodeList.find((node) => node.value === id);
+    const node = currentNodeList.find((node) => node.id === id);
     currentNodeList = node?.children || [];
   }
   return currentNodeList;
@@ -53,43 +54,45 @@ export const TreeMenu: FC<Props> = (props) => {
 
   const renderBackButton = () => {
     return (
-      <div
-        onClick={goBack}
-        className="mb-2 text-left font-bold text-lg dark:text-neutral-200"
-      >
-        <LeftOutlined /> 返回
-      </div>
+      <>
+        <Flex onClick={goBack} className="m-2">
+          <ArrowLeftOutlined />
+          <div className="ml-2 text-left font-bold text-lg">返回上一级</div>
+        </Flex>
+        <SplitLine />
+      </>
     );
   };
 
   const renderMenuItem = (item: ArticleTreeNode, index: number) => {
-    const selected = props.selectedIds?.includes(item.value);
+    const selected = props.selectedIds?.includes(item.id);
     return (
-      <div key={item.value}>
+      <div key={item.id}>
         <div
           className={
-            "mb-2 px-2 flex justify-between items-center h-[32px] rounded text-base " +
+            "py-2 px-4 flex justify-between items-center h-[32px] rounded text-base " +
             (selected ? "bg-green-500 text-white" : "")
           }
         >
-          <span
-            className="flex-shrink-0 w-2 h-[60%] bg-gray-300 dark:bg-neutral-700 mr-2 rounded"
-            style={{ backgroundColor: item.color }}
-          />
           <span
             className="flex-grow truncate dark:text-neutral-200"
             onClick={() => props.onClickNode?.(item)}
           >
             {item.title}
           </span>
-          {item.children?.length && (
-            <Button
-              onClick={() => goForward(item.value)}
-              className="ml-2 shrink-0"
-              type="text"
-              icon={<FolderOutlined className={selected ? "text-white" : ""} />}
-            />
-          )}
+          <Flex gap={8} justify="flex-start" align="center">
+            {item.children?.length > 0 && (
+              <Button
+                onClick={() => goForward(item.id)}
+                className="ml-2 shrink-0"
+                type="text"
+                icon={
+                  <FolderOutlined className={selected ? "text-white" : ""} />
+                }
+              />
+            )}
+            <ColorDot color={item.color} />
+          </Flex>
         </div>
         {index < currentList.length - 1 ? <SplitLine /> : null}
       </div>

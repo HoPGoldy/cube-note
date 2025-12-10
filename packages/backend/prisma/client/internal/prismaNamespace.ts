@@ -1570,7 +1570,9 @@ export const ArticleScalarFieldEnum = {
   content: 'content',
   parentPath: 'parentPath',
   tagIds: 'tagIds',
-  favorite: 'favorite'
+  favorite: 'favorite',
+  color: 'color',
+  listSubarticle: 'listSubarticle'
 } as const
 
 export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]

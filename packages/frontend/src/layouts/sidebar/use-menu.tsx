@@ -2,25 +2,18 @@ import {
   useAddArticle,
   useQueryArticleFavorite,
   useQueryArticleLink,
-  useQueryArticleRelated,
   useQueryArticleTree,
-  useSetArticleRelated,
 } from "@/services/article";
 import {
   stateCurrentArticleId,
   stateCurrentTab,
   stateParentArticleIds,
   stateParentArticleTitle,
-  stateSelectedRelatedArticleIds,
 } from "@/store/menu";
-import { ArticleTreeNode, TabTypes } from "@/types/article";
+import { TabTypes } from "@/types/article";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  UnorderedListOutlined,
-  ShareAltOutlined,
-  HeartOutlined,
-} from "@ant-design/icons";
+import { UnorderedListOutlined, HeartOutlined } from "@ant-design/icons";
 import { useAtom, useAtomValue } from "jotai";
 import { useGetAppConfig } from "@/services/app-config";
 
@@ -30,12 +23,6 @@ export const tabOptions = [
     sidebarLabel: "下属笔记",
     value: TabTypes.Sub,
     icon: <UnorderedListOutlined />,
-  },
-  {
-    label: "相关",
-    sidebarLabel: "相关笔记",
-    value: TabTypes.Related,
-    icon: <ShareAltOutlined />,
   },
   {
     label: "收藏",
@@ -63,9 +50,6 @@ export const useMenu = () => {
   const [parentArticleTitle, setParentArticleTitle] = useAtom(
     stateParentArticleTitle,
   );
-  const [selectedRelatedArticleIds, setRelatedArticleIds] = useAtom(
-    stateSelectedRelatedArticleIds,
-  );
 
   // 获取左下角菜单树
   const { data: articleTree } = useQueryArticleTree(currentRootArticleId);
@@ -74,19 +58,11 @@ export const useMenu = () => {
     currentArticleId,
     !!(currentArticleId && currentTab === TabTypes.Sub),
   );
-  // 获取当前文章的相关文章
-  const { data: articleRelatedLink, isLoading: relatedLinkLoading } =
-    useQueryArticleRelated(
-      currentArticleId,
-      !!(currentArticleId && currentTab === TabTypes.Related),
-    );
   // 获取收藏文章
   const { data: articleFavorite, isLoading: favoriteLoading } =
     useQueryArticleFavorite(currentTab === TabTypes.Favorite);
   // 新增文章
   const { mutateAsync: addArticle } = useAddArticle();
-  // 更新选中的相关文章
-  const { mutateAsync: setArticleRelated } = useSetArticleRelated();
 
   const createArticle = async () => {
     if (!currentArticleId) {
@@ -112,52 +88,16 @@ export const useMenu = () => {
     setParentArticleTitle(articleLink.data.parentArticleTitle || "");
   }, [articleLink]);
 
-  // 查看了相关条目，更新信息，让设置相关条目时可以高亮已关联文章
-  useEffect(() => {
-    if (!articleRelatedLink || !articleRelatedLink.data) return;
-    setRelatedArticleIds(
-      articleRelatedLink.data.relatedArticles.map((item) => item.id),
-    );
-  }, [articleRelatedLink]);
-
-  // 把选择的相关文章更新到后端
-  const onUpdateRelatedArticleIds = (newIds: string[]) => {
-    setRelatedArticleIds(newIds);
-  };
-
-  // 把选择的相关文章更新到相关列表
-  const onUpdateRelatedList = (newItem: ArticleTreeNode) => {
-    const currentLinks = articleRelatedLink?.data?.relatedArticles || [];
-    // 如果已经关联了，就移除
-    const hasLink = currentLinks.find((item) => item.id === newItem.value);
-
-    if (!currentArticleId) {
-      console.error("当前文章不存在，无法更新相关文章");
-      return;
-    }
-
-    setArticleRelated({
-      link: !hasLink,
-      fromArticleId: currentArticleId,
-      toArticleId: newItem.value,
-    });
-  };
-
   return {
     currentTab,
     currentRootArticleId,
     parentArticleIds,
     parentArticleTitle,
-    selectedRelatedArticleIds,
     articleTree,
     articleLink,
     linkLoading,
-    articleRelatedLink,
-    relatedLinkLoading,
     articleFavorite,
     favoriteLoading,
     createArticle,
-    onUpdateRelatedArticleIds,
-    onUpdateRelatedList,
   };
 };

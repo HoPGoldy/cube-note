@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Breadcrumb, Button, Col, Row } from "antd";
-import { LinkOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Col, Flex, Row } from "antd";
 import { MobileDrawer } from "@/components/mobile-drawer";
 import { TreeMenu } from "@/components/tree-menu/mobile";
 import {
@@ -20,6 +19,7 @@ import { useQueryArticleTree } from "@/services/article";
 import { BreadcrumbItemType } from "antd/es/breadcrumb/Breadcrumb";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useGetAppConfig } from "@/services/app-config";
+import { ColorDot } from "@/components/color-picker/color-dot";
 
 interface Props {
   currentArticleId: string;
@@ -48,24 +48,25 @@ export const useBreadcrumb = () => {
 
     idPath.reduce(
       (prev, cur) => {
-        const item = prev.find((i) => i.value === cur);
+        const item = prev.find((i) => i.id === cur);
         if (!item) return [];
         pathNodes.push(item);
         return item.children || [];
       },
-      articleTree?.data ? [articleTree.data] : [],
+      articleTree?.data ? articleTree.data : [],
     );
 
     const config: BreadcrumbItemType[] = pathNodes.map((i) => ({
       title: (
         <div className="truncate w-fit max-w-[8rem]" title={i.title}>
-          <Link to={`/article/${i.value}`}>{i.title}</Link>
+          <Link to={`/article/${i.id}`}>{i.title}</Link>
         </div>
       ),
     }));
 
     return config;
   }, [parentArticleIds, articleTree, currentArticleId]);
+  console.log("🚀 ~ useBreadcrumb ~ breadcrumbConfig:", breadcrumbConfig);
 
   /** 渲染桌面端面包屑 */
   const renderBreadcrumb = () => {
@@ -94,10 +95,6 @@ export const useMobileMenu = (props: Props) => {
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
   /** 当前 treeMenu 所处的层级 */
   const [treeMenuPath, setTreeMenuPath] = useState<string[]>([]);
-  /** 是否展开笔记管理选择抽屉 */
-  const [isLinkDrawerOpen, setIsLinkDrawerOpen] = useState(false);
-  /** 笔记管理选择 treeMenu 所处的层级 */
-  const [linkTreeMenuPath, setLinkTreeMenuPath] = useState<string[]>([]);
   /** 面包屑功能 */
   const { renderBreadcrumb } = useBreadcrumb();
 
@@ -127,10 +124,10 @@ export const useMobileMenu = (props: Props) => {
           value={treeMenuPath}
           onChange={setTreeMenuPath}
           onClickNode={(node) => {
-            navigate(`/article/${node.value}`);
+            navigate(`/article/${node.id}`);
             setIsMenuDrawerOpen(false);
           }}
-          treeData={menu?.articleTree?.data?.children || []}
+          treeData={menu?.articleTree?.data?.[0]?.children || []}
         />
       </>
     );
@@ -150,38 +147,11 @@ export const useMobileMenu = (props: Props) => {
             setIsMenuDrawerOpen(false);
           }}
         >
-          <span
-            className="flex-shrink-0 w-2 h-[60%] bg-gray-300 dark:bg-neutral-700 mr-2 rounded"
-            style={{ backgroundColor: item.color }}
-          />
+          <ColorDot color={item.color} />
           <span className="truncate">{item.title}</span>
         </div>
         {index < list.length - 1 ? <SplitLine /> : null}
       </div>
-    );
-  };
-
-  /** 渲染相关文章列表 */
-  const renderRelatedMenu = () => {
-    if (menu.relatedLinkLoading) return <div className="my-8">加载中...</div>;
-    const currentMenu = menu.articleRelatedLink?.data?.relatedArticles || [];
-
-    return (
-      <>
-        {currentMenu.length <= 0 ? (
-          <div className={EMPTY_CLASSNAME}>暂无相关笔记</div>
-        ) : (
-          currentMenu.map((i, index) => renderMenuItem(i, index, currentMenu))
-        )}
-        <Button
-          block
-          size="large"
-          icon={<LinkOutlined />}
-          onClick={() => setIsLinkDrawerOpen(true)}
-        >
-          关联其他笔记
-        </Button>
-      </>
     );
   };
 
@@ -206,36 +176,11 @@ export const useMobileMenu = (props: Props) => {
     switch (menu.currentTab) {
       case TabTypes.Sub:
         return renderSubMenu();
-      case TabTypes.Related:
-        return renderRelatedMenu();
       case TabTypes.Favorite:
         return renderFavoriteMenu();
       default:
         return null;
     }
-  };
-
-  const onLinkSelectDrawerClose = () => {
-    setIsLinkDrawerOpen(false);
-  };
-
-  const renderLinkSelectDrawer = () => {
-    return (
-      <MobileDrawer
-        title="关联笔记选择"
-        open={isLinkDrawerOpen}
-        onClose={onLinkSelectDrawerClose}
-        height="80%"
-      >
-        <TreeMenu
-          treeData={menu?.articleTree?.data?.children || []}
-          value={linkTreeMenuPath}
-          onChange={setLinkTreeMenuPath}
-          selectedIds={menu.selectedRelatedArticleIds}
-          onClickNode={menu.onUpdateRelatedList}
-        />
-      </MobileDrawer>
-    );
   };
 
   const renderMenuDrawer = () => {
@@ -266,29 +211,25 @@ export const useMobileMenu = (props: Props) => {
       >
         <div className="flex flex-col flex-nowrap h-full">
           <div className="flex-grow overflow-y-auto">{renderCurrentMenu()}</div>
-          <div className="flex-shrink-0">
-            <Row gutter={[8, 8]}>
+          <div className="flex-shrink-0 mx-2">
+            <Flex gap={8}>
               {tabOptions.map((tab) => {
                 return (
-                  <Col span={8} key={tab.value}>
-                    <Button
-                      size="large"
-                      block
-                      type={
-                        menu.currentTab === tab.value ? "primary" : "default"
-                      }
-                      onClick={() => setCurrentMenu(tab.value)}
-                      icon={tab.icon}
-                    >
-                      {tab.label}
-                    </Button>
-                  </Col>
+                  <Button
+                    key={tab.value}
+                    size="large"
+                    block
+                    type={menu.currentTab === tab.value ? "primary" : "default"}
+                    onClick={() => setCurrentMenu(tab.value)}
+                    icon={tab.icon}
+                  >
+                    {tab.label}
+                  </Button>
                 );
               })}
-            </Row>
+            </Flex>
           </div>
         </div>
-        {renderLinkSelectDrawer()}
       </MobileDrawer>
     );
   };

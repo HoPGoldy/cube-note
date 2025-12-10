@@ -6,22 +6,20 @@ import {
   ArticleDeleteResp,
   ArticleLinkResp,
   ArticleMenuItem,
-  ArticleRelatedResp,
-  ArticleSubLinkDetail,
   ArticleTreeNode,
   DeleteArticleMutation,
   SearchArticleReqData,
   SearchArticleResp,
-  SetArticleRelatedReqData,
   UpdateArticleReqData,
 } from "@/types/article";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 
 /** 查询文章正文 */
-export const useQueryArticleContent = (id: string) => {
-  return useQuery({
+export const useQueryArticleContent = (id?: string) => {
+  const result = useQuery({
     queryKey: ["articleContent", id],
+    enabled: !!id,
     queryFn: async () => {
       const resp = await requestPost("article/getContent", {
         id,
@@ -35,8 +33,9 @@ export const useQueryArticleContent = (id: string) => {
         } as ArticleContent,
       };
     },
-    refetchOnWindowFocus: false,
   });
+
+  return { ...result, articleDetail: result.data?.data };
 };
 
 const updateArticleCache = (
@@ -113,37 +112,6 @@ export const useQueryArticleLink = (
   });
 };
 
-/** 查询本文的详细下属文章列表 */
-export const useQueryArticleSublink = (
-  id: string | undefined,
-  enabled: boolean,
-) => {
-  return useQuery({
-    queryKey: ["articleDetailSubLink", id],
-    queryFn: () => {
-      return requestPost<ArticleSubLinkDetail[]>(
-        "article/getChildrenDetailList",
-        { id },
-      );
-    },
-    enabled,
-  });
-};
-
-/** 查询本文的相关文章 */
-export const useQueryArticleRelated = (
-  id: string | undefined,
-  enabled: boolean,
-) => {
-  return useQuery({
-    queryKey: ["articleRelated", id],
-    queryFn: () => {
-      return requestPost<ArticleRelatedResp>("article/getRelated", { id });
-    },
-    enabled,
-  });
-};
-
 /** 新增文章 */
 export const useAddArticle = () => {
   return useMutation({
@@ -194,7 +162,7 @@ export const useQueryArticleTree = (id?: string) => {
   return useQuery({
     queryKey: ["menu", id],
     queryFn: () => {
-      return requestPost<ArticleTreeNode>("article/getTree", { id });
+      return requestPost<ArticleTreeNode[]>("article/getTree", { id });
     },
     refetchOnWindowFocus: false,
     enabled: !isNil(id),
@@ -225,20 +193,6 @@ export const useFavoriteArticle = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favorite"] });
-    },
-  });
-};
-
-/** 关联文章 */
-export const useSetArticleRelated = () => {
-  return useMutation({
-    mutationFn: (data: SetArticleRelatedReqData) => {
-      return requestPost("article/setRelated", data);
-    },
-    onSuccess: (resp, data) => {
-      queryClient.invalidateQueries({
-        queryKey: ["articleRelated", data.fromArticleId],
-      });
     },
   });
 };

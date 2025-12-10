@@ -33,6 +33,8 @@ export type ArticleMinAggregateOutputType = {
   parentPath: string | null
   tagIds: string | null
   favorite: boolean | null
+  color: string | null
+  listSubarticle: boolean | null
 }
 
 export type ArticleMaxAggregateOutputType = {
@@ -44,6 +46,8 @@ export type ArticleMaxAggregateOutputType = {
   parentPath: string | null
   tagIds: string | null
   favorite: boolean | null
+  color: string | null
+  listSubarticle: boolean | null
 }
 
 export type ArticleCountAggregateOutputType = {
@@ -55,6 +59,8 @@ export type ArticleCountAggregateOutputType = {
   parentPath: number
   tagIds: number
   favorite: number
+  color: number
+  listSubarticle: number
   _all: number
 }
 
@@ -68,6 +74,8 @@ export type ArticleMinAggregateInputType = {
   parentPath?: true
   tagIds?: true
   favorite?: true
+  color?: true
+  listSubarticle?: true
 }
 
 export type ArticleMaxAggregateInputType = {
@@ -79,6 +87,8 @@ export type ArticleMaxAggregateInputType = {
   parentPath?: true
   tagIds?: true
   favorite?: true
+  color?: true
+  listSubarticle?: true
 }
 
 export type ArticleCountAggregateInputType = {
@@ -90,6 +100,8 @@ export type ArticleCountAggregateInputType = {
   parentPath?: true
   tagIds?: true
   favorite?: true
+  color?: true
+  listSubarticle?: true
   _all?: true
 }
 
@@ -174,6 +186,8 @@ export type ArticleGroupByOutputType = {
   parentPath: string | null
   tagIds: string | null
   favorite: boolean
+  color: string | null
+  listSubarticle: boolean
   _count: ArticleCountAggregateOutputType | null
   _min: ArticleMinAggregateOutputType | null
   _max: ArticleMaxAggregateOutputType | null
@@ -206,6 +220,8 @@ export type ArticleWhereInput = {
   parentPath?: Prisma.StringNullableFilter<"Article"> | string | null
   tagIds?: Prisma.StringNullableFilter<"Article"> | string | null
   favorite?: Prisma.BoolFilter<"Article"> | boolean
+  color?: Prisma.StringNullableFilter<"Article"> | string | null
+  listSubarticle?: Prisma.BoolFilter<"Article"> | boolean
   relationsFrom?: Prisma.ArticleRelationListRelationFilter
   relationsTo?: Prisma.ArticleRelationListRelationFilter
 }
@@ -219,6 +235,8 @@ export type ArticleOrderByWithRelationInput = {
   parentPath?: Prisma.SortOrderInput | Prisma.SortOrder
   tagIds?: Prisma.SortOrderInput | Prisma.SortOrder
   favorite?: Prisma.SortOrder
+  color?: Prisma.SortOrderInput | Prisma.SortOrder
+  listSubarticle?: Prisma.SortOrder
   relationsFrom?: Prisma.ArticleRelationOrderByRelationAggregateInput
   relationsTo?: Prisma.ArticleRelationOrderByRelationAggregateInput
 }
@@ -235,6 +253,8 @@ export type ArticleWhereUniqueInput = Prisma.AtLeast<{
   parentPath?: Prisma.StringNullableFilter<"Article"> | string | null
   tagIds?: Prisma.StringNullableFilter<"Article"> | string | null
   favorite?: Prisma.BoolFilter<"Article"> | boolean
+  color?: Prisma.StringNullableFilter<"Article"> | string | null
+  listSubarticle?: Prisma.BoolFilter<"Article"> | boolean
   relationsFrom?: Prisma.ArticleRelationListRelationFilter
   relationsTo?: Prisma.ArticleRelationListRelationFilter
 }, "id">
@@ -248,6 +268,8 @@ export type ArticleOrderByWithAggregationInput = {
   parentPath?: Prisma.SortOrderInput | Prisma.SortOrder
   tagIds?: Prisma.SortOrderInput | Prisma.SortOrder
   favorite?: Prisma.SortOrder
+  color?: Prisma.SortOrderInput | Prisma.SortOrder
+  listSubarticle?: Prisma.SortOrder
   _count?: Prisma.ArticleCountOrderByAggregateInput
   _max?: Prisma.ArticleMaxOrderByAggregateInput
   _min?: Prisma.ArticleMinOrderByAggregateInput
@@ -265,6 +287,8 @@ export type ArticleScalarWhereWithAggregatesInput = {
   parentPath?: Prisma.StringNullableWithAggregatesFilter<"Article"> | string | null
   tagIds?: Prisma.StringNullableWithAggregatesFilter<"Article"> | string | null
   favorite?: Prisma.BoolWithAggregatesFilter<"Article"> | boolean
+  color?: Prisma.StringNullableWithAggregatesFilter<"Article"> | string | null
+  listSubarticle?: Prisma.BoolWithAggregatesFilter<"Article"> | boolean
 }
 
 export type ArticleCreateInput = {
@@ -276,6 +300,8 @@ export type ArticleCreateInput = {
   parentPath?: string | null
   tagIds?: string | null
   favorite?: boolean
+  color?: string | null
+  listSubarticle?: boolean
   relationsFrom?: Prisma.ArticleRelationCreateNestedManyWithoutFromInput
   relationsTo?: Prisma.ArticleRelationCreateNestedManyWithoutToInput
 }
@@ -289,6 +315,8 @@ export type ArticleUncheckedCreateInput = {
   parentPath?: string | null
   tagIds?: string | null
   favorite?: boolean
+  color?: string | null
+  listSubarticle?: boolean
   relationsFrom?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutFromInput
   relationsTo?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutToInput
 }
@@ -302,6 +330,8 @@ export type ArticleUpdateInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
   relationsFrom?: Prisma.ArticleRelationUpdateManyWithoutFromNestedInput
   relationsTo?: Prisma.ArticleRelationUpdateManyWithoutToNestedInput
 }
@@ -315,6 +345,8 @@ export type ArticleUncheckedUpdateInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
   relationsFrom?: Prisma.ArticleRelationUncheckedUpdateManyWithoutFromNestedInput
   relationsTo?: Prisma.ArticleRelationUncheckedUpdateManyWithoutToNestedInput
 }
@@ -328,6 +360,8 @@ export type ArticleCreateManyInput = {
   parentPath?: string | null
   tagIds?: string | null
   favorite?: boolean
+  color?: string | null
+  listSubarticle?: boolean
 }
 
 export type ArticleUpdateManyMutationInput = {
@@ -339,6 +373,8 @@ export type ArticleUpdateManyMutationInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ArticleUncheckedUpdateManyInput = {
@@ -350,6 +386,8 @@ export type ArticleUncheckedUpdateManyInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ArticleCountOrderByAggregateInput = {
@@ -361,6 +399,8 @@ export type ArticleCountOrderByAggregateInput = {
   parentPath?: Prisma.SortOrder
   tagIds?: Prisma.SortOrder
   favorite?: Prisma.SortOrder
+  color?: Prisma.SortOrder
+  listSubarticle?: Prisma.SortOrder
 }
 
 export type ArticleMaxOrderByAggregateInput = {
@@ -372,6 +412,8 @@ export type ArticleMaxOrderByAggregateInput = {
   parentPath?: Prisma.SortOrder
   tagIds?: Prisma.SortOrder
   favorite?: Prisma.SortOrder
+  color?: Prisma.SortOrder
+  listSubarticle?: Prisma.SortOrder
 }
 
 export type ArticleMinOrderByAggregateInput = {
@@ -383,6 +425,8 @@ export type ArticleMinOrderByAggregateInput = {
   parentPath?: Prisma.SortOrder
   tagIds?: Prisma.SortOrder
   favorite?: Prisma.SortOrder
+  color?: Prisma.SortOrder
+  listSubarticle?: Prisma.SortOrder
 }
 
 export type ArticleScalarRelationFilter = {
@@ -427,6 +471,8 @@ export type ArticleCreateWithoutRelationsFromInput = {
   parentPath?: string | null
   tagIds?: string | null
   favorite?: boolean
+  color?: string | null
+  listSubarticle?: boolean
   relationsTo?: Prisma.ArticleRelationCreateNestedManyWithoutToInput
 }
 
@@ -439,6 +485,8 @@ export type ArticleUncheckedCreateWithoutRelationsFromInput = {
   parentPath?: string | null
   tagIds?: string | null
   favorite?: boolean
+  color?: string | null
+  listSubarticle?: boolean
   relationsTo?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutToInput
 }
 
@@ -456,6 +504,8 @@ export type ArticleCreateWithoutRelationsToInput = {
   parentPath?: string | null
   tagIds?: string | null
   favorite?: boolean
+  color?: string | null
+  listSubarticle?: boolean
   relationsFrom?: Prisma.ArticleRelationCreateNestedManyWithoutFromInput
 }
 
@@ -468,6 +518,8 @@ export type ArticleUncheckedCreateWithoutRelationsToInput = {
   parentPath?: string | null
   tagIds?: string | null
   favorite?: boolean
+  color?: string | null
+  listSubarticle?: boolean
   relationsFrom?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutFromInput
 }
 
@@ -496,6 +548,8 @@ export type ArticleUpdateWithoutRelationsFromInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
   relationsTo?: Prisma.ArticleRelationUpdateManyWithoutToNestedInput
 }
 
@@ -508,6 +562,8 @@ export type ArticleUncheckedUpdateWithoutRelationsFromInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
   relationsTo?: Prisma.ArticleRelationUncheckedUpdateManyWithoutToNestedInput
 }
 
@@ -531,6 +587,8 @@ export type ArticleUpdateWithoutRelationsToInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
   relationsFrom?: Prisma.ArticleRelationUpdateManyWithoutFromNestedInput
 }
 
@@ -543,6 +601,8 @@ export type ArticleUncheckedUpdateWithoutRelationsToInput = {
   parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
   relationsFrom?: Prisma.ArticleRelationUncheckedUpdateManyWithoutFromNestedInput
 }
 
@@ -595,6 +655,8 @@ export type ArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   parentPath?: boolean
   tagIds?: boolean
   favorite?: boolean
+  color?: boolean
+  listSubarticle?: boolean
   relationsFrom?: boolean | Prisma.Article$relationsFromArgs<ExtArgs>
   relationsTo?: boolean | Prisma.Article$relationsToArgs<ExtArgs>
   _count?: boolean | Prisma.ArticleCountOutputTypeDefaultArgs<ExtArgs>
@@ -609,6 +671,8 @@ export type ArticleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   parentPath?: boolean
   tagIds?: boolean
   favorite?: boolean
+  color?: boolean
+  listSubarticle?: boolean
 }, ExtArgs["result"]["article"]>
 
 export type ArticleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -620,6 +684,8 @@ export type ArticleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   parentPath?: boolean
   tagIds?: boolean
   favorite?: boolean
+  color?: boolean
+  listSubarticle?: boolean
 }, ExtArgs["result"]["article"]>
 
 export type ArticleSelectScalar = {
@@ -631,9 +697,11 @@ export type ArticleSelectScalar = {
   parentPath?: boolean
   tagIds?: boolean
   favorite?: boolean
+  color?: boolean
+  listSubarticle?: boolean
 }
 
-export type ArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "title" | "content" | "parentPath" | "tagIds" | "favorite", ExtArgs["result"]["article"]>
+export type ArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "title" | "content" | "parentPath" | "tagIds" | "favorite" | "color" | "listSubarticle", ExtArgs["result"]["article"]>
 export type ArticleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   relationsFrom?: boolean | Prisma.Article$relationsFromArgs<ExtArgs>
   relationsTo?: boolean | Prisma.Article$relationsToArgs<ExtArgs>
@@ -657,6 +725,8 @@ export type $ArticlePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     parentPath: string | null
     tagIds: string | null
     favorite: boolean
+    color: string | null
+    listSubarticle: boolean
   }, ExtArgs["result"]["article"]>
   composites: {}
 }
@@ -1090,6 +1160,8 @@ export interface ArticleFieldRefs {
   readonly parentPath: Prisma.FieldRef<"Article", 'String'>
   readonly tagIds: Prisma.FieldRef<"Article", 'String'>
   readonly favorite: Prisma.FieldRef<"Article", 'Boolean'>
+  readonly color: Prisma.FieldRef<"Article", 'String'>
+  readonly listSubarticle: Prisma.FieldRef<"Article", 'Boolean'>
 }
     
 

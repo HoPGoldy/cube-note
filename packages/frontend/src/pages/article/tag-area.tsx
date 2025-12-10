@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { TagPicker } from "@/components/tag-picker";
 import { Draggable } from "@/components/draggable";
 import { useTagDict } from "../tag-manager/use-tag-dict";
+import { getColorValue } from "@/components/color-picker/color-dot";
 
 interface Props {
   /**
@@ -37,7 +38,7 @@ const TagArea: FC<Props> = (props) => {
   const onClickAddBtn = async (newLabel: string) => {
     if (!newLabel) return;
     // 先添加标签
-    const resp = await addTag({ title: newLabel, color: "#404040" });
+    const resp = await addTag({ title: newLabel, color: "" });
     if (!resp?.data) return;
 
     // 再更新文章的标签列表
@@ -79,7 +80,10 @@ const TagArea: FC<Props> = (props) => {
         key={itemId}
       >
         {tagInfo && (
-          <Tag color={tagInfo.color} onClick={() => onClickTag(itemId)}>
+          <Tag
+            color={getColorValue(tagInfo.color)}
+            onClick={() => onClickTag(itemId)}
+          >
             {tagInfo.title}
           </Tag>
         )}
@@ -93,7 +97,7 @@ const TagArea: FC<Props> = (props) => {
 
     return (
       <Draggable
-        className="w-full"
+        className="w-full mt-4"
         value={existTagIds}
         renderItem={renderTagItem}
         onChange={onChangeOrder}

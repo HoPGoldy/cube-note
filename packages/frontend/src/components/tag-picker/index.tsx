@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, Col, Modal, Row, Space } from "antd";
+import { Button, Card, Col, Flex, Modal, Row, Space } from "antd";
 import { MobileDrawer } from "@/components/mobile-drawer";
 import { TagListItem } from "@/types/tag";
 import { useQueryTagList } from "@/services/tag";
@@ -8,6 +8,7 @@ import { Tag } from "@/components/tag";
 import Loading from "@/layouts/loading";
 import { useIsMobile } from "@/layouts/responsive";
 import { useNavigate } from "react-router-dom";
+import { ColorDot, getColorValue } from "../color-picker/color-dot";
 
 interface Props {
   open: boolean;
@@ -24,20 +25,33 @@ export const TagPicker: FC<Props> = (props) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  // 获取标签列表
-  const { data: tagListResp, isLoading: isTagLoading } = useQueryTagList();
-  const tagList = tagListResp?.data || [];
+  const { tagList, isLoading: isTagLoading } = useQueryTagList();
+  console.log("🚀 ~ TagPicker ~ tagList:", tagList);
 
   const renderTag = (item: TagListItem) => {
     return (
       <Tag
         key={item.id}
-        color={item.color}
+        color={getColorValue(item.color)}
         selected={selectedTags.includes(item.id)}
         onClick={() => onSelected(item)}
       >
         {item.title}
       </Tag>
+    );
+    return (
+      <Card
+        key={item.id}
+        color={item.color}
+        // selected={selectedTags.includes(item.id)}
+        styles={{ body: { padding: "6px 16px" } }}
+        onClick={() => onSelected(item)}
+      >
+        <Flex align="center" gap={8}>
+          <div>{item.title}</div>
+          {item.color && <ColorDot color={item.color} />}
+        </Flex>
+      </Card>
     );
   };
 
@@ -46,7 +60,7 @@ export const TagPicker: FC<Props> = (props) => {
 
     return (
       <div className="mx-2">
-        <Space wrap size={[4, 8]}>
+        <Space wrap size={[8, 8]}>
           {tagList.map(renderTag)}
         </Space>
       </div>

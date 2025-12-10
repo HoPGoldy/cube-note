@@ -159,9 +159,9 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
   const onClickNode = (node: ArticleTreeNode) => {
     props.onClickNode?.(node);
 
-    if (props.value?.includes(node.value)) {
-      props.onChange?.(props.value?.filter((v) => v !== node.value));
-    } else props.onChange?.([...(props?.value || []), node.value]);
+    if (props.value?.includes(node.id)) {
+      props.onChange?.(props.value?.filter((v) => v !== node.id));
+    } else props.onChange?.([...(props?.value || []), node.id]);
   };
 
   /**
@@ -173,24 +173,20 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
   const renderMenuItem = (item: ArticleTreeNode, level: number) => {
     return (
       <div
-        key={item.value}
+        key={item.id}
         style={{ height: MENU_HEIGHT, width: MENU_WIDTH }}
         className="overflow-hidden"
       >
         <div
           /** 展开和收起菜单时会靠这个 id 查找对应的 div */
-          id={item.value.toString()}
+          id={item.id}
           className={
             s.menuItem +
             " " +
-            (props.value?.includes(item.value)
-              ? s.itemSelected
-              : s.itemUnselected)
+            (props.value?.includes(item.id) ? s.itemSelected : s.itemUnselected)
           }
           onClick={() => onClickNode(item)}
-          onMouseEnter={() =>
-            onOpenInnerMenu(item.value.toString(), level, item.children)
-          }
+          onMouseEnter={() => onOpenInnerMenu(item.id, level, item.children)}
         >
           <div className="truncate">{item.title}</div>
           <div className="flex flex-nowrap flex-row items-center">
@@ -200,7 +196,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
                 style={{ backgroundColor: item.color }}
               />
             )}
-            {item.children && <RightOutlined />}
+            {item.children && item.children.length > 0 && <RightOutlined />}
           </div>
         </div>
       </div>

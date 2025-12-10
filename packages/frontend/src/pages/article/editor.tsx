@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Editor as MdEditor } from "@bytemd/react";
-import { plugins } from "@/components/file-uploader-plugin";
 import debounce from "lodash/debounce";
 import { autoSaveContent } from "@/services/article";
 import { messageError } from "@/utils/message";
 import { useIsMobile } from "@/layouts/responsive";
-import zh_Hans from "bytemd/locales/zh_Hans.json";
 import { Editor } from "@/components/markdown-editor";
 import { PreviewType } from "@uiw/react-md-editor";
 
@@ -62,7 +59,6 @@ export const useEditor = (props: Props) => {
       <Editor
         value={content}
         preview={(isMobile ? "edit" : "live") as PreviewType}
-        // locale={zh_Hans}
         onChange={onContentChange}
       />
     );

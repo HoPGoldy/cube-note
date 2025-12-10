@@ -10,6 +10,23 @@ interface RegisterOptions {
 export async function registerArticleController(options: RegisterOptions) {
   const { server, articleService } = options;
 
+  // 获取文章内容（POST）
+  server.post(
+    "/article/getContent",
+    {
+      schema: {
+        description: "获取文章内容",
+        body: Type.Object({
+          id: Type.String(),
+        }),
+      },
+    },
+    async (request) => {
+      const body = request.body;
+      return await articleService.getArticleDetail(body.id);
+    },
+  );
+
   // 获取文章下属链接信息
   server.post(
     "/article/getLink",
@@ -22,50 +39,9 @@ export async function registerArticleController(options: RegisterOptions) {
       },
     },
     async (request) => {
-      const body = request.body;
+      const body = request.body as { id: string };
       const { id } = body;
-      const parent = await articleService.getArticleDetail(id);
-      return {
-        parentArticleIds: parent.parentPath?.split("#").filter(Boolean),
-        childrenArticles: [],
-      };
-    },
-  );
-
-  // 获取文章详细的子文章列表
-  server.post(
-    "/article/getChildrenDetailList",
-    {
-      schema: {
-        description: "获取文章的详细子文章列表",
-        body: Type.Object({
-          id: Type.String(),
-        }),
-      },
-    },
-    async (request) => {
-      const body = request.body;
-      const { id } = body;
-      // 这里需要实现获取子文章的详细信息
-      return [];
-    },
-  );
-
-  // 获取文章相关文章
-  server.post(
-    "/article/getRelated",
-    {
-      schema: {
-        description: "获取文章的相关文章",
-        body: Type.Object({
-          id: Type.String(),
-        }),
-      },
-    },
-    async (request) => {
-      const body = request.body;
-      const { id } = body;
-      return await articleService.getArticleRelations(id);
+      return await articleService.getChildren(id);
     },
   );
 
@@ -81,7 +57,7 @@ export async function registerArticleController(options: RegisterOptions) {
       },
     },
     async (request) => {
-      return await articleService.getArticleTree();
+      return articleService.getArticleTree();
     },
   );
 
@@ -95,7 +71,7 @@ export async function registerArticleController(options: RegisterOptions) {
       },
     },
     async (request) => {
-      return [];
+      return await articleService.getFavoriteArticles();
     },
   );
 
@@ -113,7 +89,11 @@ export async function registerArticleController(options: RegisterOptions) {
       },
     },
     async (request) => {
-      const body = request.body;
+      const body = request.body as {
+        title: string;
+        content?: string;
+        parentId?: string;
+      };
       return await articleService.createArticle(
         body.title,
         body.content || "",
@@ -202,34 +182,6 @@ export async function registerArticleController(options: RegisterOptions) {
     async (request) => {
       const body = request.body;
       return await articleService.setFavorite(body.id, body.favorite);
-    },
-  );
-
-  // 设置文章关联
-  server.post(
-    "/article/setRelated",
-    {
-      schema: {
-        description: "设置文章关联",
-        body: Type.Object({
-          fromArticleId: Type.String(),
-          toArticleId: Type.String(),
-          link: Type.Boolean(),
-        }),
-      },
-    },
-    async (request) => {
-      const body = request.body;
-      const { fromArticleId, toArticleId, link } = body;
-      if (link) {
-        return await articleService.setArticleRelation(
-          fromArticleId,
-          toArticleId,
-        );
-      } else {
-        await articleService.removeArticleRelation(fromArticleId, toArticleId);
-        return { success: true };
-      }
     },
   );
 }

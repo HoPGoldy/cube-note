@@ -35,7 +35,7 @@ export class AppConfigService {
     });
 
     this.cache.set("allConfigs", JSON.stringify(configs));
-    return configs;
+    return configs as SchemaAppConfigType;
   }
 
   async setConfigValues(configs: Record<string, string>) {

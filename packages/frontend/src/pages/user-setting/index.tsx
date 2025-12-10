@@ -143,17 +143,6 @@ export const MobileSetting: FC<MobileProps> = (props) => {
           </Card>
 
           <Card size="small">
-            <Cell
-              title={
-                <div>
-                  <UserOutlined /> &nbsp;登录用户
-                </div>
-              }
-              extra={settingHook.userName}
-            />
-          </Card>
-
-          <Card size="small">
             {settingHook.settingConfig.map(renderConfigItem)}
           </Card>
 

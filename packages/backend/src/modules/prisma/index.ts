@@ -23,7 +23,7 @@ export class PrismaService extends PrismaClient {
       if (!rootArticleConfig) {
         const article = await tx.article.create({
           data: {
-            title: "根文章",
+            title: "Cube Note 首页",
             content: "",
           },
         });
