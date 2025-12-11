@@ -1,13 +1,11 @@
 import { FC, Fragment } from "react";
 import { Button, Card, Col, Drawer, Flex, Row, Statistic } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
 import {
-  UserOutlined,
-  RightOutlined,
-  LogoutOutlined,
-  CloudServerOutlined,
-  CheckCircleOutlined,
+  CloseCircleOutlined,
+  HighlightOutlined,
+  SnippetsOutlined,
 } from "@ant-design/icons";
+import { UserOutlined, RightOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Cell, SplitLine } from "@/components/cell";
 import { SettingLinkItem, useSettingMenu } from "./use-setting-menu";
 import { AboutModal } from "../about";
@@ -36,16 +34,16 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
         <Row gutter={[16, 16]} justify="space-around">
           <Col>
             <Statistic
-              title="启用服务"
-              value={settingHook.enabledCount}
-              prefix={<CloudServerOutlined />}
+              title="笔记数量"
+              value={settingHook.articleCount}
+              prefix={<SnippetsOutlined />}
             />
           </Col>
           <Col>
             <Statistic
-              title="正常运行"
-              value={settingHook.upCount}
-              prefix={<CheckCircleOutlined />}
+              title="总字数"
+              value={settingHook.articleLength}
+              prefix={<HighlightOutlined />}
             />
           </Col>
         </Row>
@@ -121,22 +119,22 @@ export const MobileSetting: FC<MobileProps> = (props) => {
       }
     >
       <Flex vertical className="p-4" gap={16}>
-        <h1 className="text-center">Cube Probe</h1>
+        <h1 className="text-center">Cube Note</h1>
         <Flex vertical gap={16} className="flex-grow">
           <Card size="small">
             <Row justify="space-around">
               <Col>
                 <Statistic
-                  title="启用服务"
-                  value={settingHook.enabledCount}
-                  prefix={<CloudServerOutlined />}
+                  title="笔记数量"
+                  value={settingHook.articleCount}
+                  prefix={<SnippetsOutlined />}
                 />
               </Col>
               <Col>
                 <Statistic
-                  title="正常运行"
-                  value={settingHook.upCount}
-                  prefix={<CheckCircleOutlined />}
+                  title="总字数"
+                  value={settingHook.articleLength}
+                  prefix={<HighlightOutlined />}
                 />
               </Col>
             </Row>

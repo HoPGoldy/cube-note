@@ -206,4 +206,19 @@ export class ArticleService {
       orderBy: { updatedAt: "desc" },
     });
   }
+
+  async statisticArticles() {
+    const countResult = await this.options.prisma.article.aggregate({
+      _count: { id: true },
+    });
+
+    const sumResult = await this.options.prisma.$queryRaw<
+      { totalLength: number | null }[]
+    >`SELECT SUM(LENGTH(content)) AS totalLength FROM "Article"`;
+
+    return {
+      articleCount: countResult._count.id,
+      articleLength: Number(sumResult[0]?.totalLength) || 0,
+    };
+  }
 }

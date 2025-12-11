@@ -13,7 +13,7 @@ export const AboutModal: FC<AboutModalModalProps> = (props) => {
       open={props.open}
       onCancel={() => props.onClose()}
       onOk={() => props.onClose()}
-      title="关于应用 Cube Probe"
+      title="关于应用 Cube Note"
       footer={(_, { OkBtn }) => (
         <Flex align="center" justify="space-between">
           <div className="text-gray-500 dark:text-gray-200">

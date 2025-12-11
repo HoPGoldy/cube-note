@@ -3,7 +3,7 @@ import { logout, stateUserJwtData } from "@/store/user";
 import { SmileOutlined, BellOutlined } from "@ant-design/icons";
 import { useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
-import { useGetNotificationStatusList } from "@/services/notification";
+import { useQueryArticleCount } from "@/services/article";
 
 export interface SettingLinkItem {
   label: string;
@@ -17,14 +17,7 @@ export const useSettingMenu = () => {
   /** 是否展示关于弹窗 */
   const [aboutVisible, setAboutVisible] = useState(false);
 
-  const { data: statusData } = useGetNotificationStatusList();
-  const statusList = (statusData?.data as any[]) ?? [];
-  /** 启用的服务数量 */
-  const enabledCount = statusList.filter((s) => s.hostEnabled).length;
-  /** 正常运行的服务数量 */
-  const upCount = statusList.filter(
-    (s) => s.hostEnabled && s.currentStatus === "UP",
-  ).length;
+  const { data: countInfo } = useQueryArticleCount();
 
   const settingConfig = [
     {
@@ -45,15 +38,17 @@ export const useSettingMenu = () => {
     logout();
   };
 
+  const articleCount = countInfo?.data?.articleCount || "---";
+  const articleLength = countInfo?.data?.articleLength || "---";
   const userName = userInfo?.username || "---";
 
   return {
+    articleCount,
+    articleLength,
     userName,
     onLogout,
     aboutVisible,
     setAboutVisible,
     settingConfig,
-    enabledCount,
-    upCount,
   };
 };

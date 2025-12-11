@@ -210,3 +210,13 @@ export const useFavoriteArticle = () => {
     },
   });
 };
+
+/** 统计文章 */
+export const useQueryArticleCount = () => {
+  return useQuery({
+    queryKey: ["userStatistic"],
+    queryFn: () => {
+      return requestPost("article/statistic", {});
+    },
+  });
+};

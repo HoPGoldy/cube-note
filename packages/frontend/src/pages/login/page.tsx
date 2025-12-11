@@ -42,8 +42,8 @@ export const LoginPage = () => {
     if (e.key === "Enter") onPasswordSubmit();
   };
 
-  const appTitle = "Cube Probe";
-  const appSubTitle = "web 可用性监控探针服务";
+  const appTitle = "Cube Note";
+  const appSubTitle = "记录你的生活";
 
   return (
     <div className="h-screen w-screen bg-gray-100 dark:bg-neutral-800 flex flex-col justify-center items-center dark:text-gray-100">

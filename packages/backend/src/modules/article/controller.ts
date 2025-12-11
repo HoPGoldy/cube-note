@@ -190,4 +190,16 @@ export async function registerArticleController(options: RegisterOptions) {
       return await articleService.setFavorite(body.id, body.favorite);
     },
   );
+
+  server.post(
+    "/article/statistic",
+    {
+      schema: {
+        description: "统计文章数量",
+      },
+    },
+    async () => {
+      return await articleService.statisticArticles();
+    },
+  );
 }
