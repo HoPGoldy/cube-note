@@ -6,6 +6,7 @@ import {
   getParentIdByPath,
   pathToArray,
 } from "./utils";
+import { ArticleWhereInput } from "@db/models";
 
 interface ServiceOptions {
   prisma: PrismaClient;
@@ -76,27 +77,47 @@ export class ArticleService {
     pageSize: number = 20,
   ) {
     const skip = (page - 1) * pageSize;
+    const whereClause: ArticleWhereInput = {
+      OR: [
+        { title: { contains: keyword } },
+        { content: { contains: keyword } },
+      ],
+    };
 
-    const items = await this.options.prisma.article.findMany({
-      where: {
-        OR: [
-          { title: { contains: keyword } },
-          { content: { contains: keyword } },
-        ],
-      },
-      skip,
-      take: pageSize,
-      orderBy: { updatedAt: "desc" },
-    });
-    console.log("🚀 ~ ArticleService ~ searchArticles ~ items:", items);
+    const [rows, total] = await this.options.prisma.$transaction([
+      this.options.prisma.article.findMany({
+        where: whereClause,
+        skip,
+        take: pageSize,
+        orderBy: { updatedAt: "desc" },
+      }),
+      this.options.prisma.article.count({
+        where: whereClause,
+      }),
+    ]);
 
-    const total = await this.options.prisma.article.count({
-      where: {
-        OR: [
-          { title: { contains: keyword } },
-          { content: { contains: keyword } },
-        ],
-      },
+    const items = rows.map((item) => {
+      let content = "";
+      // 截取正文中关键字前后的内容
+      if (keyword) {
+        const matched = item.content.match(new RegExp(keyword, "i"));
+        if (matched && matched.index) {
+          content = item.content.slice(
+            Math.max(matched.index - 30, 0),
+            matched.index + 30,
+          );
+        }
+      }
+      if (!content) content = item.content.slice(0, 30);
+
+      const tagIds = item.tagIds ? pathToArray(item.tagIds) : [];
+
+      return {
+        id: item.id,
+        title: item.title,
+        tagIds,
+        content,
+      };
     });
 
     return { items, total };
