@@ -142,11 +142,11 @@ export const MobileSetting: FC<MobileProps> = (props) => {
             </Row>
           </Card>
 
-          <Card size="small">
+          <Card size="small" styles={{ body: { padding: "0px 18px" } }}>
             {settingHook.settingConfig.map(renderConfigItem)}
           </Card>
 
-          <Card size="small">
+          <Card size="small" styles={{ body: { padding: "0px 18px" } }}>
             <Cell
               onClick={settingHook.onLogout}
               title={
