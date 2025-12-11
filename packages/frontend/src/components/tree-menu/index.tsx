@@ -12,6 +12,7 @@ import { RightOutlined } from "@ant-design/icons";
 import { nanoid } from "nanoid";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import s from "./styles.module.css";
+import { ColorDot } from "../color-picker/color-dot";
 
 interface Props {
   treeData: ArticleTreeNode[];
@@ -190,12 +191,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
         >
           <div className="truncate">{item.title}</div>
           <div className="flex flex-nowrap flex-row items-center">
-            {item.color && (
-              <div
-                className="flex-shrink-0 w-3 h-3 bg-gray-300 rounded mr-2"
-                style={{ backgroundColor: item.color }}
-              />
-            )}
+            {item.color && <ColorDot color={item.color} className="mr-2" />}
             {item.children && item.children.length > 0 && <RightOutlined />}
           </div>
         </div>

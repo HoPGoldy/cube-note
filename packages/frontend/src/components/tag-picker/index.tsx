@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, Card, Col, Flex, Modal, Row, Space } from "antd";
+import { Button, Col, Modal, Row, Space } from "antd";
 import { MobileDrawer } from "@/components/mobile-drawer";
 import { TagListItem } from "@/types/tag";
 import { useQueryTagList } from "@/services/tag";
@@ -8,7 +8,7 @@ import { Tag } from "@/components/tag";
 import Loading from "@/layouts/loading";
 import { useIsMobile } from "@/layouts/responsive";
 import { useNavigate } from "react-router-dom";
-import { ColorDot, getColorValue } from "../color-picker/color-dot";
+import { getColorValue } from "../color-picker/color-dot";
 
 interface Props {
   open: boolean;
@@ -37,20 +37,6 @@ export const TagPicker: FC<Props> = (props) => {
       >
         {item.title}
       </Tag>
-    );
-    return (
-      <Card
-        key={item.id}
-        color={item.color}
-        // selected={selectedTags.includes(item.id)}
-        styles={{ body: { padding: "6px 16px" } }}
-        onClick={() => onSelected(item)}
-      >
-        <Flex align="center" gap={8}>
-          <div>{item.title}</div>
-          {item.color && <ColorDot color={item.color} />}
-        </Flex>
-      </Card>
     );
   };
 

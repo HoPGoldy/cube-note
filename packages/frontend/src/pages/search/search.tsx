@@ -11,14 +11,15 @@ import {
 import { useQueryTagList } from "@/services/tag";
 import { useTagDict } from "@/pages/tag-manager/use-tag-dict";
 import { Tag } from "@/components/tag";
-import { Card, Col, Flex, Input, Pagination, Row, Space } from "antd";
+import { Button, Card, Col, Flex, Input, Pagination, Row, Space } from "antd";
 import { DEFAULT_PAGE_SIZE } from "@/config";
 import { DesktopArea } from "@/layouts/responsive";
-import { LeftOutlined } from "@ant-design/icons";
+import { LeftOutlined, TagOutlined } from "@ant-design/icons";
 import { usePageTitle } from "@/store/global";
 import { getColorValue } from "@/components/color-picker/color-dot";
 import { ColorList } from "@/components/color-picker";
 import { EmptyTip } from "@/components/empty-tip";
+import { MobileDrawer } from "@/components/mobile-drawer";
 
 /**
  * 搜索页面
@@ -32,14 +33,16 @@ const SearchArticle: FC = () => {
   const [keyword, setKeyword] = useState(
     () => searchParams.get("keyword") || "",
   );
+  const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
   // 获取标签列表
   const { tagList } = useQueryTagList();
   // 标签映射
   const tagDict = useTagDict();
   // 当前分页
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedTag, setSelectedTag] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
-  const [selectedTag, setSelectedTag] = useState<string[]>();
   // 搜索结果列表
   const {
     status: searchStatus,
@@ -49,6 +52,7 @@ const SearchArticle: FC = () => {
   } = useQueryArticleList({
     keyword,
     tagIds: selectedTag,
+    colors: selectedColors,
     page: currentPage,
   });
 
@@ -131,6 +135,19 @@ const SearchArticle: FC = () => {
     setSearchParams(searchParams, { replace: true });
   };
 
+  // 目前只支持单选
+  const onSelectColor = (colorCode: string) => {
+    const newColors = colorCode ? [colorCode] : [];
+
+    setSelectedColors(newColors);
+    setCurrentPage(1);
+
+    // 更新 url 参数
+    if (newColors.length > 0) searchParams.set("colors", newColors.join(","));
+    else searchParams.delete("colors");
+    setSearchParams(searchParams, { replace: true });
+  };
+
   const renderTagArea = () => {
     return (
       <div>
@@ -139,6 +156,7 @@ const SearchArticle: FC = () => {
             <Tag
               key={tag.id}
               color={getColorValue(tag.color)}
+              selected={selectedTag.includes(tag.id)}
               onClick={() => onSelectTag(tag.id)}
             >
               {tag.title}
@@ -150,7 +168,9 @@ const SearchArticle: FC = () => {
   };
 
   const renderColorList = () => {
-    return <ColorList />;
+    return (
+      <ColorList value={selectedColors[0] || ""} onChange={onSelectColor} />
+    );
   };
 
   const renderSearchList = () => {
@@ -179,6 +199,15 @@ const SearchArticle: FC = () => {
     );
   };
 
+  const renderFilterArea = () => {
+    return (
+      <>
+        {renderColorList()}
+        {renderTagArea()}
+      </>
+    );
+  };
+
   const renderContent = () => {
     return (
       <Flex vertical gap={16} align="center" className="p-4">
@@ -191,8 +220,7 @@ const SearchArticle: FC = () => {
             onSearch={onKeywordSearch}
           />
         </DesktopArea>
-        {renderColorList()}
-        {renderTagArea()}
+        <DesktopArea>{renderFilterArea()}</DesktopArea>
         {renderSearchList()}
       </Flex>
     );
@@ -202,8 +230,35 @@ const SearchArticle: FC = () => {
     <>
       <PageContent>{renderContent()}</PageContent>
 
+      <MobileDrawer
+        title="笔记筛选"
+        open={openFilterDrawer}
+        onClose={() => setOpenFilterDrawer(false)}
+        footer={
+          <Row gutter={8}>
+            <Col flex="1">
+              <Button
+                block
+                size="large"
+                onClick={() => setOpenFilterDrawer(false)}
+              >
+                确定
+              </Button>
+            </Col>
+          </Row>
+        }
+      >
+        <Flex vertical gap={16} className="p-4" align="center">
+          {renderFilterArea()}
+        </Flex>
+      </MobileDrawer>
+
       <PageAction>
         <ActionIcon icon={<LeftOutlined />} onClick={() => navigate(-1)} />
+        <ActionIcon
+          icon={<TagOutlined />}
+          onClick={() => setOpenFilterDrawer(true)}
+        />
         <ActionSearch onSearch={onKeywordSearch} />
       </PageAction>
     </>

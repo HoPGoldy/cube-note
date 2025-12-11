@@ -162,8 +162,14 @@ export async function registerArticleController(options: RegisterOptions) {
     },
     async (request) => {
       const body = request.body;
-      const { keyword = "", page = 1, pageSize = 20 } = body;
-      return await articleService.searchArticles(keyword, page, pageSize);
+      const { keyword = "", page = 1, pageSize = 20, colors, tagIds } = body;
+      return await articleService.searchArticles(
+        keyword,
+        page,
+        pageSize,
+        colors,
+        tagIds,
+      );
     },
   );
 

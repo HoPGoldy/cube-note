@@ -15,6 +15,10 @@ export const getColorValue = (color: string) => {
 };
 
 export const ColorDot: FC<ColorDotProps> = (props) => {
+  if (!props.color) {
+    return <></>;
+  }
+
   return (
     <div
       className={`flex-shrink-0 w-3 h-3 rounded ${props.className || ""}`}

@@ -170,7 +170,7 @@ const About: FC = () => {
         >
           <div className="flex justify-between items-center">
             <span className="font-bold">{item.title}</span>
-            {item.color && <ColorDot color={item.color} />}
+            <ColorDot color={item.color} />
           </div>
         </Card>
       </Link>

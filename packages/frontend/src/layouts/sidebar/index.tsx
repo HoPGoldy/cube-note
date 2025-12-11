@@ -25,7 +25,7 @@ export const Sidebar: FC = () => {
       <Link key={item.id} to={`/article/${item.id}`}>
         <div className={s.menuItem} title={item.title}>
           <span className="truncate">{item.title}</span>
-          {item.color && <ColorDot color={item.color} />}
+          <ColorDot color={item.color} />
         </div>
       </Link>
     );

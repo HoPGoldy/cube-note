@@ -75,12 +75,26 @@ export class ArticleService {
     keyword: string,
     page: number = 1,
     pageSize: number = 20,
+    colors?: string[],
+    tagIds?: string[],
   ) {
     const skip = (page - 1) * pageSize;
     const whereClause: ArticleWhereInput = {
-      OR: [
-        { title: { contains: keyword } },
-        { content: { contains: keyword } },
+      AND: [
+        keyword
+          ? {
+              OR: [
+                { title: { contains: keyword } },
+                { content: { contains: keyword } },
+              ],
+            }
+          : {},
+        colors && colors.length > 0 ? { color: { in: colors } } : {},
+        tagIds && tagIds.length > 0
+          ? {
+              OR: tagIds.map((id) => ({ tagIds: { contains: id } })),
+            }
+          : {},
       ],
     };
 
@@ -110,12 +124,12 @@ export class ArticleService {
       }
       if (!content) content = item.content.slice(0, 30);
 
-      const tagIds = item.tagIds ? pathToArray(item.tagIds) : [];
+      const tagIdsArr = item.tagIds ? pathToArray(item.tagIds) : [];
 
       return {
         id: item.id,
         title: item.title,
-        tagIds,
+        tagIds: tagIdsArr,
         content,
       };
     });

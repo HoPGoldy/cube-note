@@ -195,7 +195,7 @@ export const ArticleConfigModal: FC = () => {
                   return (
                     <Flex gap={8} align="center">
                       <div>{nodeData.title}</div>
-                      {nodeData.color && <ColorDot color={nodeData.color} />}
+                      <ColorDot color={nodeData.color} />
                     </Flex>
                   );
                 }}
