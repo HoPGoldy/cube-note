@@ -1,6 +1,7 @@
 import { PrismaClient } from "@db/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PATH_DATABASE } from "@/config/path";
+import { HOME_CONTENT, HOME_TITLE } from "./constants";
 
 export class PrismaService extends PrismaClient {
   constructor() {
@@ -23,8 +24,8 @@ export class PrismaService extends PrismaClient {
       if (!rootArticleConfig) {
         const article = await tx.article.create({
           data: {
-            title: "Cube Note 首页",
-            content: "",
+            title: HOME_TITLE,
+            content: HOME_CONTENT,
           },
         });
 
@@ -47,8 +48,8 @@ export class PrismaService extends PrismaClient {
           // 文章不存在，创建新文章并更新配置
           const newArticle = await tx.article.create({
             data: {
-              title: "根文章",
-              content: "",
+              title: HOME_TITLE,
+              content: HOME_CONTENT,
             },
           });
 

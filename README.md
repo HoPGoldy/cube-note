@@ -1,19 +1,34 @@
 # cube-note
 
-cube-note 是基于 nodejs 开发的全栈项目，致力于打造轻量级的 web 探针服务。包含如下技术栈：
+![](https://img.shields.io/npm/v/cube-note)
 
-前端：
+cube-note 是基于 nodejs 开发的全栈项目，致力于为个人打造轻量级的 web note 服务。基于 react / fastify / sqlite / typescript 开发。
 
-- 基础框架：react / vite / typescript
-- 组件库：antdV5
-- 状态管理：jotai
-- 网络请求：axios
+<details>
+    <summary style="cursor:pointer">查看桌面端截图</summary>
+    <a href="https://imgse.com/i/p9gfefJ"><img src="https://s1.ax1x.com/2023/05/15/p9gfefJ.png" alt="p9gfefJ.png"></a>
+    <a href="https://imgse.com/i/p9gfTNF"><img src="https://s1.ax1x.com/2023/05/15/p9gfTNF.png" alt="p9gfTNF.png"></a>
+    <a href="https://imgse.com/i/p9gfoAU"><img src="https://s1.ax1x.com/2023/05/15/p9gfoAU.png" alt="p9gfoAU.png"></a>
+</details>
 
-后端：
+<details>
+    <summary style="cursor:pointer">查看移动端截图</summary>
+    <div style="display: flex; align-items: center;">
+        <a href="https://imgse.com/i/p9ghgUO"><img src="https://s1.ax1x.com/2023/05/15/p9ghgUO.png" alt="p9ghgUO.png"></a>
+        <a href="https://imgse.com/i/p9ghcVK"><img src="https://s1.ax1x.com/2023/05/15/p9ghcVK.png" alt="p9ghcVK.png"></a>
+        <a href="https://imgse.com/i/p9ghyb6"><img src="https://s1.ax1x.com/2023/05/15/p9ghyb6.png" alt="p9ghyb6.png"></a>
+    </div>
+</details>
 
-- 基础框架：fastify
-- 数据库：prisma / sqlite
-- 文档：swagger
+## 特性
+
+- 🚫 无广告、无收费、完全开源，自己的数据自己掌握
+- 🚀 极其简单的部署，仅需两行命令
+- 📝 支持 MarkDown 语法，支持实时预览、自动保存
+- 🔗 支持笔记内图片、文件上传
+- 📱 桌面端 / 移动端全站响应式设计
+- 🎯 支持关键字、标签搜索
+- 🧩 支持笔记嵌套、管理、收藏、颜色标记
 
 ## cube-note docker 容器使用
 
@@ -81,7 +96,10 @@ docker build -t cube-note:local .
 docker run -p 3001:3499 cube-note:local
 ```
 
-## 相关文档
+## 数据迁移
 
-- [团队合作时如何更新数据架构](https://www.prisma.io/docs/guides/implementing-schema-changes)
-- [在线 webhook 测试工具](https://webhook.site/)
+所有数据均默认保存在应用目录下的 `packages/backend/storage` 文件夹里，所以直接将其打包然后复制到其他地方即可。
+
+## 许可
+
+本项目源码基于 GPL v3 许可开源，[点此](https://github.com/HoPGoldy/cube-note/blob/master/LICENSE) 查看更多信息。
