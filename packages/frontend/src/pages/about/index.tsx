@@ -25,8 +25,8 @@ export const AboutModal: FC<AboutModalModalProps> = (props) => {
     >
       <Flex gap={16} vertical className="mb-4">
         <div className="mt-4 mb-2 text-base">
-          轻量级探针监控应用。 包含支持 nodejs 编码方式的 web 探针监控功能和
-          webhook 通知功能。
+          专为个人构建的轻量级笔记应用。包含支持文件上传的 Markdown
+          编辑器、双端响应式布局、数据自托管、支持搜索、标签、笔记嵌套等功能。
         </div>
 
         <a

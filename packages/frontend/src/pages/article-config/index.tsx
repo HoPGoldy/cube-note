@@ -42,7 +42,6 @@ export const ArticleConfigModal: FC = () => {
 
   const { articleDetail, isLoading: articleLoading } =
     useQueryArticleContent(detailId);
-  console.log("🚀 ~ ArticleConfigModal ~ articleDetail:", articleDetail);
 
   const isRootArticle =
     appConfig.ROOT_ARTICLE_ID && appConfig.ROOT_ARTICLE_ID === detailId;
@@ -103,11 +102,12 @@ export const ArticleConfigModal: FC = () => {
     await form.validateFields();
     const values = form.getFieldsValue();
 
-    const newPath = findPath(fullArticleTreeData, values.parentId);
+    const newPathArr = findPath(fullArticleTreeData, values.parentId);
+    const newPath = newPathArr.length > 0 ? newPathArr.join("#") + "#" : "";
 
     const postData = {
       ...values,
-      parentPath: newPath.join("#") + "#",
+      parentPath: newPath,
     };
 
     delete postData.parentId;

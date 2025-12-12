@@ -26,9 +26,11 @@ export const MobileDrawer: FC<DrawerProps> = (props) => {
               </Button>
             )
           }
-          footerStyle={{ padding: 8, border: "none" }}
           closable={false}
-          headerStyle={{ textAlign: "center", padding: 8 }}
+          styles={{
+            footer: { padding: 8, border: "none" },
+            header: { textAlign: "center", padding: 8 },
+          }}
           {...props}
         >
           {props.children}

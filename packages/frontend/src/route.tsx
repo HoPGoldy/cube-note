@@ -5,9 +5,6 @@ import { LoginAuth } from "./layouts/login-auth";
 import { AppContainer } from "./layouts/app-container";
 import { Error403 } from "./pages/e403";
 import Login from "./pages/login";
-import { HostDetailModal } from "./pages/host-detail";
-import { EndpointDetailModal } from "./pages/endpoint-detail";
-import { NotificationChannelDetailModal } from "./pages/notification-channel-detail";
 import Entry from "./pages/entry";
 import Article from "./pages/article/article";
 import Search from "./pages/search/search";
@@ -37,11 +34,6 @@ export const routes = createBrowserRouter(
         { path: "/article/:articleId", element: <Article /> },
         // 笔记搜索
         { path: "/search", element: <Search /> },
-        // 笔记管理
-        {
-          path: "/articleManage",
-          element: lazyLoad(() => import("./pages/article-manager")),
-        },
         // 标签管理
         {
           path: "/tags",
@@ -51,9 +43,6 @@ export const routes = createBrowserRouter(
       element: (
         <LoginAuth>
           <AppContainer />
-          <HostDetailModal />
-          <EndpointDetailModal />
-          <NotificationChannelDetailModal />
           <TagDetailModal />
           <ArticleConfigModal />
         </LoginAuth>

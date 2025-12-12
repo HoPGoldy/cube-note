@@ -12,12 +12,10 @@ import {
   useQueryArticleLink,
   useUpdateArticle,
 } from "@/services/article";
-import { useEditor } from "./editor";
 import { messageWarning } from "@/utils/message";
 import { ArticleMenuItem, UpdateArticleReqData } from "@/types/article";
-import TagArea from "./tag-area";
+import TagArea from "./area-tag";
 import { blurOnEnter } from "@/utils/input";
-import dayjs from "dayjs";
 import {
   SettingOutlined,
   SearchOutlined,
@@ -29,22 +27,24 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import s from "./styles.module.css";
-import { useOperation } from "./operation";
 import { useMobileMenu } from "./menu";
 import { Button, Card, Drawer, Space } from "antd";
 import { MobileSetting } from "@/pages/user-setting";
 import { PageLoading } from "@/components/page-loading";
 import { stateCurrentArticleId } from "@/store/menu";
-import { MarkdownPreview } from "@/components/markdown-editor";
+import { Editor, MarkdownPreview } from "@/components/markdown-editor";
 import { useArticleConfigAction } from "../article-config/use-detail-action";
 import { DesktopArea, useIsMobile } from "@/layouts/responsive";
 import { ColorDot } from "@/components/color-picker/color-dot";
+import { PreviewType } from "@uiw/react-md-editor";
+import { useAutoSave } from "./hooks/use-auto-save";
+import { AreaMobileActionBar } from "./area-mobile-action-bar";
+import { useArticleDetailAction } from "./hooks/use-detail-action";
+import { EditorRef } from "@/components/markdown-editor/editor";
 
-const About: FC = () => {
+const Article: FC = () => {
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  /** 页面是否在编辑中 */
-  const isEdit = searchParams.get("mode") === "edit";
   /** 是否展示设置 */
   const [showSetting, setShowSetting] = useState(false);
   /** 当前文章 id */
@@ -67,6 +67,11 @@ const About: FC = () => {
   const titleInputRef = useRef<HTMLInputElement>(null);
   /** 正在编辑的标题内容 */
   const [title, setTitle] = useState("");
+  // 正在编辑的文本内容
+  const [content, setContent] = useState("");
+  const editorRef = useRef<EditorRef>();
+
+  const detailActions = useArticleDetailAction();
 
   /** 功能 - 导航抽屉 */
   const menu = useMobileMenu({
@@ -76,37 +81,24 @@ const About: FC = () => {
   /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
   const onClickSaveBtn = async () => {
     await saveEdit({ title, content });
+    autoSave.setAutoSaveTip("");
+    detailActions.endEdit();
   };
 
   /** 只有在内容变化时，点击退出按钮才会自动保存 */
   const onClickExitBtn = async () => {
-    if (isContentModified.current) onClickSaveBtn();
-    isContentModified.current = false;
+    autoSave.setAutoSaveTip("");
+    if (autoSave.isContentModified.current) onClickSaveBtn();
+    autoSave.isContentModified.current = false;
+    detailActions.endEdit();
   };
 
   const articleConfigActions = useArticleConfigAction();
 
-  /** 文章相关的操作 */
-  const operation = useOperation({
-    currentArticleId,
-    articleDetail: articleResp?.data,
-    isEdit,
-    title,
-    updatingArticle,
-    onChangeColor: (color) => saveEdit({ color }),
-    onSetListArticle: (v) => saveEdit({ listSubarticle: v }),
-    onClickSaveBtn,
-    onClickExitBtn,
-    createArticle: menu.menu.createArticle,
+  const autoSave = useAutoSave({
+    content,
+    articleId: currentArticleId,
   });
-
-  /** 功能 - 编辑器 */
-  const { renderEditor, setEditorContent, content, isContentModified } =
-    useEditor({
-      onAutoSave: () =>
-        operation.setSaveBtnText(`自动保存于 ${dayjs().format("HH:mm")}`),
-      articleId: currentArticleId,
-    });
 
   const setCurrentArticleId = useSetAtom(stateCurrentArticleId);
 
@@ -115,19 +107,9 @@ const About: FC = () => {
     setCurrentArticleId(currentArticleId);
   }, [currentArticleId, setCurrentArticleId]);
 
-  /** 进入编辑模式 */
-  const startEdit = () => {
-    searchParams.set("mode", "edit");
-    setSearchParams(searchParams, { replace: true });
-  };
-
-  /** 退出编辑模式 */
-  const endEdit = async () => {
-    searchParams.delete("mode");
-    setSearchParams(searchParams, { replace: true });
-    operation.setSaveBtnText("");
-
-    onClickExitBtn();
+  const onContentChange = (newContent: string) => {
+    setContent(newContent);
+    autoSave.run();
   };
 
   // 新增笔记时，自动聚焦标题输入框
@@ -144,8 +126,7 @@ const About: FC = () => {
     if (!articleResp?.data) return;
 
     setTitle(articleResp.data.title);
-    setEditorContent(articleResp.data.content);
-    operation.setIsFavorite(articleResp.data.favorite);
+    setContent(articleResp.data.content);
   }, [articleResp]);
 
   const saveEdit = async (data: Partial<UpdateArticleReqData>) => {
@@ -157,7 +138,7 @@ const About: FC = () => {
     const resp = await updateArticle({ ...data, id: currentArticleId });
     if (!resp.success) return;
 
-    operation.setSaveBtnText("");
+    autoSave.setAutoSaveTip("");
   };
 
   /** 渲染底部的子笔记项目 */
@@ -179,7 +160,7 @@ const About: FC = () => {
 
   /** 渲染底部的子笔记列表 */
   const renderSubArticleList = () => {
-    if (!articleResp?.data?.listSubarticle || isEdit) return null;
+    if (!articleResp?.data?.listSubarticle || detailActions.isEdit) return null;
     if (linkLoading) return <PageLoading tip="信息加载中..." />;
     if (!articleLink?.data?.childrenArticles?.length) return null;
 
@@ -228,7 +209,7 @@ const About: FC = () => {
             >
               {isMobile ? "" : "配置"}
             </Button>
-            {!isEdit && (
+            {!detailActions.isEdit && (
               <Button
                 icon={<PlusOutlined />}
                 type={isMobile ? "text" : "default"}
@@ -238,14 +219,18 @@ const About: FC = () => {
               </Button>
             )}
             <DesktopArea>
-              {isEdit ? (
-                <Button type="primary" onClick={endEdit} icon={<SaveIcon />}>
+              {detailActions.isEdit ? (
+                <Button
+                  type="primary"
+                  onClick={detailActions.endEdit}
+                  icon={<SaveIcon />}
+                >
                   保存
                 </Button>
               ) : (
                 <Button
                   type="primary"
-                  onClick={startEdit}
+                  onClick={detailActions.startEdit}
                   icon={<FormOutlined />}
                 >
                   编辑
@@ -258,12 +243,17 @@ const About: FC = () => {
         <TagArea
           articleId={currentArticleId}
           value={articleResp?.data?.tagIds || []}
-          disabled={!isEdit}
+          disabled={!detailActions.isEdit}
         />
 
-        {isEdit ? (
+        {detailActions.isEdit ? (
           <div className={[s.editorArea, s.mdArea].join(" ")}>
-            {renderEditor()}
+            <Editor
+              ref={editorRef}
+              value={content}
+              preview={(isMobile ? "edit" : "live") as PreviewType}
+              onChange={onContentChange}
+            />
           </div>
         ) : (
           <div className={`md:w-[100%] mt-3 ${s.mdArea}`}>
@@ -277,12 +267,21 @@ const About: FC = () => {
   };
 
   const renderActionBar = () => {
-    if (isEdit) return operation.renderMobileEditBar();
+    if (detailActions.isEdit)
+      return (
+        <AreaMobileActionBar
+          updatingArticle={updatingArticle}
+          onUploadFile={(files) => {
+            return editorRef.current?.insertFile(files);
+          }}
+          onClickSaveBtn={onClickSaveBtn}
+          onClickExitBtn={onClickExitBtn}
+        />
+      );
 
     return (
       <>
         {menu.renderMenuDrawer()}
-        {operation.renderOperationDrawer()}
 
         <ActionIcon
           icon={<SettingOutlined />}
@@ -308,7 +307,7 @@ const About: FC = () => {
           icon={<MenuOutlined />}
           onClick={() => menu.setIsMenuDrawerOpen(true)}
         />
-        <ActionButton onClick={operation.startEdit}>编辑</ActionButton>
+        <ActionButton onClick={detailActions.startEdit}>编辑</ActionButton>
       </>
     );
   };
@@ -321,4 +320,4 @@ const About: FC = () => {
   );
 };
 
-export default About;
+export default Article;
