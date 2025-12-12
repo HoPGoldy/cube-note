@@ -4,6 +4,7 @@ import { ChangeEventHandler, FC, useRef, useState } from "react";
 
 interface Props {
   updatingArticle: boolean;
+  autoSaveTip: string;
   onUploadFile: (files: File[]) => Promise<void>;
   onClickSaveBtn: () => Promise<void>;
   onClickExitBtn: () => Promise<void>;
@@ -48,6 +49,9 @@ export const AreaMobileActionBar: FC<Props> = (props) => {
         loading={props.updatingArticle}
       >
         保存
+        {props.autoSaveTip && (
+          <span className="ml-2 text-xs">{props.autoSaveTip}</span>
+        )}
       </ActionButton>
     </>
   );

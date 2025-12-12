@@ -275,6 +275,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
       return (
         <AreaMobileActionBar
           updatingArticle={updatingArticle}
+          autoSaveTip={autoSave.autoSaveTip}
           onUploadFile={(files) => {
             return editorRef.current?.insertFile(files);
           }}
@@ -320,6 +321,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
     <>
       <PageContent>{renderContent()}</PageContent>
       <PageAction>{renderActionBar()}</PageAction>
+      {autoSave.contextHolder}
     </>
   );
 };
