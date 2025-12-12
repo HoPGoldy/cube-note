@@ -122,7 +122,8 @@ export async function registerArticleController(options: RegisterOptions) {
     },
     async (request) => {
       const { id, ...updateData } = request.body;
-      return await articleService.updateArticle(id, updateData);
+      await articleService.updateArticle(id, updateData);
+      return { success: true };
     },
   );
 
