@@ -6,7 +6,7 @@ import { AppContainer } from "./layouts/app-container";
 import { Error403 } from "./pages/e403";
 import Login from "./pages/login";
 import Entry from "./pages/entry";
-import Article from "./pages/article/article";
+import Article from "./pages/article";
 import Search from "./pages/search/search";
 import AttachmentDemo from "./pages/attachment-demo";
 import MarkdownEditorDemo from "./pages/markdown-editor-demo";

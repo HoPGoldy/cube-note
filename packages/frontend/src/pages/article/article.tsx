@@ -1,5 +1,5 @@
 import { FC, useState, useEffect, useRef } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useSetAtom } from "jotai";
 import {
   ActionButton,
@@ -28,7 +28,7 @@ import {
 } from "@ant-design/icons";
 import s from "./styles.module.css";
 import { useMobileMenu } from "./menu";
-import { Button, Card, Drawer, Space } from "antd";
+import { Button, Card, Drawer, Flex } from "antd";
 import { MobileSetting } from "@/pages/user-setting";
 import { PageLoading } from "@/components/page-loading";
 import { stateCurrentArticleId } from "@/store/menu";
@@ -42,13 +42,14 @@ import { AreaMobileActionBar } from "./area-mobile-action-bar";
 import { useArticleDetailAction } from "./hooks/use-detail-action";
 import { EditorRef } from "@/components/markdown-editor/editor";
 
-const Article: FC = () => {
-  const params = useParams();
+interface ArticleProps {
+  currentArticleId: string;
+}
+
+export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   /** 是否展示设置 */
   const [showSetting, setShowSetting] = useState(false);
-  /** 当前文章 id */
-  const currentArticleId = params.articleId;
   /** 获取详情 */
   const { data: articleResp, isLoading: isLoadingArticle } =
     useQueryArticleContent(currentArticleId);
@@ -201,7 +202,10 @@ const Article: FC = () => {
             placeholder="请输入笔记名"
             className="font-bold border-0 text-3xl py-2 mr-2 w-full dark:text-white"
           />
-          <Space>
+          <Flex gap={8} align="center" className="flex-shrink-0">
+            <DesktopArea>
+              <div className="flex-shrink-0">{autoSave.autoSaveTip}</div>
+            </DesktopArea>
             <Button
               icon={<UnorderedListOutlined />}
               type={isMobile ? "text" : "default"}
@@ -222,7 +226,7 @@ const Article: FC = () => {
               {detailActions.isEdit ? (
                 <Button
                   type="primary"
-                  onClick={detailActions.endEdit}
+                  onClick={onClickSaveBtn}
                   icon={<SaveIcon />}
                 >
                   保存
@@ -237,7 +241,7 @@ const Article: FC = () => {
                 </Button>
               )}
             </DesktopArea>
-          </Space>
+          </Flex>
         </div>
 
         <TagArea
@@ -319,5 +323,3 @@ const Article: FC = () => {
     </>
   );
 };
-
-export default Article;

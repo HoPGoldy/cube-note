@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { autoSaveContent } from "@/services/article";
 import { messageError } from "@/utils/message";
-import { useThrottleFn } from "ahooks";
+import { useDebounceFn } from "ahooks";
 import dayjs from "dayjs";
 
 interface Props {
@@ -14,9 +14,14 @@ export const useAutoSave = (props: Props) => {
   const isContentModified = useRef(false);
   // 自动保存的引用，防止闭包陷阱
   const contentRef = useRef(props.content);
+  if (contentRef.current !== props.content) {
+    contentRef.current = props.content;
+    isContentModified.current = true;
+  }
+
   const [autoSaveTip, setAutoSaveTip] = useState("");
 
-  const { run } = useThrottleFn(
+  const { run } = useDebounceFn(
     async () => {
       const resp = await autoSaveContent(props.articleId, contentRef.current);
       if (!resp.success) {
@@ -29,16 +34,12 @@ export const useAutoSave = (props: Props) => {
 
       setAutoSaveTip(`自动保存于 ${dayjs().format("HH:mm")}`);
     },
-    { wait: 5000 },
+    { wait: 1000 },
   );
 
   useEffect(() => {
     setAutoSaveTip("");
   }, [props.articleId]);
-
-  useEffect(() => {
-    contentRef.current = props.content;
-  }, [props.content]);
 
   return {
     autoSaveTip,
