@@ -6,8 +6,8 @@ import { ENV_IS_PROD } from "./env";
 const __filename = fileURLToPath(import.meta.url);
 
 /**
- * dev 的 __dirname 是 cube-auth/packages/backend/src/config
- * prod 的 __dirname 是 cube-auth/packages/backend/dist
+ * dev 的 __dirname 是 packages/backend/src/config
+ * prod 的 __dirname 是 packages/backend/dist
  */
 const __dirname = dirname(__filename);
 

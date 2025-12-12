@@ -30,7 +30,7 @@ export const AboutModal: FC<AboutModalModalProps> = (props) => {
         </div>
 
         <a
-          href="mailto:hopgoldy@gmail.com?&subject=cube-dnote 相关"
+          href="mailto:hopgoldy@gmail.com?&subject=cube-Note 相关"
           className="p-2 text-gray-500 dark:text-neutral-200 bg-gray-100 rounded-md"
         >
           <Flex justify="space-between">

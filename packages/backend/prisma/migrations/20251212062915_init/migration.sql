@@ -7,6 +7,19 @@ CREATE TABLE "AppConfig" (
 );
 
 -- CreateTable
+CREATE TABLE "Attachment" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "filename" TEXT NOT NULL,
+    "size" INTEGER NOT NULL,
+    "hash" TEXT NOT NULL,
+    "path" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "MonitoredHost" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -121,6 +134,42 @@ CREATE TABLE "ProbeEnv" (
     "desc" TEXT
 );
 
+-- CreateTable
+CREATE TABLE "Article" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL DEFAULT '',
+    "parentPath" TEXT,
+    "tagIds" TEXT,
+    "favorite" BOOLEAN NOT NULL DEFAULT false,
+    "color" TEXT,
+    "listSubarticle" BOOLEAN NOT NULL DEFAULT false
+);
+
+-- CreateTable
+CREATE TABLE "ArticleRelation" (
+    "fromId" TEXT NOT NULL,
+    "toId" TEXT NOT NULL,
+
+    PRIMARY KEY ("fromId", "toId"),
+    CONSTRAINT "ArticleRelation_fromId_fkey" FOREIGN KEY ("fromId") REFERENCES "Article" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "ArticleRelation_toId_fkey" FOREIGN KEY ("toId") REFERENCES "Article" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Tag" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "title" TEXT NOT NULL,
+    "color" TEXT
+);
+
+-- CreateIndex
+CREATE INDEX "Attachment_userId_idx" ON "Attachment"("userId");
+
 -- CreateIndex
 CREATE INDEX "ProbeResult_endPointId_createdAt_idx" ON "ProbeResult"("endPointId", "createdAt" DESC);
 
@@ -147,3 +196,15 @@ CREATE INDEX "NotificationLog_createdAt_idx" ON "NotificationLog"("createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ProbeEnv_key_key" ON "ProbeEnv"("key");
+
+-- CreateIndex
+CREATE INDEX "Article_parentPath_idx" ON "Article"("parentPath");
+
+-- CreateIndex
+CREATE INDEX "ArticleRelation_fromId_idx" ON "ArticleRelation"("fromId");
+
+-- CreateIndex
+CREATE INDEX "ArticleRelation_toId_idx" ON "ArticleRelation"("toId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Tag_title_key" ON "Tag"("title");
