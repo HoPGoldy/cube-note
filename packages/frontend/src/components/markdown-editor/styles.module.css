@@ -11,3 +11,7 @@
 .editorContainer :global(.w-md-editor-toolbar li > button) {
   margin: 0 4px;
 }
+
+.editorContainer :global(.w-md-editor-text-input ) {
+  min-height: 800px !important;
+}
