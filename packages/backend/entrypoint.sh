@@ -10,4 +10,4 @@ printf "\nRunning database migrations...\n"
 gosu backenduser:nodejs pnpm prisma migrate deploy
 
 printf "\nStarting service...\n"
-exec gosu backenduser:nodejs pnpm run start:prod
+exec gosu backenduser:nodejs node dist/index.js
