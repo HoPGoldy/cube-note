@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.2](https://github.com/HoPGoldy/cube-note/compare/v2.1.1...v2.1.2) (2025-12-13)
+
+
+### Bug Fixes
+
+* 侧边栏默认未选中 tab ([4985b1f](https://github.com/HoPGoldy/cube-note/commit/4985b1f40414323bafe2549b404f2a45a3a69d4b))
+* 附件未处理二级目录部署情况 ([8c8882f](https://github.com/HoPGoldy/cube-note/commit/8c8882ff4eb76fad46e14083cc0a5541adb78286))
+
 ## [2.1.1](https://github.com/HoPGoldy/cube-note/compare/v2.1.0...v2.1.1) (2025-12-13)
 
 
