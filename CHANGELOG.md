@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.2.1](https://github.com/HoPGoldy/cube-note/compare/v2.2.0...v2.2.1) (2025-12-13)
+
+
+### Bug Fixes
+
+* 后端构建类型错误问题 ([5f81ebb](https://github.com/HoPGoldy/cube-note/commit/5f81ebb8e83cc4c93d18e0f71e15f8cbc6ff8596))
+
 ## [2.2.0](https://github.com/HoPGoldy/cube-note/compare/v2.1.2...v2.2.0) (2025-12-13)
 
 
