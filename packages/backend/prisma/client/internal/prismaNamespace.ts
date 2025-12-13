@@ -757,6 +757,7 @@ export const AttachmentScalarFieldEnum = {
   hash: 'hash',
   path: 'path',
   thumbPath: 'thumbPath',
+  thumbSize: 'thumbSize',
   type: 'type',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

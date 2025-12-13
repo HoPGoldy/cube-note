@@ -108,15 +108,15 @@ export const registerController = (options: RegisterOptions) => {
         "Content-Disposition",
         `attachment; filename=${encodeURIComponent(file.filename)}`,
       );
-      reply.header("Content-Length", file.size.toString());
       reply.header("Cache-Control", "max-age=2592000"); // 缓存一个月
 
-      console.log("🚀 ~ registerController ~ file:", file);
-      if (file.thumbPath && type !== "original") {
+      if (file.thumbPath && file.thumbSize && type !== "original") {
+        reply.header("Content-Length", file.thumbSize.toString());
         const fileStream = createReadStream(file.thumbPath);
         return reply.send(fileStream);
       }
 
+      reply.header("Content-Length", file.size.toString());
       const fileStream = createReadStream(file.path);
       return reply.send(fileStream);
     },

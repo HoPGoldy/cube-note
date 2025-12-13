@@ -47,6 +47,7 @@ export class AttachmentService {
       await writeFile(thumbPath, thumbBuffer);
 
       fileInfo.thumbPath = thumbPath;
+      fileInfo.thumbSize = thumbBuffer.length;
     } catch (err) {
       console.log("不支持的文件类型:", err.message);
     }

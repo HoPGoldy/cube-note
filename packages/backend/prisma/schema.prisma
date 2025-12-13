@@ -33,6 +33,7 @@ model Attachment {
   hash      String
   path      String
   thumbPath String? // 图片类型的附件会有缩略图
+  thumbSize Int?
   type      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
