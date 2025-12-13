@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.2.0](https://github.com/HoPGoldy/cube-note/compare/v2.1.2...v2.2.0) (2025-12-13)
+
+
+### Features
+
+* 支持拖转文件上传 ([62149d2](https://github.com/HoPGoldy/cube-note/commit/62149d26a2b6cd9dba440ab703e56ad3a49d8378))
+* 支持自动缩略图处理 ([87f8514](https://github.com/HoPGoldy/cube-note/commit/87f8514134e7f132d4998a6ddf71fb4df961ada4))
+
 ## [2.1.2](https://github.com/HoPGoldy/cube-note/compare/v2.1.1...v2.1.2) (2025-12-13)
 
 
