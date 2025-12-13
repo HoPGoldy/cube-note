@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.2.2](https://github.com/HoPGoldy/cube-note/compare/v2.2.1...v2.2.2) (2025-12-13)
+
+
+### Bug Fixes
+
+* 偶发提示 body must have required property 'id' ([7d0cfff](https://github.com/HoPGoldy/cube-note/commit/7d0cfff247d7f87ecf4f20be73b3dd2d393796c0))
+* 缩略图无法预览的问题 ([b7b44b5](https://github.com/HoPGoldy/cube-note/commit/b7b44b5c11e28aface5329de4d3d01428e9ddb47))
+
 ## [2.2.1](https://github.com/HoPGoldy/cube-note/compare/v2.2.0...v2.2.1) (2025-12-13)
 
 
