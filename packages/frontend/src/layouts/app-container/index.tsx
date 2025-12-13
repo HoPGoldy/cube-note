@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "../sidebar";
+import { Sidebar } from "../sidebar/desktop";
 import { useIsMobile } from "../responsive";
 import Header from "../header";
 

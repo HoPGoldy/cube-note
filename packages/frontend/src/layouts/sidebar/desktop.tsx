@@ -1,6 +1,5 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { ArticleMenuItem, TabTypes } from "@/types/article";
-import { stateCurrentTab } from "@/store/menu";
 import { Link, useNavigate } from "react-router-dom";
 import { TreeMenu } from "@//components/tree-menu";
 import {
@@ -12,13 +11,13 @@ import { Button, Col, Row, Tooltip } from "antd";
 import s from "./styles.module.css";
 import { EMPTY_CLASSNAME, tabOptions, useMenu } from "./use-menu";
 import Loading from "../loading";
-import { useSetAtom } from "jotai";
 import { ColorDot } from "@/components/color-picker/color-dot";
+import { useCreateArticle } from "@/hooks/use-create-article";
 
 export const Sidebar: FC = () => {
-  const setCurrentTab = useSetAtom(stateCurrentTab);
   const menu = useMenu();
   const navigate = useNavigate();
+  const { createArticle } = useCreateArticle();
 
   const renderMenuItem = (item: ArticleMenuItem) => {
     return (
@@ -36,7 +35,7 @@ export const Sidebar: FC = () => {
     if (menu.linkLoading) {
       return <Loading tip="加载中..." className="my-8" />;
     }
-    const currentMenu = menu.articleLink?.data?.childrenArticles || [];
+    const currentMenu = menu.childrenArticles || [];
 
     return (
       <>
@@ -62,7 +61,7 @@ export const Sidebar: FC = () => {
         <Button
           className={`${s.toolBtn} keep-antd-style mt-2`}
           icon={<PlusOutlined />}
-          onClick={menu.createArticle}
+          onClick={createArticle}
           block
         >
           创建子笔记
@@ -76,8 +75,7 @@ export const Sidebar: FC = () => {
     if (menu.favoriteLoading) {
       return <Loading tip="加载中..." className="my-8" />;
     }
-    const currentMenu = menu.articleFavorite?.data || [];
-    // console.log('🚀 ~ 收藏文章列表', currentMenu)
+    const currentMenu = menu.articleFavorite || [];
 
     return (
       <>
@@ -116,7 +114,7 @@ export const Sidebar: FC = () => {
               >
                 <Button
                   className={className.join(" ")}
-                  onClick={() => setCurrentTab(item.value)}
+                  onClick={() => menu.setCurrentTab(item.value)}
                   // style={{ backgroundColor: item.value === menu.currentTab ? '#f0f0f0' : '' }}
                   icon={item.icon}
                   block
@@ -137,7 +135,7 @@ export const Sidebar: FC = () => {
         {renderCurrentMenu()}
       </div>
       <TreeMenu
-        treeData={menu.articleTree?.data[0]?.children || []}
+        treeData={menu.articleTree[0]?.children || []}
         onClickNode={(node) => navigate(`/article/${node.id}`)}
       >
         <Button

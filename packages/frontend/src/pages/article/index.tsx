@@ -1,10 +1,9 @@
 import { FC } from "react";
-import { useParams } from "react-router-dom";
 import { ArticleContent } from "./article";
+import { useCurrentArticleId } from "@/hooks/use-current-article-id";
 
 const Article: FC = () => {
-  const params = useParams();
-  const currentArticleId = params.articleId;
+  const currentArticleId = useCurrentArticleId();
 
   return (
     <ArticleContent

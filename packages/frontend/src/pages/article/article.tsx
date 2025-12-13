@@ -1,6 +1,5 @@
 import { FC, useState, useEffect, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { useSetAtom } from "jotai";
 import {
   ActionButton,
   PageContent,
@@ -27,11 +26,10 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import s from "./styles.module.css";
-import { useMobileMenu } from "./menu";
+import { SidebarMobile } from "@/layouts/sidebar/mobile";
 import { Button, Card, Drawer, Flex } from "antd";
 import { MobileSetting } from "@/pages/user-setting";
 import { PageLoading } from "@/components/page-loading";
-import { stateCurrentArticleId } from "@/store/menu";
 import { Editor, MarkdownPreview } from "@/components/markdown-editor";
 import { useArticleConfigAction } from "../article-config/use-detail-action";
 import { DesktopArea, useIsMobile } from "@/layouts/responsive";
@@ -41,6 +39,7 @@ import { useAutoSave } from "./hooks/use-auto-save";
 import { AreaMobileActionBar } from "./area-mobile-action-bar";
 import { useArticleDetailAction } from "./hooks/use-detail-action";
 import { EditorRef } from "@/components/markdown-editor/editor";
+import { useCreateArticle } from "@/hooks/use-create-article";
 
 interface ArticleProps {
   currentArticleId: string;
@@ -72,12 +71,11 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
   const [content, setContent] = useState("");
   const editorRef = useRef<EditorRef>();
 
+  const { createArticle } = useCreateArticle();
   const detailActions = useArticleDetailAction();
 
-  /** 功能 - 导航抽屉 */
-  const menu = useMobileMenu({
-    currentArticleId,
-  });
+  /** 是否展开导航抽屉 */
+  const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
 
   /** 点击保存按钮必定会触发保存，无论内容是否被修改 */
   const onClickSaveBtn = async () => {
@@ -100,13 +98,6 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
     content,
     articleId: currentArticleId,
   });
-
-  const setCurrentArticleId = useSetAtom(stateCurrentArticleId);
-
-  useEffect(() => {
-    if (!currentArticleId) return;
-    setCurrentArticleId(currentArticleId);
-  }, [currentArticleId, setCurrentArticleId]);
 
   const onContentChange = (newContent: string) => {
     setContent(newContent);
@@ -217,7 +208,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
               <Button
                 icon={<PlusOutlined />}
                 type={isMobile ? "text" : "default"}
-                onClick={() => menu.menu.createArticle()}
+                onClick={() => createArticle()}
               >
                 {isMobile ? "" : "新增子笔记"}
               </Button>
@@ -286,11 +277,14 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
 
     return (
       <>
-        {menu.renderMenuDrawer()}
-
         <ActionIcon
           icon={<SettingOutlined />}
           onClick={() => setShowSetting(true)}
+        />
+        <SidebarMobile
+          currentArticleId={currentArticleId}
+          open={isMenuDrawerOpen}
+          onClose={() => setIsMenuDrawerOpen(false)}
         />
         <Drawer
           open={showSetting}
@@ -310,7 +304,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
         </Link>
         <ActionIcon
           icon={<MenuOutlined />}
-          onClick={() => menu.setIsMenuDrawerOpen(true)}
+          onClick={() => setIsMenuDrawerOpen(true)}
         />
         <ActionButton onClick={detailActions.startEdit}>编辑</ActionButton>
       </>

@@ -11,7 +11,7 @@ import { DesktopSetting } from "@/pages/user-setting";
 import { useAtomValue } from "jotai";
 import { stateUserJwtData } from "@/store/user";
 import { statePageTitle } from "@/store/global";
-import { useBreadcrumb } from "@/pages/article/menu";
+import { useBreadcrumb } from "@/hooks/use-breadcrumb";
 import { Link } from "react-router-dom";
 
 interface Props {

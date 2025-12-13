@@ -76,13 +76,11 @@ export const useUpdateArticle = () => {
     onSuccess: (resp, data) => {
       if (data.title || data.parentArticleId) {
         queryClient.invalidateQueries({ queryKey: ["articleLink", data.id] });
-        queryClient.invalidateQueries({ queryKey: ["articleDetailSubLink"] });
         queryClient.invalidateQueries({ queryKey: ["menu"] });
       }
       if (!isNil(data.color)) {
         queryClient.invalidateQueries({ queryKey: ["menu"] });
         queryClient.invalidateQueries({ queryKey: ["favorite"] });
-        queryClient.invalidateQueries({ queryKey: ["articleRelated"] });
       }
       // 是否收藏不通过这个接口更新，所以不需要更新收藏列表
       // if (data.favorite) {
@@ -101,15 +99,22 @@ export const autoSaveContent = async (id: string, content: string) => {
 /** 查询本文的下属文章 */
 export const useQueryArticleLink = (
   id: string | undefined,
-  enabled: boolean,
+  enabled: boolean = true,
 ) => {
-  return useQuery({
+  const result = useQuery({
     queryKey: ["articleLink", id],
     queryFn: () => {
       return requestPost<ArticleLinkResp>("article/getLink", { id });
     },
     enabled,
   });
+
+  return {
+    ...result,
+    childrenArticles: result.data?.data?.childrenArticles,
+    parentArticleIds: result.data?.data?.parentArticleIds || [],
+    parentArticleTitle: result.data?.data?.parentArticleTitle || "",
+  };
 };
 
 /** 新增文章 */
@@ -122,7 +127,6 @@ export const useAddArticle = () => {
       queryClient.invalidateQueries({
         queryKey: ["articleLink", data.parentId],
       });
-      queryClient.invalidateQueries({ queryKey: ["articleDetailSubLink"] });
       queryClient.invalidateQueries({ queryKey: ["menu"] });
     },
   });
@@ -133,14 +137,6 @@ export const useDeleteArticle = () => {
   return useMutation({
     mutationFn: (data: DeleteArticleMutation) => {
       return requestPost<ArticleDeleteResp>("article/remove", data);
-    },
-    onSuccess: (resp) => {
-      queryClient.invalidateQueries({
-        queryKey: ["articleLink", resp?.data?.parentArticleId],
-      });
-      queryClient.invalidateQueries({ queryKey: ["articleDetailSubLink"] });
-      queryClient.invalidateQueries({ queryKey: ["menu"] });
-      queryClient.invalidateQueries({ queryKey: ["favorite"] });
     },
   });
 };
@@ -185,7 +181,7 @@ export const useQueryArticleTree = (id?: string) => {
 
 /** 查询收藏列表 */
 export const useQueryArticleFavorite = (enabled: boolean) => {
-  return useQuery({
+  const result = useQuery({
     queryKey: ["favorite"],
     queryFn: () => {
       return requestPost<ArticleMenuItem[]>("article/getFavorite", {});
@@ -193,6 +189,8 @@ export const useQueryArticleFavorite = (enabled: boolean) => {
     refetchOnWindowFocus: false,
     enabled,
   });
+
+  return { ...result, articleFavorite: result.data?.data || [] };
 };
 
 /** 收藏文章 */

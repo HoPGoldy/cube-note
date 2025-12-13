@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Flex, Form, Input, Modal, Radio, TreeSelect } from "antd";
 import { DETAIL_ID_KEY } from "./use-detail-action";
 import { ColorList } from "@/components/color-picker";
@@ -34,6 +34,7 @@ const findPath = (tree: ArticleTreeNode[], nodeId: string): string[] => {
 
 export const ArticleConfigModal: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { appConfig } = useGetAppConfig();
   const detailId = searchParams.get(DETAIL_ID_KEY);
   const [modal, contextHolder] = Modal.useModal();
@@ -122,7 +123,7 @@ export const ArticleConfigModal: FC = () => {
   const onDeleteConfirm = async () => {
     modal.confirm({
       title: "确认删除该文章？",
-      content: "删除后，文章将无法恢复，请谨慎操作！",
+      content: "删除后，笔记和其下属子笔记将无法恢复，请谨慎操作！",
       okText: "确认删除",
       okButtonProps: { danger: true, loading: deletingArticle },
       cancelText: "取消",
@@ -132,6 +133,13 @@ export const ArticleConfigModal: FC = () => {
 
   const onDelete = async () => {
     await deleteArticle({ id: detailId, force: true });
+    const currentParentId = articleDetail?.parentPath
+      ? articleDetail.parentPath.split("#").filter(Boolean).pop()
+      : null;
+
+    if (currentParentId) {
+      navigate(`/article/${currentParentId}`);
+    }
     onCancel();
   };
 
