@@ -17,6 +17,9 @@ export const SchemaDownloadQuery = Type.Object({
   i: Type.String({ description: "文件 ID" }),
   t: Type.String({ description: "时间戳" }),
   s: Type.String({ description: "签名" }),
+  type: Type.Optional(
+    Type.Union([Type.Literal("thumb"), Type.Literal("original")]),
+  ),
 });
 
 export type SchemaDownloadQueryType = Type.Static<typeof SchemaDownloadQuery>;

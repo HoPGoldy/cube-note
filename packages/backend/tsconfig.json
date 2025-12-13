@@ -3,6 +3,7 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "removeComments": true,
+    "noEmit": true,
     "module": "preserve",
     "outDir": "./dist",
     "baseUrl": "./",

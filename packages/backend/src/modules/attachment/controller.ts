@@ -88,7 +88,7 @@ export const registerController = (options: RegisterOptions) => {
       },
     },
     async (request, reply) => {
-      const { i: id, t: date, s: signature } = request.query;
+      const { i: id, t: date, s: signature, type } = request.query;
 
       const verifySignature = attachmentService.generateFileAccessSignature(
         id,
@@ -111,48 +111,11 @@ export const registerController = (options: RegisterOptions) => {
       reply.header("Content-Length", file.size.toString());
       reply.header("Cache-Control", "max-age=2592000"); // 缓存一个月
 
-      const fileStream = createReadStream(file.path);
-      return reply.send(fileStream);
-    },
-  );
-
-  server.get(
-    "/attachments/view",
-    {
-      config: {
-        disableAuth: true,
-      },
-      schema: {
-        description: "查看文件（图片等）",
-        tags: ["attachment"],
-        querystring: SchemaDownloadQuery,
-      },
-    },
-    async (request, reply) => {
-      const { i: id, t: date, s: signature } = request.query;
-
-      const verifySignature = attachmentService.generateFileAccessSignature(
-        id,
-        date,
-      );
-      if (verifySignature !== signature) {
-        throw new ErrorWrongSignature();
+      console.log("🚀 ~ registerController ~ file:", file);
+      if (file.thumbPath && type !== "original") {
+        const fileStream = createReadStream(file.thumbPath);
+        return reply.send(fileStream);
       }
-
-      const file = await attachmentService.getFileInfo(id);
-      if (!file) {
-        throw new ErrorFileNotFound();
-      }
-
-      // 对于图片文件，使用 inline 显示而不是 attachment 下载
-      const contentDisposition = file.type.startsWith("image/")
-        ? `inline; filename=${encodeURIComponent(file.filename)}`
-        : `attachment; filename=${encodeURIComponent(file.filename)}`;
-
-      reply.header("Content-Type", file.type);
-      reply.header("Content-Disposition", contentDisposition);
-      reply.header("Content-Length", file.size.toString());
-      reply.header("Cache-Control", "max-age=2592000"); // 缓存一个月
 
       const fileStream = createReadStream(file.path);
       return reply.send(fileStream);

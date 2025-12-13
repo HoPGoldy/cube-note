@@ -15,11 +15,3 @@ export const UserRole = {
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
-
-
-export const EndPointType = {
-  CONFIG: 'CONFIG',
-  CODE: 'CODE'
-} as const
-
-export type EndPointType = (typeof EndPointType)[keyof typeof EndPointType]

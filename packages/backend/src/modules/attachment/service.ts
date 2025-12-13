@@ -3,7 +3,8 @@ import { createHash, createHmac } from "crypto";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import { ENV_JWT_SECRET } from "@/config/env";
-import { PATH_USER_FILE } from "@/config/path";
+import { PATH_USER_FILE, PATH_USER_FILE_THUMB } from "@/config/path";
+import { Jimp } from "jimp";
 
 interface ServiceOptions {
   prisma: PrismaClient;
@@ -31,6 +32,24 @@ export class AttachmentService {
       path: filePath,
       type: mimeType,
     };
+
+    try {
+      const image = await Jimp.fromBuffer(fileBuffer);
+      const thumbBuffer = await image
+        .scaleToFit({ w: 600, h: 600 })
+        .getBuffer("image/png", { quality: 60 });
+
+      const thumbPath = join(
+        PATH_USER_FILE_THUMB,
+        `${fileHash}-${originalFilename}`,
+      );
+
+      await writeFile(thumbPath, thumbBuffer);
+
+      fileInfo.thumbPath = thumbPath;
+    } catch (err) {
+      console.log("不支持的文件类型:", err.message);
+    }
 
     return this.options.prisma.attachment.create({ data: fileInfo });
   }

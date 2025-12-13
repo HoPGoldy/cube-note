@@ -28,55 +28,10 @@ export type AppConfig = Prisma.AppConfigModel
  */
 export type Attachment = Prisma.AttachmentModel
 /**
- * Model MonitoredHost
- * 
- */
-export type MonitoredHost = Prisma.MonitoredHostModel
-/**
- * Model EndPoint
- * 
- */
-export type EndPoint = Prisma.EndPointModel
-/**
- * Model ProbeResult
- * 
- */
-export type ProbeResult = Prisma.ProbeResultModel
-/**
- * Model ProbeHourlyStat
- * 
- */
-export type ProbeHourlyStat = Prisma.ProbeHourlyStatModel
-/**
- * Model ProbeDailyStat
- * 
- */
-export type ProbeDailyStat = Prisma.ProbeDailyStatModel
-/**
- * Model NotificationChannel
- * 
- */
-export type NotificationChannel = Prisma.NotificationChannelModel
-/**
- * Model NotificationLog
- * 
- */
-export type NotificationLog = Prisma.NotificationLogModel
-/**
- * Model ProbeEnv
- * 
- */
-export type ProbeEnv = Prisma.ProbeEnvModel
-/**
  * Model Article
  * 
  */
 export type Article = Prisma.ArticleModel
-/**
- * Model ArticleRelation
- * 
- */
-export type ArticleRelation = Prisma.ArticleRelationModel
 /**
  * Model Tag
  * 

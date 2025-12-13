@@ -41,6 +41,7 @@ export type AttachmentMinAggregateOutputType = {
   size: number | null
   hash: string | null
   path: string | null
+  thumbPath: string | null
   type: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -53,6 +54,7 @@ export type AttachmentMaxAggregateOutputType = {
   size: number | null
   hash: string | null
   path: string | null
+  thumbPath: string | null
   type: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -65,6 +67,7 @@ export type AttachmentCountAggregateOutputType = {
   size: number
   hash: number
   path: number
+  thumbPath: number
   type: number
   createdAt: number
   updatedAt: number
@@ -87,6 +90,7 @@ export type AttachmentMinAggregateInputType = {
   size?: true
   hash?: true
   path?: true
+  thumbPath?: true
   type?: true
   createdAt?: true
   updatedAt?: true
@@ -99,6 +103,7 @@ export type AttachmentMaxAggregateInputType = {
   size?: true
   hash?: true
   path?: true
+  thumbPath?: true
   type?: true
   createdAt?: true
   updatedAt?: true
@@ -111,6 +116,7 @@ export type AttachmentCountAggregateInputType = {
   size?: true
   hash?: true
   path?: true
+  thumbPath?: true
   type?: true
   createdAt?: true
   updatedAt?: true
@@ -210,6 +216,7 @@ export type AttachmentGroupByOutputType = {
   size: number
   hash: string
   path: string
+  thumbPath: string | null
   type: string
   createdAt: Date
   updatedAt: Date
@@ -245,6 +252,7 @@ export type AttachmentWhereInput = {
   size?: Prisma.IntFilter<"Attachment"> | number
   hash?: Prisma.StringFilter<"Attachment"> | string
   path?: Prisma.StringFilter<"Attachment"> | string
+  thumbPath?: Prisma.StringNullableFilter<"Attachment"> | string | null
   type?: Prisma.StringFilter<"Attachment"> | string
   createdAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
@@ -257,6 +265,7 @@ export type AttachmentOrderByWithRelationInput = {
   size?: Prisma.SortOrder
   hash?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  thumbPath?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -272,6 +281,7 @@ export type AttachmentWhereUniqueInput = Prisma.AtLeast<{
   size?: Prisma.IntFilter<"Attachment"> | number
   hash?: Prisma.StringFilter<"Attachment"> | string
   path?: Prisma.StringFilter<"Attachment"> | string
+  thumbPath?: Prisma.StringNullableFilter<"Attachment"> | string | null
   type?: Prisma.StringFilter<"Attachment"> | string
   createdAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attachment"> | Date | string
@@ -284,6 +294,7 @@ export type AttachmentOrderByWithAggregationInput = {
   size?: Prisma.SortOrder
   hash?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  thumbPath?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -304,6 +315,7 @@ export type AttachmentScalarWhereWithAggregatesInput = {
   size?: Prisma.IntWithAggregatesFilter<"Attachment"> | number
   hash?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
   path?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
+  thumbPath?: Prisma.StringNullableWithAggregatesFilter<"Attachment"> | string | null
   type?: Prisma.StringWithAggregatesFilter<"Attachment"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Attachment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Attachment"> | Date | string
@@ -316,6 +328,7 @@ export type AttachmentCreateInput = {
   size: number
   hash: string
   path: string
+  thumbPath?: string | null
   type: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -328,6 +341,7 @@ export type AttachmentUncheckedCreateInput = {
   size: number
   hash: string
   path: string
+  thumbPath?: string | null
   type: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -340,6 +354,7 @@ export type AttachmentUpdateInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   hash?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -352,6 +367,7 @@ export type AttachmentUncheckedUpdateInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   hash?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -364,6 +380,7 @@ export type AttachmentCreateManyInput = {
   size: number
   hash: string
   path: string
+  thumbPath?: string | null
   type: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -376,6 +393,7 @@ export type AttachmentUpdateManyMutationInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   hash?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -388,6 +406,7 @@ export type AttachmentUncheckedUpdateManyInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   hash?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -400,6 +419,7 @@ export type AttachmentCountOrderByAggregateInput = {
   size?: Prisma.SortOrder
   hash?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  thumbPath?: Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -416,6 +436,7 @@ export type AttachmentMaxOrderByAggregateInput = {
   size?: Prisma.SortOrder
   hash?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  thumbPath?: Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -428,6 +449,7 @@ export type AttachmentMinOrderByAggregateInput = {
   size?: Prisma.SortOrder
   hash?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  thumbPath?: Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -445,6 +467,10 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 
 
 export type AttachmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -454,6 +480,7 @@ export type AttachmentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   size?: boolean
   hash?: boolean
   path?: boolean
+  thumbPath?: boolean
   type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -466,6 +493,7 @@ export type AttachmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   size?: boolean
   hash?: boolean
   path?: boolean
+  thumbPath?: boolean
   type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -478,6 +506,7 @@ export type AttachmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   size?: boolean
   hash?: boolean
   path?: boolean
+  thumbPath?: boolean
   type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -490,12 +519,13 @@ export type AttachmentSelectScalar = {
   size?: boolean
   hash?: boolean
   path?: boolean
+  thumbPath?: boolean
   type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "filename" | "size" | "hash" | "path" | "type" | "createdAt" | "updatedAt", ExtArgs["result"]["attachment"]>
+export type AttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "filename" | "size" | "hash" | "path" | "thumbPath" | "type" | "createdAt" | "updatedAt", ExtArgs["result"]["attachment"]>
 
 export type $AttachmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Attachment"
@@ -507,6 +537,7 @@ export type $AttachmentPayload<ExtArgs extends runtime.Types.Extensions.Internal
     size: number
     hash: string
     path: string
+    thumbPath: string | null
     type: string
     createdAt: Date
     updatedAt: Date
@@ -939,6 +970,7 @@ export interface AttachmentFieldRefs {
   readonly size: Prisma.FieldRef<"Attachment", 'Int'>
   readonly hash: Prisma.FieldRef<"Attachment", 'String'>
   readonly path: Prisma.FieldRef<"Attachment", 'String'>
+  readonly thumbPath: Prisma.FieldRef<"Attachment", 'String'>
   readonly type: Prisma.FieldRef<"Attachment", 'String'>
   readonly createdAt: Prisma.FieldRef<"Attachment", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Attachment", 'DateTime'>

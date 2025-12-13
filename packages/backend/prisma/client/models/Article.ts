@@ -222,8 +222,6 @@ export type ArticleWhereInput = {
   favorite?: Prisma.BoolFilter<"Article"> | boolean
   color?: Prisma.StringNullableFilter<"Article"> | string | null
   listSubarticle?: Prisma.BoolFilter<"Article"> | boolean
-  relationsFrom?: Prisma.ArticleRelationListRelationFilter
-  relationsTo?: Prisma.ArticleRelationListRelationFilter
 }
 
 export type ArticleOrderByWithRelationInput = {
@@ -237,8 +235,6 @@ export type ArticleOrderByWithRelationInput = {
   favorite?: Prisma.SortOrder
   color?: Prisma.SortOrderInput | Prisma.SortOrder
   listSubarticle?: Prisma.SortOrder
-  relationsFrom?: Prisma.ArticleRelationOrderByRelationAggregateInput
-  relationsTo?: Prisma.ArticleRelationOrderByRelationAggregateInput
 }
 
 export type ArticleWhereUniqueInput = Prisma.AtLeast<{
@@ -255,8 +251,6 @@ export type ArticleWhereUniqueInput = Prisma.AtLeast<{
   favorite?: Prisma.BoolFilter<"Article"> | boolean
   color?: Prisma.StringNullableFilter<"Article"> | string | null
   listSubarticle?: Prisma.BoolFilter<"Article"> | boolean
-  relationsFrom?: Prisma.ArticleRelationListRelationFilter
-  relationsTo?: Prisma.ArticleRelationListRelationFilter
 }, "id">
 
 export type ArticleOrderByWithAggregationInput = {
@@ -302,8 +296,6 @@ export type ArticleCreateInput = {
   favorite?: boolean
   color?: string | null
   listSubarticle?: boolean
-  relationsFrom?: Prisma.ArticleRelationCreateNestedManyWithoutFromInput
-  relationsTo?: Prisma.ArticleRelationCreateNestedManyWithoutToInput
 }
 
 export type ArticleUncheckedCreateInput = {
@@ -317,8 +309,6 @@ export type ArticleUncheckedCreateInput = {
   favorite?: boolean
   color?: string | null
   listSubarticle?: boolean
-  relationsFrom?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutFromInput
-  relationsTo?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutToInput
 }
 
 export type ArticleUpdateInput = {
@@ -332,8 +322,6 @@ export type ArticleUpdateInput = {
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  relationsFrom?: Prisma.ArticleRelationUpdateManyWithoutFromNestedInput
-  relationsTo?: Prisma.ArticleRelationUpdateManyWithoutToNestedInput
 }
 
 export type ArticleUncheckedUpdateInput = {
@@ -347,8 +335,6 @@ export type ArticleUncheckedUpdateInput = {
   favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  relationsFrom?: Prisma.ArticleRelationUncheckedUpdateManyWithoutFromNestedInput
-  relationsTo?: Prisma.ArticleRelationUncheckedUpdateManyWithoutToNestedInput
 }
 
 export type ArticleCreateManyInput = {
@@ -429,221 +415,10 @@ export type ArticleMinOrderByAggregateInput = {
   listSubarticle?: Prisma.SortOrder
 }
 
-export type ArticleScalarRelationFilter = {
-  is?: Prisma.ArticleWhereInput
-  isNot?: Prisma.ArticleWhereInput
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
-export type ArticleCreateNestedOneWithoutRelationsFromInput = {
-  create?: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsFromInput, Prisma.ArticleUncheckedCreateWithoutRelationsFromInput>
-  connectOrCreate?: Prisma.ArticleCreateOrConnectWithoutRelationsFromInput
-  connect?: Prisma.ArticleWhereUniqueInput
-}
-
-export type ArticleCreateNestedOneWithoutRelationsToInput = {
-  create?: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsToInput, Prisma.ArticleUncheckedCreateWithoutRelationsToInput>
-  connectOrCreate?: Prisma.ArticleCreateOrConnectWithoutRelationsToInput
-  connect?: Prisma.ArticleWhereUniqueInput
-}
-
-export type ArticleUpdateOneRequiredWithoutRelationsFromNestedInput = {
-  create?: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsFromInput, Prisma.ArticleUncheckedCreateWithoutRelationsFromInput>
-  connectOrCreate?: Prisma.ArticleCreateOrConnectWithoutRelationsFromInput
-  upsert?: Prisma.ArticleUpsertWithoutRelationsFromInput
-  connect?: Prisma.ArticleWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ArticleUpdateToOneWithWhereWithoutRelationsFromInput, Prisma.ArticleUpdateWithoutRelationsFromInput>, Prisma.ArticleUncheckedUpdateWithoutRelationsFromInput>
-}
-
-export type ArticleUpdateOneRequiredWithoutRelationsToNestedInput = {
-  create?: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsToInput, Prisma.ArticleUncheckedCreateWithoutRelationsToInput>
-  connectOrCreate?: Prisma.ArticleCreateOrConnectWithoutRelationsToInput
-  upsert?: Prisma.ArticleUpsertWithoutRelationsToInput
-  connect?: Prisma.ArticleWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ArticleUpdateToOneWithWhereWithoutRelationsToInput, Prisma.ArticleUpdateWithoutRelationsToInput>, Prisma.ArticleUncheckedUpdateWithoutRelationsToInput>
-}
-
-export type ArticleCreateWithoutRelationsFromInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  title: string
-  content?: string
-  parentPath?: string | null
-  tagIds?: string | null
-  favorite?: boolean
-  color?: string | null
-  listSubarticle?: boolean
-  relationsTo?: Prisma.ArticleRelationCreateNestedManyWithoutToInput
-}
-
-export type ArticleUncheckedCreateWithoutRelationsFromInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  title: string
-  content?: string
-  parentPath?: string | null
-  tagIds?: string | null
-  favorite?: boolean
-  color?: string | null
-  listSubarticle?: boolean
-  relationsTo?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutToInput
-}
-
-export type ArticleCreateOrConnectWithoutRelationsFromInput = {
-  where: Prisma.ArticleWhereUniqueInput
-  create: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsFromInput, Prisma.ArticleUncheckedCreateWithoutRelationsFromInput>
-}
-
-export type ArticleCreateWithoutRelationsToInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  title: string
-  content?: string
-  parentPath?: string | null
-  tagIds?: string | null
-  favorite?: boolean
-  color?: string | null
-  listSubarticle?: boolean
-  relationsFrom?: Prisma.ArticleRelationCreateNestedManyWithoutFromInput
-}
-
-export type ArticleUncheckedCreateWithoutRelationsToInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  title: string
-  content?: string
-  parentPath?: string | null
-  tagIds?: string | null
-  favorite?: boolean
-  color?: string | null
-  listSubarticle?: boolean
-  relationsFrom?: Prisma.ArticleRelationUncheckedCreateNestedManyWithoutFromInput
-}
-
-export type ArticleCreateOrConnectWithoutRelationsToInput = {
-  where: Prisma.ArticleWhereUniqueInput
-  create: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsToInput, Prisma.ArticleUncheckedCreateWithoutRelationsToInput>
-}
-
-export type ArticleUpsertWithoutRelationsFromInput = {
-  update: Prisma.XOR<Prisma.ArticleUpdateWithoutRelationsFromInput, Prisma.ArticleUncheckedUpdateWithoutRelationsFromInput>
-  create: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsFromInput, Prisma.ArticleUncheckedCreateWithoutRelationsFromInput>
-  where?: Prisma.ArticleWhereInput
-}
-
-export type ArticleUpdateToOneWithWhereWithoutRelationsFromInput = {
-  where?: Prisma.ArticleWhereInput
-  data: Prisma.XOR<Prisma.ArticleUpdateWithoutRelationsFromInput, Prisma.ArticleUncheckedUpdateWithoutRelationsFromInput>
-}
-
-export type ArticleUpdateWithoutRelationsFromInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  relationsTo?: Prisma.ArticleRelationUpdateManyWithoutToNestedInput
-}
-
-export type ArticleUncheckedUpdateWithoutRelationsFromInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  relationsTo?: Prisma.ArticleRelationUncheckedUpdateManyWithoutToNestedInput
-}
-
-export type ArticleUpsertWithoutRelationsToInput = {
-  update: Prisma.XOR<Prisma.ArticleUpdateWithoutRelationsToInput, Prisma.ArticleUncheckedUpdateWithoutRelationsToInput>
-  create: Prisma.XOR<Prisma.ArticleCreateWithoutRelationsToInput, Prisma.ArticleUncheckedCreateWithoutRelationsToInput>
-  where?: Prisma.ArticleWhereInput
-}
-
-export type ArticleUpdateToOneWithWhereWithoutRelationsToInput = {
-  where?: Prisma.ArticleWhereInput
-  data: Prisma.XOR<Prisma.ArticleUpdateWithoutRelationsToInput, Prisma.ArticleUncheckedUpdateWithoutRelationsToInput>
-}
-
-export type ArticleUpdateWithoutRelationsToInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  relationsFrom?: Prisma.ArticleRelationUpdateManyWithoutFromNestedInput
-}
-
-export type ArticleUncheckedUpdateWithoutRelationsToInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  parentPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tagIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  favorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  listSubarticle?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  relationsFrom?: Prisma.ArticleRelationUncheckedUpdateManyWithoutFromNestedInput
-}
-
-
-/**
- * Count Type ArticleCountOutputType
- */
-
-export type ArticleCountOutputType = {
-  relationsFrom: number
-  relationsTo: number
-}
-
-export type ArticleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  relationsFrom?: boolean | ArticleCountOutputTypeCountRelationsFromArgs
-  relationsTo?: boolean | ArticleCountOutputTypeCountRelationsToArgs
-}
-
-/**
- * ArticleCountOutputType without action
- */
-export type ArticleCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ArticleCountOutputType
-   */
-  select?: Prisma.ArticleCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * ArticleCountOutputType without action
- */
-export type ArticleCountOutputTypeCountRelationsFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ArticleRelationWhereInput
-}
-
-/**
- * ArticleCountOutputType without action
- */
-export type ArticleCountOutputTypeCountRelationsToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ArticleRelationWhereInput
-}
 
 
 export type ArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -657,9 +432,6 @@ export type ArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   favorite?: boolean
   color?: boolean
   listSubarticle?: boolean
-  relationsFrom?: boolean | Prisma.Article$relationsFromArgs<ExtArgs>
-  relationsTo?: boolean | Prisma.Article$relationsToArgs<ExtArgs>
-  _count?: boolean | Prisma.ArticleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["article"]>
 
 export type ArticleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -702,20 +474,10 @@ export type ArticleSelectScalar = {
 }
 
 export type ArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "title" | "content" | "parentPath" | "tagIds" | "favorite" | "color" | "listSubarticle", ExtArgs["result"]["article"]>
-export type ArticleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  relationsFrom?: boolean | Prisma.Article$relationsFromArgs<ExtArgs>
-  relationsTo?: boolean | Prisma.Article$relationsToArgs<ExtArgs>
-  _count?: boolean | Prisma.ArticleCountOutputTypeDefaultArgs<ExtArgs>
-}
-export type ArticleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ArticleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $ArticlePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Article"
-  objects: {
-    relationsFrom: Prisma.$ArticleRelationPayload<ExtArgs>[]
-    relationsTo: Prisma.$ArticleRelationPayload<ExtArgs>[]
-  }
+  objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     createdAt: Date
@@ -1121,8 +883,6 @@ readonly fields: ArticleFieldRefs;
  */
 export interface Prisma__ArticleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  relationsFrom<T extends Prisma.Article$relationsFromArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Article$relationsFromArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArticleRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  relationsTo<T extends Prisma.Article$relationsToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Article$relationsToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArticleRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1179,10 +939,6 @@ export type ArticleFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
-  /**
    * Filter, which Article to fetch.
    */
   where: Prisma.ArticleWhereUniqueInput
@@ -1201,10 +957,6 @@ export type ArticleFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
-  /**
    * Filter, which Article to fetch.
    */
   where: Prisma.ArticleWhereUniqueInput
@@ -1222,10 +974,6 @@ export type ArticleFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Article
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
   /**
    * Filter, which Article to fetch.
    */
@@ -1275,10 +1023,6 @@ export type ArticleFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
-  /**
    * Filter, which Article to fetch.
    */
   where?: Prisma.ArticleWhereInput
@@ -1327,10 +1071,6 @@ export type ArticleFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
-  /**
    * Filter, which Articles to fetch.
    */
   where?: Prisma.ArticleWhereInput
@@ -1373,10 +1113,6 @@ export type ArticleCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Article
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
   /**
    * The data needed to create a Article.
    */
@@ -1423,10 +1159,6 @@ export type ArticleUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Article
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
   /**
    * The data needed to update a Article.
    */
@@ -1494,10 +1226,6 @@ export type ArticleUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
-  /**
    * The filter to search for the Article to update in case it exists.
    */
   where: Prisma.ArticleWhereUniqueInput
@@ -1524,10 +1252,6 @@ export type ArticleDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
-  /**
    * Filter which Article to delete.
    */
   where: Prisma.ArticleWhereUniqueInput
@@ -1548,54 +1272,6 @@ export type ArticleDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Article.relationsFrom
- */
-export type Article$relationsFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ArticleRelation
-   */
-  select?: Prisma.ArticleRelationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ArticleRelation
-   */
-  omit?: Prisma.ArticleRelationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleRelationInclude<ExtArgs> | null
-  where?: Prisma.ArticleRelationWhereInput
-  orderBy?: Prisma.ArticleRelationOrderByWithRelationInput | Prisma.ArticleRelationOrderByWithRelationInput[]
-  cursor?: Prisma.ArticleRelationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ArticleRelationScalarFieldEnum | Prisma.ArticleRelationScalarFieldEnum[]
-}
-
-/**
- * Article.relationsTo
- */
-export type Article$relationsToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ArticleRelation
-   */
-  select?: Prisma.ArticleRelationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ArticleRelation
-   */
-  omit?: Prisma.ArticleRelationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleRelationInclude<ExtArgs> | null
-  where?: Prisma.ArticleRelationWhereInput
-  orderBy?: Prisma.ArticleRelationOrderByWithRelationInput | Prisma.ArticleRelationOrderByWithRelationInput[]
-  cursor?: Prisma.ArticleRelationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ArticleRelationScalarFieldEnum | Prisma.ArticleRelationScalarFieldEnum[]
-}
-
-/**
  * Article without action
  */
 export type ArticleDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1607,8 +1283,4 @@ export type ArticleDefaultArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Article
    */
   omit?: Prisma.ArticleOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleInclude<ExtArgs> | null
 }

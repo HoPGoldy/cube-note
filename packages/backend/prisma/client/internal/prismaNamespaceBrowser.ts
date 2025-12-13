@@ -53,16 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   AppConfig: 'AppConfig',
   Attachment: 'Attachment',
-  MonitoredHost: 'MonitoredHost',
-  EndPoint: 'EndPoint',
-  ProbeResult: 'ProbeResult',
-  ProbeHourlyStat: 'ProbeHourlyStat',
-  ProbeDailyStat: 'ProbeDailyStat',
-  NotificationChannel: 'NotificationChannel',
-  NotificationLog: 'NotificationLog',
-  ProbeEnv: 'ProbeEnv',
   Article: 'Article',
-  ArticleRelation: 'ArticleRelation',
   Tag: 'Tag'
 } as const
 
@@ -96,135 +87,13 @@ export const AttachmentScalarFieldEnum = {
   size: 'size',
   hash: 'hash',
   path: 'path',
+  thumbPath: 'thumbPath',
   type: 'type',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
-
-
-export const MonitoredHostScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  desc: 'desc',
-  url: 'url',
-  headers: 'headers',
-  enabled: 'enabled',
-  notifyEnabled: 'notifyEnabled',
-  notifyFailureCount: 'notifyFailureCount',
-  notifyCooldownMin: 'notifyCooldownMin',
-  notifyChannelIds: 'notifyChannelIds'
-} as const
-
-export type MonitoredHostScalarFieldEnum = (typeof MonitoredHostScalarFieldEnum)[keyof typeof MonitoredHostScalarFieldEnum]
-
-
-export const EndPointScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  hostId: 'hostId',
-  name: 'name',
-  desc: 'desc',
-  type: 'type',
-  url: 'url',
-  method: 'method',
-  headers: 'headers',
-  timeout: 'timeout',
-  bodyContentType: 'bodyContentType',
-  bodyContent: 'bodyContent',
-  codeContent: 'codeContent',
-  intervalTime: 'intervalTime',
-  enabled: 'enabled'
-} as const
-
-export type EndPointScalarFieldEnum = (typeof EndPointScalarFieldEnum)[keyof typeof EndPointScalarFieldEnum]
-
-
-export const ProbeResultScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  endPointId: 'endPointId',
-  status: 'status',
-  responseTime: 'responseTime',
-  success: 'success',
-  message: 'message'
-} as const
-
-export type ProbeResultScalarFieldEnum = (typeof ProbeResultScalarFieldEnum)[keyof typeof ProbeResultScalarFieldEnum]
-
-
-export const ProbeHourlyStatScalarFieldEnum = {
-  endPointId: 'endPointId',
-  hourTimestamp: 'hourTimestamp',
-  totalChecks: 'totalChecks',
-  successCount: 'successCount',
-  avgResponseTime: 'avgResponseTime',
-  minResponseTime: 'minResponseTime',
-  maxResponseTime: 'maxResponseTime'
-} as const
-
-export type ProbeHourlyStatScalarFieldEnum = (typeof ProbeHourlyStatScalarFieldEnum)[keyof typeof ProbeHourlyStatScalarFieldEnum]
-
-
-export const ProbeDailyStatScalarFieldEnum = {
-  endPointId: 'endPointId',
-  date: 'date',
-  totalChecks: 'totalChecks',
-  successCount: 'successCount',
-  uptimePercentage: 'uptimePercentage',
-  avgResponseTime: 'avgResponseTime',
-  minResponseTime: 'minResponseTime',
-  maxResponseTime: 'maxResponseTime'
-} as const
-
-export type ProbeDailyStatScalarFieldEnum = (typeof ProbeDailyStatScalarFieldEnum)[keyof typeof ProbeDailyStatScalarFieldEnum]
-
-
-export const NotificationChannelScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  webhookUrl: 'webhookUrl',
-  headers: 'headers',
-  bodyTemplate: 'bodyTemplate',
-  enabled: 'enabled'
-} as const
-
-export type NotificationChannelScalarFieldEnum = (typeof NotificationChannelScalarFieldEnum)[keyof typeof NotificationChannelScalarFieldEnum]
-
-
-export const NotificationLogScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  hostId: 'hostId',
-  endpointId: 'endpointId',
-  channelId: 'channelId',
-  eventType: 'eventType',
-  title: 'title',
-  content: 'content',
-  success: 'success',
-  errorMsg: 'errorMsg'
-} as const
-
-export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
-
-
-export const ProbeEnvScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  key: 'key',
-  value: 'value',
-  isSecret: 'isSecret',
-  desc: 'desc'
-} as const
-
-export type ProbeEnvScalarFieldEnum = (typeof ProbeEnvScalarFieldEnum)[keyof typeof ProbeEnvScalarFieldEnum]
 
 
 export const ArticleScalarFieldEnum = {
@@ -241,14 +110,6 @@ export const ArticleScalarFieldEnum = {
 } as const
 
 export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
-
-
-export const ArticleRelationScalarFieldEnum = {
-  fromId: 'fromId',
-  toId: 'toId'
-} as const
-
-export type ArticleRelationScalarFieldEnum = (typeof ArticleRelationScalarFieldEnum)[keyof typeof ArticleRelationScalarFieldEnum]
 
 
 export const TagScalarFieldEnum = {
@@ -268,38 +129,6 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
-
-
-export const NullableJsonNullValueInput = {
-  DbNull: 'DbNull',
-  JsonNull: 'JsonNull'
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: 'JsonNull'
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
-export const JsonNullValueFilter = {
-  DbNull: 'DbNull',
-  JsonNull: 'JsonNull',
-  AnyNull: 'AnyNull'
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const NullsOrder = {

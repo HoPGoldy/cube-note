@@ -19,13 +19,20 @@ export const MarkdownPreview: FC<Parameters<typeof MDEditor.Markdown>[0]> = (
   const onClickDetail: MouseEventHandler<HTMLDivElement> = (e) => {
     const target = e.target as HTMLImageElement;
     if (target?.tagName === "IMG") {
+      if (target.src.startsWith(location.origin)) {
+        setVisibleImgSrc(target.src + "&type=original");
+        return;
+      }
+
       setVisibleImgSrc(target.src);
     }
   };
 
   return (
-    <div className="w-full h-full" onClick={onClickDetail}>
-      <MDEditor.Markdown {...restProps} components={mergedComponents} />
+    <>
+      <div className="w-full h-full" onClick={onClickDetail}>
+        <MDEditor.Markdown {...restProps} components={mergedComponents} />
+      </div>
       <Image
         style={{ display: "none" }}
         preview={{
@@ -34,6 +41,6 @@ export const MarkdownPreview: FC<Parameters<typeof MDEditor.Markdown>[0]> = (
           onVisibleChange: () => setVisibleImgSrc(""),
         }}
       />
-    </div>
+    </>
   );
 };

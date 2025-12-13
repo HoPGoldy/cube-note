@@ -38,6 +38,13 @@ export const PATH_ROOT = ensurePathExists(
 export const PATH_USER_FILE = ensurePathExists(join(PATH_ROOT, "user-files"));
 
 /**
+ * 用户上传图片缩略图存储目录
+ */
+export const PATH_USER_FILE_THUMB = ensurePathExists(
+  join(PATH_ROOT, "image-thumbs"),
+);
+
+/**
  * 静态文件托管目录
  */
 export const PATH_FRONTEND_FILE = ensurePathExists(
