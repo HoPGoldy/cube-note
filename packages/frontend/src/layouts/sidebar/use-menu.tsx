@@ -28,7 +28,7 @@ export const tabOptions = [
 export const EMPTY_CLASSNAME = "text-gray-500 py-4 cursor-default text-center";
 
 export const useMenu = () => {
-  const [currentTab, setCurrentTab] = useState<TabTypes>();
+  const [currentTab, setCurrentTab] = useState<TabTypes>(TabTypes.Sub);
   const { appConfig } = useGetAppConfig();
   const currentRootArticleId = appConfig.ROOT_ARTICLE_ID;
   const currentArticleId = useCurrentArticleId();
