@@ -106,7 +106,7 @@ export const useQueryArticleLink = (
     queryFn: () => {
       return requestPost<ArticleLinkResp>("article/getLink", { id });
     },
-    enabled,
+    enabled: !!id && enabled,
   });
 
   return {
