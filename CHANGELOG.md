@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.1](https://github.com/HoPGoldy/cube-note/compare/v2.1.0...v2.1.1) (2025-12-13)
+
+
+### Bug Fixes
+
+* 自动保存失效问题 ([2a9b037](https://github.com/HoPGoldy/cube-note/commit/2a9b037e8784d0b62b063c7ce0082275d3fc4b8c))
+* 自动保存失败后支持手动复制内容 ([40fecf5](https://github.com/HoPGoldy/cube-note/commit/40fecf52a851a2e243eec4501b15a36b25e9ce3d))
+* 默认编辑器高度太小问题 ([340caae](https://github.com/HoPGoldy/cube-note/commit/340caae469c7c8c1aa144b8d4b88ef16df066715))
+
 ## 2.1.0 (2025-12-12)
 
 
