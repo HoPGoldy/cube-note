@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useRequestFileUrl } from "@/services/attachment";
 import { FILE_PREFIX } from "../constants";
+import { mergeUrl } from "@/utils/path";
 
 export const CustomA: FC<React.AnchorHTMLAttributes<HTMLAnchorElement>> = (
   props,
@@ -33,7 +34,7 @@ export const CustomA: FC<React.AnchorHTMLAttributes<HTMLAnchorElement>> = (
       return;
     }
 
-    const url = response.data.url;
+    const url = mergeUrl(APP_CONFIG.PATH_BASENAME, response.data.url);
     window.open(url, "_blank");
   };
 

@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Skeleton } from "antd";
 import { useRequestFileUrl } from "@/services/attachment";
 import { FILE_PREFIX } from "../constants";
+import { mergeUrl } from "@/utils/path";
 
 export const CustomImg: FC<React.ImgHTMLAttributes<HTMLImageElement>> = (
   props,
@@ -28,7 +29,7 @@ export const CustomImg: FC<React.ImgHTMLAttributes<HTMLImageElement>> = (
       const response = await requestFileUrl(fileId);
 
       if (response && response.success) {
-        setRealHref(response.data.url);
+        setRealHref(mergeUrl(APP_CONFIG.PATH_BASENAME, response.data.url));
       } else {
         setRealHref(null);
       }
