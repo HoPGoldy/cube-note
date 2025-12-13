@@ -4,6 +4,7 @@ import {
   useState,
   forwardRef,
   useImperativeHandle,
+  DragEventHandler,
 } from "react";
 import MDEditor, { MDEditorProps, RefMDEditor } from "@uiw/react-md-editor";
 import { Flex, Spin } from "antd";
@@ -78,12 +79,25 @@ export const Editor = forwardRef<EditorRef, Props>(
 
       const items = clipboardData.items;
       const imageFiles: File[] = [];
-      //  纯图片处理
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         const file = item.getAsFile();
         if (file) imageFiles.push(file);
       }
+
+      if (imageFiles.length <= 0) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      insertFile(imageFiles);
+    };
+
+    const onDrop: DragEventHandler<HTMLDivElement> = async (e) => {
+      const dataTransfer = e.dataTransfer;
+      if (!dataTransfer) return;
+
+      const files = dataTransfer.files;
+      const imageFiles: File[] = Array.from(files);
 
       if (imageFiles.length <= 0) return;
 
@@ -104,6 +118,7 @@ export const Editor = forwardRef<EditorRef, Props>(
           height="100%"
           value={value}
           onPaste={onPaste}
+          onDrop={onDrop}
           onChange={(val) => onChange?.(val || "")}
           commands={[...getCommands()]}
           extraCommands={[...getExtraCommands()]}
