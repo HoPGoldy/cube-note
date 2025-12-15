@@ -141,10 +141,10 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
           size="small"
           className="hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer"
         >
-          <div className="flex justify-between items-center">
-            <span className="font-bold">{item.title}</span>
+          <Flex justify="space-between" align="center" gap={8}>
+            <span className="font-bold truncate">{item.title}</span>
             <ColorDot color={item.color} />
-          </div>
+          </Flex>
         </Card>
       </Link>
     );
