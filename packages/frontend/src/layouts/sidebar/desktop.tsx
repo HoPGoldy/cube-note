@@ -39,7 +39,7 @@ export const Sidebar: FC = () => {
 
     return (
       <>
-        {menu.parentArticleIds && (
+        {menu.parentArticleIds && menu.parentArticleIds.length > 0 && (
           <Link
             to={`/article/${menu.parentArticleIds[menu.parentArticleIds.length - 1]}`}
           >
