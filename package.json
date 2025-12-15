@@ -1,6 +1,6 @@
 {
   "name": "cube-note",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "private": true,
   "scripts": {
     "start:backend": "pnpm --filter backend start:dev",
