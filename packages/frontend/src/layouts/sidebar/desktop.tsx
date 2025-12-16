@@ -13,10 +13,12 @@ import { EMPTY_CLASSNAME, tabOptions, useMenu } from "./use-menu";
 import Loading from "../loading";
 import { ColorDot } from "@/components/color-picker/color-dot";
 import { useCreateArticle } from "@/hooks/use-create-article";
+import { useCurrentArticleId } from "@/hooks/use-current-article-id";
 
 export const Sidebar: FC = () => {
   const menu = useMenu();
   const navigate = useNavigate();
+  const currentArticleId = useCurrentArticleId();
   const { createArticle } = useCreateArticle();
 
   const renderMenuItem = (item: ArticleMenuItem) => {
@@ -27,6 +29,31 @@ export const Sidebar: FC = () => {
           <ColorDot color={item.color} />
         </div>
       </Link>
+    );
+  };
+
+  /** 当位于“标签管理”之类的非文章页面时渲染 */
+  const renderConfigMenu = () => {
+    return (
+      <>
+        <Link to={`/article/${menu.currentRootArticleId}`}>
+          <Button
+            className={`${s.toolBtn} keep-antd-style mb-2`}
+            icon={<RollbackOutlined />}
+            block
+          >
+            返回首页
+          </Button>
+        </Link>
+        <Button
+          className={`${s.toolBtn} keep-antd-style mb-2`}
+          icon={<RollbackOutlined />}
+          onClick={() => navigate(-1)}
+          block
+        >
+          返回上一页
+        </Button>
+      </>
     );
   };
 
@@ -89,6 +116,10 @@ export const Sidebar: FC = () => {
   };
 
   const renderCurrentMenu = () => {
+    if (!currentArticleId) {
+      return renderConfigMenu();
+    }
+
     switch (menu.currentTab) {
       case TabTypes.Sub:
         return renderSubMenu();
@@ -100,6 +131,8 @@ export const Sidebar: FC = () => {
   };
 
   const renderTabBtns = () => {
+    if (!currentArticleId) return null;
+
     return (
       <Row gutter={8}>
         {tabOptions.map((item) => {
@@ -129,6 +162,10 @@ export const Sidebar: FC = () => {
 
   return (
     <section className={s.sideberBox}>
+      <div className="flex flex-row flex-nowrap items-center justify-center mb-3">
+        <div className="font-black text-lg">Cube Note</div>
+      </div>
+
       {renderTabBtns()}
 
       <div className="flex-grow flex-shrink overflow-y-auto noscrollbar overflow-x-hidden my-3">
