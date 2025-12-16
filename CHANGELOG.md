@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.0](https://github.com/HoPGoldy/cube-note/compare/v2.2.3...v2.3.0) (2025-12-16)
+
+
+### Features
+
+* 搜索添加快捷键 ([a9ebca7](https://github.com/HoPGoldy/cube-note/commit/a9ebca78d89227d09d895c519a3d67b7ed469b6e))
+
+
+### Bug Fixes
+
+* 子笔记标题超长处理 ([84a5c41](https://github.com/HoPGoldy/cube-note/commit/84a5c416314cb598d888239f220f50fc74a59aab))
+* 搜索页面 tag 没有间距 ([58eb128](https://github.com/HoPGoldy/cube-note/commit/58eb1287f709061921ec4fc4bcb7c0155bd9babb))
+* 标签管理 ui 优化 ([e20b4f1](https://github.com/HoPGoldy/cube-note/commit/e20b4f15af6c53ef254ab4f8d4c4685c85511f63))
+
 ## [2.2.3](https://github.com/HoPGoldy/cube-note/compare/v2.2.2...v2.2.3) (2025-12-15)
 
 
