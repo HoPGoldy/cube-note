@@ -32,6 +32,7 @@ export const registerFrontendHistory = async (server: FastifyInstance) => {
 
   // 注册静态文件服务
   await server.register(fastifyStatic, {
+    preCompressed: true,
     root: PATH_FRONTEND_FILE,
     prefix: "/",
   });
