@@ -150,7 +150,7 @@ const SearchArticle: FC = () => {
 
   const renderTagArea = () => {
     return (
-      <div>
+      <Flex wrap gap={8}>
         {tagList.map((tag) => {
           return (
             <Tag
@@ -163,7 +163,7 @@ const SearchArticle: FC = () => {
             </Tag>
           );
         })}
-      </div>
+      </Flex>
     );
   };
 
