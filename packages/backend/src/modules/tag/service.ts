@@ -38,6 +38,7 @@ export class TagService {
   async getTagList() {
     return await this.options.prisma.tag.findMany({
       orderBy: { createdAt: "asc" },
+      select: { id: true, title: true, color: true },
     });
   }
 

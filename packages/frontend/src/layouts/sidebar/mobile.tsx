@@ -8,10 +8,11 @@ import {
   tabOptions,
   useMenu,
 } from "@/layouts/sidebar/use-menu";
-import { ArticleMenuItem, TabTypes } from "@/types/article";
 import { SplitLine } from "@/components/cell";
 import { ColorDot } from "@/components/color-picker/color-dot";
 import { useBreadcrumb } from "@/hooks/use-breadcrumb";
+import { TabTypes } from "./use-menu";
+import { SchemaArticleMenuType } from "@shared-types/article";
 
 interface SidebarMobileProps {
   currentArticleId: string;
@@ -59,9 +60,9 @@ export const SidebarMobile: FC<SidebarMobileProps> = (props) => {
   };
 
   const renderMenuItem = (
-    item: ArticleMenuItem,
+    item: SchemaArticleMenuType,
     index: number,
-    list: ArticleMenuItem[],
+    list: SchemaArticleMenuType[],
   ) => {
     return (
       <div key={item.id}>

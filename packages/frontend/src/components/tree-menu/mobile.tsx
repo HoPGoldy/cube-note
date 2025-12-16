@@ -1,4 +1,3 @@
-import { ArticleTreeNode } from "@/types/article";
 import { Button, Flex } from "antd";
 import { FC, useEffect, useRef, useState } from "react";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
@@ -6,19 +5,23 @@ import { FolderOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { SplitLine } from "../cell";
 import { EMPTY_CLASSNAME } from "@/layouts/sidebar/use-menu";
 import { ColorDot } from "../color-picker/color-dot";
+import { SchemaArticleTreeNodeType } from "@shared-types/article";
 
 interface Props {
   value: string[];
   onChange: (value: string[]) => void;
   selectedIds?: string[];
-  onClickNode?: (node: ArticleTreeNode) => void;
-  treeData: ArticleTreeNode[];
+  onClickNode?: (node: SchemaArticleTreeNodeType) => void;
+  treeData: SchemaArticleTreeNodeType[];
 }
 
 /**
  * 根据 value 找到对应的节点列表
  */
-const findNodeList = (value: string[], treeData: ArticleTreeNode[]) => {
+const findNodeList = (
+  value: string[],
+  treeData: SchemaArticleTreeNodeType[],
+) => {
   let currentNodeList = treeData;
   for (let i = 0; i < value.length; i++) {
     const id = value[i];
@@ -30,7 +33,9 @@ const findNodeList = (value: string[], treeData: ArticleTreeNode[]) => {
 
 export const TreeMenu: FC<Props> = (props) => {
   const nodeRef = useRef<HTMLDivElement>(null);
-  const [currentList, setCurrentList] = useState<ArticleTreeNode[]>([]);
+  const [currentList, setCurrentList] = useState<SchemaArticleTreeNodeType[]>(
+    [],
+  );
   /** 动画 */
   const [animating, setAnimating] = useState("to-left");
 
@@ -64,7 +69,7 @@ export const TreeMenu: FC<Props> = (props) => {
     );
   };
 
-  const renderMenuItem = (item: ArticleTreeNode, index: number) => {
+  const renderMenuItem = (item: SchemaArticleTreeNodeType, index: number) => {
     const selected = props.selectedIds?.includes(item.id);
     return (
       <div key={item.id}>

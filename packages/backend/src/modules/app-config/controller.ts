@@ -1,6 +1,6 @@
 import type { AppConfigService } from "./service";
 import type { AppInstance } from "@/types";
-import { SchemaAppConfig } from "./schema";
+import { SchemaAppConfig } from "@/types/app-config";
 
 interface RegisterOptions {
   server: AppInstance;

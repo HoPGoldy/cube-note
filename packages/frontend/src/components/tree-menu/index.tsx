@@ -1,4 +1,3 @@
-import { ArticleTreeNode } from "@/types/article";
 import React, {
   FC,
   useState,
@@ -13,10 +12,11 @@ import { nanoid } from "nanoid";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import s from "./styles.module.css";
 import { ColorDot } from "../color-picker/color-dot";
+import { SchemaArticleTreeNodeType } from "@shared-types/article";
 
 interface Props {
-  treeData: ArticleTreeNode[];
-  onClickNode?: (node: ArticleTreeNode) => void;
+  treeData: SchemaArticleTreeNodeType[];
+  onClickNode?: (node: SchemaArticleTreeNodeType) => void;
   onClickRoot?: () => void;
   value?: string[];
   onChange?: (value: string[]) => void;
@@ -27,7 +27,7 @@ interface MenuList {
   /** div 的样式 */
   styles?: React.CSSProperties;
   /** div 里显示的选项列表 */
-  subMenus?: ArticleTreeNode[];
+  subMenus?: SchemaArticleTreeNodeType[];
   /** 用于处理 findDOMNode is deprecated in StrictMode 问题 */
   nodeRef: React.RefObject<HTMLDivElement>;
 }
@@ -98,7 +98,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
    */
   const openMenu = (
     elementId: string,
-    menuData: ArticleTreeNode[],
+    menuData: SchemaArticleTreeNodeType[],
     level?: number,
     offset?: number,
   ) => {
@@ -139,7 +139,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
   const onOpenInnerMenu = (
     id: string,
     level: number,
-    nextMenuList?: ArticleTreeNode[],
+    nextMenuList?: SchemaArticleTreeNodeType[],
   ) => {
     closeAllThrottle.cancel();
     if (!nextMenuList) {
@@ -157,7 +157,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
     closeAllThrottle();
   };
 
-  const onClickNode = (node: ArticleTreeNode) => {
+  const onClickNode = (node: SchemaArticleTreeNodeType) => {
     props.onClickNode?.(node);
 
     if (props.value?.includes(node.id)) {
@@ -171,7 +171,7 @@ export const TreeMenu: FC<PropsWithChildren<Props>> = (props) => {
    * @param item 要渲染的列表项
    * @param level 当前列表所在的层级（第几个打开的列表）
    */
-  const renderMenuItem = (item: ArticleTreeNode, level: number) => {
+  const renderMenuItem = (item: SchemaArticleTreeNodeType, level: number) => {
     return (
       <div
         key={item.id}

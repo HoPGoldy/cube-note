@@ -3,11 +3,15 @@ import {
   useQueryArticleLink,
   useQueryArticleTree,
 } from "@/services/article";
-import { TabTypes } from "@/types/article";
 import { UnorderedListOutlined, HeartOutlined } from "@ant-design/icons";
 import { useGetAppConfig } from "@/services/app-config";
 import { useState } from "react";
 import { useCurrentArticleId } from "@/hooks/use-current-article-id";
+
+export enum TabTypes {
+  Sub = "sub",
+  Favorite = "favorite",
+}
 
 export const tabOptions = [
   {

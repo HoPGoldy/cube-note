@@ -11,7 +11,6 @@
   },
   "scripts": {
     "start:dev": "tsx watch src/index.ts",
-    "start:worker": "tsx src/parent.ts",
     "start:db": "prisma studio",
     "start:prod": "cross-env NODE_ENV=production node dist/index.js",
     "init:dev": "prisma migrate dev",

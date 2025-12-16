@@ -1,58 +1,8 @@
-/**
- * Article 树形结构工具函数
- */
+import { SchemaArticleItemType } from "@/types/article";
+import { getParentIdByPath } from "@/utils/tree";
+import { Article } from "@db/client";
 
-import type { Article } from "@db/client";
-
-/**
- * 将路径字符串转换为数组
- * "#1#2#3#" -> ["1", "2", "3"]
- */
-export const pathToArray = (path: string | null | undefined): string[] => {
-  if (!path) return [];
-  return path.split("#").filter(Boolean);
-};
-
-/**
- * 将数组转换为路径字符串
- * ["1", "2", "3"] -> "#1#2#3#"
- */
-export const arrayToPath = (arr: string[]): string => {
-  if (arr.length === 0) return "";
-  return "#" + arr.join("#") + "#";
-};
-
-/**
- * 在路径后追加一个 ID
- * ("#1#2#", "3") -> "#1#2#3#"
- */
-export const appendIdToPath = (
-  parentPath: string | null | undefined,
-  id: string,
-): string => {
-  return (parentPath || "") + id + "#";
-};
-
-/**
- * 从路径中获取父级 ID
- * "#1#2#3#" -> "3"
- */
-export const getParentIdByPath = (
-  path: string | null | undefined,
-): string | undefined => {
-  const arr = pathToArray(path);
-  return arr.length > 0 ? arr[arr.length - 1] : undefined;
-};
-
-/**
- * 从路径中获取路径数组的所有 ID
- * "#1#2#3#" -> ["1", "2", "3"]
- */
-export const getIdsFromPath = (path: string | null | undefined): string[] => {
-  return pathToArray(path);
-};
-
-interface ArticleTreeData {
+export interface ArticleTreeData {
   id: string;
   title: string;
   parentPath: string | null;
@@ -97,35 +47,4 @@ export const buildArticleTree = (
   }
 
   return roots;
-};
-
-/**
- * 检查文章是否有子文章
- */
-export const hasChildren = (
-  article: Article,
-  allArticles: Article[],
-): boolean => {
-  const prefix = (article.parentPath || "") + article.id + "#";
-  return allArticles.some((a) => a.parentPath?.startsWith(prefix));
-};
-
-/**
- * 获取文章的所有子文章 ID
- */
-export const getChildArticleIds = (
-  article: Article,
-  allArticles: Article[],
-): string[] => {
-  const prefix = (article.parentPath || "") + article.id + "#";
-  return allArticles
-    .filter((a) => a.parentPath?.startsWith(prefix))
-    .map((a) => a.id);
-};
-
-/**
- * 获取文章的深度（路径长度）
- */
-export const getArticleDepth = (article: Article): number => {
-  return pathToArray(article.parentPath).length;
 };

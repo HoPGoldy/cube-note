@@ -12,12 +12,15 @@ import {
 import { useGetAppConfig } from "@/services/app-config";
 import dayjs from "dayjs";
 import { ColorDot } from "@/components/color-picker/color-dot";
-import { ArticleTreeNode } from "@/types/article";
+import { SchemaArticleTreeNodeType } from "@shared-types/article";
 
 /**
  * 寻找节点在树中的路径
  */
-const findPath = (tree: ArticleTreeNode[], nodeId: string): string[] => {
+const findPath = (
+  tree: SchemaArticleTreeNodeType[],
+  nodeId: string,
+): string[] => {
   for (const node of tree) {
     if (node.id === nodeId) return [node.id];
 
@@ -244,13 +247,13 @@ export const ArticleConfigModal: FC = () => {
           <Flex>
             <span className="text-gray-400 block mr-2">创建时间</span>
             <span>
-              {dayjs(articleDetail?.createTime).format("YYYY:MM:DD HH:mm:ss")}
+              {dayjs(articleDetail?.createdAt).format("YYYY:MM:DD HH:mm:ss")}
             </span>
           </Flex>
           <Flex>
             <span className="text-gray-400 block mr-2">更新时间</span>
             <span>
-              {dayjs(articleDetail?.updateTime).format("YYYY:MM:DD HH:mm:ss")}
+              {dayjs(articleDetail?.updatedAt).format("YYYY:MM:DD HH:mm:ss")}
             </span>
           </Flex>
         </Flex>

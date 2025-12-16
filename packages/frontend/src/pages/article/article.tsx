@@ -7,12 +7,12 @@ import {
   ActionIcon,
 } from "@/layouts/page-with-action";
 import {
+  ArticleUpdateData,
   useQueryArticleContent,
   useQueryArticleLink,
   useUpdateArticle,
 } from "@/services/article";
 import { messageWarning } from "@/utils/message";
-import { ArticleMenuItem, UpdateArticleReqData } from "@/types/article";
 import TagArea from "./area-tag";
 import { blurOnEnter } from "@/utils/input";
 import {
@@ -40,6 +40,7 @@ import { AreaMobileActionBar } from "./area-mobile-action-bar";
 import { useArticleDetailAction } from "./hooks/use-detail-action";
 import { EditorRef } from "@/components/markdown-editor/editor";
 import { useCreateArticle } from "@/hooks/use-create-article";
+import { SchemaArticleMenuType } from "@shared-types/article";
 
 interface ArticleProps {
   currentArticleId: string;
@@ -121,7 +122,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
     setContent(articleResp.data.content);
   }, [articleResp]);
 
-  const saveEdit = async (data: Partial<UpdateArticleReqData>) => {
+  const saveEdit = async (data: Partial<ArticleUpdateData>) => {
     if (data.title === "") {
       messageWarning("标题不能为空");
       return;
@@ -134,7 +135,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
   };
 
   /** 渲染底部的子笔记项目 */
-  const renderSubArticleItem = (item: ArticleMenuItem) => {
+  const renderSubArticleItem = (item: SchemaArticleMenuType) => {
     return (
       <Link to={`/article/${item.id}`} key={item.id}>
         <Card

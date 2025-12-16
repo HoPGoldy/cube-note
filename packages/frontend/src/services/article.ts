@@ -1,19 +1,22 @@
 import { queryClient, requestPost } from "./base";
-import { AppResponse } from "@/types/global";
-import {
-  AddArticleReqData,
-  ArticleContent,
-  ArticleDeleteResp,
-  ArticleLinkResp,
-  ArticleMenuItem,
-  ArticleTreeNode,
-  DeleteArticleMutation,
-  SearchArticleReqData,
-  SearchArticleResp,
-  UpdateArticleReqData,
-} from "@/types/article";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
+import type {
+  SchemaArticleItemType,
+  SchemaArticleAddBodyType,
+  SchemaArticleUpdateBodyType,
+  SchemaArticleGetLinkResponseType,
+  SchemaArticleRemoveBodyType,
+  SchemaArticleSearchBodyType,
+  SchemaArticleMenuType,
+  SchemaArticleTreeNodeType,
+  SchemaArticleStatisticResponseType,
+  SchemaArticleSearchResponseType,
+} from "@shared-types/article";
+
+export type ArticleItem = Omit<SchemaArticleItemType, "tagIds"> & {
+  tagIds: string[];
+};
 
 /** 查询文章正文 */
 export const useQueryArticleContent = (id?: string) => {
@@ -30,7 +33,7 @@ export const useQueryArticleContent = (id?: string) => {
         data: {
           ...data,
           tagIds: data.tagIds ? data.tagIds.split(",").filter(Boolean) : [],
-        } as ArticleContent,
+        } as ArticleItem,
       };
     },
   });
@@ -38,29 +41,16 @@ export const useQueryArticleContent = (id?: string) => {
   return { ...result, articleDetail: result.data?.data };
 };
 
-const updateArticleCache = (
-  id: string,
-  updateData: Partial<ArticleContent>,
-) => {
-  const oldData = queryClient.getQueryData<AppResponse<ArticleContent>>([
-    "articleContent",
-    id,
-  ]);
-  if (!oldData) return;
-
-  const newData = {
-    ...oldData,
-    data: { ...oldData.data, ...updateData },
-  };
-  queryClient.setQueryData(["articleContent", id], newData);
+export type ArticleUpdateData = Omit<SchemaArticleUpdateBodyType, "tagIds"> & {
+  tagIds?: string[];
 };
 
 /** 更新文章详情 hook */
 export const useUpdateArticle = () => {
   return useMutation({
-    mutationFn: (data: UpdateArticleReqData) => {
+    mutationFn: (data: ArticleUpdateData) => {
       // 转换 tagIds 从 number[] 到 string
-      const convertedData = {
+      const convertedData: SchemaArticleUpdateBodyType = {
         ...data,
         tagIds:
           data.tagIds && data.tagIds.length > 0
@@ -69,12 +59,8 @@ export const useUpdateArticle = () => {
       };
       return requestPost("article/update", convertedData);
     },
-    onMutate: async (data) => {
-      // 把修改乐观更新到缓存
-      updateArticleCache(data.id, data);
-    },
     onSuccess: (resp, data) => {
-      if (data.title || data.parentArticleId) {
+      if (data.title) {
         queryClient.invalidateQueries({ queryKey: ["articleLink", data.id] });
         queryClient.invalidateQueries({ queryKey: ["menu"] });
       }
@@ -82,17 +68,12 @@ export const useUpdateArticle = () => {
         queryClient.invalidateQueries({ queryKey: ["menu"] });
         queryClient.invalidateQueries({ queryKey: ["favorite"] });
       }
-      // 是否收藏不通过这个接口更新，所以不需要更新收藏列表
-      // if (data.favorite) {
-      //     queryClient.invalidateQueries('favorite')
-      // }
     },
   });
 };
 
 /** 自动保存接口 */
 export const autoSaveContent = async (id: string, content: string) => {
-  updateArticleCache(id, { content });
   return requestPost("article/update", { id, content });
 };
 
@@ -104,7 +85,9 @@ export const useQueryArticleLink = (
   const result = useQuery({
     queryKey: ["articleLink", id],
     queryFn: () => {
-      return requestPost<ArticleLinkResp>("article/getLink", { id });
+      return requestPost<SchemaArticleGetLinkResponseType>("article/getLink", {
+        id,
+      });
     },
     enabled: !!id && enabled,
   });
@@ -120,7 +103,7 @@ export const useQueryArticleLink = (
 /** 新增文章 */
 export const useAddArticle = () => {
   return useMutation({
-    mutationFn: (data: AddArticleReqData) => {
+    mutationFn: (data: SchemaArticleAddBodyType) => {
       return requestPost("article/add", data);
     },
     onSuccess: (resp, data) => {
@@ -135,14 +118,14 @@ export const useAddArticle = () => {
 /** 删除文章 */
 export const useDeleteArticle = () => {
   return useMutation({
-    mutationFn: (data: DeleteArticleMutation) => {
-      return requestPost<ArticleDeleteResp>("article/remove", data);
+    mutationFn: (data: SchemaArticleRemoveBodyType) => {
+      return requestPost("article/remove", data);
     },
   });
 };
 
 /** 搜索文章列表 */
-export const useQueryArticleList = (data: SearchArticleReqData) => {
+export const useQueryArticleList = (data: SchemaArticleSearchBodyType) => {
   const enableSearch = () => {
     if (data.keyword) return true;
     if (data.tagIds && data.tagIds.length > 0) return true;
@@ -153,7 +136,10 @@ export const useQueryArticleList = (data: SearchArticleReqData) => {
   const result = useQuery({
     queryKey: ["articleList", data],
     queryFn: async () => {
-      return requestPost<SearchArticleResp>("article/search", data);
+      return requestPost<SchemaArticleSearchResponseType>(
+        "article/search",
+        data,
+      );
     },
     enabled: enableSearch(),
   });
@@ -170,7 +156,9 @@ export const useQueryArticleTree = (id?: string) => {
   const result = useQuery({
     queryKey: ["menu", id],
     queryFn: () => {
-      return requestPost<ArticleTreeNode[]>("article/getTree", { id });
+      return requestPost<SchemaArticleTreeNodeType[]>("article/getTree", {
+        id,
+      });
     },
     refetchOnWindowFocus: false,
     enabled: !isNil(id),
@@ -184,7 +172,7 @@ export const useQueryArticleFavorite = (enabled: boolean) => {
   const result = useQuery({
     queryKey: ["favorite"],
     queryFn: () => {
-      return requestPost<ArticleMenuItem[]>("article/getFavorite", {});
+      return requestPost<SchemaArticleMenuType[]>("article/getFavorite", {});
     },
     refetchOnWindowFocus: false,
     enabled,
@@ -193,28 +181,15 @@ export const useQueryArticleFavorite = (enabled: boolean) => {
   return { ...result, articleFavorite: result.data?.data || [] };
 };
 
-/** 收藏文章 */
-export const useFavoriteArticle = () => {
-  return useMutation({
-    mutationFn: (data: { id: string; favorite: boolean }) => {
-      return requestPost("article/setFavorite", data);
-    },
-    onMutate: async (data) => {
-      // 把修改乐观更新到缓存
-      updateArticleCache(data.id, { favorite: data.favorite });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["favorite"] });
-    },
-  });
-};
-
 /** 统计文章 */
 export const useQueryArticleCount = () => {
   return useQuery({
     queryKey: ["userStatistic"],
     queryFn: () => {
-      return requestPost("article/statistic", {});
+      return requestPost<SchemaArticleStatisticResponseType>(
+        "article/statistic",
+        {},
+      );
     },
   });
 };

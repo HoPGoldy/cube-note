@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Button, Col, Modal, Row, Space } from "antd";
 import { MobileDrawer } from "@/components/mobile-drawer";
-import { TagListItem } from "@/types/tag";
+import type { SchemaTagItemType } from "@shared-types/tag";
 import { useQueryTagList } from "@/services/tag";
 import { ControlOutlined } from "@ant-design/icons";
 import { Tag } from "@/components/tag";
@@ -14,7 +14,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   selectedTags: string[];
-  onSelected: (item: TagListItem) => void;
+  onSelected: (item: SchemaTagItemType) => void;
 }
 
 /**
@@ -27,7 +27,7 @@ export const TagPicker: FC<Props> = (props) => {
 
   const { tagList, isLoading: isTagLoading } = useQueryTagList();
 
-  const renderTag = (item: TagListItem) => {
+  const renderTag = (item: SchemaTagItemType) => {
     return (
       <Tag
         key={item.id}

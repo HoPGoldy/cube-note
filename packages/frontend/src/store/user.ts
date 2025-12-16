@@ -1,7 +1,7 @@
 import { atom, getDefaultStore } from "jotai";
 import JWT from "@/utils/jwt";
 import { localAccessToken } from "./lcoal";
-import { LoginResp } from "@/services/auth";
+import { SchemaAuthLoginResponseType } from "@shared-types/auth";
 
 /**
  * 当前用户的登录 token
@@ -21,7 +21,7 @@ export const logout = () => {
   localAccessToken.set();
 };
 
-export const login = (payload: LoginResp) => {
+export const login = (payload: SchemaAuthLoginResponseType) => {
   const { token } = payload;
   const store = getDefaultStore();
 

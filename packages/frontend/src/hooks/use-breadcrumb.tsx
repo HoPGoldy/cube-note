@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "antd";
-import { ArticleTreeNode } from "@/types/article";
 import { useQueryArticleLink, useQueryArticleTree } from "@/services/article";
 import { BreadcrumbItemType } from "antd/es/breadcrumb/Breadcrumb";
 import { useGetAppConfig } from "@/services/app-config";
 import { useCurrentArticleId } from "./use-current-article-id";
+import { SchemaArticleTreeNodeType } from "@shared-types/article";
 
 /**
  * 面包屑导航
@@ -25,7 +25,7 @@ export const useBreadcrumb = () => {
   const breadcrumbConfig = useMemo(() => {
     if (!articleTree || !currentArticleId) return [];
 
-    const pathNodes: ArticleTreeNode[] = [];
+    const pathNodes: SchemaArticleTreeNodeType[] = [];
     const idPath = [...(parentArticleIds || []), currentArticleId];
 
     idPath.reduce((prev, cur) => {

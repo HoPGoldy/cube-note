@@ -1,4 +1,3 @@
-import { Attachment } from "@db/client";
 import { Type } from "typebox";
 
 export const SchemaAttachmentInfo = Type.Object({
@@ -28,13 +27,6 @@ export const SchemaAccessTokenResponse = Type.Object({
   url: Type.String({ description: "下载 URL" }),
 });
 
-export const createFileInfoVo = (
-  data: Attachment,
-): SchemaAttachmentInfoType => {
-  const { path, userId, ...rest } = data;
-  return {
-    ...rest,
-    createdAt: rest.createdAt.toISOString(),
-    updatedAt: rest.updatedAt.toISOString(),
-  };
-};
+export type SchemaAccessTokenResponseType = Type.Static<
+  typeof SchemaAccessTokenResponse
+>;

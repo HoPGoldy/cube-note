@@ -6,7 +6,7 @@ import {
   ActionIcon,
   ActionButton,
 } from "@/layouts/page-with-action";
-import { TagListItem } from "@/types/tag";
+import type { SchemaTagItemType } from "@shared-types/tag";
 import { useQueryTagList } from "@/services/tag";
 import Loading from "@/layouts/loading";
 import { Button, Card, Checkbox, Col, Flex, Row } from "antd";
@@ -82,7 +82,7 @@ const TagManager: FC = () => {
     setShowColorPicker(false);
   };
 
-  const renderTagItem = (item: TagListItem) => {
+  const renderTagItem = (item: SchemaTagItemType) => {
     const checked = selectedTagIds.includes(item.id);
     return (
       <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>

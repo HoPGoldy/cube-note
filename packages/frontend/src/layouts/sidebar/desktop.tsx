@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { ArticleMenuItem, TabTypes } from "@/types/article";
 import { Link, useNavigate } from "react-router-dom";
 import { TreeMenu } from "@//components/tree-menu";
 import {
@@ -9,11 +8,12 @@ import {
 } from "@ant-design/icons";
 import { Button, Col, Row, Tooltip } from "antd";
 import s from "./styles.module.css";
-import { EMPTY_CLASSNAME, tabOptions, useMenu } from "./use-menu";
+import { EMPTY_CLASSNAME, tabOptions, useMenu, TabTypes } from "./use-menu";
 import Loading from "../loading";
 import { ColorDot } from "@/components/color-picker/color-dot";
 import { useCreateArticle } from "@/hooks/use-create-article";
 import { useCurrentArticleId } from "@/hooks/use-current-article-id";
+import { SchemaArticleMenuType } from "@shared-types/article";
 
 export const Sidebar: FC = () => {
   const menu = useMenu();
@@ -21,7 +21,7 @@ export const Sidebar: FC = () => {
   const currentArticleId = useCurrentArticleId();
   const { createArticle } = useCreateArticle();
 
-  const renderMenuItem = (item: ArticleMenuItem) => {
+  const renderMenuItem = (item: SchemaArticleMenuType) => {
     return (
       <Link key={item.id} to={`/article/${item.id}`}>
         <div className={s.menuItem} title={item.title}>

@@ -1,5 +1,4 @@
 import { useQueryArticleList } from "@/services/article";
-import { SearchArticleDetail } from "@/types/article";
 import { FC, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -20,6 +19,7 @@ import { getColorValue } from "@/components/color-picker/color-dot";
 import { ColorList } from "@/components/color-picker";
 import { EmptyTip } from "@/components/empty-tip";
 import { MobileDrawer } from "@/components/mobile-drawer";
+import type { SchemaArticleSearchItemType } from "@shared-types/article";
 
 /**
  * 搜索页面
@@ -56,7 +56,7 @@ const SearchArticle: FC = () => {
     page: currentPage,
   });
 
-  const renderTagItem = (tagId: number) => {
+  const renderTagItem = (tagId: string) => {
     const item = tagDict.get(tagId);
     if (!item) return null;
 
@@ -77,7 +77,7 @@ const SearchArticle: FC = () => {
     setSearchParams(searchParams, { replace: true });
   };
 
-  const renderSearchItem = (item: SearchArticleDetail) => {
+  const renderSearchItem = (item: SchemaArticleSearchItemType) => {
     const colorfulTitle = item.title.replace(
       keyword,
       `<span class='text-red-500'>${keyword}</span>`,

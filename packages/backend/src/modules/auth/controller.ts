@@ -2,6 +2,12 @@ import bcrypt from "bcryptjs";
 import { UserRole } from "@db/client";
 import { signJwtToken } from "./utils";
 import { AppInstance } from "@/types";
+import {
+  SchemaAuthLoginBody,
+  SchemaAuthLoginResponse,
+  SchemaAuthRenewResponse,
+  SchemaAuthRenewErrorResponse,
+} from "@/types/auth";
 import { ErrorUnauthorized } from "@/types/error";
 import { ErrorAuthFailed, ErrorBanned } from "./error";
 import { hashPassword, shaWithSalt } from "@/lib/crypto";
@@ -71,22 +77,9 @@ export const registerController = (options: RegisterOptions) => {
       schema: {
         description: "用户登录",
         tags: ["auth"],
-        body: {
-          type: "object",
-          required: ["password"],
-          properties: {
-            password: {
-              type: "string",
-            },
-          },
-        },
+        body: SchemaAuthLoginBody,
         response: {
-          200: {
-            type: "object",
-            properties: {
-              token: { type: "string", description: "JWT 令牌" },
-            },
-          },
+          200: SchemaAuthLoginResponse,
         },
       },
     },
@@ -122,18 +115,8 @@ export const registerController = (options: RegisterOptions) => {
         description: "续期 JWT 令牌",
         tags: ["auth"],
         response: {
-          200: {
-            type: "object",
-            properties: {
-              token: { type: "string", description: "新的 JWT 令牌" },
-            },
-          },
-          401: {
-            type: "object",
-            properties: {
-              error: { type: "string", description: "错误信息" },
-            },
-          },
+          200: SchemaAuthRenewResponse,
+          401: SchemaAuthRenewErrorResponse,
         },
       },
     },

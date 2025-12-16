@@ -1,12 +1,9 @@
 import { PrismaClient } from "@db/client";
 import { ErrorNotFound } from "@/types/error";
-import {
-  appendIdToPath,
-  buildArticleTree,
-  getParentIdByPath,
-  pathToArray,
-} from "./utils";
+import { buildArticleTree } from "./utils";
+import { appendIdToPath, getParentIdByPath, pathToArray } from "@/utils/tree";
 import { ArticleWhereInput } from "@db/models";
+import { SchemaArticleGetLinkResponseType } from "@/types/article";
 
 interface ServiceOptions {
   prisma: PrismaClient;
@@ -179,12 +176,13 @@ export class ArticleService {
         ? { OR: [{ parentPath: prefix }, { id: parentId }] }
         : { parentPath: prefix },
       orderBy: { createdAt: "asc" },
+      select: { id: true, title: true, parentPath: true, color: true },
     });
 
-    const data = {
-      parentArticleIds: undefined as string[] | undefined,
-      parentArticleTitle: undefined as string | undefined,
-      childrenArticles: [] as { id: string; title: string }[],
+    const data: SchemaArticleGetLinkResponseType = {
+      parentArticleIds: null,
+      parentArticleTitle: null,
+      childrenArticles: [],
     };
 
     matchedArticles.forEach((item) => {
@@ -202,7 +200,7 @@ export class ArticleService {
   async getFavoriteArticles() {
     return await this.options.prisma.article.findMany({
       where: { favorite: true },
-      select: { id: true, title: true, color: true },
+      select: { id: true, title: true, color: true, parentPath: true },
       orderBy: { updatedAt: "desc" },
     });
   }

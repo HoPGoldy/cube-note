@@ -1,4 +1,13 @@
-import { Type } from "typebox";
+import {
+  SchemaTagListBody,
+  SchemaTagAddBody,
+  SchemaTagUpdateBody,
+  SchemaTagRemoveBody,
+  SchemaTagBatchSetColorBody,
+  SchemaTagBatchRemoveBody,
+  SchemaTagItem,
+  SchemaTagList,
+} from "@/types/tag";
 import { TagService } from "./service";
 import { AppInstance } from "@/types";
 
@@ -13,7 +22,14 @@ export async function registerTagController(options: RegisterOptions) {
   // 获取标签详情
   server.get<{ Params: { id: string } }>(
     "/tag/:id",
-    { schema: { description: "获取标签详情" } },
+    {
+      schema: {
+        description: "获取标签详情",
+        response: {
+          200: SchemaTagItem,
+        },
+      },
+    },
     async (request) => {
       return await tagService.getTagById(request.params.id);
     },
@@ -25,10 +41,13 @@ export async function registerTagController(options: RegisterOptions) {
     {
       schema: {
         description: "获取所有标签",
-        body: Type.Object({}),
+        body: SchemaTagListBody,
+        response: {
+          200: SchemaTagList,
+        },
       },
     },
-    async (request) => {
+    async () => {
       return await tagService.getTagList();
     },
   );
@@ -39,10 +58,7 @@ export async function registerTagController(options: RegisterOptions) {
     {
       schema: {
         description: "创建标签",
-        body: Type.Object({
-          title: Type.String({ minLength: 1 }),
-          color: Type.Optional(Type.String()),
-        }),
+        body: SchemaTagAddBody,
       },
     },
     async (request) => {
@@ -61,11 +77,7 @@ export async function registerTagController(options: RegisterOptions) {
     {
       schema: {
         description: "更新标签",
-        body: Type.Object({
-          id: Type.String(),
-          title: Type.Optional(Type.String()),
-          color: Type.Optional(Type.String()),
-        }),
+        body: SchemaTagUpdateBody,
       },
     },
     async (request) => {
@@ -80,9 +92,7 @@ export async function registerTagController(options: RegisterOptions) {
     {
       schema: {
         description: "删除标签",
-        body: Type.Object({
-          id: Type.String(),
-        }),
+        body: SchemaTagRemoveBody,
       },
     },
     async (request) => {
@@ -97,10 +107,7 @@ export async function registerTagController(options: RegisterOptions) {
     {
       schema: {
         description: "批量设置标签颜色",
-        body: Type.Object({
-          tagIds: Type.Array(Type.String()),
-          color: Type.String(),
-        }),
+        body: SchemaTagBatchSetColorBody,
       },
     },
     async (request) => {
@@ -118,9 +125,7 @@ export async function registerTagController(options: RegisterOptions) {
     {
       schema: {
         description: "批量删除标签",
-        body: Type.Object({
-          ids: Type.Array(Type.String()),
-        }),
+        body: SchemaTagBatchRemoveBody,
       },
     },
     async (request) => {

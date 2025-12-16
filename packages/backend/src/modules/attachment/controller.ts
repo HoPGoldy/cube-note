@@ -2,13 +2,13 @@ import { Type } from "typebox";
 import type { AttachmentService } from "./service";
 import type { AppInstance } from "@/types";
 import {
-  createFileInfoVo,
   SchemaAccessTokenResponse,
   SchemaAttachmentInfo,
   SchemaDownloadQuery,
-} from "./schema";
+} from "@/types/attachment";
 import { createReadStream } from "fs";
 import { ErrorFileNotFound, ErrorNoFile, ErrorWrongSignature } from "./error";
+import { transformDate } from "@/utils/vo";
 
 interface RegisterOptions {
   server: AppInstance;
@@ -48,7 +48,7 @@ export const registerController = (options: RegisterOptions) => {
         mimeType,
       );
 
-      return createFileInfoVo(result);
+      return transformDate(result);
     },
   );
 
@@ -142,7 +142,7 @@ export const registerController = (options: RegisterOptions) => {
       if (!file) {
         throw new ErrorFileNotFound();
       }
-      return createFileInfoVo(file);
+      return transformDate(file);
     },
   );
 };

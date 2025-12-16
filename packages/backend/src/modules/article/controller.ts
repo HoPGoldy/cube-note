@@ -1,6 +1,22 @@
-import { Type } from "typebox";
+import {
+  SchemaArticleGetContentBody,
+  SchemaArticleGetLinkBody,
+  SchemaArticleGetTreeBody,
+  SchemaArticleGetFavoriteBody,
+  SchemaArticleAddBody,
+  SchemaArticleUpdateBody,
+  SchemaArticleRemoveBody,
+  SchemaArticleSearchBody,
+  SchemaArticleSetFavoriteBody,
+  SchemaArticleItem,
+  SchemaArticleGetLinkResponse,
+  SchemaArticleFavoriteList,
+  SchemaArticleStatisticResponse,
+  SchemaArticleSearchResponse,
+} from "@/types/article";
 import { ArticleService } from "./service";
 import { AppInstance } from "@/types";
+import { transformDate } from "@/utils/vo";
 
 interface RegisterOptions {
   server: AppInstance;
@@ -10,20 +26,20 @@ interface RegisterOptions {
 export async function registerArticleController(options: RegisterOptions) {
   const { server, articleService } = options;
 
-  // 获取文章内容（POST）
   server.post(
     "/article/getContent",
     {
       schema: {
         description: "获取文章内容",
-        body: Type.Object({
-          id: Type.String(),
-        }),
+        body: SchemaArticleGetContentBody,
+        response: {
+          200: SchemaArticleItem,
+        },
       },
     },
     async (request) => {
-      const body = request.body;
-      return await articleService.getArticleDetail(body.id);
+      const result = await articleService.getArticleDetail(request.body.id);
+      return transformDate(result);
     },
   );
 
@@ -33,15 +49,14 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "获取文章下属链接",
-        body: Type.Object({
-          id: Type.String(),
-        }),
+        body: SchemaArticleGetLinkBody,
+        response: {
+          200: SchemaArticleGetLinkResponse,
+        },
       },
     },
     async (request) => {
-      const body = request.body as { id: string };
-      const { id } = body;
-      return await articleService.getChildren(id);
+      return await articleService.getChildren(request.body.id);
     },
   );
 
@@ -51,12 +66,10 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "获取文章树形结构",
-        body: Type.Object({
-          id: Type.Optional(Type.String()),
-        }),
+        body: SchemaArticleGetTreeBody,
       },
     },
-    async (request) => {
+    async () => {
       return articleService.getArticleTree();
     },
   );
@@ -67,10 +80,13 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "获取收藏的文章列表",
-        body: Type.Object({}),
+        body: SchemaArticleGetFavoriteBody,
+        response: {
+          200: SchemaArticleFavoriteList,
+        },
       },
     },
-    async (request) => {
+    async () => {
       return await articleService.getFavoriteArticles();
     },
   );
@@ -81,24 +97,17 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "新增文章",
-        body: Type.Object({
-          title: Type.String(),
-          content: Type.Optional(Type.String()),
-          parentId: Type.Optional(Type.String()),
-        }),
+        body: SchemaArticleAddBody,
       },
     },
     async (request) => {
-      const body = request.body as {
-        title: string;
-        content?: string;
-        parentId?: string;
-      };
-      return await articleService.createArticle(
+      const body = request.body;
+      const result = await articleService.createArticle(
         body.title,
         body.content || "",
         body.parentId,
       );
+      return { id: result.id };
     },
   );
 
@@ -108,16 +117,7 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "更新文章",
-        body: Type.Object({
-          id: Type.String(),
-          title: Type.Optional(Type.String()),
-          content: Type.Optional(Type.String()),
-          tagIds: Type.Optional(Type.String()),
-          favorite: Type.Optional(Type.Boolean()),
-          parentPath: Type.Optional(Type.String()),
-          color: Type.Optional(Type.String()),
-          listSubarticle: Type.Optional(Type.Boolean()),
-        }),
+        body: SchemaArticleUpdateBody,
       },
     },
     async (request) => {
@@ -133,10 +133,7 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "删除文章",
-        body: Type.Object({
-          id: Type.String(),
-          force: Type.Optional(Type.Boolean()),
-        }),
+        body: SchemaArticleRemoveBody,
       },
     },
     async (request) => {
@@ -152,13 +149,10 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "获取文章列表",
-        body: Type.Object({
-          keyword: Type.Optional(Type.String()),
-          page: Type.Optional(Type.Number()),
-          pageSize: Type.Optional(Type.Number()),
-          colors: Type.Optional(Type.Array(Type.String())),
-          tagIds: Type.Optional(Type.Array(Type.String())),
-        }),
+        body: SchemaArticleSearchBody,
+        response: {
+          200: SchemaArticleSearchResponse,
+        },
       },
     },
     async (request) => {
@@ -180,10 +174,7 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "设置文章收藏状态",
-        body: Type.Object({
-          id: Type.String(),
-          favorite: Type.Boolean(),
-        }),
+        body: SchemaArticleSetFavoriteBody,
       },
     },
     async (request) => {
@@ -197,6 +188,9 @@ export async function registerArticleController(options: RegisterOptions) {
     {
       schema: {
         description: "统计文章数量",
+        response: {
+          200: SchemaArticleStatisticResponse,
+        },
       },
     },
     async () => {
