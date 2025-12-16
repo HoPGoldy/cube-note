@@ -1,6 +1,7 @@
+import { PATH_PACKAGE_JSON } from "@/config/path";
 import type { AppConfigService } from "./service";
 import type { AppInstance } from "@/types";
-import { SchemaAppConfig } from "@/types/app-config";
+import { SchemaAppConfig, SchemaAppVersionResponse } from "@/types/app-config";
 
 interface RegisterOptions {
   server: AppInstance;
@@ -44,6 +45,27 @@ export const registerController = (options: RegisterOptions) => {
     async (request) => {
       await appConfigService.setConfigValues(request.body);
       return { success: true };
+    },
+  );
+
+  server.get(
+    "/config/version",
+    {
+      schema: {
+        description: "获取应用版本号",
+        tags: ["config"],
+        response: {
+          200: SchemaAppVersionResponse,
+        },
+      },
+    },
+    async () => {
+      const packageJson = await import(PATH_PACKAGE_JSON);
+      return {
+        version: packageJson.version,
+        name: packageJson.name,
+        repository: packageJson.repository?.url || packageJson.repository,
+      };
     },
   );
 };

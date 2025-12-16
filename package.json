@@ -10,6 +10,10 @@
     "prepare": "node -e \"import('husky').then(m=>m.default()).catch(()=>{})\"",
     "release": "commit-and-tag-version"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HoPGoldy/cube-note"
+  },
   "workspaces": [
     "packages/*"
   ],

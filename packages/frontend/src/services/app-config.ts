@@ -1,6 +1,9 @@
-import { queryClient, requestPost } from "./base";
+import { queryClient, requestGet, requestPost } from "./base";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import type { SchemaAppConfigType } from "@shared-types/app-config";
+import type {
+  SchemaAppConfigType,
+  SchemaAppVersionResponseType,
+} from "@shared-types/app-config";
 
 export const useGetAppConfig = () => {
   const result = useQuery({
@@ -23,4 +26,16 @@ export const useUpdateAppConfig = () => {
       queryClient.invalidateQueries();
     },
   });
+};
+
+export const useAppVersion = () => {
+  const result = useQuery({
+    queryKey: ["app-config/version"],
+    queryFn: () => requestGet<SchemaAppVersionResponseType>("config/version"),
+  });
+
+  return {
+    ...result,
+    appVersion: result.data?.data,
+  };
 };

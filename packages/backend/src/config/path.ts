@@ -69,3 +69,10 @@ export const PATH_DATABASE = join(PATH_ROOT, "main.db");
 export const PATH_MIGRATIONS = ENV_IS_PROD
   ? join(__dirname, "../prisma/migrations")
   : join(__dirname, "../../prisma/migrations");
+
+/**
+ * package.json 文件路径
+ */
+export const PATH_PACKAGE_JSON = ENV_IS_PROD
+  ? join(__dirname, "../../../package.json")
+  : join(__dirname, "../../../../package.json");
