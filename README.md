@@ -1,6 +1,7 @@
 # cube-note
 
-![](https://img.shields.io/npm/v/cube-note)
+![Docker Image Version](https://img.shields.io/docker/v/hopgoldy/cube-note)
+![Docker Image Size](https://img.shields.io/docker/image-size/hopgoldy/cube-note)
 
 cube-note 是基于 nodejs 开发的全栈项目，致力于为个人打造轻量级的 web note 服务。基于 react / fastify / sqlite / typescript 开发。
 
