@@ -103,3 +103,5 @@ docker run -p 3001:3499 cube-note:local
 ## 许可
 
 本项目源码基于 GPL v3 许可开源，[点此](https://github.com/HoPGoldy/cube-note/blob/master/LICENSE) 查看更多信息。
+
+todo 侧边栏空状态处理

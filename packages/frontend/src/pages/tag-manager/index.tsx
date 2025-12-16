@@ -4,6 +4,7 @@ import {
   PageContent,
   PageAction,
   ActionIcon,
+  ActionButton,
 } from "@/layouts/page-with-action";
 import { TagListItem } from "@/types/tag";
 import { useQueryTagList } from "@/services/tag";
@@ -19,7 +20,7 @@ import {
   DeleteOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { MobileArea } from "@/layouts/responsive";
+import { DesktopArea, MobileArea } from "@/layouts/responsive";
 import { usePageTitle } from "@/store/global";
 import { useTagDetailAction } from "../tag-detail/use-detail-action";
 import { ColorPicker } from "@/components/color-picker";
@@ -84,7 +85,7 @@ const TagManager: FC = () => {
   const renderTagItem = (item: TagListItem) => {
     const checked = selectedTagIds.includes(item.id);
     return (
-      <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4} className="p-1">
+      <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>
         <Card
           styles={{ body: { padding: "12px 16px" } }}
           className="hover:ring-2 ring-gray-300 dark:ring-neutral-500 transition-all cursor-pointer"
@@ -112,23 +113,27 @@ const TagManager: FC = () => {
   const renderBatchBtn = () => {
     if (!isBatch) {
       return (
-        <Button onClick={() => setIsBatch(true)} icon={<DiffOutlined />}>
-          批量操作
-        </Button>
+        <DesktopArea>
+          <Button onClick={() => setIsBatch(true)} icon={<DiffOutlined />}>
+            批量操作
+          </Button>
+        </DesktopArea>
       );
     }
 
     return (
       <>
-        <Button
-          onClick={() => {
-            setIsBatch(false);
-            setSelectedTagIds([]);
-          }}
-          icon={<ExportOutlined />}
-        >
-          退出批量操作
-        </Button>
+        <DesktopArea>
+          <Button
+            onClick={() => {
+              setIsBatch(false);
+              setSelectedTagIds([]);
+            }}
+            icon={<ExportOutlined />}
+          >
+            退出批量操作
+          </Button>
+        </DesktopArea>
         <Button
           onClick={() => setShowColorPicker(true)}
           icon={<BgColorsOutlined />}
@@ -146,37 +151,40 @@ const TagManager: FC = () => {
     if (isLoadingTagList) return <Loading />;
 
     return (
-      <Flex vertical gap="md">
+      <>
         <Flex justify="flex-end" align="center" gap={8}>
-          <Button
-            onClick={tagDetailActions.onAdd}
-            type="primary"
-            icon={<PlusOutlined />}
-          >
-            新增标签
-          </Button>
+          <DesktopArea>
+            <Button
+              onClick={tagDetailActions.onAdd}
+              type="primary"
+              icon={<PlusOutlined />}
+            >
+              新增标签
+            </Button>
+          </DesktopArea>
           {renderBatchBtn()}
         </Flex>
-        <Row>{tagList.map(renderTagItem)}</Row>
-      </Flex>
+        <Row gutter={[8, 8]}>{tagList.map(renderTagItem)}</Row>
+      </>
     );
   };
 
   return (
     <>
       <PageContent>
-        <div className="box-border p-2 flex flex-col flex-nowrap h-full">
-          <div className="flex-grow overflow-y-auto overflow-x-hidden">
+        <div className="box-border flex flex-col flex-nowrap h-full p-2">
+          <Flex
+            vertical
+            gap={8}
+            className="flex-grow overflow-y-auto overflow-x-hidden"
+          >
             <MobileArea>
-              <Card
-                size="small"
-                className="text-center text-base font-bold mb-2"
-              >
+              <Card size="small" className="text-center text-base font-bold">
                 标签管理
               </Card>
             </MobileArea>
             {renderContent()}
-          </div>
+          </Flex>
         </div>
       </PageContent>
       <PageAction>
@@ -185,6 +193,9 @@ const TagManager: FC = () => {
           icon={isBatch ? <DownSquareOutlined /> : <BuildOutlined />}
           onClick={() => setIsBatch(!isBatch)}
         />
+        <ActionButton onClick={tagDetailActions.onAdd} icon={<PlusOutlined />}>
+          新增标签
+        </ActionButton>
       </PageAction>
 
       <ColorPicker
