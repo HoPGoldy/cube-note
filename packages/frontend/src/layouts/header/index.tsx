@@ -5,7 +5,7 @@ import {
   SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Popover } from "antd";
+import { Button, Popover, Tooltip } from "antd";
 import s from "./styles.module.css";
 import { DesktopSetting } from "@/pages/user-setting";
 import { useAtomValue } from "jotai";
@@ -37,11 +37,13 @@ const Header: FC<Props> = (props) => {
         <div>{currentPageTitle || renderBreadcrumb()}</div>
       </div>
       <div className="flex flex-nowrap flex-shrink-0 ml-2">
-        <Link to="/search">
-          <Button icon={<SearchOutlined />} className="w-60">
-            搜索
-          </Button>
-        </Link>
+        <Tooltip title="搜索文章 Ctrl + F">
+          <Link to="/search">
+            <Button icon={<SearchOutlined />} className="w-60">
+              搜索
+            </Button>
+          </Link>
+        </Tooltip>
         <Popover
           placement="bottomRight"
           trigger="click"

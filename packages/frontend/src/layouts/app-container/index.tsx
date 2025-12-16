@@ -3,10 +3,12 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "../sidebar/desktop";
 import { useIsMobile } from "../responsive";
 import Header from "../header";
+import { useJumpToSearch } from "@/hooks/use-jump-to-search";
 
 const SIDE_WIDTH = "240px";
 
 export const AppContainer: React.FC = () => {
+  useJumpToSearch();
   const isMobile = useIsMobile();
   /** 是否展开侧边栏 */
   const [collapsed, setCollapsed] = useState(false);
