@@ -1,4 +1,5 @@
 import { PATH_PACKAGE_JSON } from "@/config/path";
+import { readFileSync } from "fs";
 import type { AppConfigService } from "./service";
 import type { AppInstance } from "@/types";
 import { SchemaAppConfig, SchemaAppVersionResponse } from "@/types/app-config";
@@ -60,7 +61,7 @@ export const registerController = (options: RegisterOptions) => {
       },
     },
     async () => {
-      const packageJson = await import(PATH_PACKAGE_JSON);
+      const packageJson = JSON.parse(readFileSync(PATH_PACKAGE_JSON, "utf-8"));
       return {
         version: packageJson.version,
         name: packageJson.name,
