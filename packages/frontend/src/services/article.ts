@@ -13,6 +13,7 @@ import type {
   SchemaArticleStatisticResponseType,
   SchemaArticleSearchResponseType,
 } from "@shared-types/article";
+import { useMemo } from "react";
 
 export type ArticleItem = Omit<SchemaArticleItemType, "tagIds"> & {
   tagIds: string[];
@@ -92,10 +93,14 @@ export const useQueryArticleLink = (
     enabled: !!id && enabled,
   });
 
+  const parentArticleIds = useMemo(() => {
+    return result.data?.data?.parentArticleIds || [];
+  }, [result.data]);
+
   return {
     ...result,
     childrenArticles: result.data?.data?.childrenArticles,
-    parentArticleIds: result.data?.data?.parentArticleIds || [],
+    parentArticleIds,
     parentArticleTitle: result.data?.data?.parentArticleTitle || "",
   };
 };
