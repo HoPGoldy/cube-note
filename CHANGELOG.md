@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.5.0](https://github.com/HoPGoldy/cube-note/compare/v2.4.0...v2.5.0) (2025-12-22)
+
+
+### Features
+
+* 前端静态资源启用 gzip ([5058b94](https://github.com/HoPGoldy/cube-note/commit/5058b9402abe2db7f1c35d0bb07d7fda0f3169a4))
+
+
+### Bug Fixes
+
+* version 接口报错 ([d5c8613](https://github.com/HoPGoldy/cube-note/commit/d5c86131ea07c5f576d92abce82c13ec2f3b6aa4))
+* 移动端点击失效问题 ([7b074bc](https://github.com/HoPGoldy/cube-note/commit/7b074bc0503e174eeaee6f4d5199c42d5fb54030))
+
 ## [2.4.0](https://github.com/HoPGoldy/cube-note/compare/v2.3.0...v2.4.0) (2025-12-16)
 
 
