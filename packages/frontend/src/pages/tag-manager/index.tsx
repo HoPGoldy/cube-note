@@ -172,7 +172,10 @@ const TagManager: FC = () => {
   return (
     <>
       <PageContent>
-        <div className="box-border flex flex-col flex-nowrap h-full p-2">
+        <div
+          className="box-border flex flex-col flex-nowrap h-full p-2"
+          data-testid="tag-manager-container"
+        >
           <Flex
             vertical
             gap={8}

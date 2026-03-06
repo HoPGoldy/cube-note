@@ -193,6 +193,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
             }}
             placeholder="请输入笔记名"
             className="font-bold border-0 text-3xl py-2 mr-2 w-full dark:text-white"
+            data-testid="article-title-input"
           />
           <Flex gap={8} align="center" className="flex-shrink-0">
             <DesktopArea>
@@ -220,6 +221,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
                   type="primary"
                   onClick={onClickSaveBtn}
                   icon={<SaveIcon />}
+                  data-testid="article-save-btn"
                 >
                   保存
                 </Button>
@@ -228,6 +230,7 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
                   type="primary"
                   onClick={detailActions.startEdit}
                   icon={<FormOutlined />}
+                  data-testid="article-edit-btn"
                 >
                   编辑
                 </Button>
@@ -243,7 +246,10 @@ export const ArticleContent: FC<ArticleProps> = ({ currentArticleId }) => {
         />
 
         {detailActions.isEdit ? (
-          <div className={[s.editorArea, s.mdArea].join(" ")}>
+          <div
+            className={[s.editorArea, s.mdArea].join(" ")}
+            data-testid="article-editor-area"
+          >
             <Editor
               ref={editorRef}
               value={content}

@@ -182,12 +182,23 @@ const SearchArticle: FC = () => {
     }
     if (articleList.length === 0) {
       return (
-        <EmptyTip title="没有找到相关笔记" subTitle="请尝试其他关键字或标签" />
+        <div data-testid="search-empty-tip">
+          <EmptyTip
+            title="没有找到相关笔记"
+            subTitle="请尝试其他关键字或标签"
+          />
+        </div>
       );
     }
 
     return (
-      <Flex vertical align="center" gap={8} className="w-full">
+      <Flex
+        vertical
+        align="center"
+        gap={8}
+        className="w-full"
+        data-testid="search-result-list"
+      >
         {articleList.map(renderSearchItem)}
         <Pagination
           total={total}
@@ -218,6 +229,7 @@ const SearchArticle: FC = () => {
             autoFocus
             size="large"
             onSearch={onKeywordSearch}
+            data-testid="search-keyword-input"
           />
         </DesktopArea>
         <DesktopArea>{renderFilterArea()}</DesktopArea>
