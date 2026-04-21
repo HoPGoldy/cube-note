@@ -1,11 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
-import { ENV_BACKEND_PORT, ENV_IS_PROD } from "@/config/env";
+import { ENV_BACKEND_PORT } from "@/config/env";
 
 export const registerSwagger = async (server: FastifyInstance) => {
-  if (ENV_IS_PROD) return;
-
   await server.register(fastifySwagger, {
     openapi: {
       info: {
