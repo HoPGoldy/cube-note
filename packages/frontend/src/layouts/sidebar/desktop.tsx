@@ -7,6 +7,7 @@ import {
   InsertRowLeftOutlined,
 } from "@ant-design/icons";
 import { Button, Col, Row, Tooltip } from "antd";
+import { APP_NAME } from "@/config";
 import s from "./styles.module.css";
 import { EMPTY_CLASSNAME, tabOptions, useMenu, TabTypes } from "./use-menu";
 import Loading from "../loading";
@@ -163,7 +164,7 @@ export const Sidebar: FC = () => {
   return (
     <section className={s.sideberBox}>
       <div className="flex flex-row flex-nowrap items-center justify-center mb-3">
-        <div className="font-black text-lg">Cube Note</div>
+        <div className="font-black text-lg">{APP_NAME}</div>
       </div>
 
       {renderTabBtns()}
