@@ -29,6 +29,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/getContent",
     {
+      config: { requiredScopes: ["article:read"] },
       schema: {
         description: "获取文章内容",
         body: SchemaArticleGetContentBody,
@@ -47,6 +48,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/getLink",
     {
+      config: { requiredScopes: ["article:read"] },
       schema: {
         description: "获取文章下属链接",
         body: SchemaArticleGetLinkBody,
@@ -64,6 +66,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/getTree",
     {
+      config: { requiredScopes: ["article:read"] },
       schema: {
         description: "获取文章树形结构",
         body: SchemaArticleGetTreeBody,
@@ -78,6 +81,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/getFavorite",
     {
+      config: { requiredScopes: ["article:read"] },
       schema: {
         description: "获取收藏的文章列表",
         body: SchemaArticleGetFavoriteBody,
@@ -95,6 +99,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/add",
     {
+      config: { requiredScopes: ["article:write"] },
       schema: {
         description: "新增文章",
         body: SchemaArticleAddBody,
@@ -115,6 +120,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/update",
     {
+      config: { requiredScopes: ["article:write"] },
       schema: {
         description: "更新文章",
         body: SchemaArticleUpdateBody,
@@ -131,6 +137,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/remove",
     {
+      config: { requiredScopes: ["article:write"] },
       schema: {
         description: "删除文章",
         body: SchemaArticleRemoveBody,
@@ -147,6 +154,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/search",
     {
+      config: { requiredScopes: ["article:read"] },
       schema: {
         description: "获取文章列表",
         body: SchemaArticleSearchBody,
@@ -172,6 +180,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/setFavorite",
     {
+      config: { requiredScopes: ["article:write"] },
       schema: {
         description: "设置文章收藏状态",
         body: SchemaArticleSetFavoriteBody,
@@ -186,6 +195,7 @@ export async function registerArticleController(options: RegisterOptions) {
   server.post(
     "/article/statistic",
     {
+      config: { requiredScopes: ["article:read"] },
       schema: {
         description: "统计文章数量",
         response: {

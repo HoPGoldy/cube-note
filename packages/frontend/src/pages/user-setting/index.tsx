@@ -10,6 +10,7 @@ import { APP_NAME } from "@/config";
 import { Cell, SplitLine } from "@/components/cell";
 import { SettingLinkItem, useSettingMenu } from "./use-setting-menu";
 import { AboutModal } from "../about";
+import { AccessTokenModal } from "../access-token";
 
 interface DesktopProps {
   onClick: () => void;
@@ -67,6 +68,11 @@ export const DesktopSetting: FC<DesktopProps> = (props) => {
       <AboutModal
         open={settingHook.aboutVisible}
         onClose={() => settingHook.setAboutVisible(false)}
+      />
+
+      <AccessTokenModal
+        open={settingHook.accessTokenVisible}
+        onClose={() => settingHook.setAccessTokenVisible(false)}
       />
     </div>
   );
@@ -162,6 +168,11 @@ export const MobileSetting: FC<MobileProps> = (props) => {
       <AboutModal
         open={settingHook.aboutVisible}
         onClose={() => settingHook.setAboutVisible(false)}
+      />
+
+      <AccessTokenModal
+        open={settingHook.accessTokenVisible}
+        onClose={() => settingHook.setAccessTokenVisible(false)}
       />
     </Drawer>
   );

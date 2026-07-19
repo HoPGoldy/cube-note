@@ -8,10 +8,12 @@ import {
   SchemaAuthRenewResponse,
   SchemaAuthRenewErrorResponse,
 } from "@/types/auth";
-import { ErrorUnauthorized } from "@/types/error";
+import { ErrorUnauthorized, ErrorForbidden } from "@/types/error";
 import { ErrorAuthFailed, ErrorBanned } from "./error";
 import { hashPassword, shaWithSalt } from "@/lib/crypto";
 import { ENV_BACKEND_LOGIN_PASSWORD } from "@/config/env";
+import type { AccessTokenService } from "@/modules/access-token/service";
+import { ACCESS_TOKEN_PREFIX } from "@/modules/access-token/service";
 
 declare module "fastify" {
   interface FastifyContextConfig {
@@ -25,22 +27,39 @@ declare module "fastify" {
      * @default false
      */
     requireAdmin?: boolean;
+    /**
+     * 该路由所需的 access token scope 列表
+     */
+    requiredScopes?: string[];
   }
 }
 
 declare module "@fastify/jwt" {
   interface FastifyJWT {
-    payload: { id: string; username: string; role: string };
-    user: { id: string; username: string; role: string };
+    payload: {
+      id: string;
+      username: string;
+      role: string;
+      source?: string;
+      scopes?: string[];
+    };
+    user: {
+      id: string;
+      username: string;
+      role: string;
+      source?: string;
+      scopes?: string[];
+    };
   }
 }
 
 interface RegisterOptions {
   server: AppInstance;
+  accessTokenService: AccessTokenService;
 }
 
 export const registerController = (options: RegisterOptions) => {
-  const { server } = options;
+  const { server, accessTokenService } = options;
 
   // 根据配置给路由添加 swagger 安全定义
   server.addHook("onRoute", (routeOptions) => {
@@ -53,17 +72,48 @@ export const registerController = (options: RegisterOptions) => {
   });
 
   server.addHook("preHandler", async (request) => {
-    const { disableAuth, requireAdmin } = request.routeOptions.config;
+    const { disableAuth, requireAdmin, requiredScopes } =
+      request.routeOptions.config;
     if (!disableAuth) {
-      try {
-        await request.jwtVerify();
-      } catch (err) {
-        console.error(err);
-        throw new ErrorUnauthorized();
+      const authHeader = request.headers.authorization;
+      const bearerToken = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice(7)
+        : null;
+
+      if (bearerToken?.startsWith(ACCESS_TOKEN_PREFIX)) {
+        const plain = bearerToken.slice(ACCESS_TOKEN_PREFIX.length);
+        const record = await accessTokenService.verify(plain);
+        if (!record) throw new ErrorUnauthorized();
+        request.user = {
+          id: "access-token-user",
+          username: "",
+          role: "user",
+          source: "access-token",
+          scopes: record.scopes,
+        };
+      } else {
+        try {
+          await request.jwtVerify();
+        } catch {
+          throw new ErrorUnauthorized();
+        }
       }
 
       if (requireAdmin && request.user.role !== UserRole.ADMIN) {
         throw new ErrorBanned();
+      }
+
+      if (
+        requiredScopes &&
+        request.user.source === "access-token" &&
+        request.user.scopes
+      ) {
+        const hasAll = requiredScopes.every((scope) =>
+          request.user.scopes!.includes(scope),
+        );
+        if (!hasAll) {
+          throw new ErrorForbidden("Insufficient scope");
+        }
       }
     }
   });

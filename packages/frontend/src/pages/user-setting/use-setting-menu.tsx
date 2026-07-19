@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { logout, stateUserJwtData } from "@/store/user";
-import { SmileOutlined, BellOutlined } from "@ant-design/icons";
+import { SmileOutlined, BellOutlined, KeyOutlined } from "@ant-design/icons";
 import { useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { useQueryArticleCount } from "@/services/article";
@@ -16,6 +16,8 @@ export const useSettingMenu = () => {
   const navigate = useNavigate();
   /** 是否展示关于弹窗 */
   const [aboutVisible, setAboutVisible] = useState(false);
+  /** 是否展示访问令牌管理弹窗 */
+  const [accessTokenVisible, setAccessTokenVisible] = useState(false);
 
   const { data: countInfo } = useQueryArticleCount();
 
@@ -26,6 +28,11 @@ export const useSettingMenu = () => {
       onClick: () => {
         navigate("/tags");
       },
+    },
+    {
+      label: "访问令牌",
+      icon: <KeyOutlined />,
+      onClick: () => setAccessTokenVisible(true),
     },
     {
       label: "关于",
@@ -49,6 +56,8 @@ export const useSettingMenu = () => {
     onLogout,
     aboutVisible,
     setAboutVisible,
+    accessTokenVisible,
+    setAccessTokenVisible,
     settingConfig,
   };
 };

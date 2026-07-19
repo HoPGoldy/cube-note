@@ -10,6 +10,7 @@
  */
 export type * from './models/AppConfig'
 export type * from './models/Attachment'
+export type * from './models/AccessToken'
 export type * from './models/Article'
 export type * from './models/Tag'
 export type * from './commonInputTypes'

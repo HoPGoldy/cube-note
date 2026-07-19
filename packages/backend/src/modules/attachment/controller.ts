@@ -21,6 +21,7 @@ export const registerController = (options: RegisterOptions) => {
   server.post(
     "/attachments/upload",
     {
+      config: { requiredScopes: ["attachment:write"] },
       schema: {
         description: "上传文件",
         tags: ["attachment"],
@@ -55,6 +56,7 @@ export const registerController = (options: RegisterOptions) => {
   server.get(
     "/attachments/request/:fileId",
     {
+      config: { requiredScopes: ["attachment:read"] },
       schema: {
         description: "请求文件访问令牌",
         tags: ["attachment"],
@@ -125,6 +127,7 @@ export const registerController = (options: RegisterOptions) => {
   server.post(
     "/attachments/info",
     {
+      config: { requiredScopes: ["attachment:read"] },
       schema: {
         description: "获取文件信息",
         tags: ["attachment"],

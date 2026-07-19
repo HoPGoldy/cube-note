@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   AppConfig: 'AppConfig',
   Attachment: 'Attachment',
+  AccessToken: 'AccessToken',
   Article: 'Article',
   Tag: 'Tag'
 } as const
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "appConfig" | "attachment" | "article" | "tag"
+    modelProps: "appConfig" | "attachment" | "accessToken" | "article" | "tag"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -552,6 +553,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.AttachmentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AttachmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    AccessToken: {
+      payload: Prisma.$AccessTokenPayload<ExtArgs>
+      fields: Prisma.AccessTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AccessTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AccessTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.AccessTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AccessTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>
+        }
+        findMany: {
+          args: Prisma.AccessTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>[]
+        }
+        create: {
+          args: Prisma.AccessTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>
+        }
+        createMany: {
+          args: Prisma.AccessTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AccessTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.AccessTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>
+        }
+        update: {
+          args: Prisma.AccessTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.AccessTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AccessTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AccessTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.AccessTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.AccessTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAccessToken>
+        }
+        groupBy: {
+          args: Prisma.AccessTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccessTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AccessTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccessTokenCountAggregateOutputType> | number
         }
       }
     }
@@ -766,6 +841,19 @@ export const AttachmentScalarFieldEnum = {
 export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
 
 
+export const AccessTokenScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  tokenHash: 'tokenHash',
+  tokenPrefix: 'tokenPrefix',
+  scopes: 'scopes',
+  createdAt: 'createdAt',
+  lastUsedAt: 'lastUsedAt'
+} as const
+
+export type AccessTokenScalarFieldEnum = (typeof AccessTokenScalarFieldEnum)[keyof typeof AccessTokenScalarFieldEnum]
+
+
 export const ArticleScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -930,6 +1018,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   appConfig?: Prisma.AppConfigOmit
   attachment?: Prisma.AttachmentOmit
+  accessToken?: Prisma.AccessTokenOmit
   article?: Prisma.ArticleOmit
   tag?: Prisma.TagOmit
 }

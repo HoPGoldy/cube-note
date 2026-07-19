@@ -23,6 +23,7 @@ export async function registerTagController(options: RegisterOptions) {
   server.get<{ Params: { id: string } }>(
     "/tag/:id",
     {
+      config: { requiredScopes: ["tag:read"] },
       schema: {
         description: "获取标签详情",
         response: {
@@ -39,6 +40,7 @@ export async function registerTagController(options: RegisterOptions) {
   server.post(
     "/tag/list",
     {
+      config: { requiredScopes: ["tag:read"] },
       schema: {
         description: "获取所有标签",
         body: SchemaTagListBody,
@@ -56,6 +58,7 @@ export async function registerTagController(options: RegisterOptions) {
   server.post(
     "/tag/add",
     {
+      config: { requiredScopes: ["tag:write"] },
       schema: {
         description: "创建标签",
         body: SchemaTagAddBody,
@@ -75,6 +78,7 @@ export async function registerTagController(options: RegisterOptions) {
   server.post(
     "/tag/update",
     {
+      config: { requiredScopes: ["tag:write"] },
       schema: {
         description: "更新标签",
         body: SchemaTagUpdateBody,
@@ -90,6 +94,7 @@ export async function registerTagController(options: RegisterOptions) {
   server.post(
     "/tag/remove",
     {
+      config: { requiredScopes: ["tag:write"] },
       schema: {
         description: "删除标签",
         body: SchemaTagRemoveBody,
@@ -105,6 +110,7 @@ export async function registerTagController(options: RegisterOptions) {
   server.post(
     "/tag/batch/setColor",
     {
+      config: { requiredScopes: ["tag:write"] },
       schema: {
         description: "批量设置标签颜色",
         body: SchemaTagBatchSetColorBody,
@@ -123,6 +129,7 @@ export async function registerTagController(options: RegisterOptions) {
   server.post(
     "/tag/batch/remove",
     {
+      config: { requiredScopes: ["tag:write"] },
       schema: {
         description: "批量删除标签",
         body: SchemaTagBatchRemoveBody,

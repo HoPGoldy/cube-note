@@ -41,6 +41,16 @@ model Attachment {
   @@index([userId])
 }
 
+model AccessToken {
+  id          String    @id @default(uuid())
+  name        String
+  tokenHash   String    @unique
+  tokenPrefix String
+  scopes      String    @default("[]")
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+}
+
 // 文章/笔记 - 树形结构存储
 model Article {
   id        String   @id @default(uuid())

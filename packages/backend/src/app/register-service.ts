@@ -10,6 +10,8 @@ import { TagService } from "@/modules/tag/service";
 import { registerUnifyResponse } from "@/lib/unify-response";
 import type { AppInstance } from "@/types";
 import { AttachmentService } from "@/modules/attachment/service";
+import { AccessTokenService } from "@/modules/access-token/service";
+import { registerAccessTokenController } from "@/modules/access-token/controller";
 import { registerRemoveAdditionalProperties } from "@/lib/security";
 
 /**
@@ -37,6 +39,10 @@ export const registerService = async (instance: AppInstance) => {
     prisma,
   });
 
+  const accessTokenService = new AccessTokenService({
+    prisma,
+  });
+
   const appControllerPlugin = async (server: AppInstance) => {
     registerRemoveAdditionalProperties(server);
     registerUnifyResponse(server);
@@ -48,6 +54,7 @@ export const registerService = async (instance: AppInstance) => {
 
     registerAuthController({
       server,
+      accessTokenService,
     });
 
     registerAppConfigController({
@@ -63,6 +70,11 @@ export const registerService = async (instance: AppInstance) => {
     await registerTagController({
       server,
       tagService,
+    });
+
+    registerAccessTokenController({
+      server,
+      accessTokenService,
     });
   };
 
