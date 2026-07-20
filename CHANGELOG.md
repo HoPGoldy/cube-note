@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.6.0](https://github.com/HoPGoldy/cube-note/compare/v2.5.0...v2.6.0) (2026-07-20)
+
+
+### Features
+
+* add access tokens ([bc2bc9d](https://github.com/HoPGoldy/cube-note/commit/bc2bc9d3f4397576e040c5d08e271e19e35e8351))
+* add unified dev command with concurrently ([2daf138](https://github.com/HoPGoldy/cube-note/commit/2daf138f51a7d4193d362296b9df7610a2dab01c))
+* hide username label in header ([054cf8b](https://github.com/HoPGoldy/cube-note/commit/054cf8bf8b068bd35c42b4bc70992f4ee8b36fe8))
+* refine access token management ([e81d096](https://github.com/HoPGoldy/cube-note/commit/e81d096e03d1887d441ac3fdeac1e03331f84e07))
+
+
+### Bug Fixes
+
+* expose /docs/json in production ([40978ba](https://github.com/HoPGoldy/cube-note/commit/40978bacdf5bf5467709fb90f9faf23f2a60b499))
+
 ## [2.5.0](https://github.com/HoPGoldy/cube-note/compare/v2.4.0...v2.5.0) (2025-12-22)
 
 
