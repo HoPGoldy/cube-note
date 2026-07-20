@@ -1,12 +1,14 @@
 import { Type } from "typebox";
 import type { AppInstance } from "@/types";
 import type { AccessTokenService } from "./service";
-import { DEFAULT_SCOPES, type AccessTokenScope } from "./scopes";
 import {
+  DEFAULT_ACCESS_TOKEN_SCOPES,
   SchemaAccessTokenCreate,
   SchemaAccessTokenCreateResponse,
   SchemaAccessTokenList,
-  SchemaAccessTokenUpdate,
+  type SchemaAccessTokenCreateResponseType,
+  type SchemaAccessTokenListType,
+  type AccessTokenScope,
 } from "@/types/access-token";
 
 interface RegisterOptions {
@@ -36,33 +38,9 @@ export const registerAccessTokenController = (options: RegisterOptions) => {
       const { name, scopes } = request.body;
       return accessTokenService.create(
         name,
-        (scopes as AccessTokenScope[] | undefined) ?? DEFAULT_SCOPES,
-      );
-    },
-  );
-
-  server.post(
-    "/access-tokens/update",
-    {
-      config: {
-        requireAdmin: true,
-      },
-      schema: {
-        description: "更新访问令牌（名称和权限）",
-        tags: ["access-token"],
-        body: SchemaAccessTokenUpdate,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-            name: Type.String(),
-            scopes: Type.Array(Type.String()),
-          }),
-        },
-      },
-    },
-    async (request) => {
-      const { id, name, scopes } = request.body;
-      return accessTokenService.update(id, name, scopes as AccessTokenScope[]);
+        (scopes as AccessTokenScope[] | undefined) ??
+          DEFAULT_ACCESS_TOKEN_SCOPES,
+      ) as Promise<SchemaAccessTokenCreateResponseType>;
     },
   );
 
@@ -81,7 +59,7 @@ export const registerAccessTokenController = (options: RegisterOptions) => {
       },
     },
     async () => {
-      return accessTokenService.findAll();
+      return accessTokenService.findAll() as Promise<SchemaAccessTokenListType>;
     },
   );
 
@@ -103,7 +81,7 @@ export const registerAccessTokenController = (options: RegisterOptions) => {
       },
     },
     async (request) => {
-      const { id } = request.params;
+      const { id } = request.params as { id: string };
       await accessTokenService.delete(id);
       return { success: true };
     },
