@@ -97,6 +97,42 @@ export type SchemaArticleUpdateBodyType = Type.Static<
   typeof SchemaArticleUpdateBody
 >;
 
+export const SchemaArticleEditOperation = Type.Object({
+  oldText: Type.String({
+    description: "原文中要被替换的文本，必须在原文中唯一匹配",
+  }),
+  newText: Type.String({ description: "替换后的新文本" }),
+});
+export type SchemaArticleEditOperationType = Type.Static<
+  typeof SchemaArticleEditOperation
+>;
+
+export const SchemaArticleEditBody = Type.Object({
+  id: Type.String({ description: "文章 ID" }),
+  edits: Type.Array(SchemaArticleEditOperation, {
+    minItems: 1,
+    description:
+      "一组精确文本替换，所有 edit 针对原始内容匹配，任一失败则整体不生效",
+  }),
+  baseUpdatedAt: Type.Optional(
+    Type.String({
+      description:
+        "乐观锁：填入 getContent 返回的 updatedAt，若文章已被修改则拒绝本次编辑",
+    }),
+  ),
+});
+export type SchemaArticleEditBodyType = Type.Static<
+  typeof SchemaArticleEditBody
+>;
+
+export const SchemaArticleEditResponse = Type.Object({
+  success: Type.Boolean(),
+  applied: Type.Number({ description: "成功应用的 edit 数量" }),
+});
+export type SchemaArticleEditResponseType = Type.Static<
+  typeof SchemaArticleEditResponse
+>;
+
 export const SchemaArticleRemoveBody = Type.Object({
   id: Type.String(),
   force: Type.Optional(Type.Boolean()),

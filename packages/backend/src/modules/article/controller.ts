@@ -5,6 +5,8 @@ import {
   SchemaArticleGetFavoriteBody,
   SchemaArticleAddBody,
   SchemaArticleUpdateBody,
+  SchemaArticleEditBody,
+  SchemaArticleEditResponse,
   SchemaArticleRemoveBody,
   SchemaArticleSearchBody,
   SchemaArticleSetFavoriteBody,
@@ -130,6 +132,26 @@ export async function registerArticleController(options: RegisterOptions) {
       const { id, ...updateData } = request.body;
       await articleService.updateArticle(id, updateData);
       return { success: true };
+    },
+  );
+
+  // 局部精确编辑文章（对齐 Agent edit 工具语义）
+  server.post(
+    "/article/edit",
+    {
+      schema: {
+        description:
+          "对文章内容做一组精确文本替换（局部编辑）。规则：1. 所有 edits 针对原始内容匹配；2. 每个 oldText 必须在原文中唯一匹配，未找到或多处匹配都会报错；3. edits 之间不允许重叠；4. 任一 edit 失败则整体不生效；5. 传 baseUpdatedAt（getContent 返回的 updatedAt）可启用乐观锁，文章被其他人修改后会拒绝本次编辑。适合需要先 getContent 再小范围修改的场景，比 update 全量覆盖更安全",
+        tags: ["article"],
+        body: SchemaArticleEditBody,
+        response: {
+          200: SchemaArticleEditResponse,
+        },
+      },
+    },
+    async (request) => {
+      const { id, edits, baseUpdatedAt } = request.body;
+      return await articleService.editArticle(id, edits, baseUpdatedAt);
     },
   );
 

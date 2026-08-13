@@ -1,6 +1,7 @@
 import { PrismaClient } from "@db/client";
-import { ErrorNotFound } from "@/types/error";
-import { buildArticleTree } from "./utils";
+import { ErrorConflict, ErrorNotFound } from "@/types/error";
+import { SchemaArticleEditOperationType } from "@/types/article";
+import { applyEdits, buildArticleTree } from "./utils";
 import { appendIdToPath, getParentIdByPath, pathToArray } from "@/utils/tree";
 import { ArticleWhereInput } from "@db/models";
 import { SchemaArticleGetLinkResponseType } from "@/types/article";
@@ -43,6 +44,40 @@ export class ArticleService {
     if (!article) throw new ErrorNotFound("Article not found");
 
     return await this.options.prisma.article.update({ where: { id }, data });
+  }
+
+  async editArticle(
+    id: string,
+    edits: SchemaArticleEditOperationType[],
+    baseUpdatedAt?: string,
+  ) {
+    const article = await this.options.prisma.article.findUnique({
+      where: { id },
+    });
+    if (!article) throw new ErrorNotFound("Article not found");
+
+    // 任一 edit 校验失败会抛错，不会走到这里，保证全有或全无
+    const newContent = applyEdits(article.content, edits);
+
+    if (baseUpdatedAt) {
+      // 乐观锁：updatedAt 比对下沉到 where 条件，避免读取与写入之间的并发覆盖（TOCTOU）
+      const result = await this.options.prisma.article.updateMany({
+        where: { id, updatedAt: new Date(baseUpdatedAt) },
+        data: { content: newContent },
+      });
+      if (result.count === 0) {
+        throw new ErrorConflict(
+          "Article has been modified, please read the latest content before editing",
+        );
+      }
+    } else {
+      await this.options.prisma.article.update({
+        where: { id },
+        data: { content: newContent },
+      });
+    }
+
+    return { success: true, applied: edits.length };
   }
 
   async deleteArticle(id: string, force: boolean = false) {

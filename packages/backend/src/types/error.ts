@@ -35,6 +35,14 @@ export class ErrorUnauthorized extends ErrorHttp {
   }
 }
 
+export class ErrorConflict extends ErrorHttp {
+  constructor(message = "Conflict") {
+    super(message);
+    this.statusCode = 409;
+    this.code = 40900;
+  }
+}
+
 export class ErrorForbidden extends ErrorHttp {
   constructor(message = "Forbidden") {
     super(message);
