@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.7.0](https://github.com/HoPGoldy/cube-note/compare/v2.6.0...v2.7.0) (2026-08-16)
+
+
+### Features
+
+* add article edit endpoint ([cf0dc8d](https://github.com/HoPGoldy/cube-note/commit/cf0dc8d18d0e9f18cba3383ab1a7110654948d4f))
+* add cube-note agent skill ([1149995](https://github.com/HoPGoldy/cube-note/commit/11499958b3b2901b5b68a3b2804b903b0d18170e))
+
 ## [2.6.0](https://github.com/HoPGoldy/cube-note/compare/v2.5.0...v2.6.0) (2026-07-20)
 
 
